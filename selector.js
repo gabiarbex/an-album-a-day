@@ -325,7 +325,7 @@ function normalizeStoreText(value){
 function formatRuntime(ms){
  const total=Math.max(0,Math.round(Number(ms||0)/1000));
  const h=Math.floor(total/3600),m=Math.floor((total%3600)/60),sec=total%60;
- return h?\`${h}h ${String(m).padStart(2,'0')}m\`:\`${m}:${String(sec).padStart(2,'0')}\`;
+ return h?`${h}h ${String(m).padStart(2,'0')}m`:`${m}:${String(sec).padStart(2,'0')}`;
 }
 function catalogGenres(a){
  return (Array.isArray(a.genres)?a.genres:[])
@@ -336,8 +336,8 @@ async function findItunesAlbum(a){
  const cacheKey=key(a);
  if(itunesAlbumCache.has(cacheKey))return itunesAlbumCache.get(cacheKey);
  const promise=(async()=>{
-  const q=encodeURIComponent(\`${a.artist} ${a.title}\`);
-  const response=await fetch(\`https://itunes.apple.com/search?term=${q}&media=music&entity=album&attribute=albumTerm&limit=20\`);
+  const q=encodeURIComponent(`${a.artist} ${a.title}`);
+  const response=await fetch(`https://itunes.apple.com/search?term=${q}&media=music&entity=album&attribute=albumTerm&limit=20`);
   if(!response.ok)throw Error('Album metadata service unavailable');
   const data=await response.json();
   const artist=normalizeStoreText(a.artist),title=normalizeStoreText(a.title);
@@ -393,12 +393,12 @@ function renderRecordFacts(a,album,tracks,sourceLabel='CATALOG'){
  const runtime=tracks.reduce((sum,t)=>sum+(Number(t.trackTimeMillis)||0),0);
  addFact('Released',releaseYear);
  addFact('Tracks',tracks.length||album?.trackCount||'');
- addFact('Runtime',runtime?formatRuntime(runtime):a.length_min?\`${Math.round(Number(a.length_min))} min\`:'');
+ addFact('Runtime',runtime?formatRuntime(runtime):a.length_min?`${Math.round(Number(a.length_min))} min`:'');
  addFact('Format','LP / album');
  if(album?.collectionExplicitness==='explicit')addFact('Advisory','Explicit');
 
  const list=$('tracklist');list.replaceChildren();
- $('trackCountLabel').textContent=tracks.length?\`${tracks.length} TRACK${tracks.length===1?'':'S'}\`:'UNAVAILABLE';
+ $('trackCountLabel').textContent=tracks.length?`${tracks.length} TRACK${tracks.length===1?'':'S'}`:'UNAVAILABLE';
  if(!tracks.length){
   $('tracklistStatus').hidden=false;
   $('tracklistStatus').textContent='No verified tracklist found for this edition.';
@@ -411,7 +411,7 @@ function renderRecordFacts(a,album,tracks,sourceLabel='CATALOG'){
   .forEach(track=>{
    const li=document.createElement('li');
    const num=document.createElement('span');num.className='track-no';
-   num.textContent=(track.discCount||1)>1?\`${track.discNumber||1}.${String(track.trackNumber||0).padStart(2,'0')}\`:String(track.trackNumber||'').padStart(2,'0');
+   num.textContent=(track.discCount||1)>1?`${track.discNumber||1}.${String(track.trackNumber||0).padStart(2,'0')}`:String(track.trackNumber||'').padStart(2,'0');
    const name=document.createElement('span');name.className='track-name';name.textContent=track.trackName||'Untitled';
    const time=document.createElement('span');time.className='track-time';time.textContent=track.trackTimeMillis?formatRuntime(track.trackTimeMillis):'';
    li.append(num,name,time);list.append(li);
@@ -438,7 +438,7 @@ async function loadRecordFile(a){
   if(tracklistCache.has(album.collectionId)){
    tracks=await tracklistCache.get(album.collectionId);
   }else{
-   const promise=fetch(\`https://itunes.apple.com/lookup?id=${album.collectionId}&entity=song&limit=200\`)
+   const promise=fetch(`https://itunes.apple.com/lookup?id=${album.collectionId}&entity=song&limit=200`)
     .then(r=>{if(!r.ok)throw Error('Tracklist lookup unavailable');return r.json()})
     .then(data=>(data.results||[]).filter(x=>x.wrapperType==='track'&&x.kind==='song'&&Number(x.collectionId)===Number(album.collectionId)))
     .catch(e=>{console.info('Tracklist unavailable',e);return []});
