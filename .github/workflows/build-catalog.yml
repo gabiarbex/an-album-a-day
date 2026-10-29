@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/build-catalog.yml"
+      - "scripts/build_catalog_from_dump.py"
+      - "scripts/shard_catalog.py"
 
 permissions:
   contents: write
