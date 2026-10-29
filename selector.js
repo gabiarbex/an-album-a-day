@@ -295,10 +295,13 @@ function score(a,intent){
  const am=(a.moods||[]).map(x=>String(x).toLowerCase());
  for(const m of state.moods)if(am.includes(m))s+=4;
  for(const [m,w] of Object.entries(intent.moods))if(am.includes(m))s+=w*2.8;
+ for(const [m,w] of Object.entries(intent.avoidMoods||{}))if(am.includes(m))s-=w*3.2;
+ const albumGenres=[...(a.genres||[]),...(a.tags||[])].map(x=>String(typeof x==='string'?x:x?.name||'').toLowerCase());
+ for(const g of intent.genres||[])if(albumGenres.some(x=>x.includes(g)||g.includes(x)))s+=3.2;
+ for(const g of intent.avoidGenres||[])if(albumGenres.some(x=>x.includes(g)||g.includes(x)))s-=4;
  const en=a.energy_level==null?NaN:Number(a.energy_level);
  if(state.energy!==null&&Number.isFinite(en))s+=Math.max(0,5-Math.abs(en-state.energy));
  else if(intent.energy!==null&&Number.isFinite(en))s+=Math.max(0,4-Math.abs(en-intent.energy));
- if(state.comfort&&a.comfort_vs_exploration===state.comfort)s+=3;
  const duration=a.length_min==null?NaN:Number(a.length_min);
  if(state.time!==null&&Number.isFinite(duration))s+=duration<=state.time?3:-Math.min(7,(duration-state.time)/6);
  return s;
@@ -465,6 +468,18 @@ function liveScore(candidate,intent){
   const ww=2.4*confidence*Math.max(1,Number(w)||1);
   weighted+=ww*signals.moods[m];weight+=ww;
  }
+ for(const [m,w] of Object.entries(intent.avoidMoods||{})){
+  if(signals.moods[m]===undefined)continue;
+  const ww=2.7*confidence*Math.max(1,Number(w)||1);
+  weighted+=ww*(1-signals.moods[m]);weight+=ww;
+ }
+ const genre=String(candidate._live?.genre||'').toLowerCase();
+ for(const wanted of intent.genres||[]){
+  const ww=1.6;weighted+=ww*(genre.includes(wanted)||wanted.includes(genre)?1:.15);weight+=ww;
+ }
+ for(const avoided of intent.avoidGenres||[]){
+  const ww=1.8;weighted+=ww*(genre.includes(avoided)||avoided.includes(genre)?0:1);weight+=ww;
+ }
  const targetEnergy=state.energy!==null?Number(state.energy):intent.energy;
  if(targetEnergy!==null&&targetEnergy!==undefined&&signals.energy!==null){
   const similarity=Math.max(0,1-Math.abs(Number(signals.energy)-Number(targetEnergy))/10);
@@ -472,7 +487,7 @@ function liveScore(candidate,intent){
  }
  const known=diaryArtistSet().has(String(candidate.artist||'').toLowerCase());
  if(state.comfort==='comfort'){const ww=.8;weighted+=ww*(known?1:.35);weight+=ww}
- if(state.comfort==='exploration'){const ww=.8;weighted+=ww*(known?.05:1);weight+=ww}
+ if(state.comfort==='exploration'||intent.exploration>0){const ww=.8;weighted+=ww*(known?.05:1);weight+=ww}
  if(intent.moods.nostalgic&&candidate._live?.year){
   const y=Number(candidate._live.year),age=Math.max(0,new Date().getFullYear()-y);
   const ww=.35;weighted+=ww*Math.min(1,age/35);weight+=ww;
@@ -887,49 +902,58 @@ const feelingLexicon={
  cold:['winter','cold','rain','fog','frost','inverno','frio','chuva'],
  gritty:['raw','dirty','grunge','rough','punk','noise','sujo','bruto']
 };
+function termIsNegated(text,index){
+ const prefix=text.slice(Math.max(0,index-48),index).replace(/[^a-z0-9' ]+/g,' ');
+ return /\b(?:don't|dont|do not|not|without|avoid|avoiding|anything but|no)\b(?:\s+\w+){0,5}\s*$/.test(prefix);
+}
+const genreLexicon=[
+ 'alternative','indie','rock','pop','electronic','house','techno','ambient','jazz','classical','metal','punk',
+ 'hip hop','rap','r&b','soul','folk','country','reggae','ska','latin','bossa nova','samba','mpb','shoegaze',
+ 'dream pop','post-punk','post punk','goth','darkwave','experimental','psychedelic','soundtrack','afrobeat'
+];
 function interpretFeeling(text){
- const t=String(text||'').toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
- const moods={};
+ const t=String(text||'').toLocaleLowerCase().replace(/[’‘]/g,"'").normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const moods={},avoidMoods={};
  for(const [m,terms] of Object.entries(feelingLexicon)){
-  const hits=terms.filter(term=>t.includes(term.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).length;
-  if(hits)moods[m]=Math.min(hits,3);
- }
- const ranked=Object.entries(moods).sort((a,b)=>b[1]-a[1]);
- const energy=/dance|party|run|scream|rage|festa|dancar|gritar|alive/.test(t)?8:/quiet|slow|soft|gentle|sleep|calm|silencio|devagar/.test(t)?3:null;
- return {moods,energy,summary:ranked.length?ranked.slice(0,2).map(([m])=>m).join(' and ')+' feelings':''};
-}
-function savePickerState(){
- try{localStorage.setItem('albumaday.picker',JSON.stringify({note:$('feelingInput')?.value||'',state}))}catch{}
-}
-function restorePickerState(){
- try{
-  const saved=JSON.parse(localStorage.getItem('albumaday.picker')||'null');if(!saved)return;
-  if($('feelingInput')&&typeof saved.note==='string')$('feelingInput').value=saved.note;
-  if(saved.state){
-   state.moods=Array.isArray(saved.state.moods)?saved.state.moods:[];
-   state.energy=saved.state.energy??null;state.comfort=saved.state.comfort??null;state.time=saved.state.time??null;
-   for(const [id] of groups){
-    const parent=$(id);if(!parent)continue;
-    parent.querySelectorAll('button').forEach(b=>{
-     const active=id==='moods'?state.moods.includes(b._value):state[id]===b._value;
-     b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active));
-    });
+  let pos=0,neg=0;
+  for(const raw of terms){
+   const term=raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+   let from=0;
+   while(true){
+    const i=t.indexOf(term,from);if(i<0)break;
+    if(termIsNegated(t,i))neg++;else pos++;
+    from=i+Math.max(1,term.length);
    }
   }
- }catch{}
-}
-function resetPicker(){
- state.moods=[];state.energy=null;state.comfort=null;state.time=null;
- if($('feelingInput'))$('feelingInput').value='';
- for(const [id] of groups)$(id)?.querySelectorAll('button').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-pressed','false')});
- try{localStorage.removeItem('albumaday.picker')}catch{}
- $('feelingInput')?.dispatchEvent(new Event('input'));
- showToast('Counter cleared.');
-}
-function showToast(message){
- const toast=$('toast');if(!toast)return;
- toast.textContent=message;toast.hidden=false;clearTimeout(showToast.timer);
- showToast.timer=setTimeout(()=>{toast.hidden=true},2400);
+  if(pos)moods[m]=Math.min(pos,3);
+  if(neg)avoidMoods[m]=Math.min(neg,3);
+ }
+ // Longing for a person is usually more intimate than generic nostalgia.
+ if(/\bmiss(?:ing)?\b/.test(t)&&/\b(girlfriend|boyfriend|partner|wife|husband|her|him|them|someone|amor|namorada|namorado)\b/.test(t)){
+  moods.nostalgic=Math.max(moods.nostalgic||0,1);
+  moods.warm=Math.max(moods.warm||0,1);
+  if(!avoidMoods.melancholic)moods.melancholic=Math.max(moods.melancholic||0,1);
+ }
+ const genres=[],avoidGenres=[];
+ for(const g of genreLexicon){
+  let from=0,positive=false,negative=false;
+  while(true){
+   const i=t.indexOf(g,from);if(i<0)break;
+   if(termIsNegated(t,i))negative=true;else positive=true;
+   from=i+g.length;
+  }
+  if(positive)genres.push(g);
+  if(negative)avoidGenres.push(g);
+ }
+ const ranked=Object.entries(moods).sort((a,b)=>b[1]-a[1]);
+ const avoided=Object.entries(avoidMoods).sort((a,b)=>b[1]-a[1]);
+ const energy=/dance|party|run|scream|rage|festa|dancar|gritar|alive|full blast/.test(t)?8:/quiet|slow|soft|gentle|sleep|calm|silencio|devagar/.test(t)?3:null;
+ const exploration=/weird|strange|left turn|surprise|unexpected|obscure|unknown|new to me|experimental|esquisit|diferente/.test(t)?1:0;
+ const parts=[];
+ if(ranked.length)parts.push(ranked.slice(0,2).map(([m])=>m).join(' + '));
+ if(genres.length)parts.push(genres.slice(0,2).join(' / '));
+ if(avoided.length)parts.push('not '+avoided.slice(0,2).map(([m])=>m).join(' / '));
+ return {moods,avoidMoods,genres,avoidGenres,energy,exploration,summary:parts.join(' · ')};
 }
 const feelingInput=$('feelingInput');
 document.querySelectorAll('.prompt-chip').forEach(button=>{
@@ -946,8 +970,8 @@ if(feelingInput){
  restorePickerState();
  feelingInput.addEventListener('input',()=>{
   const p=interpretFeeling(feelingInput.value);
-  if(feelingInput.value.trim()&&!rankingFeaturesAvailable)$('feelingInsight').textContent='✳ note received — catalog mood matching is not live yet';
-  else $('feelingInsight').textContent=p.summary?'✳ reading: '+p.summary:'✳ your words, your soundtrack';
+  if(feelingInput.value.trim())$('feelingInsight').textContent=p.summary?'✳ reading: '+p.summary:'✳ note received — no obvious labels, which is allowed';
+  else $('feelingInsight').textContent='✳ your words, your soundtrack';
   savePickerState();
  });
  feelingInput.dispatchEvent(new Event('input'));
