@@ -86,8 +86,7 @@ function persistSeen(){
 }
 function readLogs(){try{return JSON.parse(localStorage.getItem('albumaday.logs')||'[]')}catch{return []}}
 logs=readLogs();
-function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));renderHistory();
-renderRecentPulls();renderRecentPulls()}
+function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));renderHistory();renderRecentPulls()}
 
 function readPickDays(){try{return JSON.parse(localStorage.getItem('albumaday.pickDays')||'[]')}catch{return []}}
 function markTodayPicked(){
@@ -162,6 +161,7 @@ function renderHistory(){
  }
 }
 renderHistory();
+renderRecentPulls();
 
 function albumHasGenre(a){
  return Array.isArray(a.genres)&&a.genres.some(g=>Boolean(typeof g==='string'?g:g?.name));
