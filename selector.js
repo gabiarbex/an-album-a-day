@@ -263,6 +263,36 @@ function mergeAlbums(items){
  }
  refreshFeatureCoverage();
 }
+let catalogLookupPromise=null;
+async function getCatalogLookupIndex(){
+ if(!catalogManifest?.lookup_index)return null;
+ if(catalogLookupPromise)return catalogLookupPromise;
+ catalogLookupPromise=fetch('./data/catalog/'+catalogManifest.lookup_index,{cache:'force-cache'})
+  .then(r=>{if(!r.ok)throw Error('lookup HTTP '+r.status);return r.json()})
+  .catch(e=>{catalogLookupPromise=null;console.info('Catalog lookup unavailable',e);return null});
+ return catalogLookupPromise;
+}
+async function resolveSemanticResults(results,maxNewShards=6){
+ if(!results?.length)return [];
+ const byId=new Map(albums.map(a=>[lookupId(a),a]));
+ const missing=results.filter(row=>!byId.has(row.id));
+ if(missing.length&&catalogManifest){
+  const index=await getCatalogLookupIndex();
+  if(index){
+   const files=[];
+   for(const row of missing){
+    const file=index[row.id];
+    if(file&&!files.includes(file)){
+     files.push(file);
+     if(files.length>=maxNewShards)break;
+    }
+   }
+   await Promise.all(files.map(loadSpecificShard));
+  }
+ }
+ const refreshed=new Map(albums.map(a=>[lookupId(a),a]));
+ return results.map(row=>({album:refreshed.get(row.id),semanticScore:row.score})).filter(row=>row.album);
+}
 async function loadSpecificShard(file){
  if(!catalogManifest||!file||loadedShardFiles.has(file))return;
  try{
@@ -305,12 +335,9 @@ async function restoreSharedPick(){
  let found=albums.find(a=>lookupId(a)===wanted);
  if(!found&&catalogManifest?.lookup_index){
   try{
-   const indexResponse=await fetch('./data/catalog/'+catalogManifest.lookup_index,{cache:'force-cache'});
-   if(indexResponse.ok){
-    const index=await indexResponse.json();
-    const shard=index[wanted];
-    if(shard){await loadSpecificShard(shard);found=albums.find(a=>lookupId(a)===wanted)}
-   }
+   const index=await getCatalogLookupIndex();
+   const shard=index?.[wanted];
+   if(shard){await loadSpecificShard(shard);found=albums.find(a=>lookupId(a)===wanted)}
   }catch(e){console.info('Shared-pick lookup unavailable',e)}
  }
  if(!found){
