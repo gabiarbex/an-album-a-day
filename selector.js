@@ -9,14 +9,14 @@ function readLogs(){try{return JSON.parse(localStorage.getItem('albumaday.logs')
 logs=readLogs();function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));renderHistory()}
 function renderHistory(){$('count').textContent=logs.length;const area=$('history');area.replaceChildren();if(!logs.length){area.textContent='Your listening story starts here. ✳';return}for(const entry of [...logs].reverse()){const item=document.createElement('div');item.className='history-item';const date=document.createElement('small');date.textContent=entry.date;const name=document.createElement('strong');name.textContent=`${entry.artist} — ${entry.album}`;const sub=document.createElement('div');sub.textContent=`${'★'.repeat(entry.rating||0)}${'☆'.repeat(5-(entry.rating||0))}${entry.favorite_track?' · '+entry.favorite_track:''}`;item.append(date,name,sub);if(entry.notes){const p=document.createElement('p');p.textContent=entry.notes;item.append(p)}area.append(item)}}renderHistory();
 async function load(){try{const response=await fetch('./data/albums.json',{cache:'no-store'});if(!response.ok)throw Error(`HTTP ${response.status}`);const json=await response.json();albums=(Array.isArray(json)?json:json.albums||[]).filter(a=>a.title&&a.artist);$('status').textContent=`${albums.length} albums ready to discover ✳`;if(!albums.length)throw Error('No albums found')}catch(e){$('status').textContent='Could not load albums. Run with Live Server and check data/albums.json.';console.error(e)}}load();
-function score(a){let s=0;const am=(a.moods||[]).map(x=>String(x).toLowerCase());for(const m of state.moods)if(am.includes(m))s+=4;const en=a.energy_level==null?NaN:Number(a.energy_level);if(state.energy!==null&&Number.isFinite(en))s+=Math.max(0,5-Math.abs(en-state.energy));if(state.comfort&&a.comfort_vs_exploration===state.comfort)s+=3;const duration=a.length_min==null?NaN:Number(a.length_min);if(state.time!==null&&Number.isFinite(duration))s+=duration<=state.time?3:-Math.min(7,(duration-state.time)/6);return s}
+function score(a){let s=0;const intent=interpretFeeling($('feelingInput')?.value||'');const am=(a.moods||[]).map(x=>String(x).toLowerCase());for(const m of state.moods)if(am.includes(m))s+=4;for(const [m,w] of Object.entries(intent.moods))if(am.includes(m))s+=w*2.8;const en=a.energy_level==null?NaN:Number(a.energy_level);if(state.energy!==null&&Number.isFinite(en))s+=Math.max(0,5-Math.abs(en-state.energy));else if(intent.energy!==null&&Number.isFinite(en))s+=Math.max(0,4-Math.abs(en-intent.energy));if(state.comfort&&a.comfort_vs_exploration===state.comfort)s+=3;const duration=a.length_min==null?NaN:Number(a.length_min);if(state.time!==null&&Number.isFinite(duration))s+=duration<=state.time?3:-Math.min(7,(duration-state.time)/6);return s}
 function choose(){
  if(!albums.length){$('status').textContent='Still loading albums. Check your server if this persists.';return}
  const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
  const pool=albums.filter(a=>!seenAlbums.has(key(a))&&!logged.has(key(a)));
  if(!pool.length){$('status').textContent='Every album in the library has been recommended! Export your diary before starting over.';return}
  // Sample across the full eligible catalog, rather than repeatedly choosing from a tiny top-ranked list.
- const sample=[];const n=Math.min(pool.length,500);
+ const sample=[];const n=Math.min(pool.length,1800);
  for(let i=0;i<n;i++)sample.push(pool[Math.floor(Math.random()*pool.length)]);
  let best=null,bestScore=-Infinity;
  for(const a of sample){const value=score(a)+Math.random()*8;if(value>bestScore){best=a;bestScore=value}}
@@ -65,6 +65,34 @@ function explainPick(a){
  if(state.comfort==='exploration')notes.push('A small detour from the familiar might be exactly the point.');
  else if(state.comfort==='comfort')notes.push('Sometimes the best discovery feels like coming home.');
  if(state.time!=null&&Number.isFinite(Number(a.length_min))&&Number(a.length_min)<=state.time)notes.push('And it fits the time you have.');
- if(!notes.length)notes.push('No perfect formula, just a record worth giving your attention to.');
+ const intent=interpretFeeling($('feelingInput')?.value||'');if(intent.summary)notes.unshift('Your note suggests '+intent.summary+'. This pick follows that thread.');if(!notes.length)notes.push('No perfect formula, just a record worth giving your attention to.');
  return notes.join(' ');
+}
+
+// Offline listening-intent prototype. No external service receives the journal text.
+// This is deliberately rule-based, not a trained ML model.
+const feelingLexicon={
+ nostalgic:['nostalg','saudade','miss ','remember','memories','memory','childhood','past','used to','back then','homesick','lembrança','lembrar'],
+ melancholic:['sad','cry','heartbreak','lonely','alone','grief','empty','devastat','blue','triste','chorar','solidão','luto','broken'],
+ reflective:['think','thought','quiet','introspect','confus','uncertain','meaning','question','ponder','overthink','thinking','pensando','pensar'],
+ dreamy:['dream','float','ethereal','cloud','surreal','distant','escape','space','sonho','sonhar','dreaming'],
+ warm:['warm','safe','hug','home','soft','gentle','cozy','love','tender','carinho','abraço','amor','aconchego'],
+ intense:['angry','rage','scream','furious','chaos','loud','explode','restless','raiva','gritar','intense'],
+ energetic:['dance','party','run','drive fast','excited','alive','movement','move','dançar','festa','energia'],
+ dark:['dark','night','midnight','shadow','goth','haunt','noite','escuro','sombrio'],
+ hopeful:['hope','better','healing','beginning','tomorrow','future','optimis','esperança','recomeçar'],
+ alienated:['stranger','disconnected','out of place','belong','unreal','estranha','deslocad'],
+ cold:['winter','cold','rain','fog','frost','inverno','frio','chuva'],
+ gritty:['raw','dirty','grunge','rough','punk','noise','sujo','bruto']
+};
+function interpretFeeling(text){
+ const t=String(text||'').toLocaleLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');
+ const moods={};for(const [m,terms] of Object.entries(feelingLexicon)){const hits=terms.filter(term=>t.includes(term.normalize('NFD').replace(/[\\u0300-\\u036f]/g,''))).length;if(hits)moods[m]=Math.min(hits,3)}
+ const ranked=Object.entries(moods).sort((a,b)=>b[1]-a[1]);
+ const energy=/dance|party|run|scream|rage|festa|dancar|gritar|alive/.test(t)?8:/quiet|slow|soft|gentle|sleep|calm|silencio|devagar/.test(t)?3:null;
+ return {moods,energy,summary:ranked.length?ranked.slice(0,2).map(([m])=>m).join(' and ')+' feelings':''};
+}
+const feelingInput=$('feelingInput');if(feelingInput){
+ feelingInput.addEventListener('input',()=>{const p=interpretFeeling(feelingInput.value);$('feelingInsight').textContent=p.summary?'✳ reading: '+p.summary:'✳ your words, your soundtrack';});
+ $('clearFeeling').addEventListener('click',()=>{feelingInput.value='';feelingInput.dispatchEvent(new Event('input'));feelingInput.focus()});
 }
