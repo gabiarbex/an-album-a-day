@@ -80,6 +80,14 @@ def quality_score(obj,tags,genres):
     genre_strength=sum(max(0,c) for _,c in genres[:10])
     return math.log1p(rc)*.55+math.log1p(tag_strength)*.5+math.log1p(genre_strength)*.6
 
+def relation_urls(obj):
+    urls=[]
+    for rel in obj.get("relations") or []:
+        if not isinstance(rel,dict): continue
+        resource=(rel.get("url") or {}).get("resource")
+        if resource: urls.append(resource)
+    return urls
+
 def convert(obj):
     if str(obj.get("primary-type") or "").lower()!="album": return None
     secondary=set(obj.get("secondary-types") or [])
@@ -93,6 +101,10 @@ def convert(obj):
     genre_names=[n for n,_ in genres[:6]] or [n for n,_ in tags[:6]]
     first=str(obj.get("first-release-date") or "")
     confidence=.58 if genres else (.48 if tags else 0.0)
+    urls=relation_urls(obj)
+    spotify=next((u for u in urls if "open.spotify.com/album/" in u),None)
+    sources=["https://musicbrainz.org/release-group/"+mbid]
+    if spotify: sources.append(spotify)
     return {
       "id":"mb:"+mbid,
       "artist":artist,
@@ -113,7 +125,7 @@ def convert(obj):
       "metadata":{
         "musicbrainz_id":mbid,
         "cover_art":"https://coverartarchive.org/release-group/"+mbid+"/front-500",
-        "sources":["https://musicbrainz.org/release-group/"+mbid]
+        "sources":sources
       },
       "_catalog_source":"musicbrainz_dump",
       "_tag_evidence":evidence
