@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 """Split a large album catalog into browser-friendly static shards."""
-import argparse, hashlib, json, shutil
+import argparse, json, shutil
 from pathlib import Path
+
+def lookup_id(artist,title):
+    text=(str(artist or '').strip().lower()+'\0'+str(title or '').strip().lower())
+    h=14695981039346656037
+    for ch in text:
+        h ^= ord(ch)
+        h = (h * 1099511628211) & ((1<<64)-1)
+    return f'{h:016x}'
 
 def main():
     p=argparse.ArgumentParser()
@@ -17,8 +25,7 @@ def main():
     # Give every album a stable public lookup id, then hash-order the catalog so
     # adjacent shards stay musically mixed rather than clustering by artist/year.
     for a in albums:
-        raw_key=(str(a.get('artist','')).strip().lower()+'\0'+str(a.get('title','')).strip().lower()).encode('utf-8')
-        a['lookup_id']=hashlib.sha1(raw_key).hexdigest()[:12]
+        a['lookup_id']=lookup_id(a.get('artist'),a.get('title'))
     albums=sorted(albums,key=lambda a:a['lookup_id'])
     shards=[]; lookup_index={}
     for i in range(0,len(albums),args.shard_size):
