@@ -27,8 +27,17 @@ function normalizeText(value){
 }
 
 function termIsNegated(text,index){
- const prefix=text.slice(Math.max(0,index-48),index).replace(/[^a-z0-9' ]+/g,' ');
- return /\b(?:don't|dont|do not|not|without|avoid|avoiding|anything but|no|nao|sem|evita|evitar)\b(?:\s+\w+){0,5}\s*$/.test(prefix);
+ const raw=text.slice(Math.max(0,index-64),index);
+ // Negation should not leak through sentence/clause boundaries.
+ const boundaries=[
+  raw.lastIndexOf('.'),raw.lastIndexOf('!'),raw.lastIndexOf('?'),
+  raw.lastIndexOf(';'),raw.lastIndexOf(','),
+  raw.lastIndexOf(' but '),raw.lastIndexOf(' however '),
+  raw.lastIndexOf(' mas '),raw.lastIndexOf(' porem ')
+ ];
+ const boundary=Math.max(...boundaries);
+ const clause=raw.slice(boundary+1).replace(/[^a-z0-9' ]+/g,' ');
+ return /\b(?:don't|dont|do not|not|without|avoid|avoiding|anything but|no|nao|sem|evita|evitar)\b(?:\s+\w+){0,4}\s*$/.test(clause);
 }
 
 function scanTerms(text,terms){
