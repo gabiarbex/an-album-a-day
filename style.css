@@ -1091,3 +1091,38 @@ dialog input,dialog textarea{width:100%;padding:11px;border:2px solid var(--ink)
     padding-top:0;
   }
 }
+
+
+/* === DIARY STATS 016 === */
+.diary-stats{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  margin:22px 0 10px;
+  border:2px solid var(--ink);
+  background:#f4ead8;
+  box-shadow:5px 5px 0 var(--mustard);
+}
+.diary-stats>div{
+  min-width:0;
+  padding:12px;
+  border-right:1px solid var(--ink);
+  border-bottom:1px solid var(--ink);
+}
+.diary-stats>div:nth-child(2n){border-right:0}
+.diary-stats>div:nth-last-child(-n+2){border-bottom:0}
+.diary-stats b{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--red);
+  font:700 20px/1 "Courier New",monospace;
+}
+.diary-stats span{
+  display:block;
+  margin-top:6px;
+  color:#665d52;
+  font:700 7px/1.2 "Courier New",monospace;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+}
