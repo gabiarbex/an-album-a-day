@@ -1329,12 +1329,11 @@ function artPlaceholder(a){
   }
   return lines;
  };
- const title=wrap(a.title,17).map((v,i)=>'<text x="52" y="'+(330+i*62)+'" font-size="52" font-weight="800">'+safe(v)+'</text>').join('');
- const coverColor=labelColor(a);
- const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="'+coverColor+'"/><stop offset="1" stop-color="#171411"/></linearGradient></defs><rect width="720" height="720" fill="url(#g)"/><circle cx="640" cy="100" r="240" fill="none" stroke="#f3eadb" stroke-opacity=".16" stroke-width="1"/><circle cx="640" cy="100" r="180" fill="none" stroke="#f3eadb" stroke-opacity=".12"/><g fill="#f3eadb" font-family="Arial, sans-serif"><text x="52" y="95" font-size="21" letter-spacing="6">AN ALBUM A DAY / DISCOVERY</text>'+title+'<text x="52" y="635" font-size="27">'+safe(a.artist).slice(0,37)+'</text><text x="52" y="680" font-size="18" letter-spacing="4">✳ LISTEN CLOSELY</text></g></svg>';
+ const lines=wrap(a.title,17);
+ const title=lines.map((v,i)=>'<text x="48" y="'+(300+i*58)+'" font-size="50">'+safe(v)+'</text>').join('');
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><rect width="720" height="720" fill="#ece3d4"/><rect x="34" y="34" width="652" height="652" fill="none" stroke="#171411" stroke-width="3"/><rect x="48" y="54" width="116" height="16" fill="#b9412f"/><g fill="#171411" font-family="Georgia, serif"><text x="48" y="118" font-family="Courier New, monospace" font-size="15" letter-spacing="3">AN ALBUM A DAY</text>'+title+'<text x="48" y="622" font-family="Courier New, monospace" font-size="17" letter-spacing="1">'+safe(a.artist).slice(0,44)+'</text><text x="48" y="662" font-family="Courier New, monospace" font-size="12" letter-spacing="2">MISSING SLEEVE / CATALOG COPY</text></g></svg>';
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
-
 function explainPick(a,context={}){
  if(context.rankingMode==='shared')return 'someone sent you this one.';
  if(context.rankingMode==='surprise')return 'no clues. just a straight pull from the shelf.';
