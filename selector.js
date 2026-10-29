@@ -200,12 +200,11 @@ function updateSignalNote(){
  $('fineTune')?.classList.toggle('unavailable',!active);
  node.classList.toggle('live',active);
  if(rankingFeaturesAvailable){
-  node.textContent='LIVE / FULL CATALOG: these controls steer the ranking using stored album features. Missing fields are treated as unknown, never as zero.';
+  node.textContent='these choices affect the pick.';
  }else if(liveMetadataRankingAvailable){
-  const pct=v=>Math.round((v||0)*100);
-  node.textContent=`LIVE / FIELD DESK: these controls steer a candidate set using verified store genre, release and track data. Full P1 gates are not all met yet (genre ${pct(featureCoverage.genre)}% · mood ${pct(featureCoverage.mood)}% · energy ${pct(featureCoverage.energy)}% · duration ${pct(featureCoverage.duration)}%). After 8 rated records, your diary also nudges the ranking locally.`;
+  node.textContent='these choices help narrow the shelf.';
  }else{
-  node.textContent='PREVIEW ONLY: recommendation metadata is unavailable, so these controls are disabled.';
+  node.textContent='these choices are unavailable right now.';
  }
 }
 function refreshFeatureCoverage(){
@@ -239,9 +238,9 @@ function refreshFeatureCoverage(){
 }
 function libraryStatus(){
  const total=(catalogTotal||albums.length).toLocaleString();
- if(rankingFeaturesAvailable)return `${total} albums in the universe · full recommendation metadata is live ✳`;
- if(liveMetadataRankingAvailable)return `${total} albums in the universe · live genre-aware recommendation fallback is active ✳`;
- return `${total} albums in the universe · discovery draw mode ✳`;
+ if(rankingFeaturesAvailable)return `${total} records on the shelf.`;
+ if(liveMetadataRankingAvailable)return `${total} records on the shelf.`;
+ return `${total} records in the room.`;
 }
 
 function mergeAlbumRecord(existing,incoming){
@@ -737,7 +736,7 @@ async function getAlbumTracks(album){
 async function rankWithSemantic(seed,daily){
  const note=$('feelingInput')?.value.trim()||'';
  if(note.length<2||!globalThis.AlbumSemantic?.search||!catalogManifest)return null;
- $('status').textContent='Searching the whole record room by meaning…';
+ $('status').textContent='looking through the shelves…';
  let raw;
  try{raw=await globalThis.AlbumSemantic.search(note,120)}
  catch(e){console.info('Semantic index unavailable; using live fallback.',e);return null}
@@ -788,7 +787,7 @@ async function rankWithSemantic(seed,daily){
 async function rankWithLiveMetadata(pool,seed,daily){
  const intent=interpretFeeling($('feelingInput')?.value||'');
  const sample=sampleCandidates(pool,seed,12,daily);
- $('status').textContent='Reading the spines and checking the catalogue…';
+ $('status').textContent='checking the shelves…';
  const enriched=(await mapConcurrent(sample,4,async a=>{
   const meta=await findItunesAlbum(a);
   if(!meta)return {...a,_live:{matched:false}};
@@ -992,7 +991,7 @@ async function loadSelectedAcousticProfile(a,details){
  if(classification){
   const top=Object.entries(profile.moods).sort((x,y)=>y[1]-x[1]).filter(([,v])=>v>=.55).slice(0,2);
   for(const [m,v] of top){
-   const tag=document.createElement('span');tag.className='audio-class';tag.textContent=`AUDIO: ${m.toUpperCase()} ${Math.round(v*100)}%`;classification.append(tag);
+   const tag=document.createElement('span');tag.className='audio-class';tag.textContent=m.toUpperCase();classification.append(tag);
   }
  }
  const facts=$('recordFacts');
@@ -1180,14 +1179,14 @@ function show(a,context={}){
  const info=$('details');info.replaceChildren();
  const tag=document.createElement('div');tag.className='eyebrow';
  const modeLabels={
-  shared:'SHARED FROM THE CRATE ✳',
-  semantic:context.mode==='bonus'?'BONUS / LATENT MATCH ✳':'TODAY / LATENT MATCH ✳',
-  live:context.mode==='bonus'?'BONUS / FIELD DESK ✳':'TODAY / FIELD DESK ✳',
-  stored:context.mode==='bonus'?'BONUS / CATALOG MATCH ✳':'TODAY / CATALOG MATCH ✳',
-  surprise:'TODAY / BLIND PULL ✳',
-  draw:context.mode==='bonus'?'BONUS DRAW ✳':'TODAY / DISCOVERY DRAW ✳'
+  shared:'SHARED RECORD',
+  semantic:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD',
+  live:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD',
+  stored:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD',
+  surprise:'TODAY\'S RECORD',
+  draw:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD'
  };
- tag.textContent=context.mode==='shared'?modeLabels.shared:(modeLabels[context.rankingMode]||(context.mode==='bonus'?'BONUS DRAW ✳':'TODAY’S RECORD ✳'));
+ tag.textContent=context.mode==='shared'?modeLabels.shared:(modeLabels[context.rankingMode]||(context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD'));
  const title=document.createElement('h2');title.textContent=a.title;
  const artist=document.createElement('p');artist.textContent=`${a.artist}${a.year?' · '+a.year:''}`;
  const meta=document.createElement('p');
@@ -1201,7 +1200,7 @@ function show(a,context={}){
  $('recordLabel').style.background=labelColor(a);
  requestAnimationFrame(()=>requestAnimationFrame(()=>stage.classList.add('revealed')));
  const unseen=Math.max(0,(catalogTotal||albums.length)-seenAlbums.size).toLocaleString();
- $('status').textContent=context.mode==='bonus'?`${unseen} unseen albums remaining · bonus draw ✳`:context.mode==='shared'?'shared record loaded from the catalog ✳':`${unseen} unseen albums remaining · today’s record is locked to this date ✳`;
+ $('status').textContent=context.mode==='bonus'?`${unseen} still unheard.`:context.mode==='shared'?'shared record.':`${unseen} still unheard.`;
  loadArtwork(a,cover);
  loadRecordFile(a);
  enhanceSelectedMetadata(a);
@@ -1337,54 +1336,56 @@ function artPlaceholder(a){
 }
 
 function explainPick(a,context={}){
- if(context.rankingMode==='shared')return 'Someone sent you this record from An Album a Day. The catalog metadata below is factual; no recommendation rationale is being invented for a shared link.';
- if(context.rankingMode==='surprise')return 'You asked for no clues, so this is a true date-seeded surprise from the unseen catalog. Your note and fine-tune controls were deliberately ignored.';
+ if(context.rankingMode==='shared')return 'someone sent you this one.';
+ if(context.rankingMode==='surprise')return 'no clues. just a straight pull from the shelf.';
  if(context.rankingMode==='semantic'){
-  const bits=[
-   'Your note was matched against the full catalog’s 64-dimensional TF-IDF/SVD record profiles built from artist, title, era, genres, tags and available mood labels.'
+  const note=$('feelingInput')?.value.trim()||'';
+  const intent=interpretFeeling(note);
+  const bits=[];
+  const cues=[
+   ...Object.keys(intent.moods||{}).slice(0,2),
+   ...(intent.genres||[]).slice(0,1)
   ];
-  if(state.moods.length||state.energy!==null||state.comfort!==null)bits.push('Your fine-tune controls reranked the semantic candidates using only metadata that was actually available.');
-  if(state.time!==null&&a._semantic?.runtimeMin)bits.push(`The finalist’s verified runtime is about ${Math.round(a._semantic.runtimeMin)} minutes and was included in the rerank.`);
+  if(cues.length)bits.push(`your note leaned ${cues.join(' / ')}.`);
+  else bits.push('your note pointed here.');
+  if(state.time!==null&&a._semantic?.runtimeMin)bits.push(`it runs about ${Math.round(a._semantic.runtimeMin)} minutes.`);
   const personal=diaryTasteScore(a);
-  if(personal.active)bits.push(`Your ${personal.count} rated diary records supplied a small local personalization term.`);
-  bits.push('This is compact latent-semantic retrieval, not a neural embedding model or a claim that the site understands feelings like a person.');
+  if(personal.active)bits.push('your diary nudged it a little closer.');
   return bits.join(' ');
  }
  if(context.rankingMode==='live'&&a._live?.matched){
   const bits=[];
-  const genre=a._live.genre||'available store genre';
-  bits.push(`This pick came from a live candidate set, using ${genre} as a low-confidence musical signal.`);
+  const genre=a._live.genre;
+  if(genre)bits.push(`filed near ${genre.toLowerCase()}.`);
   const intent=interpretFeeling($('feelingInput')?.value||'');
-  const requested=[...state.moods,...Object.keys(intent.moods)];
+  const requested=[...state.moods,...Object.keys(intent.moods||{})];
   const overlaps=[...new Set(requested.filter(m=>a._live.signals?.moods?.[m]!==undefined))];
-  if(overlaps.length)bits.push(`Your request overlapped with the genre-derived ${overlaps.slice(0,2).join(' / ')} profile.`);
-  if(state.energy!==null||intent.energy!==null)bits.push('Energy also contributed through the genre-derived fallback.');
-  if(state.comfort)bits.push(state.comfort==='exploration'?'The ranking favored artists not already present in your diary.':'The ranking gave a small familiarity preference to artists already in your diary.');
-  if(state.time!==null&&a._live.runtimeMin)bits.push(`The verified tracklist runtime is about ${Math.round(a._live.runtimeMin)} minutes and was used in the final rerank.`);
+  if(overlaps.length)bits.push(`it sits close to ${overlaps.slice(0,2).join(' / ')}.`);
+  if(state.time!==null&&a._live.runtimeMin)bits.push(`about ${Math.round(a._live.runtimeMin)} minutes.`);
   const personal=diaryTasteScore(a);
-  if(personal.active)bits.push(`Your ${personal.count} rated diary records also contributed a local taste nudge.`);
-  bits.push('This is an honest fallback, not the finished acoustic/semantic P1 model.');
-  return bits.join(' ');
+  if(personal.active)bits.push('your diary had a small say.');
+  return bits.join(' ')||'this one came up closest to what you asked for.';
  }
  if(!context.featuresUsed){
-  if(context.mode==='bonus')return 'This is a bonus discovery draw from the catalog. The current album data does not yet have enough mood, energy, duration, and familiarity features, so your note and filters did not influence this result.';
-  return 'This is today’s date-seeded discovery draw. The current album data does not yet have enough mood, energy, duration, and familiarity features, so your note and filters did not influence this pick. On this browser, today’s record stays the same for the date.';
+  return context.mode==='bonus'?'another pull from the shelf.':'a straight pull from the shelf.';
  }
  const am=(a.moods||[]).map(x=>String(x).toLowerCase());
  const intent=interpretFeeling($('feelingInput')?.value||'');
- const selectedMoodMatches=state.moods.filter(m=>am.includes(m));
- const textMoodMatches=Object.keys(intent.moods).filter(m=>am.includes(m));
+ const matches=[...new Set([
+  ...state.moods.filter(m=>am.includes(m)),
+  ...Object.keys(intent.moods||{}).filter(m=>am.includes(m))
+ ])].slice(0,2);
  const notes=[];
- if(textMoodMatches.length)notes.push(`Your note and this record overlap on ${textMoodMatches.slice(0,2).join(' and ')}.`);
- if(selectedMoodMatches.length)notes.push(`Your selected mood matches ${selectedMoodMatches.slice(0,2).join(' and ')}.`);
- if(state.energy!==null&&a.energy_level!==null&&a.energy_level!==undefined)notes.push('Its available energy metadata also contributed to the ranking.');
- if(state.comfort&&a.comfort_vs_exploration===state.comfort)notes.push(`Its familiarity profile matches your ${state.comfort} setting.`);
- if(state.time!==null&&Number.isFinite(Number(a.length_min))&&Number(a.length_min)<=state.time)notes.push('Its recorded duration fits the time you chose.');
- if(!notes.length)notes.push('This album ranked from the metadata currently available, but none of your selected cues matched strongly enough for a more specific claim.');
+ if(matches.length)notes.push(`it matches ${matches.join(' / ')}.`);
+ if(state.time!==null&&Number.isFinite(Number(a.length_min))&&Number(a.length_min)<=state.time)notes.push('it fits the time you gave me.');
+ if(!notes.length)notes.push('this one came up closest to what you asked for.');
  return notes.join(' ');
 }
-
 const interpretFeeling=globalThis.AlbumIntent?.interpretFeeling||(()=>({moods:{},avoidMoods:{},genres:[],avoidGenres:[],energy:null,exploration:0,summary:''}));
+if($('todayDate')){
+ const d=new Date();
+ $('todayDate').textContent=d.toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
+}
 const feelingInput=$('feelingInput');
 document.querySelectorAll('.prompt-chip').forEach(button=>{
  button.addEventListener('click',()=>{
@@ -1400,8 +1401,8 @@ if(feelingInput){
  restorePickerState();
  feelingInput.addEventListener('input',()=>{
   const p=interpretFeeling(feelingInput.value);
-  if(feelingInput.value.trim())$('feelingInsight').textContent=p.summary?'✳ reading: '+p.summary:'✳ note received — no obvious labels, which is allowed';
-  else $('feelingInsight').textContent='✳ your words, your soundtrack';
+  if(feelingInput.value.trim())$('feelingInsight').textContent=p.summary?'heard: '+p.summary:'got it.';
+  else $('feelingInsight').textContent='your note stays here';
   savePickerState();
  });
  feelingInput.dispatchEvent(new Event('input'));
