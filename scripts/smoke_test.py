@@ -41,18 +41,22 @@ def test_sharder():
         td=Path(td)
         source=td/"catalog.json"; out=td/"catalog"
         source.write_text(json.dumps({"albums":[
-            {"artist":"A","title":"One"},
-            {"artist":"B","title":"Two"},
-            {"artist":"C","title":"Three"},
+            {"artist":"A","title":"One","_catalog_source":"original","genres":["indie"]},
+            {"artist":"B","title":"Two","_catalog_source":"musicbrainz_dump"},
+            {"artist":"C","title":"Three","_catalog_source":"musicbrainz_dump"},
         ]}),encoding="utf-8")
         subprocess.run([sys.executable,str(ROOT/"scripts/shard_catalog.py"),
                         "--input",str(source),"--out-dir",str(out),"--shard-size","2"],check=True)
         manifest=json.loads((out/"manifest.json").read_text())
         lookup=json.loads((out/"lookup.json").read_text())
         assert manifest["total_albums"]==3
-        assert len(manifest["shards"])==2
+        assert manifest["base_count"]==1
+        assert manifest["expansion_count"]==2
+        assert len(manifest["shards"])==1
         assert len(lookup)==3
-        ids=[]
+        base_rows=json.loads((out/manifest["base_file"]).read_text())["albums"]
+        assert len(base_rows)==1 and base_rows[0]["title"]=="One"
+        ids=[a["lookup_id"] for a in base_rows]
         for shard in manifest["shards"]:
             rows=json.loads((out/shard["file"]).read_text())["albums"]
             ids.extend(a["lookup_id"] for a in rows)
