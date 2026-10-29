@@ -403,9 +403,9 @@ async function getAlbumTracks(album){
 }
 async function rankWithLiveMetadata(pool,seed,daily){
  const intent=interpretFeeling($('feelingInput')?.value||'');
- const sample=sampleCandidates(pool,seed,28,daily);
+ const sample=sampleCandidates(pool,seed,12,daily);
  $('status').textContent='Reading the spines and checking the catalogue…';
- const enriched=(await mapConcurrent(sample,6,async a=>{
+ const enriched=(await mapConcurrent(sample,4,async a=>{
   const meta=await findItunesAlbum(a);
   if(!meta)return {...a,_live:{matched:false}};
   const signals=genreSignals(meta.primaryGenreName);
@@ -413,8 +413,8 @@ async function rankWithLiveMetadata(pool,seed,daily){
  })).filter(Boolean);
  let ranked=enriched.map(a=>({a,v:liveScore(a,intent)+(daily?seededUnit(seed+'|rank|'+key(a))*.12:Math.random()*.12)})).sort((x,y)=>y.v-x.v);
  if(state.time!==null){
-  const finalists=ranked.slice(0,6);
-  await mapConcurrent(finalists,3,async row=>{
+  const finalists=ranked.slice(0,3);
+  await mapConcurrent(finalists,2,async row=>{
    if(!row.a._live?.collectionId)return;
    const tracks=await getAlbumTracks({collectionId:row.a._live.collectionId});
    const ms=tracks.reduce((n,t)=>n+(Number(t.trackTimeMillis)||0),0);
