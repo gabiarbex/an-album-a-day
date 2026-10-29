@@ -155,14 +155,32 @@ def main():
     args=ap.parse_args()
 
     base=load_base(args.base_catalog)
-    seen={norm_key(a["artist"],a["title"]) for a in base}
+    base_by_key={norm_key(a["artist"],a["title"]):a for a in base}
+    seen=set(base_by_key)
     need=max(0,args.target-len(base))
-    heap=[]; seq=0; scanned=0; eligible=0
+    heap=[]; seq=0; scanned=0; eligible=0; enriched_base=0
     for obj in iter_objects(args.dump):
         scanned+=1
         converted=convert(obj)
         if not converted: continue
         item,quality=converted; nk=norm_key(item["artist"],item["title"])
+        if nk in base_by_key:
+            original=base_by_key[nk]
+            # Enrich the editorial record in place; never replace its identity/order.
+            original["year"]=original.get("year") or item.get("year") or ""
+            original["genres"]=original.get("genres") or item.get("genres") or []
+            original["tags"]=original.get("tags") or item.get("tags") or []
+            original["moods"]=original.get("moods") or item.get("moods") or []
+            if original.get("energy_level") is None: original["energy_level"]=item.get("energy_level")
+            original.setdefault("features",item.get("features") or {})
+            original.setdefault("provenance",item.get("provenance") or {})
+            meta=dict(item.get("metadata") or {})
+            meta.update(original.get("metadata") or {})
+            original["metadata"]=meta
+            original["_catalog_source"]="original"
+            original["_enriched_from"]="musicbrainz_dump"
+            enriched_base+=1
+            continue
         if nk in seen: continue
         eligible+=1
         # quality matters, but deterministic noise keeps the catalog broad.
@@ -174,11 +192,11 @@ def main():
 
     expansion=[row[2] for row in sorted(heap,key=lambda x:x[0],reverse=True)]
     catalog={"albums":(base+expansion)[:args.target],"meta":{
-      "target":args.target,"base_count":len(base),"expansion_count":len(expansion),
-      "source":"MusicBrainz release-group JSON dump + preserved editorial base",
+      "target":args.target,"base_count":len(base),"base_enriched":enriched_base,"expansion_count":len(expansion),
+      "source":"MusicBrainz release-group JSON dump + preserved and enriched editorial base",
       "feature_policy":"genres/tags are source metadata; moods/energy are low-confidence tag translations"
     }}
     Path(args.output).write_text(json.dumps(catalog,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
-    print(f"Wrote {len(catalog['albums']):,} albums",flush=True)
+    print(f"Wrote {len(catalog['albums']):,} albums; enriched {enriched_base:,}/{len(base):,} editorial-base records",flush=True)
 
 if __name__=="__main__": main()
