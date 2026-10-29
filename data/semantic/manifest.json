@@ -1,0 +1,1 @@
+{"version":1,"method":"tfidf-truncated-svd","albums":100000,"dimensions":64,"vocab_size":18000,"vectors":"album-vectors.bin","components":"components.bin","ids":"ids.json","model":"model.json","album_vector_bytes":6400000,"component_bytes":1152000}
