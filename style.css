@@ -157,3 +157,226 @@ dialog label,dialog h2,dialog p{color:#2d1b2e}
 dialog .dialog-head button{color:#2d1b2e}
 dialog input,dialog textarea{background:#f3e5dc;color:#2d1b2e;border:1px solid #9d8297}
 @media(prefers-reduced-motion:reduce){.chip:hover,.recommend:hover{transform:none}}
+
+/* === ISSUE 003 / NO MORE PURPLE ===
+   Newsprint, black ink, brick red, mustard, petrol blue.
+   The record sleeve may be colorful; the interface is not. */
+:root{
+  --bg:#ded5c2;
+  --panel:#f2eadc;
+  --text:#171411;
+  --muted:#685f54;
+  --accent:#c8432f;
+  --line:#171411;
+  --paper:#f2eadc;
+  --red:#c8432f;
+  --mustard:#d5ad36;
+  --blue:#2e5f76;
+  --green:#65714b;
+  --ink:#171411;
+  --newsprint:#ded5c2;
+}
+html{background:#ded5c2}
+body{
+  color:var(--ink)!important;
+  background-color:var(--newsprint)!important;
+  background-image:
+    radial-gradient(circle at 18% 12%,#f4ecdd 0 16%,transparent 42%),
+    radial-gradient(circle at 88% 88%,#cfc3aa 0 10%,transparent 38%)!important;
+}
+body:before{opacity:.11!important;mix-blend-mode:multiply!important;filter:grayscale(1)}
+body:after{opacity:.035!important;mix-blend-mode:multiply!important;background-image:repeating-linear-gradient(0deg,transparent 0 3px,#171411 4px,transparent 5px)!important}
+
+header{
+  color:var(--ink)!important;
+  border-bottom:2px solid var(--ink)!important;
+  background:#eee5d4!important;
+  box-shadow:0 5px 0 #171411!important;
+}
+header:before{background:radial-gradient(circle,#171411 1px,transparent 1.7px) 0 0/6px 6px!important}
+header .eyebrow,.edition{color:#5e554c!important}
+header>p{color:#4c453d!important}
+header h1{color:#171411!important;text-shadow:none!important}
+header h1 em{
+  color:var(--red)!important;
+  text-decoration-color:#171411!important;
+  filter:none!important;
+}
+header:after{color:#171411!important}
+.history-toggle{
+  color:#f5eddf!important;
+  background:#171411!important;
+  border:2px solid #171411!important;
+  box-shadow:4px 4px 0 var(--red)!important;
+  border-radius:0!important;
+}
+.history-toggle span{color:#f5eddf!important}
+.history-toggle:hover{background:var(--red)!important;transform:translate(-1px,-2px)!important}
+
+main{align-items:start}
+.showcase{
+  color:#f4ead8!important;
+  background:#171411!important;
+  padding:42px 38px 48px!important;
+  box-shadow:10px 11px 0 var(--red),16px 17px 0 #17141133!important;
+  clip-path:polygon(0 1%,7% 0,15% .7%,25% 0,34% .6%,47% 0,58% .5%,69% 0,80% .8%,91% 0,100% .5%,99.6% 12%,100% 23%,99.7% 37%,100% 51%,99.6% 65%,100% 79%,99.5% 90%,100% 100%,91% 99.5%,80% 100%,70% 99.4%,60% 100%,48% 99.5%,38% 100%,27% 99.4%,16% 100%,7% 99.5%,0 100%,.4% 89%,0 76%,.5% 63%,0 51%,.4% 38%,0 24%,.4% 12%);
+}
+.showcase:before{color:#d5ad36!important}
+.stage-note{color:#efe4d3!important}
+.sticker-a{
+  background:var(--mustard)!important;
+  color:#171411!important;
+  border:2px solid #171411!important;
+  box-shadow:4px 4px 0 var(--red)!important;
+}
+.sleeve{outline-color:#f0e4d233!important}
+.record-label{box-shadow:0 0 0 4px #0c0c0c,inset 0 0 0 1px #fff4!important}
+
+.album-details .eyebrow{color:var(--mustard)!important}
+.album-details h2{color:#f7eddd!important}
+.album-details p{color:#cfc4b2!important}
+.primary{
+  background:var(--red)!important;
+  color:#fff6e9!important;
+  border:2px solid #fff6e9!important;
+  box-shadow:4px 4px 0 var(--mustard)!important;
+}
+.primary:hover{background:#df553d!important}
+.secondary{
+  color:#f4ead8!important;
+  border:2px solid #bdb09d!important;
+  background:transparent!important;
+  box-shadow:3px 3px 0 #000!important;
+}
+.secondary:hover:not(:disabled){background:#f4ead8!important;color:#171411!important;border-color:#f4ead8!important}
+.why-panel{
+  color:#171411!important;
+  background:#eee1ca!important;
+  background-image:
+    radial-gradient(#17141125 .75px,transparent 1px),
+    repeating-linear-gradient(0deg,transparent 0 28px,#17141112 29px,transparent 30px)!important;
+  background-size:5px 5px,100% 30px!important;
+  border:2px dashed #171411!important;
+  box-shadow:5px 5px 0 var(--mustard)!important;
+}
+.why-panel:before,.why-panel:after{background:#171411!important;color:#f0e5d3!important}
+.why-icon,.why-heading{color:var(--red)!important}
+.why-panel p{color:#29231e!important}
+
+.picker{color:#171411!important}
+.issue-stamp{
+  color:#f5ecdc!important;
+  background:var(--red)!important;
+  border:2px solid #171411!important;
+  box-shadow:4px 4px 0 #171411!important;
+}
+.feeling-field{
+  color:#171411!important;
+  background-color:#eee2cb!important;
+  background-image:
+    radial-gradient(#17141120 .7px,transparent .9px),
+    repeating-linear-gradient(0deg,transparent 0 30px,#17141116 31px,transparent 32px)!important;
+  border:2px solid #171411!important;
+  box-shadow:7px 7px 0 var(--blue)!important;
+}
+.feeling-field:before{background:#cfc2abcc!important}
+.feeling-field:after{color:#51483e!important;border-top-color:#17141166!important}
+.feeling-field .eyebrow{color:var(--red)!important}
+.feeling-field h2{color:#171411!important}
+.feeling-prompt{color:#4d453c!important}
+#feelingInput{
+  color:#171411!important;
+  caret-color:var(--red)!important;
+  border-color:#17141188!important;
+  background-color:transparent!important;
+  background-image:repeating-linear-gradient(transparent 0 32px,#1714112d 33px,transparent 34px)!important;
+}
+#feelingInput::placeholder{color:#6f665b!important}
+#feelingInsight,#clearFeeling{color:#4d453c!important}
+#clearFeeling{border-bottom-color:#171411!important}
+
+.cutline{color:#51483e!important}
+.cutline:before,.cutline:after{background:repeating-linear-gradient(90deg,#171411 0 5px,transparent 5px 10px)!important}
+.picker>.eyebrow,.field>.eyebrow{color:#5b5047!important}
+.picker h2{color:#171411!important}
+.hint{color:#62594e!important}
+
+.chip{
+  color:#171411!important;
+  background:#f4ecde!important;
+  border:2px solid #171411!important;
+  border-radius:0!important;
+  box-shadow:3px 3px 0 #171411!important;
+}
+.chip:nth-child(4n+1){background:#f4ecde!important}
+.chip:nth-child(4n+2){background:#e4d8bd!important}
+.chip:nth-child(4n+3){background:#d7d4c7!important}
+.chip:nth-child(4n){background:#e8d7c9!important}
+.chip:hover{
+  color:#171411!important;
+  background:var(--mustard)!important;
+  border-color:#171411!important;
+  transform:translate(-2px,-2px) rotate(-1deg)!important;
+  box-shadow:5px 5px 0 #171411!important;
+}
+.chip.selected{
+  color:#fff6e8!important;
+  background:var(--red)!important;
+  border-color:#171411!important;
+  box-shadow:4px 4px 0 #171411!important;
+  transform:rotate(-1deg)!important;
+}
+.field:nth-of-type(2) .chip.selected{background:var(--blue)!important}
+.field:nth-of-type(3) .chip.selected{background:var(--green)!important}
+.field:nth-of-type(4) .chip.selected{background:#171411!important}
+
+.recommend{
+  color:#171411!important;
+  background:var(--mustard)!important;
+  background-image:radial-gradient(#17141120 .7px,transparent 1px)!important;
+  border:3px solid #171411!important;
+  border-radius:0!important;
+  box-shadow:6px 6px 0 var(--red)!important;
+}
+.recommend:hover{
+  color:#f6ecdd!important;
+  background:var(--red)!important;
+  box-shadow:8px 8px 0 #171411!important;
+}
+#status{color:#5f564b!important}
+.picker-postscript{color:#554c42!important;border-top-color:#17141155!important}
+.picker-postscript span{color:var(--red)!important}
+
+.site-footer{
+  color:#eee5d6!important;
+  background:#171411!important;
+  border-top:8px solid var(--red)!important;
+}
+.site-footer i{color:var(--mustard)!important}
+
+.drawer{
+  color:#171411!important;
+  background-color:#e9dfcc!important;
+  background-image:radial-gradient(#17141120 .7px,transparent 1px)!important;
+  border-left:4px solid #171411!important;
+}
+.drawer-head button{color:#171411!important}
+.drawer-head h2{color:#171411!important}
+.history-item{border-bottom-color:#171411!important}
+.drawer>.secondary{color:#171411!important;border-color:#171411!important;box-shadow:3px 3px 0 var(--red)!important}
+
+dialog{
+  color:#171411!important;
+  background-color:#eee2cb!important;
+  background-image:radial-gradient(#1714111f .7px,transparent 1px)!important;
+  border:3px solid #171411!important;
+  box-shadow:8px 8px 0 var(--red),0 20px 70px #0008!important;
+}
+dialog label,dialog h2,dialog p,dialog .dialog-head button{color:#171411!important}
+dialog input,dialog textarea{color:#171411!important;background:#f8f0e3!important;border:2px solid #171411!important;border-radius:0!important}
+.star{color:#8a8174!important}
+.star.active{color:var(--red)!important}
+
+@media(max-width:850px){
+  .showcase{padding:32px 24px 38px!important;box-shadow:7px 8px 0 var(--red)!important}
+}
