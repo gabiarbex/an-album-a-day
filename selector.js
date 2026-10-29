@@ -357,7 +357,7 @@ async function findItunesAlbum(a){
  if(itunesAlbumCache.has(cacheKey))return itunesAlbumCache.get(cacheKey);
  const promise=(async()=>{
   const q=encodeURIComponent(`${a.artist} ${a.title}`);
-  const response=await fetch(`https://itunes.apple.com/search?term=${q}&media=music&entity=album&attribute=albumTerm&limit=20`);
+  const response=await fetch(`https://itunes.apple.com/search?term=${q}&media=music&entity=album&limit=20`);
   if(!response.ok)throw Error('Album metadata service unavailable');
   const data=await response.json();
   const artist=normalizeStoreText(a.artist),title=normalizeStoreText(a.title);
