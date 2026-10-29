@@ -978,9 +978,10 @@ async function loadSelectedAcousticProfile(a,details){
  }
  const facts=$('recordFacts');
  if(facts){
+  const group=document.createElement('div');group.className='record-fact acoustic-fact';
   const dt=document.createElement('dt');dt.textContent='Audio sample';
   const dd=document.createElement('dd');dd.textContent=`${profile.tracksAnalyzed} track${profile.tracksAnalyzed===1?'':'s'} / AB`;
-  facts.append(dt,dd);
+  group.append(dt,dd);facts.append(group);
  }
  return profile;
 }
@@ -1047,8 +1048,9 @@ function resetRecordFile(a){
  }
  const facts=$('recordFacts');facts.replaceChildren();
  if(a.year){
+  const group=document.createElement('div');group.className='record-fact';
   const dt=document.createElement('dt');dt.textContent='Released';
-  const dd=document.createElement('dd');dd.textContent=a.year;facts.append(dt,dd);
+  const dd=document.createElement('dd');dd.textContent=a.year;group.append(dt,dd);facts.append(group);
  }
  $('tracklist').replaceChildren();
  $('trackCountLabel').textContent='—';
@@ -1071,9 +1073,10 @@ function renderRecordFacts(a,album,tracks,sourceLabel='CATALOG'){
  const facts=$('recordFacts');facts.replaceChildren();
  const addFact=(label,value)=>{
   if(value===null||value===undefined||value==='')return;
+  const group=document.createElement('div');group.className='record-fact';
   const dt=document.createElement('dt');dt.textContent=label;
   const dd=document.createElement('dd');dd.textContent=value;
-  facts.append(dt,dd);
+  group.append(dt,dd);facts.append(group);
  };
  const releaseYear=(album?.releaseDate||'').slice(0,4)||a.year||'';
  $('catalogNumber').textContent=internalCatalogNumber(a);
