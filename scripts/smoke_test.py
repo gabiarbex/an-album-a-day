@@ -83,6 +83,8 @@ def test_dump_builder():
            "artist-credit":[{"name":"Test Artist"}],"genres":[{"name":"shoegaze","count":8}],"tags":[{"name":"dream pop","count":5}]},
           {"id":"00000000-0000-0000-0000-000000000002","title":"Noise Record","first-release-date":"1982","primary-type":"Album",
            "artist-credit":[{"name":"Other Artist"}],"tags":[{"name":"post-punk","count":6}]},
+          {"id":"00000000-0000-0000-0000-000000000004","title":"Dream Record","first-release-date":"1998","primary-type":"Album",
+           "artist-credit":[{"name":"Test Artist"}],"tags":[{"name":"rock","count":1}]},
           {"id":"00000000-0000-0000-0000-000000000003","title":"Not an Album","primary-type":"EP","artist-credit":[{"name":"Skip Me"}]},
         ]
         payload=td/"release-group"
@@ -101,6 +103,8 @@ def test_dump_builder():
         assert albums[0].get("metadata",{}).get("musicbrainz_id")
         assert any(a.get("genres") for a in albums[1:])
         assert any(a.get("moods") for a in albums[1:])
+        keys={(a["artist"].lower(),a["title"].lower()) for a in albums}
+        assert len(keys)==len(albums), "global builder must dedupe artist/title release-group variants"
         assert all(a["title"]!="Not an Album" for a in albums)
 
 def main():
