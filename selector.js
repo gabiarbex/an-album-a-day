@@ -304,7 +304,8 @@ async function eligiblePool(){
  }
  return pool;
 }
-async function chooseDaily(){
+async function chooseDaily(options={}){
+ const surprise=Boolean(options.surprise);
  if(!albums.length){$('status').textContent='Still loading albums. Check your connection if this persists.';return}
  setPickBusy(true);
  try{
@@ -319,9 +320,16 @@ async function chooseDaily(){
   const pool=await eligiblePool();
   if(!pool.length){$('status').textContent='Every available album has already been recommended.';return}
   const seed=`${getDate()}|${getUserSalt()}`;
-  const result=rankingFeaturesAvailable
+  let result;
+  if(surprise){
+   const candidates=sampleCandidates(pool,seed+'|surprise',Math.min(250,pool.length),true);
+   const album=candidates[Math.floor(seededUnit(seed+'|surprise-final')*candidates.length)]||pool[0];
+   result={album,featuresUsed:false,mode:'surprise'};
+  }else{
+   result=rankingFeaturesAvailable
     ? rankFromStoredFeatures(pool,seed,true)
     : await rankWithLiveMetadata(pool,seed,true);
+  }
   pick=result.album;
   seenAlbums.add(hash32(key(pick)));persistSeen();
   saveDailyPick(pick,result.featuresUsed,result.mode);
@@ -364,8 +372,8 @@ function setPickBusy(busy){
   $('recommend').querySelector('span:first-child').textContent=busy?'✳ digging through the crates…':'✳ hand me today’s record';
  }
 }
-$('recommend').addEventListener('click',chooseDaily);
-$('surpriseMe')?.addEventListener('click',chooseDaily);
+$('recommend').addEventListener('click',()=>chooseDaily());
+$('surpriseMe')?.addEventListener('click',()=>chooseDaily({surprise:true}));
 $('reroll').addEventListener('click',chooseAnother);
 
 
@@ -798,6 +806,7 @@ function artPlaceholder(a){
 
 function explainPick(a,context={}){
  if(context.rankingMode==='shared')return 'Someone sent you this record from An Album a Day. The catalog metadata below is factual; no recommendation rationale is being invented for a shared link.';
+ if(context.rankingMode==='surprise')return 'You asked for no clues, so this is a true date-seeded surprise from the unseen catalog. Your note and fine-tune controls were deliberately ignored.';
  if(context.rankingMode==='live'&&a._live?.matched){
   const bits=[];
   const genre=a._live.genre||'available store genre';
