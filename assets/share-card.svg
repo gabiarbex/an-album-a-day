@@ -1,27 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-<defs>
-  <filter id="noise"><feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 .12"/></feComponentTransfer></filter>
-  <pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="1.2" cy="1.2" r="1" fill="#171411" opacity=".16"/></pattern>
-</defs>
-<rect width="1200" height="630" fill="#e8dfcf"/>
-<rect width="1200" height="630" fill="url(#dots)"/>
-<rect x="0" y="0" width="1200" height="630" filter="url(#noise)" opacity=".75"/>
-<g transform="rotate(-2 340 310)">
-  <rect x="72" y="92" width="660" height="420" fill="#171411"/>
-  <text x="112" y="168" fill="#f4eddf" font-family="Georgia,serif" font-style="italic" font-size="28">a little ritual for curious ears</text>
-  <text x="110" y="292" fill="#f4eddf" font-family="Georgia,serif" font-size="96">an album</text>
-  <text x="110" y="395" fill="#d34a32" font-family="Georgia,serif" font-style="italic" font-size="112">a day.</text>
-  <text x="112" y="458" fill="#b7ad9d" font-family="Arial,sans-serif" font-size="20" letter-spacing="4">ONE RECORD. ONE DAY. NO ALGORITHMIC PANIC.</text>
-</g>
-<g transform="translate(780 120) rotate(7 150 150)">
-  <circle cx="150" cy="150" r="150" fill="#111"/>
-  <circle cx="150" cy="150" r="94" fill="none" stroke="#403a34" stroke-width="2"/>
-  <circle cx="150" cy="150" r="55" fill="#d34a32"/>
-  <circle cx="150" cy="150" r="8" fill="#e8dfcf"/>
-</g>
-<g transform="rotate(4 920 500)">
-  <rect x="770" y="445" width="335" height="90" fill="#f4eddf" stroke="#171411" stroke-width="2"/>
-  <text x="795" y="483" fill="#171411" font-family="Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="3">DISCOVER / LISTEN / KEEP</text>
-  <text x="795" y="515" fill="#d34a32" font-family="Georgia,serif" font-style="italic" font-size="22">made for feeling things too much ♡</text>
-</g>
+  <rect width="1200" height="630" fill="#e9e1d2"/>
+  <rect x="54" y="50" width="1092" height="530" fill="none" stroke="#171411" stroke-width="3"/>
+  <rect x="84" y="86" width="148" height="18" fill="#b9412f"/>
+  <text x="84" y="148" fill="#171411" font-family="Courier New, monospace" font-size="18" letter-spacing="4">AN ALBUM A DAY / 2026</text>
+  <text x="80" y="315" fill="#171411" font-family="Georgia, serif" font-size="118">an album</text>
+  <text x="80" y="430" fill="#b9412f" font-family="Georgia, serif" font-size="132" font-style="italic">a day.</text>
+  <line x1="82" y1="484" x2="1110" y2="484" stroke="#171411" stroke-width="2"/>
+  <text x="84" y="530" fill="#171411" font-family="Courier New, monospace" font-size="18" letter-spacing="2">ONE RECORD EVERY DAY. LISTEN FIRST.</text>
+  <circle cx="1022" cy="184" r="74" fill="#171411"/>
+  <circle cx="1022" cy="184" r="19" fill="#b9412f"/>
+  <circle cx="1022" cy="184" r="4" fill="#e9e1d2"/>
 </svg>
