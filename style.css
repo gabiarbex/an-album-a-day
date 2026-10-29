@@ -1943,3 +1943,132 @@ dialog input,dialog textarea{
     border-top:1px solid #81786e!important;
   }
 }
+
+
+/* === TRACKLIST FIRST 027 ===
+   The running order belongs directly under the album, not behind catalogue metadata. */
+.tracklist-panel{
+  margin:24px 0 0;
+  padding:0;
+  color:#eee4d4;
+  border-top:1px solid #8f8576;
+  border-bottom:1px solid #8f8576;
+}
+.tracklist-panel[hidden]{display:none}
+.tracklist-head{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  padding:10px 0 8px;
+  color:#bcb09f;
+  font:700 8px/1.2 "Courier New",monospace;
+  letter-spacing:1.2px;
+}
+.tracklist-head span:last-child{color:#eee4d4}
+
+.tracklist-panel .tracklist{
+  columns:auto!important;
+  column-count:1!important;
+  column-gap:0!important;
+  column-rule:0!important;
+  margin:0!important;
+  padding:0 0 7px!important;
+  border:0!important;
+}
+.tracklist-panel .tracklist li{
+  display:grid!important;
+  grid-template-columns:30px minmax(0,1fr) auto!important;
+  gap:9px!important;
+  align-items:baseline!important;
+  break-inside:auto!important;
+  padding:6px 0!important;
+  border-bottom:1px solid #f0e4d31c!important;
+}
+.tracklist-panel .tracklist li:last-child{border-bottom:0!important}
+.tracklist-panel .track-no{
+  color:#8f8576!important;
+  font:9px "Courier New",monospace!important;
+}
+.tracklist-panel .track-name{
+  color:#f0e6d7!important;
+  font:14px/1.3 Georgia,serif!important;
+  font-style:normal!important;
+}
+.tracklist-panel .track-time{
+  color:#8f8576!important;
+  font:9px "Courier New",monospace!important;
+}
+.tracklist-panel .track-disc{
+  display:block!important;
+  grid-template-columns:none!important;
+  padding:13px 0 5px!important;
+  color:var(--red)!important;
+  border-bottom:1px solid #8f8576!important;
+  font:700 8px "Courier New",monospace!important;
+  letter-spacing:1px!important;
+  text-transform:uppercase!important;
+}
+.tracklist-panel .tracklist-status{
+  margin:0!important;
+  padding:9px 0 12px!important;
+  color:#938879!important;
+  font:italic 12px Georgia,serif!important;
+}
+
+/* secondary filing data stays available but out of the listening flow */
+.record-file{
+  margin:22px 0 0!important;
+  color:#c8bcab!important;
+  background:transparent!important;
+  border:0!important;
+  border-top:1px solid #5d574f!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+.record-file[hidden]{display:none!important}
+.record-file:before{display:none!important}
+.record-file-summary{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  padding:10px 0;
+  cursor:pointer;
+  list-style:none;
+  color:#918779;
+  font:700 8px/1.3 "Courier New",monospace;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+}
+.record-file-summary::-webkit-details-marker{display:none}
+.record-file-summary:after{content:"+";margin-left:auto;color:#c8bcab}
+.record-file[open] .record-file-summary:after{content:"−"}
+.record-file-summary #metadataSource{
+  margin-left:auto;
+  color:#746c61;
+  text-transform:none;
+  letter-spacing:0;
+  font-weight:400;
+}
+.record-file-body{
+  margin:2px 0 0;
+  padding:0 0 8px;
+  color:var(--ink);
+  background:#eee5d6;
+}
+.record-file .record-file-strip{
+  margin:0 10px!important;
+}
+.record-file .file-under{
+  padding-top:8px!important;
+}
+.record-file .record-facts{
+  margin-bottom:0!important;
+}
+
+@media(max-width:620px){
+  .tracklist-panel .tracklist li{
+    grid-template-columns:25px minmax(0,1fr) auto!important;
+  }
+  .tracklist-panel .track-name{font-size:13px!important}
+  .record-file-summary #metadataSource{display:none}
+}
