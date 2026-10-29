@@ -323,20 +323,61 @@ async function load(){
 load();
 
 function score(a,intent){
- let s=0;
- const am=(a.moods||[]).map(x=>String(x).toLowerCase());
- for(const m of state.moods)if(am.includes(m))s+=4;
- for(const [m,w] of Object.entries(intent.moods))if(am.includes(m))s+=w*2.8;
- for(const [m,w] of Object.entries(intent.avoidMoods||{}))if(am.includes(m))s-=w*3.2;
+ let weighted=0,totalWeight=0;
+ const confidence=(name,fallback=.7)=>{
+  const value=Number(a.provenance?.[name]?.confidence);
+  return Number.isFinite(value)?Math.max(.1,Math.min(1,value)):fallback;
+ };
+ const moodVector=a.features?.moods&&Object.keys(a.features.moods).length
+  ? a.features.moods
+  : Object.fromEntries((a.moods||[]).map(m=>[String(m).toLowerCase(),1]));
+ const requested={...Object.fromEntries(state.moods.map(m=>[m,1])),...intent.moods};
+ for(const [m,w] of Object.entries(requested)){
+  if(moodVector[m]===undefined)continue;
+  const ww=2.6*confidence('moods',.65)*Math.max(1,Number(w)||1);
+  weighted+=ww*Number(moodVector[m]);totalWeight+=ww;
+ }
+ for(const [m,w] of Object.entries(intent.avoidMoods||{})){
+  if(moodVector[m]===undefined)continue;
+  const ww=2.8*confidence('moods',.65)*Math.max(1,Number(w)||1);
+  weighted+=ww*(1-Number(moodVector[m]));totalWeight+=ww;
+ }
+
  const albumGenres=[...(a.genres||[]),...(a.tags||[])].map(x=>String(typeof x==='string'?x:x?.name||'').toLowerCase());
- for(const g of intent.genres||[])if(albumGenres.some(x=>x.includes(g)||g.includes(x)))s+=3.2;
- for(const g of intent.avoidGenres||[])if(albumGenres.some(x=>x.includes(g)||g.includes(x)))s-=4;
- const en=a.energy_level==null?NaN:Number(a.energy_level);
- if(state.energy!==null&&Number.isFinite(en))s+=Math.max(0,5-Math.abs(en-state.energy));
- else if(intent.energy!==null&&Number.isFinite(en))s+=Math.max(0,4-Math.abs(en-intent.energy));
- const duration=a.length_min==null?NaN:Number(a.length_min);
- if(state.time!==null&&Number.isFinite(duration))s+=duration<=state.time?3:-Math.min(7,(duration-state.time)/6);
- return s;
+ for(const g of intent.genres||[]){
+  const ww=1.8*confidence('genres',.65);
+  weighted+=ww*(albumGenres.some(x=>x.includes(g)||g.includes(x))?1:.15);totalWeight+=ww;
+ }
+ for(const g of intent.avoidGenres||[]){
+  const ww=2*confidence('genres',.65);
+  weighted+=ww*(albumGenres.some(x=>x.includes(g)||g.includes(x))?0:1);totalWeight+=ww;
+ }
+
+ const rawEnergy=a.features?.energy!==null&&a.features?.energy!==undefined
+  ? Number(a.features.energy)*10
+  : Number(a.energy_level);
+ const targetEnergy=state.energy!==null?Number(state.energy):intent.energy;
+ if(targetEnergy!==null&&targetEnergy!==undefined&&Number.isFinite(rawEnergy)){
+  const ww=1.8*confidence('energy',.75);
+  weighted+=ww*Math.max(0,1-Math.abs(rawEnergy-targetEnergy)/10);totalWeight+=ww;
+ }
+
+ const rawDuration=a.features?.duration_min??a.length_min;
+ if(state.time!==null&&Number.isFinite(Number(rawDuration))){
+  const runtime=Number(rawDuration),limit=Number(state.time);
+  const ww=1.8*confidence('duration_min',.9);
+  weighted+=ww*(runtime<=limit?1:Math.max(0,1-(runtime-limit)/30));totalWeight+=ww;
+ }
+
+ const known=diaryArtistSet().has(String(a.artist||'').toLowerCase());
+ if(state.comfort==='comfort'){
+  const ww=.75;weighted+=ww*(known?1:.35);totalWeight+=ww;
+ }
+ if(state.comfort==='exploration'||intent.exploration>0){
+  const ww=.75;weighted+=ww*(known?.05:1);totalWeight+=ww;
+ }
+
+ return totalWeight?weighted/totalWeight:.5;
 }
 async function eligiblePool(){
  const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
@@ -415,13 +456,18 @@ async function chooseAnother(){
 }
 function rankFromStoredFeatures(pool,seed,daily){
  const intent=interpretFeeling($('feelingInput')?.value||'');
- const candidates=sampleCandidates(pool,seed,Math.min(250,pool.length),daily);
- let best=null,bestValue=-Infinity;
- for(const a of candidates){
-  const value=score(a,intent)+(daily?seededUnit(seed+'|'+key(a))*.8:Math.random()*.8);
-  if(value>bestValue){best=a;bestValue=value}
- }
- return {album:best||candidates[0],featuresUsed:true,mode:'stored'};
+ const candidates=sampleCandidates(pool,seed,Math.min(1800,pool.length),daily)
+  .map(a=>({a,v:score(a,intent)}))
+  .sort((x,y)=>y.v-x.v);
+ const top=candidates.slice(0,Math.min(200,candidates.length));
+ if(!top.length)return {album:pool[0],featuresUsed:false,mode:'draw'};
+ // Relevance-biased sampling keeps repeated prompts from collapsing to one argmax.
+ const weights=top.map((row,i)=>Math.max(.02,(row.v+.08)*(1-i/(top.length*1.25))));
+ const total=weights.reduce((n,v)=>n+v,0);
+ let needle=(daily?seededUnit(seed+'|stored-final'):Math.random())*total;
+ let chosen=top[0];
+ for(let i=0;i<top.length;i++){needle-=weights[i];if(needle<=0){chosen=top[i];break}}
+ return {album:chosen.a,featuresUsed:true,mode:'stored'};
 }
 function setPickBusy(busy){
  for(const id of ['recommend','surpriseMe','reroll']){
