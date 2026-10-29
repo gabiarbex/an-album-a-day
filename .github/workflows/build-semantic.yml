@@ -10,6 +10,7 @@ on:
     paths:
       - ".github/workflows/build-semantic.yml"
       - "scripts/build_semantic_index.py"
+      - "scripts/check_semantic_quality.py"
       - "data/catalog/**"
 
 permissions:
@@ -62,6 +63,14 @@ jobs:
           assert len(ids)==m['albums']==len(set(ids))
           print(json.dumps(m,indent=2))
           PY
+
+      - name: Run semantic retrieval sanity checks
+        run: |
+          python scripts/check_semantic_quality.py \
+            --catalog-dir data/catalog \
+            --semantic-dir data/semantic \
+            --top 20 \
+            --minimum-hit-rate 0.15
 
       - name: Commit semantic index
         shell: bash
