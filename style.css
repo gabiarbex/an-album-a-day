@@ -1259,3 +1259,44 @@ dialog input,dialog textarea{width:100%;padding:11px;border:2px solid var(--ink)
 }
 .history-entry-actions button:last-child{color:var(--red);border-bottom-color:var(--red)}
 .history-entry-actions button:hover{color:var(--ink);border-bottom-color:var(--ink)}
+
+
+/* === FLEXIBLE RECORD FACTS + REAL AUDIO STAMPS === */
+.record-facts{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:0!important;
+}
+.record-fact{
+  min-width:0;
+  border-right:1px solid var(--ink);
+  border-bottom:1px solid var(--ink);
+}
+.record-fact dt,.record-fact dd{
+  display:block!important;
+  grid-row:auto!important;
+  margin:0!important;
+  border:0!important;
+}
+.record-fact dt{
+  min-height:27px;
+  padding:7px 8px!important;
+  border-bottom:1px solid var(--ink)!important;
+}
+.record-fact dd{
+  min-height:31px;
+  padding:8px!important;
+}
+.record-fact:nth-child(4n){border-right:0}
+.acoustic-fact dd{color:var(--blue)}
+.classification .audio-class{
+  color:#f4ead8;
+  background:var(--blue);
+  border-color:var(--ink);
+  box-shadow:2px 2px 0 var(--red);
+}
+@media(max-width:620px){
+  .record-facts{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .record-fact:nth-child(4n){border-right:1px solid var(--ink)}
+  .record-fact:nth-child(2n){border-right:0}
+}
