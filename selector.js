@@ -839,6 +839,8 @@ let musicBrainzLastRequest=0;
 let musicBrainzChain=Promise.resolve();
 const musicBrainzGroupCache=new Map();
 const musicBrainzDetailCache=new Map();
+const musicBrainzReleaseCache=new Map();
+const acousticBrainzCache=new Map();
 function musicBrainzJson(url){
  const job=musicBrainzChain.then(async()=>{
   const wait=Math.max(0,1100-(Date.now()-musicBrainzLastRequest));
@@ -869,11 +871,116 @@ async function getMusicBrainzGroupDetails(a){
  const group=await findMusicBrainzGroup(a);
  if(!group?.id)return null;
  if(musicBrainzDetailCache.has(group.id))return musicBrainzDetailCache.get(group.id);
- const promise=musicBrainzJson('https://musicbrainz.org/ws/2/release-group/'+group.id+'?inc=genres+tags+url-rels&fmt=json')
+ const promise=musicBrainzJson('https://musicbrainz.org/ws/2/release-group/'+group.id+'?inc=releases+genres+tags+url-rels&fmt=json')
   .catch(e=>{console.info('MusicBrainz detail lookup unavailable',e);return null});
  musicBrainzDetailCache.set(group.id,promise);
  return promise;
 }
+function canonicalRelease(details){
+ const releases=(details?.releases||[]).filter(r=>r?.id);
+ if(!releases.length)return null;
+ const official=releases.filter(r=>!r.status||String(r.status).toLowerCase()==='official');
+ const pool=official.length?official:releases;
+ return pool.slice().sort((a,b)=>{
+  const ad=String(a.date||'9999-99-99'),bd=String(b.date||'9999-99-99');
+  if(ad!==bd)return ad.localeCompare(bd);
+  return String(a.country||'').localeCompare(String(b.country||''));
+ })[0];
+}
+async function getReleaseWithRecordings(releaseId){
+ if(!releaseId)return null;
+ if(musicBrainzReleaseCache.has(releaseId))return musicBrainzReleaseCache.get(releaseId);
+ const promise=musicBrainzJson('https://musicbrainz.org/ws/2/release/'+releaseId+'?inc=recordings+media&fmt=json')
+  .catch(e=>{console.info('MusicBrainz recording lookup unavailable',e);return null});
+ musicBrainzReleaseCache.set(releaseId,promise);return promise;
+}
+async function fetchAcousticHighLevel(mbid){
+ if(acousticBrainzCache.has(mbid))return acousticBrainzCache.get(mbid);
+ const promise=fetch('https://acousticbrainz.org/api/v1/'+mbid+'/high-level',{cache:'force-cache'})
+  .then(r=>{if(!r.ok)throw Error('AcousticBrainz HTTP '+r.status);return r.json()})
+  .catch(()=>null);
+ acousticBrainzCache.set(mbid,promise);return promise;
+}
+function classifierProbability(highlevel,section,label){
+ const value=Number(highlevel?.[section]?.all?.[label]);
+ return Number.isFinite(value)?Math.max(0,Math.min(1,value)):null;
+}
+function aggregateAcoustic(rows){
+ if(!rows.length)return null;
+ const sums={sad:0,happy:0,aggressive:0,relaxed:0,party:0,danceable:0,dark:0,electronic:0};
+ const counts=Object.fromEntries(Object.keys(sums).map(k=>[k,0]));
+ const mappings=[
+  ['sad','mood_sad','sad'],['happy','mood_happy','happy'],
+  ['aggressive','mood_aggressive','aggressive'],['relaxed','mood_relaxed','relaxed'],
+  ['party','mood_party','party'],['danceable','danceability','danceable'],
+  ['dark','timbre','dark'],['electronic','mood_electronic','electronic']
+ ];
+ for(const row of rows){
+  const high=row?.highlevel||row;
+  for(const [name,section,label] of mappings){
+   const p=classifierProbability(high,section,label);
+   if(p===null)continue;sums[name]+=p;counts[name]++;
+  }
+ }
+ const avg=name=>counts[name]?sums[name]/counts[name]:null;
+ const sad=avg('sad'),happy=avg('happy'),aggressive=avg('aggressive'),relaxed=avg('relaxed');
+ const party=avg('party'),dance=avg('danceable'),dark=avg('dark'),electronic=avg('electronic');
+ const values=arr=>arr.filter(v=>v!==null&&Number.isFinite(v));
+ const mean=arr=>{const v=values(arr);return v.length?v.reduce((n,x)=>n+x,0)/v.length:null};
+ const moods={};
+ const put=(name,value)=>{if(value!==null&&Number.isFinite(value))moods[name]=Math.max(0,Math.min(1,value))};
+ put('melancholic',sad);
+ put('hopeful',happy);
+ put('intense',mean([aggressive,relaxed===null?null:1-relaxed]));
+ put('energetic',mean([dance,party,aggressive]));
+ put('warm',mean([relaxed,happy]));
+ put('dreamy',relaxed===null?null:relaxed*(aggressive===null?1:1-aggressive*.55));
+ put('dark',dark);
+ put('gritty',aggressive);
+ put('reflective',mean([sad,relaxed]));
+ put('cold',mean([dark,electronic]));
+ const energyParts=values([dance,aggressive,party,relaxed===null?null:1-relaxed]);
+ const energy=energyParts.length?10*energyParts.reduce((n,x,i)=>n+x*[.4,.25,.2,.15][Math.min(i,3)],0)/([.4,.25,.2,.15].slice(0,energyParts.length).reduce((n,x)=>n+x,0)):null;
+ return {moods,energy,tracksAnalyzed:rows.length,confidence:Math.min(.9,.52+rows.length*.04)};
+}
+async function loadSelectedAcousticProfile(a,details){
+ const release=canonicalRelease(details);if(!release?.id)return null;
+ const full=await getReleaseWithRecordings(release.id);if(!full||!pick||key(pick)!==key(a))return null;
+ const recordingIds=[];
+ for(const medium of full.media||[]){
+  for(const track of medium.tracks||[]){
+   const id=track?.recording?.id;if(id&&!recordingIds.includes(id))recordingIds.push(id);
+  }
+ }
+ if(!recordingIds.length)return null;
+ // Bound network work: sample up to 8 evenly spread recordings from the album.
+ const take=Math.min(8,recordingIds.length),sample=[];
+ for(let i=0;i<take;i++)sample.push(recordingIds[Math.floor(i*(recordingIds.length-1)/Math.max(1,take-1))]);
+ const rows=(await mapConcurrent([...new Set(sample)],4,fetchAcousticHighLevel)).filter(Boolean);
+ if(!rows.length||!pick||key(pick)!==key(a))return null;
+ const profile=aggregateAcoustic(rows);if(!profile)return null;
+ a._acoustic=profile;
+ a.features={...(a.features||{}),moods:{...(a.features?.moods||{}),...profile.moods},energy:profile.energy===null?a.features?.energy:profile.energy/10};
+ a.provenance={...(a.provenance||{}),
+  moods:{source:'acousticbrainz-selected-sample',confidence:profile.confidence},
+  energy:{source:'acousticbrainz-selected-sample',confidence:profile.confidence}
+ };
+ const classification=$('classification');
+ if(classification){
+  const top=Object.entries(profile.moods).sort((x,y)=>y[1]-x[1]).filter(([,v])=>v>=.55).slice(0,2);
+  for(const [m,v] of top){
+   const tag=document.createElement('span');tag.className='audio-class';tag.textContent=`AUDIO: ${m.toUpperCase()} ${Math.round(v*100)}%`;classification.append(tag);
+  }
+ }
+ const facts=$('recordFacts');
+ if(facts){
+  const dt=document.createElement('dt');dt.textContent='Audio sample';
+  const dd=document.createElement('dd');dd.textContent=`${profile.tracksAnalyzed} track${profile.tracksAnalyzed===1?'':'s'} / AB`;
+  facts.append(dt,dd);
+ }
+ return profile;
+}
+
 async function enhanceSelectedMetadata(a){
  const details=await getMusicBrainzGroupDetails(a);
  if(!details||!pick||key(pick)!==key(a))return;
@@ -900,6 +1007,9 @@ async function enhanceSelectedMetadata(a){
  }
  const source=$('metadataSource');
  if(source&&source.textContent.includes('ITUNES'))source.textContent='MUSICBRAINZ + ITUNES STORE';
+ loadSelectedAcousticProfile(a,details).then(profile=>{
+  if(profile&&$('metadataSource')&&pick&&key(pick)===key(a))$('metadataSource').textContent='MUSICBRAINZ + ITUNES + ACOUSTICBRAINZ';
+ });
 }
 async function findItunesAlbum(a){
  const cacheKey=key(a);
@@ -1123,8 +1233,8 @@ $('logForm').onsubmit=e=>{
   genre:live.genre||(Array.isArray(pick.genres)?(typeof pick.genres[0]==='string'?pick.genres[0]:pick.genres[0]?.name):'')||'',
   signal_snapshot:{
    genre:live.genre||'',
-   moods:live.signals?.moods||staticMoods,
-   energy:live.signals?.energy??pick.energy_level??null
+   moods:pick._acoustic?.moods||live.signals?.moods||pick.features?.moods||staticMoods,
+   energy:pick._acoustic?.energy??live.signals?.energy??(pick.features?.energy!=null?Number(pick.features.energy)*10:null)??pick.energy_level??null
   }
  });
  persist();$('logDialog').close();$('status').textContent='Saved to your listening diary ♡';
