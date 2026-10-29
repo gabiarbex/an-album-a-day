@@ -4,7 +4,7 @@ let albums=[],logs=[],pick=null,rating=0,catalogManifest=null,catalogTotal=0;
 let rankingFeaturesAvailable=false;
 let featureCoverage={genre:0,mood:0,energy:0,duration:0};
 const liveMetadataRankingAvailable=true;
-const ENGINE_VERSION='live-metadata-v1';
+const ENGINE_VERSION='hybrid-fielddesk-v3';
 const loadedShardFiles=new Set();
 const state={moods:[],energy:null,comfort:null,time:null};
 const $=id=>document.getElementById(id);
