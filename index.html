@@ -21,7 +21,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=2">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23171411'/%3E%3Ccircle cx='32' cy='32' r='23' fill='none' stroke='%23e8dfcf' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23c8432f'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=human-026">
+  <link rel="stylesheet" href="style.css?v=tracklist-027">
 </head>
 <body>
   <header class="masthead">
@@ -65,23 +65,13 @@
         <p>describe what you want to hear, or leave it to chance.</p>
       </div>
 
-      <section id="recordFile" class="record-file" hidden aria-live="polite">
-        <div class="record-file-head">
-          <span>CATALOGUE CARD</span>
-          <span id="metadataSource">LOOKING IT UP…</span>
+      <section id="tracklistPanel" class="tracklist-panel" hidden aria-live="polite">
+        <div class="tracklist-head">
+          <span>TRACKLIST</span>
+          <span id="trackCountLabel">—</span>
         </div>
-        <div class="record-file-strip">
-          <div><small>CAT. NO.</small><b id="catalogNumber">AAD-000000</b></div>
-          <div><small>ERA</small><b id="eraStamp">—</b></div>
-          <div class="pull-stamp">PULL<br>01</div>
-        </div>
-        <div class="file-under"><span>FILE UNDER</span><div id="classification" class="classification"></div></div>
-        <dl id="recordFacts" class="record-facts"></dl>
-        <details id="tracklistDetails" class="tracklist-details" open>
-          <summary><span>TRACKLIST</span><span id="trackCountLabel">—</span></summary>
-          <ol id="tracklist" class="tracklist"></ol>
-          <p id="tracklistStatus" class="tracklist-status">Pulling the sleeve notes…</p>
-        </details>
+        <ol id="tracklist" class="tracklist"></ol>
+        <p id="tracklistStatus" class="tracklist-status">pulling the tracklist…</p>
       </section>
 
       <div class="actions">
@@ -100,6 +90,21 @@
       </div>
 
       <p class="asterisk-note">one for today. another if you really need it.</p>
+
+      <details id="recordFile" class="record-file" hidden>
+        <summary class="record-file-summary">
+          <span>record details</span>
+          <span id="metadataSource">looking it up…</span>
+        </summary>
+        <div class="record-file-body">
+          <div class="record-file-strip">
+            <div><small>CAT. NO.</small><b id="catalogNumber">AAD-000000</b></div>
+            <div><small>ERA</small><b id="eraStamp">—</b></div>
+          </div>
+          <div class="file-under"><span>FILE UNDER</span><div id="classification" class="classification"></div></div>
+          <dl id="recordFacts" class="record-facts"></dl>
+        </div>
+      </details>
     </section>
 
     <section class="picker" aria-label="Choose a record">
@@ -236,8 +241,8 @@
     </form>
   </dialog>
 
-  <script src="intent-core.js?v=human-026"></script>
-  <script src="semantic-core.js?v=human-026"></script>
-  <script src="selector.js?v=human-026" defer></script>
+  <script src="intent-core.js?v=tracklist-027"></script>
+  <script src="semantic-core.js?v=tracklist-027"></script>
+  <script src="selector.js?v=tracklist-027" defer></script>
 </body>
 </html>
