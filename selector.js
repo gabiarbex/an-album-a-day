@@ -86,7 +86,8 @@ function persistSeen(){
 }
 function readLogs(){try{return JSON.parse(localStorage.getItem('albumaday.logs')||'[]')}catch{return []}}
 logs=readLogs();
-function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));renderHistory()}
+function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));renderHistory();
+renderRecentPulls();renderRecentPulls()}
 
 function readPickDays(){try{return JSON.parse(localStorage.getItem('albumaday.pickDays')||'[]')}catch{return []}}
 function markTodayPicked(){
@@ -104,6 +105,28 @@ function renderStreak(){
  let streak=0,d=new Date();
  while(days.has(getDate(d))){streak++;d.setDate(d.getDate()-1)}
  node.textContent=`${streak} day${streak===1?'':'s'} streak`;
+}
+function renderRecentPulls(){
+ const area=$('recentPulls');if(!area)return;
+ area.replaceChildren();
+ const recent=[...logs].reverse().slice(0,6);
+ if(!recent.length){
+  const p=document.createElement('p');p.className='recent-empty';p.textContent='Nothing filed yet. Your shelf will grow as you listen.';area.append(p);return;
+ }
+ for(const entry of recent){
+  const card=document.createElement('article');card.className='recent-card';
+  const art=document.createElement('div');art.className='recent-art';
+  if(entry.cover_art){
+   const img=document.createElement('img');img.src=entry.cover_art;img.alt='';img.loading='lazy';
+   img.onerror=()=>{img.remove();art.classList.add('fallback')};art.append(img);
+  }else art.classList.add('fallback');
+  const copy=document.createElement('div');copy.className='recent-card-copy';
+  const date=document.createElement('small');date.textContent=entry.date||'';
+  const title=document.createElement('strong');title.textContent=entry.album||'Untitled';
+  const artist=document.createElement('span');artist.textContent=entry.artist||'Unknown artist';
+  const rating=document.createElement('em');rating.textContent=entry.rating?('★'.repeat(entry.rating)+'☆'.repeat(5-entry.rating)):'unrated';
+  copy.append(date,title,artist,rating);card.append(art,copy);area.append(card);
+ }
 }
 function renderHistory(){
  $('count').textContent=logs.length;
@@ -911,6 +934,7 @@ function labelColor(a){
 
 function drawer(open){$('drawer').classList.toggle('open',open);$('drawer').setAttribute('aria-hidden',String(!open));$('overlay').hidden=!open}
 $('historyToggle').onclick=()=>drawer(true);
+$('openDiaryFromShelf')?.addEventListener('click',()=>drawer(true));
 $('closeDrawer').onclick=()=>drawer(false);
 $('overlay').onclick=()=>drawer(false);
 
