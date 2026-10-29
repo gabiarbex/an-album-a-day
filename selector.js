@@ -229,8 +229,11 @@ async function loadSpecificShard(file){
 }
 async function loadMoreShards(count=6){
  if(!catalogManifest)return;
- const remaining=catalogManifest.shards.filter(s=>!loadedShardFiles.has(s.file));
- for(let i=remaining.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[remaining[i],remaining[j]]=[remaining[j],remaining[i]]}
+ const seed=`${getDate()}|${getUserSalt()}|catalog-shards`;
+ const remaining=catalogManifest.shards
+  .filter(s=>!loadedShardFiles.has(s.file))
+  .slice()
+  .sort((a,b)=>seededUnit(seed+'|'+b.file)-seededUnit(seed+'|'+a.file));
  const selected=remaining.slice(0,count);
  const batches=await Promise.all(selected.map(async shard=>{
   try{
