@@ -599,6 +599,7 @@ function updateTrackOptions(tracks){
 let musicBrainzLastRequest=0;
 let musicBrainzChain=Promise.resolve();
 const musicBrainzGroupCache=new Map();
+const musicBrainzDetailCache=new Map();
 function musicBrainzJson(url){
  const job=musicBrainzChain.then(async()=>{
   const wait=Math.max(0,1100-(Date.now()-musicBrainzLastRequest));
@@ -624,6 +625,42 @@ async function findMusicBrainzGroup(a){
   return exact||groups.find(g=>normalizeStoreText(g.title)===title)||null;
  })().catch(e=>{console.info('MusicBrainz cover lookup unavailable',a.artist,a.title,e);return null});
  musicBrainzGroupCache.set(cacheKey,promise);return promise;
+}
+async function getMusicBrainzGroupDetails(a){
+ const group=await findMusicBrainzGroup(a);
+ if(!group?.id)return null;
+ if(musicBrainzDetailCache.has(group.id))return musicBrainzDetailCache.get(group.id);
+ const promise=musicBrainzJson('https://musicbrainz.org/ws/2/release-group/'+group.id+'?inc=genres+tags+url-rels&fmt=json')
+  .catch(e=>{console.info('MusicBrainz detail lookup unavailable',e);return null});
+ musicBrainzDetailCache.set(group.id,promise);
+ return promise;
+}
+async function enhanceSelectedMetadata(a){
+ const details=await getMusicBrainzGroupDetails(a);
+ if(!details||!pick||key(pick)!==key(a))return;
+ const genres=(details.genres||[]).slice().sort((x,y)=>(y.count||0)-(x.count||0)).map(x=>x.name).filter(Boolean);
+ const tags=(details.tags||[]).slice().sort((x,y)=>(y.count||0)-(x.count||0)).map(x=>x.name).filter(Boolean);
+ if(!Array.isArray(a.genres)||!a.genres.length)a.genres=genres.slice(0,6);
+ if(!Array.isArray(a.tags)||!a.tags.length)a.tags=tags.slice(0,10);
+ a.metadata={...(a.metadata||{}),musicbrainz_id:details.id,cover_art:'https://coverartarchive.org/release-group/'+details.id+'/front-500'};
+ const spotify=(details.relations||[]).map(r=>r?.url?.resource).find(u=>typeof u==='string'&&/open\.spotify\.com\/album\//i.test(u));
+ if(spotify){
+  const src=Array.isArray(a.metadata.sources)?a.metadata.sources.slice():a.metadata.sources?[a.metadata.sources]:[];
+  if(!src.includes(spotify))src.push(spotify);
+  a.metadata.sources=src;
+  if($('spotify'))$('spotify').href=spotify;
+ }
+ const box=$('classification');
+ if(box&&genres.length){
+  const existing=new Set([...box.querySelectorAll('span')].map(n=>n.textContent.toLowerCase()));
+  for(const genre of genres.slice(0,5)){
+   if(existing.has(genre.toLowerCase()))continue;
+   const tag=document.createElement('span');tag.textContent=genre.toUpperCase();box.append(tag);existing.add(genre.toLowerCase());
+   if(box.children.length>=5)break;
+  }
+ }
+ const source=$('metadataSource');
+ if(source&&source.textContent.includes('ITUNES'))source.textContent='MUSICBRAINZ + ITUNES STORE';
 }
 async function findItunesAlbum(a){
  const cacheKey=key(a);
@@ -783,6 +820,7 @@ function show(a,context={}){
  $('status').textContent=context.mode==='bonus'?`${unseen} unseen albums remaining · bonus draw ✳`:context.mode==='shared'?'shared record loaded from the catalog ✳':`${unseen} unseen albums remaining · today’s record is locked to this date ✳`;
  loadArtwork(a,cover);
  loadRecordFile(a);
+ enhanceSelectedMetadata(a);
 }
 function labelColor(a){
  const palette=['#c8432f','#2e5f76','#d5ad36','#65714b','#9a593f','#d9d0bc'];
