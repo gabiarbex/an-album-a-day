@@ -82,6 +82,7 @@ jobs:
           assert all((Path("data/catalog")/s["file"]).exists() for s in shards)
 
           original=0
+          base_enriched=0
           with_genre=0
           with_mood=0
           with_energy=0
@@ -93,6 +94,7 @@ jobs:
                   assert lid and lid not in ids, f"Duplicate/missing lookup id: {lid}"
                   ids.add(lid)
                   original += album.get("_catalog_source") == "original"
+                  base_enriched += album.get("_enriched_from") == "musicbrainz_dump"
                   with_genre += bool(album.get("genres"))
                   with_mood += bool(album.get("moods"))
                   with_energy += album.get("energy_level") is not None
@@ -100,6 +102,7 @@ jobs:
           assert original >= 9500, f"Editorial base was not preserved: {original:,}"
           print(f"Catalog: {total:,}")
           print(f"Preserved editorial base: {original:,}")
+          print(f"Editorial base enriched from MusicBrainz: {base_enriched:,}")
           print(f"Genre coverage: {with_genre/total:.1%}")
           print(f"Mood-tag coverage: {with_mood/total:.1%}")
           print(f"Energy-tag coverage: {with_energy/total:.1%}")
