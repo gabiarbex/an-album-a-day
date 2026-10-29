@@ -886,7 +886,8 @@ async function findMusicBrainzGroup(a){
  musicBrainzGroupCache.set(cacheKey,promise);return promise;
 }
 async function getMusicBrainzGroupDetails(a){
- const group=await findMusicBrainzGroup(a);
+ const known=String(a?.metadata?.musicbrainz_id||'').replace(/^mb:/,'');
+ const group=known?{id:known}:await findMusicBrainzGroup(a);
  if(!group?.id)return null;
  if(musicBrainzDetailCache.has(group.id))return musicBrainzDetailCache.get(group.id);
  const promise=musicBrainzJson('https://musicbrainz.org/ws/2/release-group/'+group.id+'?inc=releases+genres+tags+url-rels&fmt=json')
@@ -1054,9 +1055,10 @@ async function findItunesAlbum(a){
  return promise;
 }
 function resetRecordFile(a){
- const panel=$('recordFile');if(!panel)return;
- panel.hidden=false;
- $('metadataSource').textContent='LOOKING IT UP…';
+ const panel=$('recordFile'),trackPanel=$('tracklistPanel');
+ if(panel)panel.hidden=false;
+ if(trackPanel)trackPanel.hidden=false;
+ $('metadataSource').textContent='catalogue';
  $('catalogNumber').textContent=internalCatalogNumber(a);
  $('eraStamp').textContent=eraLabel(a.year);
  $('classification').replaceChildren();
@@ -1073,12 +1075,31 @@ function resetRecordFile(a){
  $('tracklist').replaceChildren();
  $('trackCountLabel').textContent='—';
  $('tracklistStatus').hidden=false;
- $('tracklistStatus').textContent='Pulling the sleeve notes…';
+ $('tracklistStatus').textContent='pulling the tracklist…';
  updateTrackOptions([]);
 }
-function renderRecordFacts(a,album,tracks,sourceLabel='CATALOG'){
- const panel=$('recordFile');if(!panel)return;
- panel.hidden=false;
+function musicBrainzTracks(release){
+ const media=Array.isArray(release?.media)?release.media:[];
+ const discCount=media.length||1,tracks=[];
+ media.forEach((medium,mi)=>{
+  const discNumber=Number(medium.position)||mi+1;
+  for(const [ti,track] of (medium.tracks||[]).entries()){
+   tracks.push({
+    discNumber,
+    discCount,
+    trackNumber:Number(track.position)||ti+1,
+    trackName:track.title||track.recording?.title||'Untitled',
+    trackTimeMillis:Number(track.length)||Number(track.recording?.length)||0,
+    recordingId:track.recording?.id||''
+   });
+  }
+ });
+ return tracks;
+}
+function renderRecordFacts(a,album,tracks,sourceLabel='catalogue'){
+ const panel=$('recordFile'),trackPanel=$('tracklistPanel');
+ if(panel)panel.hidden=false;
+ if(trackPanel)trackPanel.hidden=false;
  $('metadataSource').textContent=sourceLabel;
 
  const genreNames=[...catalogGenres(a),album?.primaryGenreName].filter(Boolean);
@@ -1096,14 +1117,13 @@ function renderRecordFacts(a,album,tracks,sourceLabel='CATALOG'){
   const dd=document.createElement('dd');dd.textContent=value;
   group.append(dt,dd);facts.append(group);
  };
- const releaseYear=(album?.releaseDate||'').slice(0,4)||a.year||'';
+ const releaseYear=(album?.releaseDate||album?.date||'').slice(0,4)||a.year||'';
  $('catalogNumber').textContent=internalCatalogNumber(a);
  $('eraStamp').textContent=eraLabel(releaseYear);
  const runtime=tracks.reduce((sum,t)=>sum+(Number(t.trackTimeMillis)||0),0);
  addFact('Released',releaseYear);
  addFact('Tracks',tracks.length||album?.trackCount||'');
  addFact('Runtime',runtime?formatRuntime(runtime):a.length_min?`${Math.round(Number(a.length_min))} min`:'');
- addFact('Format','LP / album');
  if(album?.collectionExplicitness==='explicit')addFact('Advisory','Explicit');
 
  const list=$('tracklist');list.replaceChildren();
@@ -1111,18 +1131,24 @@ function renderRecordFacts(a,album,tracks,sourceLabel='CATALOG'){
  if(!tracks.length){
   updateTrackOptions([]);
   $('tracklistStatus').hidden=false;
-  $('tracklistStatus').textContent='No verified tracklist found for this edition.';
+  $('tracklistStatus').textContent='no verified tracklist found for this edition.';
   return;
  }
  $('tracklistStatus').hidden=true;
  updateTrackOptions(tracks);
+ let lastDisc=null;
  tracks
   .slice()
   .sort((x,y)=>(x.discNumber||1)-(y.discNumber||1)||(x.trackNumber||0)-(y.trackNumber||0))
   .forEach(track=>{
+   if((track.discCount||1)>1&&track.discNumber!==lastDisc){
+    lastDisc=track.discNumber;
+    const disc=document.createElement('li');disc.className='track-disc';
+    disc.textContent=`disc ${track.discNumber}`;list.append(disc);
+   }
    const li=document.createElement('li');
    const num=document.createElement('span');num.className='track-no';
-   num.textContent=(track.discCount||1)>1?`${track.discNumber||1}.${String(track.trackNumber||0).padStart(2,'0')}`:String(track.trackNumber||'').padStart(2,'0');
+   num.textContent=String(track.trackNumber||'').padStart(2,'0');
    const name=document.createElement('span');name.className='track-name';name.textContent=track.trackName||'Untitled';
    const time=document.createElement('span');time.className='track-time';time.textContent=track.trackTimeMillis?formatRuntime(track.trackTimeMillis):'';
    li.append(num,name,time);list.append(li);
@@ -1132,36 +1158,53 @@ async function loadRecordFile(a){
  const request=++recordFileRequest;
  resetRecordFile(a);
  const cacheKey=key(a);
+ const cacheId='albumaday.record.v3.'+hash32(cacheKey);
  try{
   let cached=null;
-  try{cached=JSON.parse(sessionStorage.getItem('albumaday.record.'+hash32(cacheKey))||'null')}catch{}
-  if(cached){
-   if(request===recordFileRequest&&pick&&key(pick)===cacheKey)renderRecordFacts(a,cached.album,cached.tracks||[],'CATALOG DATA / ITUNES STORE');
+  try{cached=JSON.parse(sessionStorage.getItem(cacheId)||'null')}catch{}
+  if(cached?.tracks?.length){
+   if(request===recordFileRequest&&pick&&key(pick)===cacheKey)renderRecordFacts(a,cached.album,cached.tracks,cached.source||'catalogue');
    return;
   }
+
+  // MusicBrainz is the primary tracklist source because it exposes every medium
+  // and every track on the canonical release, rather than a storefront subset.
+  const details=await getMusicBrainzGroupDetails(a);
+  if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
+  if(details){
+   const release=canonicalRelease(details);
+   if(release?.id){
+    const full=await getReleaseWithRecordings(release.id);
+    if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
+    const tracks=musicBrainzTracks(full);
+    if(tracks.length){
+     const album={
+      date:full?.date||release.date||details['first-release-date']||a.year||'',
+      trackCount:tracks.length
+     };
+     const cache={album,tracks,source:'MusicBrainz'};
+     try{sessionStorage.setItem(cacheId,JSON.stringify(cache))}catch{}
+     renderRecordFacts(a,album,tracks,'MusicBrainz');
+     return;
+    }
+   }
+  }
+
+  // Store lookup remains a fallback for albums without a usable MusicBrainz release.
   const album=await findItunesAlbum(a);
   if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
   if(!album?.collectionId){
-   renderRecordFacts(a,null,[],'CATALOG DATA');
+   renderRecordFacts(a,null,[],'catalogue');
    return;
   }
-  let tracks=[];
-  if(tracklistCache.has(album.collectionId)){
-   tracks=await tracklistCache.get(album.collectionId);
-  }else{
-   const promise=fetch(`https://itunes.apple.com/lookup?id=${album.collectionId}&entity=song&limit=200`)
-    .then(r=>{if(!r.ok)throw Error('Tracklist lookup unavailable');return r.json()})
-    .then(data=>(data.results||[]).filter(x=>x.wrapperType==='track'&&x.kind==='song'&&Number(x.collectionId)===Number(album.collectionId)))
-    .catch(e=>{console.info('Tracklist unavailable',e);return []});
-   tracklistCache.set(album.collectionId,promise);
-   tracks=await promise;
-  }
+  const tracks=await getAlbumTracks(album);
   if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
-  const cache={album,tracks};
-  try{sessionStorage.setItem('albumaday.record.'+hash32(cacheKey),JSON.stringify(cache))}catch{}
-  renderRecordFacts(a,album,tracks,'CATALOG DATA / ITUNES STORE');
+  const cache={album,tracks,source:'store'};
+  try{sessionStorage.setItem(cacheId,JSON.stringify(cache))}catch{}
+  renderRecordFacts(a,album,tracks,'store');
  }catch(e){
-  if(request===recordFileRequest)renderRecordFacts(a,null,[],'CATALOG DATA');
+  console.info('Record file unavailable',e);
+  if(request===recordFileRequest)renderRecordFacts(a,null,[],'catalogue');
  }
 }
 
