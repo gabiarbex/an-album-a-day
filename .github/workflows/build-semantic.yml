@@ -1,0 +1,67 @@
+name: Build semantic album index
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "data/catalog/**"
+      - "scripts/build_semantic_index.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: semantic-catalog-build
+  cancel-in-progress: true
+
+jobs:
+  build-semantic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy scikit-learn
+      - name: Build semantic retrieval index
+        run: |
+          python scripts/build_semantic_index.py \
+            --catalog-dir data/catalog \
+            --output-dir data/semantic \
+            --dimensions 64 \
+            --max-features 18000
+      - name: Validate index
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('data/semantic/manifest.json').read_text())
+          assert m['albums']==100000, m
+          assert 32 <= m['dimensions'] <= 64, m
+          assert m['vocab_size'] >= 1000, m
+          assert Path('data/semantic/album-vectors.bin').stat().st_size == m['albums']*m['dimensions']
+          assert Path('data/semantic/components.bin').stat().st_size == m['vocab_size']*m['dimensions']
+          ids=json.loads(Path('data/semantic/ids.json').read_text())
+          assert len(ids)==m['albums']==len(set(ids))
+          print(m)
+          PY
+      - name: Commit semantic index
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/semantic
+          if git diff --cached --quiet; then
+            echo "No semantic changes."
+            exit 0
+          fi
+          git commit -m "Build compact semantic retrieval index"
+          git pull --rebase origin main
+          git push origin HEAD:main
