@@ -51,6 +51,13 @@ for(const [id,values] of groups){
 }
 
 function key(a){return `${String(a.artist||'').toLowerCase()}::${String(a.title||'').toLowerCase()}`}
+function lookupId(a){
+ if(a?.lookup_id)return a.lookup_id;
+ const text=String(a?.artist||'').trim().toLowerCase()+'\0'+String(a?.title||'').trim().toLowerCase();
+ let h=14695981039346656037n,p=1099511628211n,mask=(1n<<64n)-1n;
+ for(const ch of text){h^=BigInt(ch.codePointAt(0));h=(h*p)&mask}
+ return h.toString(16).padStart(16,'0');
+}
 function getDate(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function hash32(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function seededUnit(str){return hash32(str)/4294967296}
@@ -171,6 +178,15 @@ function mergeAlbums(items){
  }
  refreshFeatureCoverage();
 }
+async function loadSpecificShard(file){
+ if(!catalogManifest||!file||loadedShardFiles.has(file))return;
+ try{
+  const r=await fetch('./data/catalog/'+file,{cache:'force-cache'});
+  if(!r.ok)throw Error('HTTP '+r.status);
+  const data=await r.json();loadedShardFiles.add(file);
+  mergeAlbums(Array.isArray(data)?data:data.albums||[]);
+ }catch(e){console.warn('Could not load requested catalog shard',file,e)}
+}
 async function loadMoreShards(count=6){
  if(!catalogManifest)return;
  const remaining=catalogManifest.shards.filter(s=>!loadedShardFiles.has(s.file));
@@ -195,6 +211,29 @@ function readDailyPick(){
 function saveDailyPick(album,featuresUsed,rankingMode){
  try{localStorage.setItem('albumaday.dailyPick',JSON.stringify({date:getDate(),album,featuresUsed:Boolean(featuresUsed),rankingMode:rankingMode||'draw',engineVersion:ENGINE_VERSION}))}catch(e){console.warn('Could not save daily pick',e)}
 }
+async function restoreSharedPick(){
+ const wanted=new URLSearchParams(location.search).get('a');
+ if(!wanted)return false;
+ let found=albums.find(a=>lookupId(a)===wanted);
+ if(!found&&catalogManifest?.lookup_index){
+  try{
+   const indexResponse=await fetch('./data/catalog/'+catalogManifest.lookup_index,{cache:'force-cache'});
+   if(indexResponse.ok){
+    const index=await indexResponse.json();
+    const shard=index[wanted];
+    if(shard){await loadSpecificShard(shard);found=albums.find(a=>lookupId(a)===wanted)}
+   }
+  }catch(e){console.info('Shared-pick lookup unavailable',e)}
+ }
+ if(!found){
+  showToast('That shared record is not in the loaded catalog.');
+  return false;
+ }
+ pick=found;
+ show(pick,{mode:'shared',featuresUsed:false,rankingMode:'shared'});
+ $('reroll').hidden=false;
+ return true;
+}
 function restoreDailyPick(){
  const daily=readDailyPick();
  if(!daily)return false;
@@ -214,7 +253,7 @@ async function load(){
    if(!albums.length)throw Error('Catalog manifest exists but shards were empty');
    refreshFeatureCoverage();
    $('status').textContent=libraryStatus();
-   restoreDailyPick();
+   if(!(await restoreSharedPick()))restoreDailyPick();
    return;
   }
  }catch(e){console.info('Large catalog not deployed yet; using base catalog.',e)}
@@ -227,7 +266,7 @@ async function load(){
   refreshFeatureCoverage();
   $('status').textContent=libraryStatus();
   if(!albums.length)throw Error('No albums found');
-  restoreDailyPick();
+  if(!(await restoreSharedPick()))restoreDailyPick();
  }catch(e){
   $('status').textContent='Could not load the music library.';
   console.error(e);
@@ -611,7 +650,7 @@ function show(a,context={}){
  $('emptyCover').style.display='none';
  cover.src=artPlaceholder(a);
  const info=$('details');info.replaceChildren();
- const tag=document.createElement('div');tag.className='eyebrow';tag.textContent=context.mode==='bonus'?'BONUS DRAW ✳':'TODAY’S RECORD ✳';
+ const tag=document.createElement('div');tag.className='eyebrow';tag.textContent=context.mode==='bonus'?'BONUS DRAW ✳':context.mode==='shared'?'SHARED FROM THE CRATE ✳':'TODAY’S RECORD ✳';
  const title=document.createElement('h2');title.textContent=a.title;
  const artist=document.createElement('p');artist.textContent=`${a.artist}${a.year?' · '+a.year:''}`;
  const meta=document.createElement('p');
@@ -625,7 +664,7 @@ function show(a,context={}){
  $('recordLabel').style.background=labelColor(a);
  requestAnimationFrame(()=>requestAnimationFrame(()=>stage.classList.add('revealed')));
  const unseen=Math.max(0,(catalogTotal||albums.length)-seenAlbums.size).toLocaleString();
- $('status').textContent=context.mode==='bonus'?`${unseen} unseen albums remaining · bonus draw ✳`:`${unseen} unseen albums remaining · today’s record is locked to this date ✳`;
+ $('status').textContent=context.mode==='bonus'?`${unseen} unseen albums remaining · bonus draw ✳`:context.mode==='shared'?'shared record loaded from the catalog ✳':`${unseen} unseen albums remaining · today’s record is locked to this date ✳`;
  loadArtwork(a,cover);
  loadRecordFile(a);
 }
@@ -707,6 +746,7 @@ function artPlaceholder(a){
 }
 
 function explainPick(a,context={}){
+ if(context.rankingMode==='shared')return 'Someone sent you this record from An Album a Day. The catalog metadata below is factual; no recommendation rationale is being invented for a shared link.';
  if(context.rankingMode==='live'&&a._live?.matched){
   const bits=[];
   const genre=a._live.genre||'available store genre';
@@ -824,10 +864,12 @@ $('resetPicker')?.addEventListener('click',resetPicker);
 
 $('sharePick')?.addEventListener('click',async()=>{
  if(!pick)return;
+ const url=new URL(location.origin+location.pathname);
+ url.searchParams.set('a',lookupId(pick));
  const text=`Today's record: ${pick.title} — ${pick.artist} · An Album a Day`;
  try{
-  if(navigator.share)await navigator.share({title:'An Album a Day',text,url:location.origin+location.pathname});
-  else{await navigator.clipboard.writeText(text+'\n'+location.origin+location.pathname);showToast('Record copied to clipboard.')}
+  if(navigator.share)await navigator.share({title:`${pick.title} — ${pick.artist}`,text,url:url.toString()});
+  else{await navigator.clipboard.writeText(text+'\n'+url.toString());showToast('Record link copied to clipboard.')}
  }catch(e){if(e?.name!=='AbortError')showToast('Could not share this record.')}
 });
 
