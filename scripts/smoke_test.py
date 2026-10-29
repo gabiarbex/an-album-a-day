@@ -24,9 +24,18 @@ def test_frontend_contract():
     if css.count("{")!=css.count("}"): fail("CSS braces are unbalanced")
     if "selector.js?v=" not in html or "style.css?v=" not in html:
         fail("Cache-busted CSS/JS references missing")
+    if html.find("intent-core.js")<0 or html.find("semantic-core.js")<0:
+        fail("Intent/semantic browser cores are missing from index.html")
+    if not (html.find("intent-core.js") < html.find("selector.js") and html.find("semantic-core.js") < html.find("selector.js")):
+        fail("Core recommendation scripts must load before selector.js")
 
     subprocess.run(["node","--check",str(ROOT/"intent-core.js")],check=True)
+    subprocess.run(["node","--check",str(ROOT/"semantic-core.js")],check=True)
     subprocess.run(["node","--check",str(ROOT/"selector.js")],check=True)
+    subprocess.run([sys.executable,"-m","py_compile",
+                    str(ROOT/"scripts/build_catalog_from_dump.py"),
+                    str(ROOT/"scripts/shard_catalog.py"),
+                    str(ROOT/"scripts/build_semantic_index.py")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/intent_test.js")],check=True)
 
 def test_base_catalog():
