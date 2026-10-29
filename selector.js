@@ -149,7 +149,7 @@ function updateSignalNote(){
  if(rankingFeaturesAvailable){
   node.textContent='LIVE / FULL CATALOG: these controls steer the ranking using stored album features. Missing fields are treated as unknown, never as zero.';
  }else if(liveMetadataRankingAvailable){
-  node.textContent='LIVE / FIELD DESK: these controls steer a candidate set using verified store genre, release and track data. Mood + energy are low-confidence genre translations until full P1 enrichment lands.';
+  node.textContent='LIVE / FIELD DESK: these controls steer a candidate set using verified store genre, release and track data. Mood + energy are low-confidence genre translations until full P1 enrichment lands. After 8 rated records, your diary also starts nudging the ranking locally.';
  }else{
   node.textContent='PREVIEW ONLY: recommendation metadata is unavailable, so these controls are disabled.';
  }
@@ -402,6 +402,35 @@ async function mapConcurrent(items,limit,fn){
  return results;
 }
 function diaryArtistSet(){return new Set(logs.map(x=>String(x.artist||'').toLowerCase()))}
+function diaryTasteProfile(){
+ const rated=logs.filter(x=>Number(x.rating)>0&&x.signal_snapshot);
+ const profile={count:rated.length,moods:{},genres:{},energySum:0,energyWeight:0};
+ for(const entry of rated){
+  const preference=(Number(entry.rating)-3)/2;
+  const snap=entry.signal_snapshot||{};
+  for(const [m,v] of Object.entries(snap.moods||{}))profile.moods[m]=(profile.moods[m]||0)+preference*Number(v||0);
+  if(snap.genre)profile.genres[String(snap.genre).toLowerCase()]=(profile.genres[String(snap.genre).toLowerCase()]||0)+preference;
+  if(snap.energy!==null&&snap.energy!==undefined&&preference>0){profile.energySum+=Number(snap.energy)*preference;profile.energyWeight+=preference}
+ }
+ return profile;
+}
+function diaryTasteScore(candidate){
+ const profile=diaryTasteProfile();
+ if(profile.count<8)return {active:false,score:.5,count:profile.count};
+ const sig=candidate._live?.signals||{};
+ let total=0,weight=0;
+ for(const [m,v] of Object.entries(sig.moods||{})){
+  const pref=profile.moods[m];
+  if(pref===undefined)continue;
+  const normalized=.5+.5*Math.tanh(pref/3);
+  total+=normalized*Number(v||0);weight+=Number(v||0);
+ }
+ const genre=String(candidate._live?.genre||'').toLowerCase();
+ if(genre&&profile.genres[genre]!==undefined){
+  total+=(.5+.5*Math.tanh(profile.genres[genre]/2))*1.2;weight+=1.2;
+ }
+ return {active:true,score:weight?total/weight:.5,count:profile.count};
+}
 function liveScore(candidate,intent){
  let weighted=0,weight=0;
  const signals=candidate._live?.signals||{moods:{},energy:null,confidence:.35};
@@ -429,6 +458,8 @@ function liveScore(candidate,intent){
   const fit=runtime<=limit?1:Math.max(0,1-(runtime-limit)/30);
   const ww=1.6;weighted+=ww*fit;weight+=ww;
  }
+ const personal=diaryTasteScore(candidate);
+ if(personal.active){const ww=.75;weighted+=ww*personal.score;weight+=ww}
  return weight?weighted/weight:0.5;
 }
 async function getAlbumTracks(album){
@@ -696,7 +727,19 @@ function stars(){
 }
 $('logForm').onsubmit=e=>{
  e.preventDefault();if(!pick)return;
- logs.push({date:getDate(),artist:pick.artist,album:pick.title,rating,favorite_track:$('track').value.trim(),notes:$('notes').value.trim(),cover_art:pick.metadata?.cover_art||''});
+ const live=pick._live||{};
+ const staticMoods=Array.isArray(pick.moods)?Object.fromEntries(pick.moods.map(m=>[m,1])):{};
+ logs.push({
+  date:getDate(),artist:pick.artist,album:pick.title,rating,
+  favorite_track:$('track').value.trim(),notes:$('notes').value.trim(),
+  cover_art:pick.metadata?.cover_art||'',
+  genre:live.genre||(Array.isArray(pick.genres)?(typeof pick.genres[0]==='string'?pick.genres[0]:pick.genres[0]?.name):'')||'',
+  signal_snapshot:{
+   genre:live.genre||'',
+   moods:live.signals?.moods||staticMoods,
+   energy:live.signals?.energy??pick.energy_level??null
+  }
+ });
  persist();$('logDialog').close();$('status').textContent='Saved to your listening diary ♡';
 };
 $('export').onclick=()=>{
@@ -758,6 +801,8 @@ function explainPick(a,context={}){
   if(state.energy!==null||intent.energy!==null)bits.push('Energy also contributed through the genre-derived fallback.');
   if(state.comfort)bits.push(state.comfort==='exploration'?'The ranking favored artists not already present in your diary.':'The ranking gave a small familiarity preference to artists already in your diary.');
   if(state.time!==null&&a._live.runtimeMin)bits.push(`The verified tracklist runtime is about ${Math.round(a._live.runtimeMin)} minutes and was used in the final rerank.`);
+  const personal=diaryTasteScore(a);
+  if(personal.active)bits.push(`Your ${personal.count} rated diary records also contributed a local taste nudge.`);
   bits.push('This is an honest fallback, not the finished acoustic/semantic P1 model.');
   return bits.join(' ');
  }
