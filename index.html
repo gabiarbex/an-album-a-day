@@ -31,7 +31,7 @@
         <h1>an album <em>a day.</em></h1>
         <p>For the records you know by heart, and the ones you haven’t met yet.</p>
       </div>
-      <button id="historyToggle" class="history-toggle">
+      <button id="historyToggle" class="history-toggle" aria-controls="drawer" aria-expanded="false">
         ◷ listening diary
         <span id="count">0</span>
         <span class="history-sep">/</span>
@@ -201,7 +201,7 @@
     <span>MADE FOR THE LOVE OF LISTENING · 2026</span>
   </footer>
 
-  <aside id="drawer" class="drawer" aria-hidden="true">
+  <aside id="drawer" class="drawer" aria-hidden="true" tabindex="-1">
     <div class="drawer-head">
       <h2>Listening diary ♡</h2>
       <button id="closeDrawer" aria-label="Close diary">✕</button>
