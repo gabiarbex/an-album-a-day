@@ -1428,7 +1428,7 @@ function buildLastfmTaste(rows){
  if(!counts.size)throw Error('No artists found');
  const ranked=[...counts.entries()].sort((a,b)=>b[1]-a[1]);
  const max=ranked[0][1];
- const artists=ranked.slice(0,1500).map(([artist,count])=>[artist,Number((Math.log1p(count)/Math.log1p(max)).toFixed(6))]);
+ const artists=ranked.slice(0,10000).map(([artist,count])=>[artist,Number((Math.log1p(count)/Math.log1p(max)).toFixed(6))]);
  return {version:1,total_scrobbles:total,unique_artists:counts.size,artists,imported_at:new Date().toISOString()};
 }
 $('importLastfm')?.addEventListener('click',()=>$('lastfmFile')?.click());
