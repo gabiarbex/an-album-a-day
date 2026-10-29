@@ -613,20 +613,45 @@ function diaryTasteProfile(){
  }
  return profile;
 }
+function candidateSignalBundle(candidate){
+ if(candidate._live?.matched){
+  return {
+   moods:candidate._live.signals?.moods||{},
+   energy:candidate._live.signals?.energy??null,
+   genre:String(candidate._live.genre||'').toLowerCase()
+  };
+ }
+ const moods=candidate.features?.moods&&Object.keys(candidate.features.moods).length
+  ? candidate.features.moods
+  : Object.fromEntries((candidate.moods||[]).map(m=>[String(m).toLowerCase(),1]));
+ const energy=candidate.features?.energy!==null&&candidate.features?.energy!==undefined
+  ? Number(candidate.features.energy)*10
+  : candidate.energy_level;
+ const firstGenre=(candidate.genres||[])[0];
+ return {
+  moods,
+  energy:energy===null||energy===undefined?null:Number(energy),
+  genre:String(typeof firstGenre==='string'?firstGenre:firstGenre?.name||'').toLowerCase()
+ };
+}
 function diaryTasteScore(candidate){
  const profile=diaryTasteProfile();
  if(profile.count<8)return {active:false,score:.5,count:profile.count};
- const sig=candidate._live?.signals||{};
+ const sig=candidateSignalBundle(candidate);
  let total=0,weight=0;
  for(const [m,v] of Object.entries(sig.moods||{})){
   const pref=profile.moods[m];
   if(pref===undefined)continue;
   const normalized=.5+.5*Math.tanh(pref/3);
-  total+=normalized*Number(v||0);weight+=Number(v||0);
+  const strength=Math.max(.15,Number(v||0));
+  total+=normalized*strength;weight+=strength;
  }
- const genre=String(candidate._live?.genre||'').toLowerCase();
- if(genre&&profile.genres[genre]!==undefined){
-  total+=(.5+.5*Math.tanh(profile.genres[genre]/2))*1.2;weight+=1.2;
+ if(sig.genre&&profile.genres[sig.genre]!==undefined){
+  total+=(.5+.5*Math.tanh(profile.genres[sig.genre]/2))*1.2;weight+=1.2;
+ }
+ if(sig.energy!==null&&Number.isFinite(Number(sig.energy))&&profile.energyWeight>0){
+  const preferred=profile.energySum/profile.energyWeight;
+  total+=Math.max(0,1-Math.abs(Number(sig.energy)-preferred)/10)*.6;weight+=.6;
  }
  return {active:true,score:weight?total/weight:.5,count:profile.count};
 }
