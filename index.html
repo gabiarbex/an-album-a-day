@@ -1,1 +1,202 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>An Album a Day — a daily music discovery ritual</title><meta name="description" content="A tactile daily music discovery ritual: one album a day, a listening diary, and a growing universe of records."><meta name="theme-color" content="#171411"><link rel="canonical" href="https://gabiarbex.github.io/an-album-a-day/"><meta property="og:type" content="website"><meta property="og:site_name" content="An Album a Day"><meta property="og:title" content="An Album a Day"><meta property="og:description" content="One record. One day. No algorithmic panic."><meta property="og:url" content="https://gabiarbex.github.io/an-album-a-day/"><meta property="og:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="An Album a Day fanzine-style social card"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="An Album a Day"><meta name="twitter:description" content="One record. One day. No algorithmic panic."><meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23171411'/%3E%3Ccircle cx='32' cy='32' r='23' fill='none' stroke='%23e8dfcf' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23d34a32'/%3E%3C/svg%3E"><link rel="stylesheet" href="style.css?v=fanzine-006"></head><body><header><div class="eyebrow">✳ A LITTLE RITUAL FOR CURIOUS EARS <span class="edition">EST. 2026 · VOL. 001</span></div><h1>an album <em>a day.</em></h1><p>For the records you know by heart, and the ones you haven’t met yet.</p><button id="historyToggle" class="history-toggle">◷ Listening diary <span id="count">0</span><span class="history-sep">·</span><span id="streak">0 day streak</span></button></header><main><section class="showcase"><div class="record-stage" id="stage"><div class="stage-note">TODAY’S OBJECT OF AFFECTION <span>↘</span></div><div class="sticker sticker-a">PLAY IT LOUD<br>OR NOT AT ALL ♡</div><div class="record" id="record"><div class="record-label" id="recordLabel"></div></div><div class="sleeve" id="sleeve"><img id="cover" alt="Selected album cover"><div id="emptyCover" class="empty-cover"><span>✳</span><strong>your next favorite<br>is waiting.</strong></div></div></div><div class="album-details" id="details"><div class="eyebrow">TODAY'S PICK / 001</div><h2>Something good is coming.</h2><p>Set your vibe, then let the music find you.</p></div><div class="actions"><a id="spotify" class="primary disabled" target="_blank" rel="noopener noreferrer">▶ Open on Spotify ↗</a><button id="log" class="secondary" disabled>♡ Add to diary</button><button id="reroll" class="secondary reroll" hidden>↻ Give me another</button></div><div class="why-panel" id="whyPanel"><span class="why-icon">✳</span><div><div class="why-heading">LINER NOTES / WHY THIS RECORD?</div><p id="whyText">Good music finds you in unexpected places. Choose your mood and we’ll take it from there.</p></div></div></section><section class="picker"><div class="issue-stamp">ISSUE Nº 001 <span>✳</span> YOUR PERSONAL SOUNDTRACK</div><div class="feeling-field"><div class="eyebrow">00 / THE UNSENT LETTER</div><h2>dear music,</h2><label for="feelingInput" class="feeling-prompt">Tell us what today feels like. A sentence, a confession, a very specific Tuesday.</label><textarea id="feelingInput" maxlength="1200" rows="4" placeholder="i miss a place i've never been. i want something that feels like driving home at 2am..."></textarea><div class="feeling-foot"><span id="feelingInsight" aria-live="polite">✳ your words, your soundtrack</span><button id="clearFeeling" type="button">clear note ↗</button></div></div><div class="cutline"><span>OR GO BY INSTINCT</span></div><div class="eyebrow">01 / THE FEELING</div><h2>What's the mood?</h2><p class="hint">Pick as many as you like. Or leave it to your note.</p><div id="moods" class="chips"></div><div class="field"><div class="eyebrow">02 / THE ENERGY</div><h2>How much energy?</h2><div id="energy" class="chips"></div></div><div class="field"><div class="eyebrow">03 / THE ADVENTURE</div><h2>Familiar or unexpected?</h2><div id="comfort" class="chips"></div></div><div class="field"><div class="eyebrow">04 / THE TIME</div><h2>How long have you got?</h2><div id="time" class="chips"></div></div><button id="recommend" class="recommend">✳ Reveal today’s record <span>↗</span></button><p id="status" role="status">Loading your music library…</p><div class="picker-postscript">MADE FOR FEELING THINGS TOO MUCH. <span>♡</span></div></section></main><footer class="site-footer"><span>AN ALBUM A DAY <i>✳</i> A SMALL INTERNET CORNER FOR BIG FEELINGS</span><span>MADE FOR THE LOVE OF LISTENING · 2026</span></footer><aside id="drawer" class="drawer" aria-hidden="true"><div class="drawer-head"><h2>Listening diary ♡</h2><button id="closeDrawer" aria-label="Close diary">✕</button></div><div id="history"></div><button id="export" class="secondary">↓ Export diary JSON</button></aside><div id="overlay" class="overlay" hidden></div><dialog id="logDialog"><form id="logForm"><div class="dialog-head"><h2>Dear diary…</h2><button type="button" id="closeDialog">✕</button></div><p id="logAlbum"></p><label>Your rating</label><div id="stars" class="stars"></div><label for="track">Favorite track</label><input id="track" placeholder="The one you replayed"><label for="notes">Your thoughts</label><textarea id="notes" rows="4" placeholder="How did it make you feel?"></textarea><button class="recommend" type="submit">Save to diary ♡</button></form></dialog><script src="selector.js?v=fanzine-006" defer></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>An Album a Day — a daily music discovery ritual</title>
+  <meta name="description" content="A tactile daily music discovery ritual: one album a day, a listening diary, and a growing universe of records.">
+  <meta name="theme-color" content="#171411">
+  <link rel="canonical" href="https://gabiarbex.github.io/an-album-a-day/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="An Album a Day">
+  <meta property="og:title" content="An Album a Day">
+  <meta property="og:description" content="One record. One day. No algorithmic panic.">
+  <meta property="og:url" content="https://gabiarbex.github.io/an-album-a-day/">
+  <meta property="og:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="An Album a Day fanzine-style social card">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="An Album a Day">
+  <meta name="twitter:description" content="One record. One day. No algorithmic panic.">
+  <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23171411'/%3E%3Ccircle cx='32' cy='32' r='23' fill='none' stroke='%23e8dfcf' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23c8432f'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css?v=counter-007">
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-kicker">✳ INDEPENDENT DAILY LISTENING SERVICE <span>ISSUE 001 / EST. 2026</span></div>
+    <div class="masthead-row">
+      <div>
+        <h1>an album <em>a day.</em></h1>
+        <p>For the records you know by heart, and the ones you haven’t met yet.</p>
+      </div>
+      <button id="historyToggle" class="history-toggle">
+        ◷ listening diary
+        <span id="count">0</span>
+        <span class="history-sep">/</span>
+        <span id="streak">0 day streak</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="showcase" aria-label="Today's record">
+      <div class="showcase-rubric">
+        <span>TODAY / SIDE A</span>
+        <span>ONE RECORD ONLY*</span>
+      </div>
+
+      <div class="record-stage" id="stage">
+        <div class="stage-note">TODAY’S OBJECT OF AFFECTION <span>↘</span></div>
+        <div class="sticker sticker-a">FILE UNDER:<br>PLAY THIS</div>
+        <div class="record" id="record"><div class="record-label" id="recordLabel"></div></div>
+        <div class="sleeve" id="sleeve">
+          <img id="cover" width="720" height="720" alt="Selected album cover">
+          <div id="emptyCover" class="empty-cover">
+            <span>✳</span>
+            <strong>your next favorite<br>is waiting.</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="album-details" id="details">
+        <div class="eyebrow">TODAY’S RECORD / UNFILED</div>
+        <h2>Something good is coming.</h2>
+        <p>Tell the clerk what you need, or leave it entirely to chance.</p>
+      </div>
+
+      <div class="actions">
+        <a id="spotify" class="primary disabled" target="_blank" rel="noopener noreferrer">▶ Open on Spotify ↗</a>
+        <button id="log" class="secondary" disabled>♡ Add to diary</button>
+        <button id="reroll" class="secondary reroll" hidden>↻ Give me another</button>
+      </div>
+
+      <div class="why-panel" id="whyPanel">
+        <span class="why-icon">✳</span>
+        <div>
+          <div class="why-heading">CLERK’S NOTE / WHY THIS RECORD?</div>
+          <p id="whyText">No fake certainty here. When the catalog knows why a record fits, we’ll tell you. When it doesn’t, we’ll tell you that too.</p>
+        </div>
+      </div>
+
+      <p class="asterisk-note">*you can absolutely ask for another. we’re not cops.</p>
+    </section>
+
+    <section class="picker" aria-label="Choose a record">
+      <div class="counter-ticket">
+        <span>COUNTER TICKET Nº 001</span>
+        <b>WHAT ARE WE LOOKING FOR?</b>
+      </div>
+
+      <div class="clerk-intro">
+        <div class="eyebrow">START HERE / TALK TO THE CLERK</div>
+        <h2>what kind of record do you need today?</h2>
+        <p>Write it badly. Write it specifically. Give us a memory, a weather report, a person, a train ride, a minor emotional crisis.</p>
+      </div>
+
+      <div class="feeling-field">
+        <label for="feelingInput" class="feeling-prompt">leave a note on the counter:</label>
+        <textarea id="feelingInput" maxlength="1200" rows="6" placeholder="i miss someone but i don’t want a sad record. i want something warm, a little weird, and good for walking home after midnight..."></textarea>
+
+        <div class="prompt-shelf" aria-label="Writing prompts">
+          <button type="button" class="prompt-chip" data-prompt="something for a 2am walk">2am walk</button>
+          <button type="button" class="prompt-chip" data-prompt="i want to feel worse, beautifully">beautifully devastating</button>
+          <button type="button" class="prompt-chip" data-prompt="give me a left turn, not something obvious">left turn please</button>
+          <button type="button" class="prompt-chip" data-prompt="something warm and human">warm + human</button>
+        </div>
+
+        <div class="feeling-foot">
+          <span id="feelingInsight" aria-live="polite">✳ your note stays in this browser</span>
+          <button id="clearFeeling" type="button">clear note ↗</button>
+        </div>
+      </div>
+
+      <details class="fine-tune" id="fineTune">
+        <summary>
+          <span>fine-tune the hunt</span>
+          <small>optional / for people with opinions</small>
+        </summary>
+
+        <div class="signal-note" id="signalNote">
+          These controls are being wired to real album metadata. Until coverage is high enough, they won’t pretend to steer the pick.
+        </div>
+
+        <div class="tuning-block">
+          <div class="eyebrow">01 / THE WEATHER INSIDE YOUR HEAD</div>
+          <h3>what’s in the air?</h3>
+          <div id="moods" class="chips"></div>
+        </div>
+
+        <div class="tuning-block">
+          <div class="eyebrow">02 / VOLTAGE</div>
+          <h3>how much electricity?</h3>
+          <div id="energy" class="chips"></div>
+        </div>
+
+        <div class="tuning-block">
+          <div class="eyebrow">03 / DISTANCE FROM HOME</div>
+          <h3>safe bet or strange little door?</h3>
+          <div id="comfort" class="chips"></div>
+        </div>
+
+        <div class="tuning-block">
+          <div class="eyebrow">04 / HOW LONG CAN WE KEEP YOU?</div>
+          <h3>how much time have you got?</h3>
+          <div id="time" class="chips"></div>
+        </div>
+      </details>
+
+      <button id="recommend" class="recommend">
+        <span>✳ hand me today’s record</span>
+        <span>↗</span>
+      </button>
+
+      <p id="status" role="status">Loading the record room…</p>
+
+      <div class="picker-postscript">
+        <span>NO ENDLESS SCROLL.</span>
+        <span>NO “BECAUSE YOU LIKED...” PRISON.</span>
+        <span>ONE RECORD, THEN GO LISTEN TO IT.</span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>AN ALBUM A DAY <i>✳</i> A SMALL INTERNET CORNER FOR BIG FEELINGS</span>
+    <span>MADE FOR THE LOVE OF LISTENING · 2026</span>
+  </footer>
+
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <h2>Listening diary ♡</h2>
+      <button id="closeDrawer" aria-label="Close diary">✕</button>
+    </div>
+    <div id="history"></div>
+    <button id="export" class="secondary">↓ Export diary JSON</button>
+  </aside>
+
+  <div id="overlay" class="overlay" hidden></div>
+
+  <dialog id="logDialog">
+    <form id="logForm">
+      <div class="dialog-head">
+        <h2>Dear diary…</h2>
+        <button type="button" id="closeDialog" aria-label="Close">✕</button>
+      </div>
+      <p id="logAlbum"></p>
+      <fieldset class="rating-fieldset">
+        <legend>Your rating</legend>
+        <div id="stars" class="stars" role="radiogroup" aria-label="Album rating"></div>
+      </fieldset>
+      <label for="track">Favorite track</label>
+      <input id="track" placeholder="The one you replayed">
+      <label for="notes">Your thoughts</label>
+      <textarea id="notes" rows="4" placeholder="How did it make you feel?"></textarea>
+      <button class="recommend" type="submit">Save to diary ♡</button>
+    </form>
+  </dialog>
+
+  <script src="selector.js?v=counter-007" defer></script>
+</body>
+</html>
