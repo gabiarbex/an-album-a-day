@@ -21,7 +21,7 @@
   <meta name="twitter:description" content="One record. One day. No algorithmic panic.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23171411'/%3E%3Ccircle cx='32' cy='32' r='23' fill='none' stroke='%23e8dfcf' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23c8432f'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=counter-008">
+  <link rel="stylesheet" href="style.css?v=product-009">
 </head>
 <body>
   <header class="masthead">
@@ -69,6 +69,7 @@
       <div class="actions">
         <a id="spotify" class="primary disabled" target="_blank" rel="noopener noreferrer">▶ Open on Spotify ↗</a>
         <button id="log" class="secondary" disabled>♡ Add to diary</button>
+        <button id="sharePick" class="secondary" disabled>↗ Share this record</button>
         <button id="reroll" class="secondary reroll" hidden>↻ Give me another</button>
       </div>
 
@@ -93,6 +94,10 @@
         <div class="eyebrow">START HERE / TALK TO THE CLERK</div>
         <h2>what kind of record do you need today?</h2>
         <p>Write it badly. Write it specifically. Give us a memory, a weather report, a person, a train ride, a minor emotional crisis.</p>
+        <div class="quick-actions">
+          <button id="surpriseMe" type="button" class="quick-pick"><span>✳</span><b>surprise me</b><small>skip the note entirely</small></button>
+          <button id="resetPicker" type="button" class="quick-pick quiet"><span>↺</span><b>start over</b><small>clear today’s request</small></button>
+        </div>
       </div>
 
       <div class="feeling-field">
@@ -173,10 +178,15 @@
       <button id="closeDrawer" aria-label="Close diary">✕</button>
     </div>
     <div id="history"></div>
-    <button id="export" class="secondary">↓ Export diary JSON</button>
+    <div class="drawer-actions">
+      <button id="export" class="secondary">↓ Export diary JSON</button>
+      <button id="importDiary" class="secondary">↑ Import diary JSON</button>
+      <input id="importFile" type="file" accept="application/json,.json" hidden>
+    </div>
   </aside>
 
   <div id="overlay" class="overlay" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
   <dialog id="logDialog">
     <form id="logForm">
@@ -197,6 +207,6 @@
     </form>
   </dialog>
 
-  <script src="selector.js?v=counter-008" defer></script>
+  <script src="selector.js?v=product-009" defer></script>
 </body>
 </html>
