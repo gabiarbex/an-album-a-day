@@ -2,6 +2,8 @@
 
 let albums=[],logs=[],pick=null,rating=0,catalogManifest=null,catalogTotal=0;
 let rankingFeaturesAvailable=false,featureCoverage=0;
+const liveMetadataRankingAvailable=true;
+const ENGINE_VERSION='live-metadata-v1';
 const loadedShardFiles=new Set();
 const state={moods:[],energy:null,comfort:null,time:null};
 const $=id=>document.getElementById(id);
@@ -130,17 +132,19 @@ function hasRankingData(a){
 }
 function updateSignalNote(){
  const node=$('signalNote');if(!node)return;
+ const active=rankingFeaturesAvailable||liveMetadataRankingAvailable;
  document.querySelectorAll('.fine-tune .chip').forEach(button=>{
-  button.disabled=!rankingFeaturesAvailable;
-  button.setAttribute('aria-disabled',String(!rankingFeaturesAvailable));
+  button.disabled=!active;
+  button.setAttribute('aria-disabled',String(!active));
  });
- $('fineTune')?.classList.toggle('unavailable',!rankingFeaturesAvailable);
+ $('fineTune')?.classList.toggle('unavailable',!active);
+ node.classList.toggle('live',active);
  if(rankingFeaturesAvailable){
-  node.classList.add('live');
-  node.textContent='LIVE: these controls now steer the ranking. Missing album fields are treated as unknown, never as zero.';
+  node.textContent='LIVE / FULL CATALOG: these controls steer the ranking using stored album features. Missing fields are treated as unknown, never as zero.';
+ }else if(liveMetadataRankingAvailable){
+  node.textContent='LIVE / FIELD DESK: these controls steer a candidate set using verified store genre, release and track data. Mood + energy are low-confidence genre translations until full P1 enrichment lands.';
  }else{
-  node.classList.remove('live');
-  node.textContent='PREVIEW ONLY: the catalog is still being enriched. These controls stay disabled until there is enough real metadata to make them honest.';
+  node.textContent='PREVIEW ONLY: recommendation metadata is unavailable, so these controls are disabled.';
  }
 }
 function refreshFeatureCoverage(){
@@ -153,8 +157,9 @@ function refreshFeatureCoverage(){
 }
 function libraryStatus(){
  const total=(catalogTotal||albums.length).toLocaleString();
- if(rankingFeaturesAvailable)return `${total} albums in the universe · recommendation metadata is live ✳`;
- return `${total} albums in the universe · mood matching is not live yet, so today’s pick is a discovery draw ✳`;
+ if(rankingFeaturesAvailable)return `${total} albums in the universe · full recommendation metadata is live ✳`;
+ if(liveMetadataRankingAvailable)return `${total} albums in the universe · live genre-aware recommendation fallback is active ✳`;
+ return `${total} albums in the universe · discovery draw mode ✳`;
 }
 
 function mergeAlbums(items){
@@ -184,17 +189,17 @@ async function loadMoreShards(count=6){
 function readDailyPick(){
  try{
   const value=JSON.parse(localStorage.getItem('albumaday.dailyPick')||'null');
-  return value&&value.date===getDate()&&value.album?value:null;
+  return value&&value.date===getDate()&&value.album&&value.engineVersion===ENGINE_VERSION?value:null;
  }catch{return null}
 }
-function saveDailyPick(album,featuresUsed){
- try{localStorage.setItem('albumaday.dailyPick',JSON.stringify({date:getDate(),album,featuresUsed:Boolean(featuresUsed)}))}catch(e){console.warn('Could not save daily pick',e)}
+function saveDailyPick(album,featuresUsed,rankingMode){
+ try{localStorage.setItem('albumaday.dailyPick',JSON.stringify({date:getDate(),album,featuresUsed:Boolean(featuresUsed),rankingMode:rankingMode||'draw',engineVersion:ENGINE_VERSION}))}catch(e){console.warn('Could not save daily pick',e)}
 }
 function restoreDailyPick(){
  const daily=readDailyPick();
  if(!daily)return false;
  pick=daily.album;
- show(pick,{mode:'daily',featuresUsed:Boolean(daily.featuresUsed),restored:true});
+ show(pick,{mode:'daily',featuresUsed:Boolean(daily.featuresUsed),rankingMode:daily.rankingMode||'draw',restored:true});
  $('reroll').hidden=false;
  markTodayPicked();
  return true;
@@ -255,51 +260,53 @@ async function eligiblePool(){
 async function chooseDaily(){
  if(!albums.length){$('status').textContent='Still loading albums. Check your connection if this persists.';return}
  setPickBusy(true);
- const existing=readDailyPick();
- if(existing){
-  pick=existing.album;
-  show(pick,{mode:'daily',featuresUsed:Boolean(existing.featuresUsed),restored:true});
-  $('reroll').hidden=false;
+ try{
+  const existing=readDailyPick();
+  if(existing){
+   pick=existing.album;
+   show(pick,{mode:'daily',featuresUsed:Boolean(existing.featuresUsed),rankingMode:existing.rankingMode||'draw',restored:true});
+   $('reroll').hidden=false;
+   markTodayPicked();
+   return;
+  }
+  const pool=await eligiblePool();
+  if(!pool.length){$('status').textContent='Every available album has already been recommended.';return}
+  const seed=`${getDate()}|${getUserSalt()}`;
+  const result=rankingFeaturesAvailable
+    ? rankFromStoredFeatures(pool,seed,true)
+    : await rankWithLiveMetadata(pool,seed,true);
+  pick=result.album;
+  seenAlbums.add(hash32(key(pick)));persistSeen();
+  saveDailyPick(pick,result.featuresUsed,result.mode);
   markTodayPicked();
-  setPickBusy(false);
-  return;
- }
- const pool=await eligiblePool();
- if(!pool.length){$('status').textContent='Every available album has already been recommended.';setPickBusy(false);return}
- const intent=interpretFeeling($('feelingInput')?.value||'');
- const seed=`${getDate()}|${getUserSalt()}`;
- let best=null,bestValue=-Infinity;
- for(const a of pool){
-  const base=rankingFeaturesAvailable?score(a,intent):0;
-  const jitter=seededUnit(seed+'|'+key(a))*8;
-  const value=base+jitter;
-  if(value>bestValue){best=a;bestValue=value}
- }
- pick=best;
- seenAlbums.add(hash32(key(best)));persistSeen();
- saveDailyPick(best,rankingFeaturesAvailable);
- markTodayPicked();
- show(best,{mode:'daily',featuresUsed:rankingFeaturesAvailable});
- $('reroll').hidden=false;
- setPickBusy(false);
+  show(pick,{mode:'daily',featuresUsed:result.featuresUsed,rankingMode:result.mode});
+  $('reroll').hidden=false;
+ }finally{setPickBusy(false)}
 }
 async function chooseAnother(){
  if(!albums.length)return;
  setPickBusy(true);
- const pool=await eligiblePool();
- if(!pool.length){$('status').textContent='Every available album has already been recommended.';setPickBusy(false);return}
+ try{
+  const pool=await eligiblePool();
+  if(!pool.length){$('status').textContent='Every available album has already been recommended.';return}
+  const seed=`bonus|${Date.now()}|${Math.random()}`;
+  const result=rankingFeaturesAvailable
+    ? rankFromStoredFeatures(pool,seed,false)
+    : await rankWithLiveMetadata(pool,seed,false);
+  pick=result.album;
+  seenAlbums.add(hash32(key(pick)));persistSeen();
+  show(pick,{mode:'bonus',featuresUsed:result.featuresUsed,rankingMode:result.mode});
+ }finally{setPickBusy(false)}
+}
+function rankFromStoredFeatures(pool,seed,daily){
  const intent=interpretFeeling($('feelingInput')?.value||'');
- const sample=[];const n=Math.min(pool.length,1800);
- for(let i=0;i<n;i++)sample.push(pool[Math.floor(Math.random()*pool.length)]);
+ const candidates=sampleCandidates(pool,seed,Math.min(250,pool.length),daily);
  let best=null,bestValue=-Infinity;
- for(const a of sample){
-  const value=(rankingFeaturesAvailable?score(a,intent):0)+Math.random()*8;
+ for(const a of candidates){
+  const value=score(a,intent)+(daily?seededUnit(seed+'|'+key(a))*.8:Math.random()*.8);
   if(value>bestValue){best=a;bestValue=value}
  }
- pick=best;
- seenAlbums.add(hash32(key(best)));persistSeen();
- show(best,{mode:'bonus',featuresUsed:rankingFeaturesAvailable});
- setPickBusy(false);
+ return {album:best||candidates[0],featuresUsed:true,mode:'stored'};
 }
 function setPickBusy(busy){
  for(const id of ['recommend','surpriseMe','reroll']){
@@ -314,6 +321,117 @@ $('recommend').addEventListener('click',chooseDaily);
 $('surpriseMe')?.addEventListener('click',chooseDaily);
 $('reroll').addEventListener('click',chooseAnother);
 
+
+const genreSignalRules=[
+ {re:/metal|hard rock/i,energy:8.6,moods:{dark:.9,intense:.95,gritty:.85,energetic:.7}},
+ {re:/punk|hardcore/i,energy:8.4,moods:{gritty:.95,intense:.85,energetic:.85,alienated:.55}},
+ {re:/hip-hop|hip hop|rap/i,energy:7.2,moods:{gritty:.65,intense:.6,energetic:.72,reflective:.45}},
+ {re:/electronic|dance|house|techno|trance/i,energy:7.8,moods:{energetic:.9,dreamy:.48,cold:.45,intense:.5}},
+ {re:/ambient|new age/i,energy:2.4,moods:{dreamy:.95,reflective:.78,cold:.5,warm:.32}},
+ {re:/alternative|indie|rock/i,energy:6.2,moods:{gritty:.55,intense:.5,reflective:.48,energetic:.55,alienated:.4}},
+ {re:/r&b|soul/i,energy:5.2,moods:{warm:.85,reflective:.65,melancholic:.45,hopeful:.42}},
+ {re:/singer\/songwriter|folk/i,energy:3.8,moods:{reflective:.9,warm:.62,melancholic:.58,nostalgic:.52}},
+ {re:/jazz/i,energy:4.5,moods:{reflective:.78,warm:.58,dreamy:.48,intense:.28}},
+ {re:/classical/i,energy:3.8,moods:{reflective:.86,dreamy:.62,cold:.38,intense:.35}},
+ {re:/country|americana/i,energy:4.6,moods:{warm:.62,nostalgic:.7,reflective:.58,melancholic:.38}},
+ {re:/reggae|ska/i,energy:5.8,moods:{warm:.78,hopeful:.72,energetic:.55}},
+ {re:/latin|brazilian|samba|bossa|mpb/i,energy:5.7,moods:{warm:.74,reflective:.5,hopeful:.55,nostalgic:.38}},
+ {re:/pop/i,energy:6.4,moods:{warm:.55,hopeful:.58,energetic:.72,dreamy:.28}},
+ {re:/soundtrack|score/i,energy:4.3,moods:{dreamy:.68,reflective:.7,intense:.4}},
+];
+function genreSignals(genre){
+ const out={moods:{},energy:null,confidence:.42};
+ for(const rule of genreSignalRules){
+  if(!rule.re.test(String(genre||'')))continue;
+  out.energy=rule.energy;
+  for(const [m,v] of Object.entries(rule.moods))out.moods[m]=Math.max(out.moods[m]||0,v);
+  break;
+ }
+ return out;
+}
+function sampleCandidates(pool,seed,count,daily){
+ if(pool.length<=count)return pool.slice();
+ if(daily)return pool.slice().sort((a,b)=>seededUnit(seed+'|'+key(b))-seededUnit(seed+'|'+key(a))).slice(0,count);
+ const copy=pool.slice();
+ for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}
+ return copy.slice(0,count);
+}
+async function mapConcurrent(items,limit,fn){
+ const results=new Array(items.length);let next=0;
+ async function worker(){while(next<items.length){const i=next++;results[i]=await fn(items[i],i)}}
+ await Promise.all(Array.from({length:Math.min(limit,items.length)},worker));
+ return results;
+}
+function diaryArtistSet(){return new Set(logs.map(x=>String(x.artist||'').toLowerCase()))}
+function liveScore(candidate,intent){
+ let weighted=0,weight=0;
+ const signals=candidate._live?.signals||{moods:{},energy:null,confidence:.35};
+ const confidence=signals.confidence||.35;
+ const requested={...Object.fromEntries(state.moods.map(m=>[m,1])),...intent.moods};
+ for(const [m,w] of Object.entries(requested)){
+  if(signals.moods[m]===undefined)continue;
+  const ww=2.4*confidence*Math.max(1,Number(w)||1);
+  weighted+=ww*signals.moods[m];weight+=ww;
+ }
+ const targetEnergy=state.energy!==null?Number(state.energy):intent.energy;
+ if(targetEnergy!==null&&targetEnergy!==undefined&&signals.energy!==null){
+  const similarity=Math.max(0,1-Math.abs(Number(signals.energy)-Number(targetEnergy))/10);
+  const ww=1.8*confidence;weighted+=ww*similarity;weight+=ww;
+ }
+ const known=diaryArtistSet().has(String(candidate.artist||'').toLowerCase());
+ if(state.comfort==='comfort'){const ww=.8;weighted+=ww*(known?1:.35);weight+=ww}
+ if(state.comfort==='exploration'){const ww=.8;weighted+=ww*(known?.05:1);weight+=ww}
+ if(intent.moods.nostalgic&&candidate._live?.year){
+  const y=Number(candidate._live.year),age=Math.max(0,new Date().getFullYear()-y);
+  const ww=.35;weighted+=ww*Math.min(1,age/35);weight+=ww;
+ }
+ if(candidate._live?.runtimeMin&&state.time!==null){
+  const runtime=Number(candidate._live.runtimeMin),limit=Number(state.time);
+  const fit=runtime<=limit?1:Math.max(0,1-(runtime-limit)/30);
+  const ww=1.6;weighted+=ww*fit;weight+=ww;
+ }
+ return weight?weighted/weight:0.5;
+}
+async function getAlbumTracks(album){
+ if(!album?.collectionId)return [];
+ if(tracklistCache.has(album.collectionId))return await tracklistCache.get(album.collectionId);
+ const promise=fetch(`https://itunes.apple.com/lookup?id=${album.collectionId}&entity=song&limit=200`)
+  .then(r=>{if(!r.ok)throw Error('Tracklist lookup unavailable');return r.json()})
+  .then(data=>(data.results||[]).filter(x=>x.wrapperType==='track'&&x.kind==='song'&&Number(x.collectionId)===Number(album.collectionId)))
+  .catch(()=>[]);
+ tracklistCache.set(album.collectionId,promise);return await promise;
+}
+async function rankWithLiveMetadata(pool,seed,daily){
+ const intent=interpretFeeling($('feelingInput')?.value||'');
+ const sample=sampleCandidates(pool,seed,28,daily);
+ $('status').textContent='Reading the spines and checking the catalogue…';
+ const enriched=(await mapConcurrent(sample,6,async a=>{
+  const meta=await findItunesAlbum(a);
+  if(!meta)return {...a,_live:{matched:false}};
+  const signals=genreSignals(meta.primaryGenreName);
+  return {...a,year:(meta.releaseDate||'').slice(0,4)||a.year,_live:{matched:true,genre:meta.primaryGenreName||'',year:(meta.releaseDate||'').slice(0,4),signals,collectionId:meta.collectionId,trackCount:meta.trackCount}};
+ })).filter(Boolean);
+ let ranked=enriched.map(a=>({a,v:liveScore(a,intent)+(daily?seededUnit(seed+'|rank|'+key(a))*.12:Math.random()*.12)})).sort((x,y)=>y.v-x.v);
+ if(state.time!==null){
+  const finalists=ranked.slice(0,6);
+  await mapConcurrent(finalists,3,async row=>{
+   if(!row.a._live?.collectionId)return;
+   const tracks=await getAlbumTracks({collectionId:row.a._live.collectionId});
+   const ms=tracks.reduce((n,t)=>n+(Number(t.trackTimeMillis)||0),0);
+   if(ms)row.a._live.runtimeMin=ms/60000;
+   row.v=liveScore(row.a,intent)+(daily?seededUnit(seed+'|time|'+key(row.a))*.08:Math.random()*.08);
+  });
+  ranked=ranked.sort((x,y)=>y.v-x.v);
+ }
+ const viable=ranked.filter(x=>x.a._live?.matched);
+ if(!viable.length){
+  const fallback=sample[0]||pool[0];
+  return {album:fallback,featuresUsed:false,mode:'draw'};
+ }
+ const top=viable.slice(0,Math.min(8,viable.length));
+ const chosen=daily?top[Math.floor(seededUnit(seed+'|final')*top.length)]:top[Math.floor(Math.random()*top.length)];
+ return {album:chosen.a,featuresUsed:true,mode:'live'};
+}
 
 const itunesAlbumCache=new Map();
 const tracklistCache=new Map();
@@ -589,6 +707,20 @@ function artPlaceholder(a){
 }
 
 function explainPick(a,context={}){
+ if(context.rankingMode==='live'&&a._live?.matched){
+  const bits=[];
+  const genre=a._live.genre||'available store genre';
+  bits.push(`This pick came from a live candidate set, using ${genre} as a low-confidence musical signal.`);
+  const intent=interpretFeeling($('feelingInput')?.value||'');
+  const requested=[...state.moods,...Object.keys(intent.moods)];
+  const overlaps=[...new Set(requested.filter(m=>a._live.signals?.moods?.[m]!==undefined))];
+  if(overlaps.length)bits.push(`Your request overlapped with the genre-derived ${overlaps.slice(0,2).join(' / ')} profile.`);
+  if(state.energy!==null||intent.energy!==null)bits.push('Energy also contributed through the genre-derived fallback.');
+  if(state.comfort)bits.push(state.comfort==='exploration'?'The ranking favored artists not already present in your diary.':'The ranking gave a small familiarity preference to artists already in your diary.');
+  if(state.time!==null&&a._live.runtimeMin)bits.push(`The verified tracklist runtime is about ${Math.round(a._live.runtimeMin)} minutes and was used in the final rerank.`);
+  bits.push('This is an honest fallback, not the finished acoustic/semantic P1 model.');
+  return bits.join(' ');
+ }
  if(!context.featuresUsed){
   if(context.mode==='bonus')return 'This is a bonus discovery draw from the catalog. The current album data does not yet have enough mood, energy, duration, and familiarity features, so your note and filters did not influence this result.';
   return 'This is today’s date-seeded discovery draw. The current album data does not yet have enough mood, energy, duration, and familiarity features, so your note and filters did not influence this pick. On this browser, today’s record stays the same for the date.';
