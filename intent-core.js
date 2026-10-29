@@ -6,7 +6,7 @@ const feelingLexicon={
  melancholic:['sad','cry','heartbreak','lonely','alone','grief','empty','devastat','blue','triste','chorar','solidao','luto','broken'],
  reflective:['think','thought','quiet','introspect','confus','uncertain','meaning','question','ponder','overthink','thinking','pensando','pensar'],
  dreamy:['dream','float','ethereal','cloud','surreal','distant','escape','space','sonho','sonhar','dreaming'],
- warm:['warm','safe','hug','home','soft','gentle','cozy','love','tender','carinho','abraco','amor','aconchego'],
+ warm:['warm','safe','hug','home','soft','gentle','cozy','love','tender','carinho','abraco','amor','aconchego','quente','acolhedor','acolhedora','suave'],
  intense:['angry','rage','scream','furious','chaos','loud','explode','restless','raiva','gritar','intense'],
  energetic:['dance','party','run','drive fast','excited','alive','movement','move','dancar','festa','energia'],
  dark:['dark','night','midnight','shadow','goth','haunt','noite','escuro','sombrio'],
@@ -66,7 +66,7 @@ function interpretFeeling(text){
  }
 
  // Relationship longing is usually warmer/more intimate than generic "sad".
- if(/\bmiss(?:ing)?\b|\bsaudade\b/.test(t)&&/\b(girlfriend|boyfriend|partner|wife|husband|her|him|them|someone|amor|namorada|namorado|ela|ele)\b/.test(t)){
+ if(/\bmiss(?:ing)?\b|\bsaudade\b/.test(t)&&/\b(girlfriend|boyfriend|partner|wife|husband|her|him|them|someone|amor|namorada|namorado|ela|ele|dela|dele)\b/.test(t)){
   moods.nostalgic=Math.max(moods.nostalgic||0,1);
   moods.warm=Math.max(moods.warm||0,1);
   if(!avoidMoods.melancholic)moods.melancholic=Math.max(moods.melancholic||0,1);
