@@ -315,6 +315,16 @@ async function eligiblePool(){
  }
  return pool;
 }
+function hasRecommendationIntent(){
+ return Boolean(
+  $('feelingInput')?.value.trim() ||
+  state.moods.length ||
+  state.energy!==null ||
+  state.comfort!==null ||
+  state.time!==null ||
+  logs.filter(x=>Number(x.rating)>0&&x.signal_snapshot).length>=8
+ );
+}
 async function chooseDaily(options={}){
  const surprise=Boolean(options.surprise);
  if(!albums.length){$('status').textContent='Still loading albums. Check your connection if this persists.';return}
@@ -332,10 +342,11 @@ async function chooseDaily(options={}){
   if(!pool.length){$('status').textContent='Every available album has already been recommended.';return}
   const seed=`${getDate()}|${getUserSalt()}`;
   let result;
-  if(surprise){
-   const candidates=sampleCandidates(pool,seed+'|surprise',Math.min(250,pool.length),true);
-   const album=candidates[Math.floor(seededUnit(seed+'|surprise-final')*candidates.length)]||pool[0];
-   result={album,featuresUsed:false,mode:'surprise'};
+  if(surprise||!hasRecommendationIntent()){
+   const suffix=surprise?'surprise':'clean-draw';
+   const candidates=sampleCandidates(pool,seed+'|'+suffix,Math.min(250,pool.length),true);
+   const album=candidates[Math.floor(seededUnit(seed+'|'+suffix+'-final')*candidates.length)]||pool[0];
+   result={album,featuresUsed:false,mode:surprise?'surprise':'draw'};
   }else{
    result=rankingFeaturesAvailable
     ? rankFromStoredFeatures(pool,seed,true)
@@ -356,9 +367,15 @@ async function chooseAnother(){
   const pool=await eligiblePool();
   if(!pool.length){$('status').textContent='Every available album has already been recommended.';return}
   const seed=`bonus|${Date.now()}|${Math.random()}`;
-  const result=rankingFeaturesAvailable
+  let result;
+  if(!hasRecommendationIntent()){
+   const candidates=sampleCandidates(pool,seed,Math.min(250,pool.length),false);
+   result={album:candidates[Math.floor(Math.random()*candidates.length)]||pool[0],featuresUsed:false,mode:'draw'};
+  }else{
+   result=rankingFeaturesAvailable
     ? rankFromStoredFeatures(pool,seed,false)
     : await rankWithLiveMetadata(pool,seed,false);
+  }
   pick=result.album;
   seenAlbums.add(hash32(key(pick)));persistSeen();
   show(pick,{mode:'bonus',featuresUsed:result.featuresUsed,rankingMode:result.mode});
