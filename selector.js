@@ -1,7 +1,8 @@
 'use strict';
 
 let albums=[],logs=[],pick=null,rating=0,catalogManifest=null,catalogTotal=0;
-let rankingFeaturesAvailable=false,featureCoverage=0;
+let rankingFeaturesAvailable=false;
+let featureCoverage={genre:0,mood:0,energy:0,duration:0};
 const liveMetadataRankingAvailable=true;
 const ENGINE_VERSION='live-metadata-v1';
 const loadedShardFiles=new Set();
@@ -139,11 +140,20 @@ function renderHistory(){
 }
 renderHistory();
 
-function hasRankingData(a){
+function albumHasGenre(a){
+ return Array.isArray(a.genres)&&a.genres.some(g=>Boolean(typeof g==='string'?g:g?.name));
+}
+function albumHasMood(a){
  return (Array.isArray(a.moods)&&a.moods.length>0) ||
-        (a.energy_level!==null&&a.energy_level!==undefined&&Number.isFinite(Number(a.energy_level))) ||
-        Boolean(a.comfort_vs_exploration) ||
-        (a.length_min!==null&&a.length_min!==undefined&&Number.isFinite(Number(a.length_min)));
+        Boolean(a.features?.moods&&Object.keys(a.features.moods).length);
+}
+function albumHasEnergy(a){
+ return (a.energy_level!==null&&a.energy_level!==undefined&&Number.isFinite(Number(a.energy_level))) ||
+        (a.features?.energy!==null&&a.features?.energy!==undefined&&Number.isFinite(Number(a.features.energy)));
+}
+function albumHasDuration(a){
+ return (a.length_min!==null&&a.length_min!==undefined&&Number.isFinite(Number(a.length_min))) ||
+        (a.features?.duration_min!==null&&a.features?.duration_min!==undefined&&Number.isFinite(Number(a.features.duration_min)));
 }
 function updateSignalNote(){
  const node=$('signalNote');if(!node)return;
@@ -157,17 +167,39 @@ function updateSignalNote(){
  if(rankingFeaturesAvailable){
   node.textContent='LIVE / FULL CATALOG: these controls steer the ranking using stored album features. Missing fields are treated as unknown, never as zero.';
  }else if(liveMetadataRankingAvailable){
-  node.textContent='LIVE / FIELD DESK: these controls steer a candidate set using verified store genre, release and track data. Mood + energy are low-confidence genre translations until full P1 enrichment lands. After 8 rated records, your diary also starts nudging the ranking locally.';
+  const pct=v=>Math.round((v||0)*100);
+  node.textContent=`LIVE / FIELD DESK: these controls steer a candidate set using verified store genre, release and track data. Full P1 gates are not all met yet (genre ${pct(featureCoverage.genre)}% · mood ${pct(featureCoverage.mood)}% · energy ${pct(featureCoverage.energy)}% · duration ${pct(featureCoverage.duration)}%). After 8 rated records, your diary also nudges the ranking locally.`;
  }else{
   node.textContent='PREVIEW ONLY: recommendation metadata is unavailable, so these controls are disabled.';
  }
 }
 function refreshFeatureCoverage(){
- if(!albums.length){featureCoverage=0;rankingFeaturesAvailable=false;updateSignalNote();return}
- const enriched=albums.reduce((n,a)=>n+(hasRankingData(a)?1:0),0);
- featureCoverage=enriched/albums.length;
- // Until P1 normalises sparse records, do not pretend a partially enriched catalog is fair.
- rankingFeaturesAvailable=featureCoverage>=0.80;
+ if(!albums.length){
+  featureCoverage={genre:0,mood:0,energy:0,duration:0};
+  rankingFeaturesAvailable=false;
+  updateSignalNote();
+  return;
+ }
+ const n=albums.length;
+ const counts=albums.reduce((acc,a)=>{
+  acc.genre+=albumHasGenre(a)?1:0;
+  acc.mood+=albumHasMood(a)?1:0;
+  acc.energy+=albumHasEnergy(a)?1:0;
+  acc.duration+=albumHasDuration(a)?1:0;
+  return acc;
+ },{genre:0,mood:0,energy:0,duration:0});
+ featureCoverage={
+  genre:counts.genre/n,
+  mood:counts.mood/n,
+  energy:counts.energy/n,
+  duration:counts.duration/n
+ };
+ // P1 launch gates: a tag-only catalog must never masquerade as the full recommender.
+ rankingFeaturesAvailable=
+  featureCoverage.genre>=0.85 &&
+  featureCoverage.mood>=0.80 &&
+  featureCoverage.energy>=0.75 &&
+  featureCoverage.duration>=0.90;
  updateSignalNote();
 }
 function libraryStatus(){
