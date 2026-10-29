@@ -25,7 +25,9 @@ def test_frontend_contract():
     if "selector.js?v=" not in html or "style.css?v=" not in html:
         fail("Cache-busted CSS/JS references missing")
 
+    subprocess.run(["node","--check",str(ROOT/"intent-core.js")],check=True)
     subprocess.run(["node","--check",str(ROOT/"selector.js")],check=True)
+    subprocess.run(["node",str(ROOT/"scripts/intent_test.js")],check=True)
 
 def test_base_catalog():
     raw=json.loads((ROOT/"data/albums.json").read_text(encoding="utf-8"))
