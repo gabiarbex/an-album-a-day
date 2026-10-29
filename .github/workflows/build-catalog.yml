@@ -1,0 +1,62 @@
+name: Build 100k album catalog
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-catalog.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build verified catalog from current base
+        run: |
+          python scripts/build_catalog.py             --target 100000             --base-catalog data/albums.json             --output data/catalog-expanded.json             --checkpoint data/catalog-checkpoint.json
+
+      - name: Split catalog into browser-friendly shards
+        run: |
+          python scripts/shard_catalog.py             --input data/catalog-expanded.json             --out-dir data/catalog             --shard-size 1000
+
+      - name: Validate catalog
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest=json.loads(Path("data/catalog/manifest.json").read_text())
+          total=manifest["total_albums"]
+          shards=manifest["shards"]
+          assert total >= 10000, f"Catalog unexpectedly small: {total}"
+          assert sum(s["count"] for s in shards) == total
+          print(f"Validated {total:,} albums across {len(shards)} shards")
+          PY
+
+      - name: Remove build-only monolith
+        run: rm -f data/catalog-expanded.json data/catalog-checkpoint.json
+
+      - name: Commit generated catalog
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/catalog
+          if git diff --cached --quiet; then
+            echo "No catalog changes to commit."
+          else
+            git commit -m "Build sharded 100k album discovery catalog"
+            git push
+          fi
