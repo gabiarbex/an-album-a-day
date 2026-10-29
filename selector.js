@@ -1212,11 +1212,23 @@ function labelColor(a){
  return palette[n%palette.length];
 }
 
-function drawer(open){$('drawer').classList.toggle('open',open);$('drawer').setAttribute('aria-hidden',String(!open));$('overlay').hidden=!open}
+function drawer(open){
+ const panel=$('drawer'),toggle=$('historyToggle');
+ panel.classList.toggle('open',open);
+ panel.setAttribute('aria-hidden',String(!open));
+ toggle?.setAttribute('aria-expanded',String(open));
+ $('overlay').hidden=!open;
+ document.body.classList.toggle('drawer-open',open);
+ if(open)requestAnimationFrame(()=>panel.focus({preventScroll:true}));
+ else toggle?.focus({preventScroll:true});
+}
 $('historyToggle').onclick=()=>drawer(true);
 $('openDiaryFromShelf')?.addEventListener('click',()=>drawer(true));
 $('closeDrawer').onclick=()=>drawer(false);
 $('overlay').onclick=()=>drawer(false);
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&$('drawer')?.classList.contains('open')&&!$('logDialog')?.open)drawer(false);
+});
 
 function removeDiaryEntry(index){
  const entry=logs[index];if(!entry)return;
@@ -1247,8 +1259,17 @@ function stars(){
  const area=$('stars');area.replaceChildren();
  for(let i=1;i<=5;i++){
   const b=document.createElement('button');b.type='button';b.className='star'+(i<=rating?' active':'');b.textContent='★';
-  b.setAttribute('aria-label',`${i} stars`);b.setAttribute('role','radio');b.setAttribute('aria-checked',String(i===rating));b.onclick=()=>{rating=i;stars()};area.append(b);
+  b.setAttribute('aria-label',`${i} stars`);b.setAttribute('role','radio');b.setAttribute('aria-checked',String(i===rating));
+  b.tabIndex=(rating===i||(rating===0&&i===1))?0:-1;
+  b.onclick=()=>{rating=i;stars();area.querySelector('[aria-checked="true"]')?.focus()};
+  area.append(b);
  }
+ area.onkeydown=e=>{
+  if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;
+  e.preventDefault();
+  const delta=(e.key==='ArrowRight'||e.key==='ArrowUp')?1:-1;
+  rating=Math.max(1,Math.min(5,(rating||1)+delta));stars();area.querySelector('[aria-checked="true"]')?.focus();
+ };
 }
 $('logForm').onsubmit=e=>{
  e.preventDefault();
