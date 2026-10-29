@@ -498,9 +498,13 @@ async function chooseDaily(options={}){
    const album=candidates[Math.floor(seededUnit(seed+'|'+suffix+'-final')*candidates.length)]||pool[0];
    result={album,featuresUsed:false,mode:surprise?'surprise':'draw'};
   }else{
-   result=rankingFeaturesAvailable
-    ? rankFromStoredFeatures(pool,seed,true)
-    : await rankWithLiveMetadata(pool,seed,true);
+   const hasNote=Boolean($('feelingInput')?.value.trim());
+   result=hasNote?await rankWithSemantic(seed,true):null;
+   if(!result){
+    result=rankingFeaturesAvailable
+     ? rankFromStoredFeatures(pool,seed,true)
+     : await rankWithLiveMetadata(pool,seed,true);
+   }
   }
   pick=result.album;
   seenAlbums.add(hash32(key(pick)));persistSeen();
@@ -522,9 +526,13 @@ async function chooseAnother(){
    const candidates=sampleCandidates(pool,seed,Math.min(250,pool.length),false);
    result={album:candidates[Math.floor(Math.random()*candidates.length)]||pool[0],featuresUsed:false,mode:'draw'};
   }else{
-   result=rankingFeaturesAvailable
-    ? rankFromStoredFeatures(pool,seed,false)
-    : await rankWithLiveMetadata(pool,seed,false);
+   const hasNote=Boolean($('feelingInput')?.value.trim());
+   result=hasNote?await rankWithSemantic(seed,false):null;
+   if(!result){
+    result=rankingFeaturesAvailable
+     ? rankFromStoredFeatures(pool,seed,false)
+     : await rankWithLiveMetadata(pool,seed,false);
+   }
   }
   pick=result.album;
   seenAlbums.add(hash32(key(pick)));persistSeen();
@@ -707,6 +715,57 @@ async function getAlbumTracks(album){
   .catch(()=>[]);
  tracklistCache.set(album.collectionId,promise);return await promise;
 }
+async function rankWithSemantic(seed,daily){
+ const note=$('feelingInput')?.value.trim()||'';
+ if(note.length<2||!globalThis.AlbumSemantic?.search||!catalogManifest)return null;
+ $('status').textContent='Searching the whole record room by meaning…';
+ let raw;
+ try{raw=await globalThis.AlbumSemantic.search(note,120)}
+ catch(e){console.info('Semantic index unavailable; using live fallback.',e);return null}
+ if(!raw.length)return null;
+
+ const resolved=await resolveSemanticResults(raw,6);
+ const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
+ const intent=interpretFeeling(note);
+ let ranked=resolved
+  .filter(row=>!seenAlbums.has(hash32(key(row.album)))&&!logged.has(key(row.album)))
+  .map(row=>{
+   const semantic=Math.max(0,Math.min(1,(Number(row.semanticScore)+1)/2));
+   const controls=score(row.album,intent);
+   const personal=diaryTasteScore(row.album);
+   let relevance=.74*semantic+.18*controls;
+   if(personal.active)relevance+=.08*personal.score;
+   return {...row,v:relevance,semantic};
+  })
+  .sort((a,b)=>b.v-a.v);
+ if(!ranked.length)return null;
+
+ if(state.time!==null){
+  const finalists=ranked.slice(0,3);
+  await mapConcurrent(finalists,2,async row=>{
+   const meta=await findItunesAlbum(row.album);
+   if(!meta?.collectionId)return;
+   const tracks=await getAlbumTracks(meta);
+   const ms=tracks.reduce((n,t)=>n+(Number(t.trackTimeMillis)||0),0);
+   if(!ms)return;
+   const runtime=ms/60000,limit=Number(state.time);
+   const fit=runtime<=limit?1:Math.max(0,1-(runtime-limit)/30);
+   row.album._semantic={...(row.album._semantic||{}),runtimeMin:runtime};
+   row.v=.88*row.v+.12*fit;
+  });
+  ranked.sort((a,b)=>b.v-a.v);
+ }
+
+ const top=ranked.slice(0,Math.min(50,ranked.length));
+ const weights=top.map((row,i)=>Math.max(.01,(row.v+.04)*(1-i/(top.length*1.35))));
+ const total=weights.reduce((n,v)=>n+v,0);
+ let needle=(daily?seededUnit(seed+'|semantic-final'):Math.random())*total;
+ let chosen=top[0];
+ for(let i=0;i<top.length;i++){needle-=weights[i];if(needle<=0){chosen=top[i];break}}
+ chosen.album._semantic={...(chosen.album._semantic||{}),score:chosen.semantic,method:'tfidf-svd-64'};
+ return {album:chosen.album,featuresUsed:true,mode:'semantic'};
+}
+
 async function rankWithLiveMetadata(pool,seed,daily){
  const intent=interpretFeeling($('feelingInput')?.value||'');
  const sample=sampleCandidates(pool,seed,12,daily);
@@ -1114,6 +1173,17 @@ function artPlaceholder(a){
 function explainPick(a,context={}){
  if(context.rankingMode==='shared')return 'Someone sent you this record from An Album a Day. The catalog metadata below is factual; no recommendation rationale is being invented for a shared link.';
  if(context.rankingMode==='surprise')return 'You asked for no clues, so this is a true date-seeded surprise from the unseen catalog. Your note and fine-tune controls were deliberately ignored.';
+ if(context.rankingMode==='semantic'){
+  const bits=[
+   'Your note was matched against the full catalog’s 64-dimensional TF-IDF/SVD record profiles built from artist, title, era, genres, tags and available mood labels.'
+  ];
+  if(state.moods.length||state.energy!==null||state.comfort!==null)bits.push('Your fine-tune controls reranked the semantic candidates using only metadata that was actually available.');
+  if(state.time!==null&&a._semantic?.runtimeMin)bits.push(`The finalist’s verified runtime is about ${Math.round(a._semantic.runtimeMin)} minutes and was included in the rerank.`);
+  const personal=diaryTasteScore(a);
+  if(personal.active)bits.push(`Your ${personal.count} rated diary records supplied a small local personalization term.`);
+  bits.push('This is compact latent-semantic retrieval, not a neural embedding model or a claim that the site understands feelings like a person.');
+  return bits.join(' ');
+ }
  if(context.rankingMode==='live'&&a._live?.matched){
   const bits=[];
   const genre=a._live.genre||'available store genre';
