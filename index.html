@@ -21,7 +21,7 @@
   <meta name="twitter:description" content="One record. One day. No algorithmic panic.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23171411'/%3E%3Ccircle cx='32' cy='32' r='23' fill='none' stroke='%23e8dfcf' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23c8432f'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=app-021">
+  <link rel="stylesheet" href="style.css?v=app-022">
 </head>
 <body>
   <header class="masthead">
@@ -211,12 +211,16 @@
       <div><b id="statAverage">—</b><span>average rating</span></div>
       <div><b id="statGenre">—</b><span>top genre</span></div>
       <div><b id="statTraining">0</b><span>taste signals</span></div>
+      <div><b id="statLastfm">—</b><span>Last.fm artists</span></div>
     </div>
     <div id="history"></div>
     <div class="drawer-actions">
       <button id="export" class="secondary">↓ Export diary JSON</button>
       <button id="importDiary" class="secondary">↑ Import diary JSON</button>
+      <button id="importLastfm" class="secondary">◎ Import Last.fm CSV locally</button>
+      <button id="clearLastfm" class="secondary subtle" hidden>× Clear Last.fm taste prior</button>
       <input id="importFile" type="file" accept="application/json,.json" hidden>
+      <input id="lastfmFile" type="file" accept=".csv,text/csv" hidden>
     </div>
   </aside>
 
@@ -243,6 +247,6 @@
     </form>
   </dialog>
 
-  <script src="intent-core.js?v=app-020"></script>\n  <script src="selector.js?v=app-020" defer></script>
+  <script src="intent-core.js?v=app-022"></script>\n  <script src="selector.js?v=app-022" defer></script>
 </body>
 </html>
