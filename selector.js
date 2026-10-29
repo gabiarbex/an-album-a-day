@@ -42,6 +42,7 @@ for(const [id,values] of groups){
     x.classList.toggle('selected',active);
     x.setAttribute('aria-pressed',String(active));
    });
+   savePickerState();
   });
   parent.append(b);
  });
@@ -62,9 +63,17 @@ function getUserSalt(){
   return salt;
  }catch{return 'anonymous-listener'}
 }
-function readSeen(){try{return new Set(JSON.parse(localStorage.getItem('albumaday.seen')||'[]'))}catch{return new Set()}}
+function readSeen(){
+ try{
+  const raw=JSON.parse(localStorage.getItem('albumaday.seen')||'[]');
+  return new Set((Array.isArray(raw)?raw:[]).map(v=>typeof v==='number'?v:hash32(String(v))));
+ }catch{return new Set()}
+}
 let seenAlbums=readSeen();
-function persistSeen(){try{localStorage.setItem('albumaday.seen',JSON.stringify([...seenAlbums]))}catch(e){console.warn('Seen history storage unavailable',e)}}
+function persistSeen(){
+ try{localStorage.setItem('albumaday.seen',JSON.stringify([...seenAlbums]))}
+ catch(e){showToast('Could not save seen-history on this browser.');console.warn('Seen history storage unavailable',e)}
+}
 function readLogs(){try{return JSON.parse(localStorage.getItem('albumaday.logs')||'[]')}catch{return []}}
 logs=readLogs();
 function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));renderHistory()}
@@ -90,16 +99,25 @@ function renderHistory(){
  $('count').textContent=logs.length;
  renderStreak();
  const area=$('history');area.replaceChildren();
- if(!logs.length){area.textContent='Your listening story starts here. ✳';return}
+ if(!logs.length){
+  const empty=document.createElement('div');empty.className='history-empty';
+  empty.innerHTML='<b>no records filed yet.</b><span>listen to something, then leave yourself a note.</span>';
+  area.append(empty);return;
+ }
  for(const entry of [...logs].reverse()){
-  const item=document.createElement('div');item.className='history-item';
+  const item=document.createElement('article');item.className='history-item';
+  if(entry.cover_art){
+   const img=document.createElement('img');img.className='history-cover';img.src=entry.cover_art;img.alt='';
+   img.onerror=()=>img.remove();item.append(img);
+  }
+  const copy=document.createElement('div');copy.className='history-copy';
   const date=document.createElement('small');date.textContent=entry.date;
   const name=document.createElement('strong');name.textContent=`${entry.artist} — ${entry.album}`;
-  const sub=document.createElement('div');
+  const sub=document.createElement('div');sub.className='history-rating';
   sub.textContent=`${'★'.repeat(entry.rating||0)}${'☆'.repeat(5-(entry.rating||0))}${entry.favorite_track?' · '+entry.favorite_track:''}`;
-  item.append(date,name,sub);
-  if(entry.notes){const p=document.createElement('p');p.textContent=entry.notes;item.append(p)}
-  area.append(item);
+  copy.append(date,name,sub);
+  if(entry.notes){const p=document.createElement('p');p.textContent=entry.notes;copy.append(p)}
+  item.append(copy);area.append(item);
  }
 }
 renderHistory();
@@ -222,25 +240,27 @@ function score(a,intent){
 }
 async function eligiblePool(){
  const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
- let pool=albums.filter(a=>!seenAlbums.has(key(a))&&!logged.has(key(a)));
+ let pool=albums.filter(a=>!seenAlbums.has(hash32(key(a)))&&!logged.has(key(a)));
  if(catalogManifest&&pool.length<350&&loadedShardFiles.size<catalogManifest.shards.length){
   await loadMoreShards(6);
-  pool=albums.filter(a=>!seenAlbums.has(key(a))&&!logged.has(key(a)));
+  pool=albums.filter(a=>!seenAlbums.has(hash32(key(a)))&&!logged.has(key(a)));
  }
  return pool;
 }
 async function chooseDaily(){
  if(!albums.length){$('status').textContent='Still loading albums. Check your connection if this persists.';return}
+ setPickBusy(true);
  const existing=readDailyPick();
  if(existing){
   pick=existing.album;
   show(pick,{mode:'daily',featuresUsed:Boolean(existing.featuresUsed),restored:true});
   $('reroll').hidden=false;
   markTodayPicked();
+  setPickBusy(false);
   return;
  }
  const pool=await eligiblePool();
- if(!pool.length){$('status').textContent='Every available album has already been recommended.';return}
+ if(!pool.length){$('status').textContent='Every available album has already been recommended.';setPickBusy(false);return}
  const intent=interpretFeeling($('feelingInput')?.value||'');
  const seed=`${getDate()}|${getUserSalt()}`;
  let best=null,bestValue=-Infinity;
@@ -251,16 +271,18 @@ async function chooseDaily(){
   if(value>bestValue){best=a;bestValue=value}
  }
  pick=best;
- seenAlbums.add(key(best));persistSeen();
+ seenAlbums.add(hash32(key(best)));persistSeen();
  saveDailyPick(best,rankingFeaturesAvailable);
  markTodayPicked();
  show(best,{mode:'daily',featuresUsed:rankingFeaturesAvailable});
  $('reroll').hidden=false;
+ setPickBusy(false);
 }
 async function chooseAnother(){
  if(!albums.length)return;
+ setPickBusy(true);
  const pool=await eligiblePool();
- if(!pool.length){$('status').textContent='Every available album has already been recommended.';return}
+ if(!pool.length){$('status').textContent='Every available album has already been recommended.';setPickBusy(false);return}
  const intent=interpretFeeling($('feelingInput')?.value||'');
  const sample=[];const n=Math.min(pool.length,1800);
  for(let i=0;i<n;i++)sample.push(pool[Math.floor(Math.random()*pool.length)]);
@@ -270,10 +292,21 @@ async function chooseAnother(){
   if(value>bestValue){best=a;bestValue=value}
  }
  pick=best;
- seenAlbums.add(key(best));persistSeen();
+ seenAlbums.add(hash32(key(best)));persistSeen();
  show(best,{mode:'bonus',featuresUsed:rankingFeaturesAvailable});
+ setPickBusy(false);
+}
+function setPickBusy(busy){
+ for(const id of ['recommend','surpriseMe','reroll']){
+  const node=$(id);if(node)node.disabled=busy;
+ }
+ if($('recommend')){
+  $('recommend').classList.toggle('is-loading',busy);
+  $('recommend').querySelector('span:first-child').textContent=busy?'✳ digging through the crates…':'✳ hand me today’s record';
+ }
 }
 $('recommend').addEventListener('click',chooseDaily);
+$('surpriseMe')?.addEventListener('click',chooseDaily);
 $('reroll').addEventListener('click',chooseAnother);
 
 function spotifyUrl(a){
@@ -284,11 +317,9 @@ function spotifyUrl(a){
 }
 function show(a,context={}){
  const stage=$('stage');stage.classList.remove('revealed');void stage.offsetWidth;
- const url=a.metadata?.cover_art||artPlaceholder(a);
  const cover=$('cover');cover.style.display='block';cover.alt=`${a.title} by ${a.artist} album cover`;
  $('emptyCover').style.display='none';
- cover.onerror=()=>{cover.onerror=null;cover.src=artPlaceholder(a)};
- cover.src=url;
+ cover.src=artPlaceholder(a);
  const info=$('details');info.replaceChildren();
  const tag=document.createElement('div');tag.className='eyebrow';tag.textContent=context.mode==='bonus'?'BONUS DRAW ✳':'TODAY’S RECORD ✳';
  const title=document.createElement('h2');title.textContent=a.title;
@@ -299,6 +330,7 @@ function show(a,context={}){
  const why=$('whyText');if(why)why.textContent=explainPick(a,context);
  const link=$('spotify');link.href=spotifyUrl(a);link.classList.remove('disabled');
  $('log').disabled=false;
+ $('sharePick').disabled=false;
  $('recordLabel').style.background=labelColor(a);
  requestAnimationFrame(()=>requestAnimationFrame(()=>stage.classList.add('revealed')));
  const unseen=Math.max(0,(catalogTotal||albums.length)-seenAlbums.size).toLocaleString();
@@ -341,25 +373,33 @@ $('export').onclick=()=>{
  a.href=url;a.download='listening_log.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
 
-// Artwork fallback chain is intentionally unchanged in P0; P1/P3 will revisit catalog enrichment and cover resolution.
 let artworkRequest=0;
 async function loadArtwork(a,img){
- if(a.metadata?.cover_art && /^https?:\/\//.test(a.metadata.cover_art))return;
  const request=++artworkRequest;
- try{
-  const q=encodeURIComponent(`${a.artist} ${a.title}`);
-  const r=await fetch(`https://itunes.apple.com/search?term=${q}&entity=album&limit=15`);
-  if(!r.ok)throw Error('Artwork service unavailable');
-  const data=await r.json();
-  const norm=x=>String(x||'').normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-  const match=(data.results||[]).find(x=>norm(x.artistName)===norm(a.artist)&&norm(x.collectionName)===norm(a.title));
-  if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
-  if(match?.artworkUrl100)img.src=match.artworkUrl100.replace(/100x100bb/,'600x600bb');
-  else{
-   const loose=(data.results||[]).find(x=>norm(x.artistName)===norm(a.artist)&&norm(x.collectionName).includes(norm(a.title)));
-   if(loose?.artworkUrl100)img.src=loose.artworkUrl100.replace(/100x100bb/,'600x600bb');
-  }
- }catch(e){console.info('Cover unavailable for',a.artist,a.title)}
+ const fallback=artPlaceholder(a);
+ const tryItunes=async()=>{
+  try{
+   const q=encodeURIComponent(`${a.artist} ${a.title}`);
+   const r=await fetch(`https://itunes.apple.com/search?term=${q}&entity=album&limit=15`);
+   if(!r.ok)throw Error('Artwork service unavailable');
+   const data=await r.json();
+   const norm=x=>String(x||'').normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+   const exact=(data.results||[]).find(x=>norm(x.artistName)===norm(a.artist)&&norm(x.collectionName)===norm(a.title));
+   const loose=exact||(data.results||[]).find(x=>norm(x.artistName)===norm(a.artist)&&norm(x.collectionName).includes(norm(a.title)));
+   if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
+   if(loose?.artworkUrl100){
+    img.onerror=()=>{img.onerror=null;img.src=fallback};
+    img.src=loose.artworkUrl100.replace(/100x100bb/,'600x600bb');
+   }else img.src=fallback;
+  }catch(e){img.src=fallback;console.info('Cover unavailable for',a.artist,a.title)}
+ };
+ const preferred=a.metadata?.cover_art;
+ if(preferred&&/^https?:\/\//.test(preferred)){
+  img.onerror=()=>{img.onerror=null;tryItunes()};
+  img.src=preferred;
+ }else{
+  tryItunes();
+ }
 }
 
 function artPlaceholder(a){
@@ -423,6 +463,39 @@ function interpretFeeling(text){
  const energy=/dance|party|run|scream|rage|festa|dancar|gritar|alive/.test(t)?8:/quiet|slow|soft|gentle|sleep|calm|silencio|devagar/.test(t)?3:null;
  return {moods,energy,summary:ranked.length?ranked.slice(0,2).map(([m])=>m).join(' and ')+' feelings':''};
 }
+function savePickerState(){
+ try{localStorage.setItem('albumaday.picker',JSON.stringify({note:$('feelingInput')?.value||'',state}))}catch{}
+}
+function restorePickerState(){
+ try{
+  const saved=JSON.parse(localStorage.getItem('albumaday.picker')||'null');if(!saved)return;
+  if($('feelingInput')&&typeof saved.note==='string')$('feelingInput').value=saved.note;
+  if(saved.state){
+   state.moods=Array.isArray(saved.state.moods)?saved.state.moods:[];
+   state.energy=saved.state.energy??null;state.comfort=saved.state.comfort??null;state.time=saved.state.time??null;
+   for(const [id] of groups){
+    const parent=$(id);if(!parent)continue;
+    parent.querySelectorAll('button').forEach(b=>{
+     const active=id==='moods'?state.moods.includes(b._value):state[id]===b._value;
+     b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active));
+    });
+   }
+  }
+ }catch{}
+}
+function resetPicker(){
+ state.moods=[];state.energy=null;state.comfort=null;state.time=null;
+ if($('feelingInput'))$('feelingInput').value='';
+ for(const [id] of groups)$(id)?.querySelectorAll('button').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-pressed','false')});
+ try{localStorage.removeItem('albumaday.picker')}catch{}
+ $('feelingInput')?.dispatchEvent(new Event('input'));
+ showToast('Counter cleared.');
+}
+function showToast(message){
+ const toast=$('toast');if(!toast)return;
+ toast.textContent=message;toast.hidden=false;clearTimeout(showToast.timer);
+ showToast.timer=setTimeout(()=>{toast.hidden=true},2400);
+}
 const feelingInput=$('feelingInput');
 document.querySelectorAll('.prompt-chip').forEach(button=>{
  button.addEventListener('click',()=>{
@@ -435,10 +508,43 @@ document.querySelectorAll('.prompt-chip').forEach(button=>{
  });
 });
 if(feelingInput){
+ restorePickerState();
+ feelingInput.dispatchEvent(new Event('input'));
  feelingInput.addEventListener('input',()=>{
   const p=interpretFeeling(feelingInput.value);
   if(feelingInput.value.trim()&&!rankingFeaturesAvailable)$('feelingInsight').textContent='✳ note received — catalog mood matching is not live yet';
   else $('feelingInsight').textContent=p.summary?'✳ reading: '+p.summary:'✳ your words, your soundtrack';
+  savePickerState();
  });
  $('clearFeeling').addEventListener('click',()=>{feelingInput.value='';feelingInput.dispatchEvent(new Event('input'));feelingInput.focus()});
+ feelingInput.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){e.preventDefault();chooseDaily()}});
 }
+$('resetPicker')?.addEventListener('click',resetPicker);
+
+$('sharePick')?.addEventListener('click',async()=>{
+ if(!pick)return;
+ const text=`Today's record: ${pick.title} — ${pick.artist} · An Album a Day`;
+ try{
+  if(navigator.share)await navigator.share({title:'An Album a Day',text,url:location.origin+location.pathname});
+  else{await navigator.clipboard.writeText(text+'\n'+location.origin+location.pathname);showToast('Record copied to clipboard.')}
+ }catch(e){if(e?.name!=='AbortError')showToast('Could not share this record.')}
+});
+
+$('importDiary')?.addEventListener('click',()=>$('importFile')?.click());
+$('importFile')?.addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+  const parsed=JSON.parse(await file.text());
+  if(!Array.isArray(parsed))throw Error('Diary must be a JSON array');
+  const valid=parsed.filter(x=>x&&typeof x.artist==='string'&&typeof x.album==='string');
+  const existing=new Set(logs.map(x=>`${x.date||''}|${x.artist}|${x.album}`));
+  let added=0;
+  for(const entry of valid){
+   const k=`${entry.date||''}|${entry.artist}|${entry.album}`;
+   if(existing.has(k))continue;
+   logs.push(entry);existing.add(k);added++;
+  }
+  persist();showToast(`Imported ${added} diary entr${added===1?'y':'ies'}.`);
+ }catch(err){showToast('That file does not look like an Album a Day diary.')}
+ e.target.value='';
+});
