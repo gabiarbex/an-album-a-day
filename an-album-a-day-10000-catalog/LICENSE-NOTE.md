@@ -1,1 +1,0 @@
-The source code in this starter project may be adapted and published by the project owner. Third-party album artwork, artist names, and Spotify trademarks remain the property of their respective rights holders. Verify licenses before redistributing third-party assets.
