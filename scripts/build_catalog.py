@@ -81,6 +81,30 @@ def convert(group):
       }
     }
 
+def normalize_key(artist,title):
+    return (' '.join(str(artist or '').casefold().split()), ' '.join(str(title or '').casefold().split()))
+
+def load_base_catalog(path):
+    if not path:
+        return {}
+    p=Path(path)
+    if not p.exists():
+        return {}
+    raw=json.loads(p.read_text(encoding='utf-8'))
+    items=raw if isinstance(raw,list) else raw.get('albums',[])
+    albums={}
+    for idx,item in enumerate(items):
+        if not isinstance(item,dict):
+            continue
+        artist=item.get('artist'); title=item.get('title')
+        if not artist or not title:
+            continue
+        item=dict(item)
+        item.setdefault('id',f'legacy:{idx}:{artist}:{title}')
+        item.setdefault('_catalog_source','original')
+        albums[item['id']]=item
+    return albums
+
 def taste_queries(path):
     if not path:
         return []
@@ -108,17 +132,23 @@ def main():
     p.add_argument('--target',type=int,default=100000)
     p.add_argument('--output',default='data/catalog-expanded.json')
     p.add_argument('--checkpoint',default='data/catalog-checkpoint.json')
+    p.add_argument('--base-catalog',default='data/albums.json',help='Existing catalog to preserve before expansion')
     p.add_argument('--taste-graph',default=None,help='Optional private Last.fm taste graph from scripts/mesh_lastfm.py')
     p.add_argument('--taste-share',type=float,default=.30,help='Approximate share of query families derived from taste graph')
     p.add_argument('--user-agent',default='AnAlbumADay/0.2 (https://github.com/gabiarbex/an-album-a-day)')
     args=p.parse_args()
     out=Path(args.output); out.parent.mkdir(parents=True,exist_ok=True)
     cp=Path(args.checkpoint); cp.parent.mkdir(parents=True,exist_ok=True)
+    base_albums=load_base_catalog(args.base_catalog)
     if cp.exists():
         saved=json.loads(cp.read_text(encoding='utf-8'))
         albums=saved.get('albums',{}); progress=saved.get('progress',{})
+        # Re-inject base catalog in case the checkpoint was created before this behavior existed.
+        for k,v in base_albums.items():
+            albums.setdefault(k,v)
     else:
-        albums={};progress={}
+        albums=dict(base_albums);progress={}
+    seen_keys={normalize_key(v.get('artist'),v.get('title')) for v in albums.values()}
     global_queries=QUERIES[:]
     personal_queries=taste_queries(args.taste_graph)
     rng=random.Random(42)
@@ -141,7 +171,14 @@ def main():
             if not groups: break
             for group in groups:
                 item=convert(group)
-                if item: albums[item['id']]=item
+                if not item:
+                    continue
+                nk=normalize_key(item.get('artist'),item.get('title'))
+                if nk in seen_keys:
+                    continue
+                item['_catalog_source']='musicbrainz_expansion'
+                albums[item['id']]=item
+                seen_keys.add(nk)
             offset+=len(groups)
             progress[q]=offset
             cp.write_text(json.dumps({'albums':albums,'progress':progress},ensure_ascii=False),encoding='utf-8')
@@ -149,7 +186,10 @@ def main():
             if len(groups)<100: break
             time.sleep(1.2)
         if len(albums)>=args.target: break
-    catalog={'albums':list(albums.values())[:args.target]}
+    # Preserve every base-catalog entry first, then append expansion records.
+    original=[v for v in albums.values() if v.get('_catalog_source')=='original']
+    expansion=[v for v in albums.values() if v.get('_catalog_source')!='original']
+    catalog={'albums':(original+expansion)[:args.target]}
     out.write_text(json.dumps(catalog,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
     print(f'Wrote {len(catalog["albums"]):,} albums to {out}')
     if len(albums)<args.target:
