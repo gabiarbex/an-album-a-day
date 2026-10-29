@@ -257,8 +257,16 @@ async function load(){
   if(manifestResponse.ok){
    catalogManifest=await manifestResponse.json();
    catalogTotal=Number(catalogManifest.total_albums)||0;
-   await loadMoreShards(8);
-   if(!albums.length)throw Error('Catalog manifest exists but shards were empty');
+   // The original editorial 10k is always active, even after the global 100k lands.
+   try{
+    const baseResponse=await fetch('./data/albums.json',{cache:'force-cache'});
+    if(baseResponse.ok){
+     const base=await baseResponse.json();
+     mergeAlbums(Array.isArray(base)?base:base.albums||[]);
+    }
+   }catch(e){console.info('Editorial base could not be preloaded',e)}
+   await loadMoreShards(6);
+   if(!albums.length)throw Error('Catalog manifest exists but no albums loaded');
    refreshFeatureCoverage();
    $('status').textContent=libraryStatus();
    if(!(await restoreSharedPick()))restoreDailyPick();
