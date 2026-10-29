@@ -35,8 +35,13 @@ def read_catalog(catalog_dir):
     root=Path(catalog_dir)
     manifest=json.loads((root/"manifest.json").read_text())
     albums=[]
+    base_file=manifest.get("base_file")
+    if base_file:
+        albums.extend(json.loads((root/base_file).read_text())["albums"])
     for shard in manifest["shards"]:
         albums.extend(json.loads((root/shard["file"]).read_text())["albums"])
+    if len(albums)!=manifest["total_albums"]:
+        raise ValueError(f"Catalog manifest says {manifest['total_albums']:,} albums but semantic builder loaded {len(albums):,}")
     return albums
 
 def names(values):
