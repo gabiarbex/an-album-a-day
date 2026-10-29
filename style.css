@@ -117,3 +117,43 @@ h1 em{font-style:italic;text-decoration:underline;text-decoration-thickness:2px;
 @media(max-width:1150px){header:after{display:none}.sticker-a{left:-2%;top:8%}}
 @media(max-width:850px){.feeling-field{margin-top:4px}.issue-stamp{margin-bottom:25px}.sticker-a{left:0;top:10%}.feeling-field h2{font-size:38px}}
 @media(max-width:430px){.feeling-field{padding:22px 18px 16px}.feeling-foot{align-items:flex-start;flex-direction:column}.sticker-a{font-size:8px;padding:9px}.stage-note{font-size:11px}}
+
+/* ISSUE 002 — THE XEROX TEXTURE SYSTEM
+   Entirely CSS-generated: no broken asset paths, no external image dependencies. */
+:root{--xerox-ink:#17111b;--xerox-paper:#ecd7c8;--xerox-pink:#d9accd}
+body{isolation:isolate}
+body:before{z-index:50;opacity:.13;mix-blend-mode:soft-light;background-size:170px 170px}
+body:after{content:"";position:fixed;inset:0;z-index:49;pointer-events:none;opacity:.08;background-image:repeating-linear-gradient(0deg,transparent 0px,transparent 2px,#f6c7ed 3px,transparent 4px),repeating-linear-gradient(90deg,transparent 0px,transparent 7px,#0b050d 8px,transparent 9px);background-size:100% 140px,180px 100%;mix-blend-mode:screen}
+header{isolation:isolate}
+header:before{content:"";position:absolute;z-index:-1;left:22px;top:15px;width:245px;height:185px;opacity:.14;transform:rotate(-9deg);background:radial-gradient(circle,#e9b7d4 1px,transparent 1.7px) 0 0/6px 6px;mask-image:radial-gradient(ellipse,black,transparent 75%);pointer-events:none}
+header h1{text-shadow:1px 1px 0 #c998bc22,-1px 0 0 #f8d7eb15}
+header h1 em{filter:drop-shadow(1px 1px 0 #ffb3d12e)}
+.showcase:before{content:"SIDE A / SIDE B";position:absolute;top:-35px;right:0;font:700 10px 'DM Sans',sans-serif;letter-spacing:2px;color:#bba1b7;transform:rotate(5deg)}
+.sleeve:after{background:repeating-linear-gradient(0deg,#ffffff0a 0px,transparent 1px,transparent 3px),linear-gradient(105deg,#ffffff16,transparent 40%,#00000015);mix-blend-mode:soft-light;opacity:.38}
+.sleeve{outline:1px solid #e5c3d525;outline-offset:2px}
+.sticker-a{background:#f0d7c2;color:#281b2a;border:2px dashed #684b5c;box-shadow:3px 4px 0 #0007;clip-path:polygon(2% 0,100% 4%,98% 100%,0 97%);transform:rotate(-11deg)}
+.feeling-field{background-color:#ead5c7;background-image:radial-gradient(#6c455f22 .7px,transparent .9px),repeating-linear-gradient(0deg,transparent 0 30px,#ffffff24 31px,transparent 32px);background-size:5px 5px,100% 32px;box-shadow:6px 6px 0 #110a15,8px 8px 0 #bb91ae;clip-path:polygon(0 0,8% .3%,16% 0,26% .25%,36% 0,48% .25%,59% 0,70% .2%,80% 0,90% .3%,100% 0,99.8% 13%,100% 27%,99.8% 39%,100% 51%,99.8% 64%,100% 77%,99.8% 89%,100% 100%,90% 99.7%,80% 100%,70% 99.8%,60% 100%,50% 99.7%,40% 100%,30% 99.8%,20% 100%,10% 99.7%,0 100%,.2% 88%,0 76%,.2% 64%,0 52%,.2% 40%,0 28%,.2% 15%)}
+.feeling-field:after{content:"✳  PRIVATE LISTENING NOTES  /  NO. 001";display:block;margin-top:14px;font:700 9px 'DM Sans',sans-serif;letter-spacing:2px;color:#8d7080;border-top:1px dashed #80617455;padding-top:12px}
+.feeling-field:before{z-index:3;background:linear-gradient(100deg,#d3bdadbb,#f5e5d5a8,#d2bca9bb);border-left:1px dashed #9c7e8166;border-right:1px dashed #9c7e8166}
+#feelingInput{background:repeating-linear-gradient(transparent 0px,transparent 32px,#92768c55 33px,transparent 34px);background-color:transparent!important;color:#302035!important;caret-color:#5e2e60;border-radius:0!important;box-shadow:none!important;min-height:136px;font:17px/34px Georgia,serif!important}
+#feelingInput::placeholder{color:#836a7d!important}
+.cutline{position:relative}
+.cutline:before,.cutline:after{background:repeating-linear-gradient(90deg,#c5a0b5 0 4px,transparent 4px 10px)}
+.why-panel{background-color:#281c2d;background-image:radial-gradient(#e9bbdb16 .75px,transparent 1px);background-size:5px 5px;border:1px dashed #aa8ca2;box-shadow:4px 4px 0 #100a15,6px 6px 0 #61405a55}
+.why-panel:after{content:"✳ CUT HERE";position:absolute;right:15px;bottom:-8px;background:#160f1a;color:#bba2b5;padding:0 7px;font:700 9px 'DM Sans',sans-serif;letter-spacing:1.2px}
+.issue-stamp{background-color:#e9d0ba;background-image:radial-gradient(#482a3b26 .65px,transparent 1px);background-size:4px 4px;border:1px solid #3b273a;clip-path:polygon(0 0,100% 0,99% 96%,3% 100%);box-shadow:3px 4px 0 #0008}
+.picker .field{position:relative}
+.picker .field:before{content:"✳";position:absolute;right:2px;top:-8px;color:#b48fae;font-size:19px;opacity:.65;transform:rotate(15deg)}
+.chip{border-style:solid;border-color:#8c698a77;box-shadow:2px 2px 0 #0005;position:relative}
+.chip.selected{background:#e6b8d8;color:#2a1830;box-shadow:3px 3px 0 #0009;transform:rotate(-1deg)}
+.chip:hover{transform:translate(-1px,-2px) rotate(-1deg)}
+.recommend{position:relative;background-color:#e3b6d7;background-image:radial-gradient(#40203b1e .6px,transparent 1px);background-size:4px 4px;border:2px solid #28182d;box-shadow:4px 4px 0 #100916,0 0 0 2px #f0d6e8,0 0 0 6px #160f1b}
+.recommend:hover{box-shadow:6px 7px 0 #100916,0 0 0 2px #f0d6e8,0 0 0 6px #160f1b}
+.site-footer{border-top:1px dashed #ac85a955}
+.drawer{background-color:#251829;background-image:radial-gradient(#f3c9e016 .7px,transparent 1px);background-size:5px 5px}
+.history-item{border-bottom:1px dashed #967796}
+dialog{background-color:#ead4ca;background-image:radial-gradient(#6b4b5e16 .7px,transparent 1px);background-size:5px 5px;color:#2d1b2e;box-shadow:8px 8px 0 #0c0711,0 20px 70px #000a}
+dialog label,dialog h2,dialog p{color:#2d1b2e}
+dialog .dialog-head button{color:#2d1b2e}
+dialog input,dialog textarea{background:#f3e5dc;color:#2d1b2e;border:1px solid #9d8297}
+@media(prefers-reduced-motion:reduce){.chip:hover,.recommend:hover{transform:none}}
