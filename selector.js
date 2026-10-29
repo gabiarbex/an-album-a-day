@@ -85,8 +85,13 @@ function persistSeen(){
  catch(e){showToast('Could not save seen-history on this browser.');console.warn('Seen history storage unavailable',e)}
 }
 function readLogs(){try{return JSON.parse(localStorage.getItem('albumaday.logs')||'[]')}catch{return []}}
+function readLastfmTaste(){try{return JSON.parse(localStorage.getItem('albumaday.lastfmTaste')||'null')}catch{return null}}
 logs=readLogs();
-function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));renderHistory();renderRecentPulls()}
+let lastfmTaste=readLastfmTaste();
+let lastfmTasteMap=new Map(lastfmTaste?.artists||[]);
+let diaryArtistCache=null,diaryTasteCache=null;
+function invalidateTasteCaches(){diaryArtistCache=null;diaryTasteCache=null}
+function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));invalidateTasteCaches();renderHistory();renderRecentPulls()}
 
 function readPickDays(){try{return JSON.parse(localStorage.getItem('albumaday.pickDays')||'[]')}catch{return []}}
 function markTodayPicked(){
@@ -138,6 +143,8 @@ function renderHistory(){
  const topGenre=Object.entries(genreCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
  if($('statGenre'))$('statGenre').textContent=topGenre;
  if($('statTraining'))$('statTraining').textContent=logs.filter(x=>Number(x.rating)>0&&x.signal_snapshot).length;
+ if($('statLastfm'))$('statLastfm').textContent=lastfmTaste?.unique_artists?Number(lastfmTaste.unique_artists).toLocaleString():'—';
+ if($('clearLastfm'))$('clearLastfm').hidden=!lastfmTaste;
  const area=$('history');area.replaceChildren();
  if(!logs.length){
   const empty=document.createElement('div');empty.className='history-empty';
@@ -446,12 +453,12 @@ function score(a,intent){
   weighted+=ww*(runtime<=limit?1:Math.max(0,1-(runtime-limit)/30));totalWeight+=ww;
  }
 
- const known=diaryArtistSet().has(String(a.artist||'').toLowerCase());
+ const familiarity=artistFamiliarity(a.artist);
  if(state.comfort==='comfort'){
-  const ww=.75;weighted+=ww*(known?1:.35);totalWeight+=ww;
+  const ww=.75;weighted+=ww*(.2+.8*familiarity);totalWeight+=ww;
  }
  if(state.comfort==='exploration'||intent.exploration>0){
-  const ww=.75;weighted+=ww*(known?.05:1);totalWeight+=ww;
+  const ww=.75;weighted+=ww*(1-.95*familiarity);totalWeight+=ww;
  }
 
  return totalWeight?weighted/totalWeight:.5;
@@ -608,8 +615,19 @@ async function mapConcurrent(items,limit,fn){
  await Promise.all(Array.from({length:Math.min(limit,items.length)},worker));
  return results;
 }
-function diaryArtistSet(){return new Set(logs.map(x=>String(x.artist||'').toLowerCase()))}
+function diaryArtistSet(){
+ if(diaryArtistCache)return diaryArtistCache;
+ diaryArtistCache=new Set(logs.map(x=>String(x.artist||'').toLowerCase()));
+ return diaryArtistCache;
+}
+function lastfmFamiliarity(artist){
+ return Number(lastfmTasteMap.get(String(artist||'').trim().toLowerCase())||0);
+}
+function artistFamiliarity(artist){
+ return Math.max(diaryArtistSet().has(String(artist||'').toLowerCase())?1:0,lastfmFamiliarity(artist));
+}
 function diaryTasteProfile(){
+ if(diaryTasteCache)return diaryTasteCache;
  const rated=logs.filter(x=>Number(x.rating)>0&&x.signal_snapshot);
  const profile={count:rated.length,moods:{},genres:{},energySum:0,energyWeight:0};
  for(const entry of rated){
@@ -619,6 +637,7 @@ function diaryTasteProfile(){
   if(snap.genre)profile.genres[String(snap.genre).toLowerCase()]=(profile.genres[String(snap.genre).toLowerCase()]||0)+preference;
   if(snap.energy!==null&&snap.energy!==undefined&&preference>0){profile.energySum+=Number(snap.energy)*preference;profile.energyWeight+=preference}
  }
+ diaryTasteCache=profile;
  return profile;
 }
 function candidateSignalBundle(candidate){
@@ -690,9 +709,9 @@ function liveScore(candidate,intent){
   const similarity=Math.max(0,1-Math.abs(Number(signals.energy)-Number(targetEnergy))/10);
   const ww=1.8*confidence;weighted+=ww*similarity;weight+=ww;
  }
- const known=diaryArtistSet().has(String(candidate.artist||'').toLowerCase());
- if(state.comfort==='comfort'){const ww=.8;weighted+=ww*(known?1:.35);weight+=ww}
- if(state.comfort==='exploration'||intent.exploration>0){const ww=.8;weighted+=ww*(known?.05:1);weight+=ww}
+ const familiarity=artistFamiliarity(candidate.artist);
+ if(state.comfort==='comfort'){const ww=.8;weighted+=ww*(.2+.8*familiarity);weight+=ww}
+ if(state.comfort==='exploration'||intent.exploration>0){const ww=.8;weighted+=ww*(1-.95*familiarity);weight+=ww}
  if(intent.moods.nostalgic&&candidate._live?.year){
   const y=Number(candidate._live.year),age=Math.max(0,new Date().getFullYear()-y);
   const ww=.35;weighted+=ww*Math.min(1,age/35);weight+=ww;
@@ -1379,6 +1398,54 @@ $('sharePick')?.addEventListener('click',async()=>{
   if(navigator.share)await navigator.share({title:`${pick.title} — ${pick.artist}`,text,url:url.toString()});
   else{await navigator.clipboard.writeText(text+'\n'+url.toString());showToast('Record link copied to clipboard.')}
  }catch(e){if(e?.name!=='AbortError')showToast('Could not share this record.')}
+});
+
+function parseCsv(text){
+ const rows=[];let row=[],field='',quoted=false;
+ for(let i=0;i<text.length;i++){
+  const ch=text[i];
+  if(quoted){
+   if(ch==='"'&&text[i+1]==='"'){field+='"';i++}
+   else if(ch==='"')quoted=false;
+   else field+=ch;
+  }else{
+   if(ch==='"')quoted=true;
+   else if(ch===','){row.push(field);field=''}
+   else if(ch==='\n'){row.push(field.replace(/\r$/,''));rows.push(row);row=[];field=''}
+   else field+=ch;
+  }
+ }
+ if(field||row.length){row.push(field.replace(/\r$/,''));rows.push(row)}
+ return rows;
+}
+function buildLastfmTaste(rows){
+ const counts=new Map();let total=0;
+ for(const row of rows){
+  const artist=String(row?.[0]||'').trim();
+  if(!artist||/^(artist|artist name)$/i.test(artist))continue;
+  const key=artist.toLowerCase();counts.set(key,(counts.get(key)||0)+1);total++;
+ }
+ if(!counts.size)throw Error('No artists found');
+ const ranked=[...counts.entries()].sort((a,b)=>b[1]-a[1]);
+ const max=ranked[0][1];
+ const artists=ranked.slice(0,1500).map(([artist,count])=>[artist,Number((Math.log1p(count)/Math.log1p(max)).toFixed(6))]);
+ return {version:1,total_scrobbles:total,unique_artists:counts.size,artists,imported_at:new Date().toISOString()};
+}
+$('importLastfm')?.addEventListener('click',()=>$('lastfmFile')?.click());
+$('lastfmFile')?.addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+  showToast('Reading Last.fm history locally…');
+  const taste=buildLastfmTaste(parseCsv(await file.text()));
+  localStorage.setItem('albumaday.lastfmTaste',JSON.stringify(taste));
+  lastfmTaste=taste;lastfmTasteMap=new Map(taste.artists);invalidateTasteCaches();renderHistory();
+  showToast(`Last.fm taste prior ready: ${taste.unique_artists.toLocaleString()} artists. Raw CSV was not uploaded.`);
+ }catch(err){console.warn(err);showToast('Could not read that Last.fm CSV.')}
+ e.target.value='';
+});
+$('clearLastfm')?.addEventListener('click',()=>{
+ try{localStorage.removeItem('albumaday.lastfmTaste')}catch{}
+ lastfmTaste=null;lastfmTasteMap=new Map();invalidateTasteCaches();renderHistory();showToast('Last.fm taste prior cleared.');
 });
 
 $('importDiary')?.addEventListener('click',()=>$('importFile')?.click());
