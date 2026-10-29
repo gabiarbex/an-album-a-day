@@ -170,7 +170,10 @@ def main():
     base_by_key={norm_key(a["artist"],a["title"]):a for a in base}
     seen=set(base_by_key)
     need=max(0,args.target-len(base))
-    heap=[]; seq=0; scanned=0; eligible=0; enriched_base=0
+    # selected keeps only the best-scoring MusicBrainz release-group for each
+    # normalized artist/title key. Heap entries may become stale when a better
+    # duplicate arrives; prune them lazily before comparing the cutoff.
+    heap=[]; selected={}; seq=0; scanned=0; eligible=0; enriched_base=0
     for obj in iter_objects(args.dump):
         scanned+=1
         converted=convert(obj)
@@ -197,12 +200,35 @@ def main():
         eligible+=1
         # quality matters, but deterministic noise keeps the catalog broad.
         priority=deterministic_noise(item["id"])+min(1.5,quality/8)
-        row=(priority,seq,item);seq+=1
-        if len(heap)<need: heapq.heappush(heap,row)
-        elif row[0]>heap[0][0]: heapq.heapreplace(heap,row)
-        if scanned%250000==0: print(f"scanned={scanned:,} eligible={eligible:,} kept={len(heap):,}",flush=True)
+        seq+=1
+        row=(priority,seq,nk,item)
 
-    expansion=[row[2] for row in sorted(heap,key=lambda x:x[0],reverse=True)]
+        current=selected.get(nk)
+        if current is not None:
+            # Same artist/title may exist as multiple MusicBrainz release groups.
+            # Keep only the stronger candidate.
+            if priority>current[0]:
+                selected[nk]=row
+                heapq.heappush(heap,row)
+            continue
+
+        # Remove stale heap rows whose key has since been upgraded/evicted.
+        while heap and (heap[0][2] not in selected or selected[heap[0][2]][1]!=heap[0][1]):
+            heapq.heappop(heap)
+
+        if len(selected)<need:
+            selected[nk]=row
+            heapq.heappush(heap,row)
+        elif heap and priority>heap[0][0]:
+            weakest=heapq.heappop(heap)
+            selected.pop(weakest[2],None)
+            selected[nk]=row
+            heapq.heappush(heap,row)
+
+        if scanned%250000==0:
+            print(f"scanned={scanned:,} eligible={eligible:,} unique_kept={len(selected):,}",flush=True)
+
+    expansion=[row[3] for row in sorted(selected.values(),key=lambda x:x[0],reverse=True)]
     catalog={"albums":(base+expansion)[:args.target],"meta":{
       "target":args.target,"base_count":len(base),"base_enriched":enriched_base,"expansion_count":len(expansion),
       "source":"MusicBrainz release-group JSON dump + preserved and enriched editorial base",
