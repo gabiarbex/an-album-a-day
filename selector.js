@@ -318,6 +318,7 @@ $('reroll').addEventListener('click',chooseAnother);
 const itunesAlbumCache=new Map();
 const tracklistCache=new Map();
 let recordFileRequest=0;
+let activeTracklist=[];
 
 function normalizeStoreText(value){
  return String(value||'').normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
@@ -331,6 +332,25 @@ function catalogGenres(a){
  return (Array.isArray(a.genres)?a.genres:[])
   .map(g=>typeof g==='string'?g:g?.name)
   .filter(Boolean);
+}
+function internalCatalogNumber(a){
+ return 'AAD-'+hash32(key(a)).toString(16).toUpperCase().padStart(8,'0');
+}
+function eraLabel(year){
+ const y=Number.parseInt(year,10);
+ if(!Number.isFinite(y))return 'UNFILED ERA';
+ const decade=Math.floor(y/10)*10;
+ return `${decade}s`;
+}
+function updateTrackOptions(tracks){
+ activeTracklist=tracks||[];
+ const list=$('trackOptions');if(!list)return;
+ list.replaceChildren();
+ for(const track of activeTracklist){
+  const option=document.createElement('option');
+  option.value=track.trackName||'';
+  list.append(option);
+ }
 }
 async function findItunesAlbum(a){
  const cacheKey=key(a);
@@ -355,6 +375,8 @@ function resetRecordFile(a){
  const panel=$('recordFile');if(!panel)return;
  panel.hidden=false;
  $('metadataSource').textContent='LOOKING IT UP…';
+ $('catalogNumber').textContent=internalCatalogNumber(a);
+ $('eraStamp').textContent=eraLabel(a.year);
  $('classification').replaceChildren();
  const immediate=catalogGenres(a).slice(0,4);
  for(const genre of immediate){
@@ -369,6 +391,7 @@ function resetRecordFile(a){
  $('trackCountLabel').textContent='—';
  $('tracklistStatus').hidden=false;
  $('tracklistStatus').textContent='Pulling the sleeve notes…';
+ updateTrackOptions([]);
 }
 function renderRecordFacts(a,album,tracks,sourceLabel='CATALOG'){
  const panel=$('recordFile');if(!panel)return;
@@ -390,6 +413,8 @@ function renderRecordFacts(a,album,tracks,sourceLabel='CATALOG'){
   facts.append(dt,dd);
  };
  const releaseYear=(album?.releaseDate||'').slice(0,4)||a.year||'';
+ $('catalogNumber').textContent=internalCatalogNumber(a);
+ $('eraStamp').textContent=eraLabel(releaseYear);
  const runtime=tracks.reduce((sum,t)=>sum+(Number(t.trackTimeMillis)||0),0);
  addFact('Released',releaseYear);
  addFact('Tracks',tracks.length||album?.trackCount||'');
@@ -400,11 +425,13 @@ function renderRecordFacts(a,album,tracks,sourceLabel='CATALOG'){
  const list=$('tracklist');list.replaceChildren();
  $('trackCountLabel').textContent=tracks.length?`${tracks.length} TRACK${tracks.length===1?'':'S'}`:'UNAVAILABLE';
  if(!tracks.length){
+  updateTrackOptions([]);
   $('tracklistStatus').hidden=false;
   $('tracklistStatus').textContent='No verified tracklist found for this edition.';
   return;
  }
  $('tracklistStatus').hidden=true;
+ updateTrackOptions(tracks);
  tracks
   .slice()
   .sort((x,y)=>(x.discNumber||1)-(y.discNumber||1)||(x.trackNumber||0)-(y.trackNumber||0))
@@ -498,6 +525,7 @@ $('overlay').onclick=()=>drawer(false);
 $('log').onclick=()=>{
  if(!pick)return;
  rating=0;$('track').value='';$('notes').value='';
+ $('track').placeholder=activeTracklist.length?'Choose from the tracklist or type your own':'The one you replayed';
  $('logAlbum').textContent=`${pick.artist} — ${pick.title}`;
  stars();$('logDialog').showModal();
 };
