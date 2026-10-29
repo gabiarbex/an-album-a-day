@@ -130,12 +130,17 @@ function hasRankingData(a){
 }
 function updateSignalNote(){
  const node=$('signalNote');if(!node)return;
+ document.querySelectorAll('.fine-tune .chip').forEach(button=>{
+  button.disabled=!rankingFeaturesAvailable;
+  button.setAttribute('aria-disabled',String(!rankingFeaturesAvailable));
+ });
+ $('fineTune')?.classList.toggle('unavailable',!rankingFeaturesAvailable);
  if(rankingFeaturesAvailable){
   node.classList.add('live');
-  node.textContent='The catalog has enough recommendation metadata for these controls to steer the ranking. Missing fields are still treated as unknown, never as zero.';
+  node.textContent='LIVE: these controls now steer the ranking. Missing album fields are treated as unknown, never as zero.';
  }else{
   node.classList.remove('live');
-  node.textContent='These controls are being wired to real album metadata. Until coverage is high enough, they won’t pretend to steer the pick.';
+  node.textContent='PREVIEW ONLY: the catalog is still being enriched. These controls stay disabled until there is enough real metadata to make them honest.';
  }
 }
 function refreshFeatureCoverage(){
@@ -509,13 +514,13 @@ document.querySelectorAll('.prompt-chip').forEach(button=>{
 });
 if(feelingInput){
  restorePickerState();
- feelingInput.dispatchEvent(new Event('input'));
  feelingInput.addEventListener('input',()=>{
   const p=interpretFeeling(feelingInput.value);
   if(feelingInput.value.trim()&&!rankingFeaturesAvailable)$('feelingInsight').textContent='✳ note received — catalog mood matching is not live yet';
   else $('feelingInsight').textContent=p.summary?'✳ reading: '+p.summary:'✳ your words, your soundtrack';
   savePickerState();
  });
+ feelingInput.dispatchEvent(new Event('input'));
  $('clearFeeling').addEventListener('click',()=>{feelingInput.value='';feelingInput.dispatchEvent(new Event('input'));feelingInput.focus()});
  feelingInput.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){e.preventDefault();chooseDaily()}});
 }
