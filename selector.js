@@ -1,6 +1,6 @@
 'use strict';
 
-let albums=[],logs=[],pick=null,rating=0,catalogManifest=null,catalogTotal=0;
+let albums=[],logs=[],pick=null,rating=0,editingLogIndex=null,catalogManifest=null,catalogTotal=0;
 let rankingFeaturesAvailable=false;
 let featureCoverage={genre:0,mood:0,energy:0,duration:0};
 const liveMetadataRankingAvailable=true;
@@ -144,7 +144,8 @@ function renderHistory(){
   empty.innerHTML='<b>no records filed yet.</b><span>listen to something, then leave yourself a note.</span>';
   area.append(empty);return;
  }
- for(const entry of [...logs].reverse()){
+ for(const row of logs.map((entry,index)=>({entry,index})).reverse()){
+  const {entry,index}=row;
   const item=document.createElement('article');item.className='history-item';
   if(entry.cover_art){
    const img=document.createElement('img');img.className='history-cover';img.src=entry.cover_art;img.alt='';
@@ -157,6 +158,10 @@ function renderHistory(){
   sub.textContent=`${'★'.repeat(entry.rating||0)}${'☆'.repeat(5-(entry.rating||0))}${entry.favorite_track?' · '+entry.favorite_track:''}`;
   copy.append(date,name,sub);
   if(entry.notes){const p=document.createElement('p');p.textContent=entry.notes;copy.append(p)}
+  const actions=document.createElement('div');actions.className='history-entry-actions';
+  const edit=document.createElement('button');edit.type='button';edit.textContent='edit';edit.onclick=()=>editDiaryEntry(index);
+  const remove=document.createElement('button');remove.type='button';remove.textContent='remove';remove.onclick=()=>removeDiaryEntry(index);
+  actions.append(edit,remove);copy.append(actions);
   item.append(copy);area.append(item);
  }
 }
@@ -938,14 +943,31 @@ $('openDiaryFromShelf')?.addEventListener('click',()=>drawer(true));
 $('closeDrawer').onclick=()=>drawer(false);
 $('overlay').onclick=()=>drawer(false);
 
+function removeDiaryEntry(index){
+ const entry=logs[index];if(!entry)return;
+ if(!confirm(`Remove "${entry.album}" by ${entry.artist} from your diary?`))return;
+ logs.splice(index,1);persist();showToast('Diary entry removed.');
+}
+function editDiaryEntry(index){
+ const entry=logs[index];if(!entry)return;
+ editingLogIndex=index;
+ rating=Number(entry.rating)||0;
+ $('track').value=entry.favorite_track||'';
+ $('notes').value=entry.notes||'';
+ $('track').placeholder='Favorite track';
+ $('logAlbum').textContent=`${entry.artist} — ${entry.album}`;
+ stars();
+ $('logDialog').showModal();
+}
 $('log').onclick=()=>{
  if(!pick)return;
+ editingLogIndex=null;
  rating=0;$('track').value='';$('notes').value='';
  $('track').placeholder=activeTracklist.length?'Choose from the tracklist or type your own':'The one you replayed';
  $('logAlbum').textContent=`${pick.artist} — ${pick.title}`;
  stars();$('logDialog').showModal();
 };
-$('closeDialog').onclick=()=>$('logDialog').close();
+$('closeDialog').onclick=()=>{editingLogIndex=null;$('logDialog').close()};
 function stars(){
  const area=$('stars');area.replaceChildren();
  for(let i=1;i<=5;i++){
@@ -954,7 +976,14 @@ function stars(){
  }
 }
 $('logForm').onsubmit=e=>{
- e.preventDefault();if(!pick)return;
+ e.preventDefault();
+ if(editingLogIndex!==null){
+  const current=logs[editingLogIndex];if(!current)return;
+  logs[editingLogIndex]={...current,rating,favorite_track:$('track').value.trim(),notes:$('notes').value.trim()};
+  editingLogIndex=null;
+  persist();$('logDialog').close();showToast('Diary entry updated.');return;
+ }
+ if(!pick)return;
  const live=pick._live||{};
  const staticMoods=Array.isArray(pick.moods)?Object.fromEntries(pick.moods.map(m=>[m,1])):{};
  logs.push({
