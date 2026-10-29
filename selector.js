@@ -237,12 +237,29 @@ function libraryStatus(){
  return `${total} albums in the universe · discovery draw mode ✳`;
 }
 
+function mergeAlbumRecord(existing,incoming){
+ if(!existing||!incoming)return existing;
+ const fillArray=name=>{
+  if((!Array.isArray(existing[name])||!existing[name].length)&&Array.isArray(incoming[name])&&incoming[name].length)existing[name]=incoming[name];
+ };
+ if(!existing.year&&incoming.year)existing.year=incoming.year;
+ fillArray('genres');fillArray('tags');fillArray('moods');
+ if(existing.energy_level===null||existing.energy_level===undefined)existing.energy_level=incoming.energy_level;
+ if(existing.length_min===null||existing.length_min===undefined)existing.length_min=incoming.length_min;
+ if(!existing.lookup_id&&incoming.lookup_id)existing.lookup_id=incoming.lookup_id;
+ existing.features={...(incoming.features||{}),...(existing.features||{})};
+ existing.provenance={...(incoming.provenance||{}),...(existing.provenance||{})};
+ existing.metadata={...(incoming.metadata||{}),...(existing.metadata||{})};
+ if(incoming._enriched_from&&!existing._enriched_from)existing._enriched_from=incoming._enriched_from;
+ return existing;
+}
 function mergeAlbums(items){
- const known=new Set(albums.map(key));
+ const byKey=new Map(albums.map(a=>[key(a),a]));
  for(const a of items||[]){
   if(!a?.title||!a?.artist)continue;
-  const k=key(a);if(known.has(k))continue;
-  known.add(k);albums.push(a);
+  const k=key(a),existing=byKey.get(k);
+  if(existing){mergeAlbumRecord(existing,a);continue}
+  byKey.set(k,a);albums.push(a);
  }
  refreshFeatureCoverage();
 }
@@ -320,9 +337,11 @@ async function load(){
   if(manifestResponse.ok){
    catalogManifest=await manifestResponse.json();
    catalogTotal=Number(catalogManifest.total_albums)||0;
-   // The original editorial 10k is always active, even after the global 100k lands.
+   // The original editorial catalog is always active. Once the global build
+   // exists, prefer its MusicBrainz-enriched base over legacy albums.json.
    try{
-    const baseResponse=await fetch('./data/albums.json',{cache:'force-cache'});
+    const basePath=catalogManifest.base_file?'./data/catalog/'+catalogManifest.base_file:'./data/albums.json';
+    const baseResponse=await fetch(basePath,{cache:'force-cache'});
     if(baseResponse.ok){
      const base=await baseResponse.json();
      mergeAlbums(Array.isArray(base)?base:base.albums||[]);
