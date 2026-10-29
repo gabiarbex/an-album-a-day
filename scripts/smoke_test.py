@@ -35,7 +35,8 @@ def test_frontend_contract():
     subprocess.run([sys.executable,"-m","py_compile",
                     str(ROOT/"scripts/build_catalog_from_dump.py"),
                     str(ROOT/"scripts/shard_catalog.py"),
-                    str(ROOT/"scripts/build_semantic_index.py")],check=True)
+                    str(ROOT/"scripts/build_semantic_index.py"),
+                    str(ROOT/"scripts/check_semantic_quality.py")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/intent_test.js")],check=True)
 
 def test_base_catalog():
@@ -107,8 +108,20 @@ def test_dump_builder():
         assert len(keys)==len(albums), "global builder must dedupe artist/title release-group variants"
         assert all(a["title"]!="Not an Album" for a in albums)
 
+def test_semantic_artifacts_if_present():
+    root=ROOT/"data/semantic"
+    manifest_path=root/"manifest.json"
+    if not manifest_path.exists():
+        return
+    m=json.loads(manifest_path.read_text())
+    assert m["albums"]==100000
+    assert 32 <= m["dimensions"] <= 64
+    assert m["vocab_size"] >= 1000
+    assert (root/m["vectors"]).stat().st_size == m["albums"]*m["dimensions"]
+    assert (root/m["components"]).stat().st_size == m["vocab_size"]*m["dimensions"]
+
 def main():
-    tests=[test_frontend_contract,test_base_catalog,test_sharder,test_dump_builder]
+    tests=[test_frontend_contract,test_base_catalog,test_sharder,test_dump_builder,test_semantic_artifacts_if_present]
     for test in tests:
         test()
         print("PASS",test.__name__)
