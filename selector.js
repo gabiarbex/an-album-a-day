@@ -556,6 +556,35 @@ function updateTrackOptions(tracks){
   list.append(option);
  }
 }
+let musicBrainzLastRequest=0;
+let musicBrainzChain=Promise.resolve();
+const musicBrainzGroupCache=new Map();
+function musicBrainzJson(url){
+ const job=musicBrainzChain.then(async()=>{
+  const wait=Math.max(0,1100-(Date.now()-musicBrainzLastRequest));
+  if(wait)await new Promise(resolve=>setTimeout(resolve,wait));
+  const response=await fetch(url,{headers:{Accept:'application/json'}});
+  musicBrainzLastRequest=Date.now();
+  if(!response.ok)throw Error('MusicBrainz HTTP '+response.status);
+  return response.json();
+ });
+ musicBrainzChain=job.catch(()=>{});
+ return job;
+}
+async function findMusicBrainzGroup(a){
+ const cacheKey=key(a);
+ if(musicBrainzGroupCache.has(cacheKey))return musicBrainzGroupCache.get(cacheKey);
+ const promise=(async()=>{
+  const query=`artist:"${String(a.artist||'').replace(/"/g,'')}" AND releasegroup:"${String(a.title||'').replace(/"/g,'')}"`;
+  const url='https://musicbrainz.org/ws/2/release-group/?query='+encodeURIComponent(query)+'&fmt=json&limit=8';
+  const data=await musicBrainzJson(url);
+  const artist=normalizeStoreText(a.artist),title=normalizeStoreText(a.title);
+  const groups=data['release-groups']||[];
+  const exact=groups.find(g=>normalizeStoreText(g.title)===title&&normalizeStoreText((g['artist-credit']||[]).map(c=>c.name||c.artist?.name||'').join(''))===artist);
+  return exact||groups.find(g=>normalizeStoreText(g.title)===title)||null;
+ })().catch(e=>{console.info('MusicBrainz cover lookup unavailable',a.artist,a.title,e);return null});
+ musicBrainzGroupCache.set(cacheKey,promise);return promise;
+}
 async function findItunesAlbum(a){
  const cacheKey=key(a);
  if(itunesAlbumCache.has(cacheKey))return itunesAlbumCache.get(cacheKey);
@@ -768,23 +797,18 @@ let artworkRequest=0;
 async function loadArtwork(a,img){
  const request=++artworkRequest;
  const fallback=artPlaceholder(a);
- const tryItunes=async()=>{
-  try{
-   const album=await findItunesAlbum(a);
-   if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
-   if(album?.artworkUrl100){
-    img.onerror=()=>{img.onerror=null;img.src=fallback};
-    img.src=album.artworkUrl100.replace(/100x100bb/,'600x600bb');
-   }else img.src=fallback;
-  }catch(e){img.src=fallback;console.info('Cover unavailable for',a.artist,a.title)}
+ const apply=url=>{
+  if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
+  img.onerror=()=>{img.onerror=null;img.src=fallback};
+  img.src=url;
  };
  const preferred=a.metadata?.cover_art;
- if(preferred&&/^https?:\/\//.test(preferred)){
-  img.onerror=()=>{img.onerror=null;tryItunes()};
-  img.src=preferred;
- }else{
-  tryItunes();
- }
+ if(preferred&&/^https?:\/\//.test(preferred)){apply(preferred);return}
+ try{
+  const group=await findMusicBrainzGroup(a);
+  if(group?.id)apply('https://coverartarchive.org/release-group/'+group.id+'/front-500');
+  else apply(fallback);
+ }catch{apply(fallback)}
 }
 
 function artPlaceholder(a){
