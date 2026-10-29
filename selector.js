@@ -1159,7 +1159,16 @@ function show(a,context={}){
  $('emptyCover').style.display='none';
  cover.src=artPlaceholder(a);
  const info=$('details');info.replaceChildren();
- const tag=document.createElement('div');tag.className='eyebrow';tag.textContent=context.mode==='bonus'?'BONUS DRAW ✳':context.mode==='shared'?'SHARED FROM THE CRATE ✳':'TODAY’S RECORD ✳';
+ const tag=document.createElement('div');tag.className='eyebrow';
+ const modeLabels={
+  shared:'SHARED FROM THE CRATE ✳',
+  semantic:context.mode==='bonus'?'BONUS / LATENT MATCH ✳':'TODAY / LATENT MATCH ✳',
+  live:context.mode==='bonus'?'BONUS / FIELD DESK ✳':'TODAY / FIELD DESK ✳',
+  stored:context.mode==='bonus'?'BONUS / CATALOG MATCH ✳':'TODAY / CATALOG MATCH ✳',
+  surprise:'TODAY / BLIND PULL ✳',
+  draw:context.mode==='bonus'?'BONUS DRAW ✳':'TODAY / DISCOVERY DRAW ✳'
+ };
+ tag.textContent=context.mode==='shared'?modeLabels.shared:(modeLabels[context.rankingMode]||(context.mode==='bonus'?'BONUS DRAW ✳':'TODAY’S RECORD ✳'));
  const title=document.createElement('h2');title.textContent=a.title;
  const artist=document.createElement('p');artist.textContent=`${a.artist}${a.year?' · '+a.year:''}`;
  const meta=document.createElement('p');
