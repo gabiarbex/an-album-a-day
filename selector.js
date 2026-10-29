@@ -939,8 +939,12 @@ function aggregateAcoustic(rows){
  put('gritty',aggressive);
  put('reflective',mean([sad,relaxed]));
  put('cold',mean([dark,electronic]));
- const energyParts=values([dance,aggressive,party,relaxed===null?null:1-relaxed]);
- const energy=energyParts.length?10*energyParts.reduce((n,x,i)=>n+x*[.4,.25,.2,.15][Math.min(i,3)],0)/([.4,.25,.2,.15].slice(0,energyParts.length).reduce((n,x)=>n+x,0)):null;
+ const energyParts=[
+  [dance,.4],[aggressive,.25],[party,.2],[relaxed===null?null:1-relaxed,.15]
+ ].filter(([v])=>v!==null&&Number.isFinite(v));
+ const energy=energyParts.length
+  ?10*energyParts.reduce((n,[v,w])=>n+v*w,0)/energyParts.reduce((n,[,w])=>n+w,0)
+  :null;
  return {moods,energy,tracksAnalyzed:rows.length,confidence:Math.min(.9,.52+rows.length*.04)};
 }
 async function loadSelectedAcousticProfile(a,details){
