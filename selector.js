@@ -107,6 +107,14 @@ function renderStreak(){
 function renderHistory(){
  $('count').textContent=logs.length;
  renderStreak();
+ if($('statListened'))$('statListened').textContent=logs.length;
+ const rated=logs.filter(x=>Number(x.rating)>0);
+ if($('statAverage'))$('statAverage').textContent=rated.length?(rated.reduce((n,x)=>n+Number(x.rating),0)/rated.length).toFixed(1)+'★':'—';
+ const genreCounts={};
+ for(const x of logs){if(x.genre)genreCounts[x.genre]=(genreCounts[x.genre]||0)+1}
+ const topGenre=Object.entries(genreCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
+ if($('statGenre'))$('statGenre').textContent=topGenre;
+ if($('statTraining'))$('statTraining').textContent=logs.filter(x=>Number(x.rating)>0&&x.signal_snapshot).length;
  const area=$('history');area.replaceChildren();
  if(!logs.length){
   const empty=document.createElement('div');empty.className='history-empty';
