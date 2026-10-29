@@ -1300,3 +1300,16 @@ dialog input,dialog textarea{width:100%;padding:11px;border:2px solid var(--ink)
   .record-fact:nth-child(4n){border-right:1px solid var(--ink)}
   .record-fact:nth-child(2n){border-right:0}
 }
+
+
+.diary-stats>div:last-child{
+  grid-column:1/-1;
+  border-right:0;
+  border-bottom:0;
+}
+.drawer-actions .secondary.subtle{
+  background:transparent;
+  color:var(--red);
+  border-style:dashed;
+  box-shadow:none;
+}
