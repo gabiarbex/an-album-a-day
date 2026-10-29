@@ -70,25 +70,30 @@ jobs:
           import json
           from pathlib import Path
 
-          manifest=json.loads(Path("data/catalog/manifest.json").read_text())
-          lookup=json.loads(Path("data/catalog/lookup.json").read_text())
+          root=Path("data/catalog")
+          manifest=json.loads((root/"manifest.json").read_text())
+          lookup=json.loads((root/"lookup.json").read_text())
           shards=manifest["shards"]
           total=manifest["total_albums"]
+          base_count=manifest["base_count"]
 
           assert total == 100000, f"Expected 100,000 albums, got {total:,}"
-          assert len(shards) == 100, f"Expected 100 shards, got {len(shards)}"
-          assert sum(s["count"] for s in shards) == total
+          assert base_count >= 9500, f"Editorial base unexpectedly small: {base_count:,}"
+          assert base_count + sum(s["count"] for s in shards) == total
           assert len(lookup) == total, f"Lookup index mismatch: {len(lookup):,}"
-          assert all((Path("data/catalog")/s["file"]).exists() for s in shards)
+          assert (root/manifest["base_file"]).exists()
+          assert all((root/s["file"]).exists() for s in shards)
 
           original=0
           base_enriched=0
           with_genre=0
           with_mood=0
           with_energy=0
+          with_duration=0
           ids=set()
-          for shard in shards:
-              rows=json.loads((Path("data/catalog")/shard["file"]).read_text())["albums"]
+          files=[manifest["base_file"]]+[s["file"] for s in shards]
+          for filename in files:
+              rows=json.loads((root/filename).read_text())["albums"]
               for album in rows:
                   lid=album.get("lookup_id")
                   assert lid and lid not in ids, f"Duplicate/missing lookup id: {lid}"
@@ -98,16 +103,19 @@ jobs:
                   with_genre += bool(album.get("genres"))
                   with_mood += bool(album.get("moods"))
                   with_energy += album.get("energy_level") is not None
+                  with_duration += album.get("length_min") is not None
 
-          assert original >= 9500, f"Editorial base was not preserved: {original:,}"
+          assert len(ids)==total
+          assert original==base_count, f"Original count mismatch: {original:,} vs {base_count:,}"
           print(f"Catalog: {total:,}")
           print(f"Preserved editorial base: {original:,}")
           print(f"Editorial base enriched from MusicBrainz: {base_enriched:,}")
+          print(f"Expansion shards: {len(shards)}")
           print(f"Genre coverage: {with_genre/total:.1%}")
           print(f"Mood-tag coverage: {with_mood/total:.1%}")
           print(f"Energy-tag coverage: {with_energy/total:.1%}")
+          print(f"Duration coverage: {with_duration/total:.1%}")
           PY
-
       - name: Remove build-only files
         run: rm -f release-group.tar.xz data/catalog-expanded.json data/catalog-checkpoint.json
 
