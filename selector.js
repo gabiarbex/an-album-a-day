@@ -314,6 +314,146 @@ $('recommend').addEventListener('click',chooseDaily);
 $('surpriseMe')?.addEventListener('click',chooseDaily);
 $('reroll').addEventListener('click',chooseAnother);
 
+
+const itunesAlbumCache=new Map();
+const tracklistCache=new Map();
+let recordFileRequest=0;
+
+function normalizeStoreText(value){
+ return String(value||'').normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+}
+function formatRuntime(ms){
+ const total=Math.max(0,Math.round(Number(ms||0)/1000));
+ const h=Math.floor(total/3600),m=Math.floor((total%3600)/60),sec=total%60;
+ return h?\`${h}h ${String(m).padStart(2,'0')}m\`:\`${m}:${String(sec).padStart(2,'0')}\`;
+}
+function catalogGenres(a){
+ return (Array.isArray(a.genres)?a.genres:[])
+  .map(g=>typeof g==='string'?g:g?.name)
+  .filter(Boolean);
+}
+async function findItunesAlbum(a){
+ const cacheKey=key(a);
+ if(itunesAlbumCache.has(cacheKey))return itunesAlbumCache.get(cacheKey);
+ const promise=(async()=>{
+  const q=encodeURIComponent(\`${a.artist} ${a.title}\`);
+  const response=await fetch(\`https://itunes.apple.com/search?term=${q}&media=music&entity=album&attribute=albumTerm&limit=20\`);
+  if(!response.ok)throw Error('Album metadata service unavailable');
+  const data=await response.json();
+  const artist=normalizeStoreText(a.artist),title=normalizeStoreText(a.title);
+  const results=data.results||[];
+  return results.find(x=>normalizeStoreText(x.artistName)===artist&&normalizeStoreText(x.collectionName)===title)
+    ||results.find(x=>normalizeStoreText(x.artistName)===artist&&(
+      normalizeStoreText(x.collectionName).includes(title)||title.includes(normalizeStoreText(x.collectionName))
+    ))
+    ||null;
+ })().catch(e=>{console.info('Album metadata lookup unavailable',a.artist,a.title,e);return null});
+ itunesAlbumCache.set(cacheKey,promise);
+ return promise;
+}
+function resetRecordFile(a){
+ const panel=$('recordFile');if(!panel)return;
+ panel.hidden=false;
+ $('metadataSource').textContent='LOOKING IT UP…';
+ $('classification').replaceChildren();
+ const immediate=catalogGenres(a).slice(0,4);
+ for(const genre of immediate){
+  const tag=document.createElement('span');tag.textContent=String(genre).toUpperCase();$('classification').append(tag);
+ }
+ const facts=$('recordFacts');facts.replaceChildren();
+ if(a.year){
+  const dt=document.createElement('dt');dt.textContent='Released';
+  const dd=document.createElement('dd');dd.textContent=a.year;facts.append(dt,dd);
+ }
+ $('tracklist').replaceChildren();
+ $('trackCountLabel').textContent='—';
+ $('tracklistStatus').hidden=false;
+ $('tracklistStatus').textContent='Pulling the sleeve notes…';
+}
+function renderRecordFacts(a,album,tracks,sourceLabel='CATALOG'){
+ const panel=$('recordFile');if(!panel)return;
+ panel.hidden=false;
+ $('metadataSource').textContent=sourceLabel;
+
+ const genreNames=[...catalogGenres(a),album?.primaryGenreName].filter(Boolean);
+ const unique=[...new Set(genreNames.map(x=>String(x).trim()).filter(Boolean))].slice(0,5);
+ const classification=$('classification');classification.replaceChildren();
+ for(const genre of unique.length?unique:['UNCLASSIFIED']){
+  const tag=document.createElement('span');tag.textContent=genre.toUpperCase();classification.append(tag);
+ }
+
+ const facts=$('recordFacts');facts.replaceChildren();
+ const addFact=(label,value)=>{
+  if(value===null||value===undefined||value==='')return;
+  const dt=document.createElement('dt');dt.textContent=label;
+  const dd=document.createElement('dd');dd.textContent=value;
+  facts.append(dt,dd);
+ };
+ const releaseYear=(album?.releaseDate||'').slice(0,4)||a.year||'';
+ const runtime=tracks.reduce((sum,t)=>sum+(Number(t.trackTimeMillis)||0),0);
+ addFact('Released',releaseYear);
+ addFact('Tracks',tracks.length||album?.trackCount||'');
+ addFact('Runtime',runtime?formatRuntime(runtime):a.length_min?\`${Math.round(Number(a.length_min))} min\`:'');
+ addFact('Format','LP / album');
+ if(album?.collectionExplicitness==='explicit')addFact('Advisory','Explicit');
+
+ const list=$('tracklist');list.replaceChildren();
+ $('trackCountLabel').textContent=tracks.length?\`${tracks.length} TRACK${tracks.length===1?'':'S'}\`:'UNAVAILABLE';
+ if(!tracks.length){
+  $('tracklistStatus').hidden=false;
+  $('tracklistStatus').textContent='No verified tracklist found for this edition.';
+  return;
+ }
+ $('tracklistStatus').hidden=true;
+ tracks
+  .slice()
+  .sort((x,y)=>(x.discNumber||1)-(y.discNumber||1)||(x.trackNumber||0)-(y.trackNumber||0))
+  .forEach(track=>{
+   const li=document.createElement('li');
+   const num=document.createElement('span');num.className='track-no';
+   num.textContent=(track.discCount||1)>1?\`${track.discNumber||1}.${String(track.trackNumber||0).padStart(2,'0')}\`:String(track.trackNumber||'').padStart(2,'0');
+   const name=document.createElement('span');name.className='track-name';name.textContent=track.trackName||'Untitled';
+   const time=document.createElement('span');time.className='track-time';time.textContent=track.trackTimeMillis?formatRuntime(track.trackTimeMillis):'';
+   li.append(num,name,time);list.append(li);
+  });
+}
+async function loadRecordFile(a){
+ const request=++recordFileRequest;
+ resetRecordFile(a);
+ const cacheKey=key(a);
+ try{
+  let cached=null;
+  try{cached=JSON.parse(sessionStorage.getItem('albumaday.record.'+hash32(cacheKey))||'null')}catch{}
+  if(cached){
+   if(request===recordFileRequest&&pick&&key(pick)===cacheKey)renderRecordFacts(a,cached.album,cached.tracks||[],'CATALOG DATA / ITUNES STORE');
+   return;
+  }
+  const album=await findItunesAlbum(a);
+  if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
+  if(!album?.collectionId){
+   renderRecordFacts(a,null,[],'CATALOG DATA');
+   return;
+  }
+  let tracks=[];
+  if(tracklistCache.has(album.collectionId)){
+   tracks=await tracklistCache.get(album.collectionId);
+  }else{
+   const promise=fetch(\`https://itunes.apple.com/lookup?id=${album.collectionId}&entity=song&limit=200\`)
+    .then(r=>{if(!r.ok)throw Error('Tracklist lookup unavailable');return r.json()})
+    .then(data=>(data.results||[]).filter(x=>x.wrapperType==='track'&&x.kind==='song'&&Number(x.collectionId)===Number(album.collectionId)))
+    .catch(e=>{console.info('Tracklist unavailable',e);return []});
+   tracklistCache.set(album.collectionId,promise);
+   tracks=await promise;
+  }
+  if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
+  const cache={album,tracks};
+  try{sessionStorage.setItem('albumaday.record.'+hash32(cacheKey),JSON.stringify(cache))}catch{}
+  renderRecordFacts(a,album,tracks,'CATALOG DATA / ITUNES STORE');
+ }catch(e){
+  if(request===recordFileRequest)renderRecordFacts(a,null,[],'CATALOG DATA');
+ }
+}
+
 function spotifyUrl(a){
  const source=a.metadata?.sources;
  const candidate=Array.isArray(source)?source.find(s=>typeof s==='string'&&s.includes('spotify.com')):source;
@@ -333,6 +473,7 @@ function show(a,context={}){
  meta.textContent=[(a.moods||[]).join(' · '),a.length_min?`${Math.round(Number(a.length_min))} min`:null].filter(Boolean).join('  /  ');
  info.append(tag,title,artist,meta);
  const why=$('whyText');if(why)why.textContent=explainPick(a,context);
+ resetRecordFile(a);
  const link=$('spotify');link.href=spotifyUrl(a);link.classList.remove('disabled');
  $('log').disabled=false;
  $('sharePick').disabled=false;
@@ -341,6 +482,7 @@ function show(a,context={}){
  const unseen=Math.max(0,(catalogTotal||albums.length)-seenAlbums.size).toLocaleString();
  $('status').textContent=context.mode==='bonus'?`${unseen} unseen albums remaining · bonus draw ✳`:`${unseen} unseen albums remaining · today’s record is locked to this date ✳`;
  loadArtwork(a,cover);
+ loadRecordFile(a);
 }
 function labelColor(a){
  const palette=['#c8432f','#2e5f76','#d5ad36','#65714b','#9a593f','#d9d0bc'];
@@ -384,17 +526,11 @@ async function loadArtwork(a,img){
  const fallback=artPlaceholder(a);
  const tryItunes=async()=>{
   try{
-   const q=encodeURIComponent(`${a.artist} ${a.title}`);
-   const r=await fetch(`https://itunes.apple.com/search?term=${q}&entity=album&limit=15`);
-   if(!r.ok)throw Error('Artwork service unavailable');
-   const data=await r.json();
-   const norm=x=>String(x||'').normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-   const exact=(data.results||[]).find(x=>norm(x.artistName)===norm(a.artist)&&norm(x.collectionName)===norm(a.title));
-   const loose=exact||(data.results||[]).find(x=>norm(x.artistName)===norm(a.artist)&&norm(x.collectionName).includes(norm(a.title)));
+   const album=await findItunesAlbum(a);
    if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
-   if(loose?.artworkUrl100){
+   if(album?.artworkUrl100){
     img.onerror=()=>{img.onerror=null;img.src=fallback};
-    img.src=loose.artworkUrl100.replace(/100x100bb/,'600x600bb');
+    img.src=album.artworkUrl100.replace(/100x100bb/,'600x600bb');
    }else img.src=fallback;
   }catch(e){img.src=fallback;console.info('Cover unavailable for',a.artist,a.title)}
  };
