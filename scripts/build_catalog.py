@@ -3,6 +3,7 @@
 
 Examples:
   python scripts/build_catalog.py --target 100000 --output data/catalog-expanded.json
+  python scripts/build_catalog.py --target 100000 --taste-graph private/taste_graph.json
   python scripts/build_catalog.py --target 100000 --seeds private/lastfm_artist_seeds.json
 
 This script is intentionally opt-in: large public-catalog downloads take time.
@@ -80,15 +81,37 @@ def convert(group):
       }
     }
 
+def taste_queries(path):
+    if not path:
+        return []
+    data=json.loads(Path(path).read_text(encoding='utf-8'))
+    mbids=[]
+    for row in (data.get('artists') or {}).values():
+        seed=(row.get('seed') or {}).get('mbid')
+        if seed: mbids.append(seed)
+        for n in row.get('neighbors') or []:
+            if n.get('mbid'): mbids.append(n['mbid'])
+    # Deduplicate while preserving order, then batch OR queries so personal
+    # taste expands coverage without dominating the global catalog.
+    mbids=list(dict.fromkeys(mbids))
+    out=[]
+    batch=35
+    for i in range(0,len(mbids),batch):
+        chunk=mbids[i:i+batch]
+        ors=' OR '.join(f'arid:{m}' for m in chunk)
+        out.append(f'primarytype:album AND ({ors})')
+    return out
+
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('--target',type=int,default=100000)
     p.add_argument('--output',default='data/catalog-expanded.json')
     p.add_argument('--checkpoint',default='data/catalog-checkpoint.json')
-    p.add_argument('--user-agent',default='AnAlbumADay/0.1 (contact: replace-with-your-email@example.com)')
+    p.add_argument('--taste-graph',default=None,help='Optional private Last.fm taste graph from scripts/mesh_lastfm.py')
+    p.add_argument('--taste-share',type=float,default=.30,help='Approximate share of query families derived from taste graph')
+    p.add_argument('--user-agent',default='AnAlbumADay/0.2 (https://github.com/gabiarbex/an-album-a-day)')
     args=p.parse_args()
-    if 'replace-with-your-email' in args.user_agent:
-        p.error('Supply a real contact address in --user-agent, required for respectful MusicBrainz access.')
     out=Path(args.output); out.parent.mkdir(parents=True,exist_ok=True)
     cp=Path(args.checkpoint); cp.parent.mkdir(parents=True,exist_ok=True)
     if cp.exists():
@@ -96,8 +119,20 @@ def main():
         albums=saved.get('albums',{}); progress=saved.get('progress',{})
     else:
         albums={};progress={}
-    queries=QUERIES[:]
-    random.Random(42).shuffle(queries)
+    global_queries=QUERIES[:]
+    personal_queries=taste_queries(args.taste_graph)
+    rng=random.Random(42)
+    rng.shuffle(global_queries); rng.shuffle(personal_queries)
+    # Interleave taste-derived and independent global queries. The taste graph
+    # can deepen coverage around the listener, but cannot become the whole catalog.
+    queries=[]
+    gi=pi=0
+    while gi<len(global_queries) or pi<len(personal_queries):
+        choose_personal=personal_queries and pi<len(personal_queries) and rng.random()<max(0,min(1,args.taste_share))
+        if choose_personal or gi>=len(global_queries):
+            queries.append(personal_queries[pi]); pi+=1
+        elif gi<len(global_queries):
+            queries.append(global_queries[gi]); gi+=1
     for q in queries:
         offset=progress.get(q,0)
         while len(albums)<args.target and offset<10000:
