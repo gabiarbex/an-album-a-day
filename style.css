@@ -959,3 +959,135 @@ dialog input,dialog textarea{width:100%;padding:11px;border:2px solid var(--ink)
   .record-facts dt,.record-facts dd{grid-row:auto}
   .tracklist li{grid-template-columns:28px minmax(0,1fr) auto}
 }
+
+
+/* === CRATE FILE 014 / THE RECORD SHOP BACK-COVER PASS === */
+.record-file{
+  position:relative;
+  overflow:visible;
+  background:
+    linear-gradient(90deg,#0000 0 96%,#17141110 96% 100%),
+    radial-gradient(#1714111c .7px,transparent 1px) 0 0/5px 5px,
+    #eee0c9;
+}
+.record-file:before{
+  content:"";
+  position:absolute;
+  left:52px;
+  top:-11px;
+  width:88px;
+  height:22px;
+  background:#cfc0a8cc;
+  border-left:1px dashed #71685c;
+  border-right:1px dashed #71685c;
+  transform:rotate(-2deg);
+  pointer-events:none;
+}
+.record-file-strip{
+  display:grid;
+  grid-template-columns:1fr 1fr auto;
+  gap:0;
+  align-items:stretch;
+  margin:12px;
+  border:2px solid var(--ink);
+  background:#f7ecda;
+}
+.record-file-strip>div:not(.pull-stamp){
+  padding:9px 10px;
+  border-right:1px solid var(--ink);
+}
+.record-file-strip small{
+  display:block;
+  margin-bottom:4px;
+  color:#6c6257;
+  font:700 7px "Courier New",monospace;
+  letter-spacing:1px;
+}
+.record-file-strip b{
+  font:700 11px "Courier New",monospace;
+  letter-spacing:.7px;
+}
+.pull-stamp{
+  min-width:88px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:var(--red);
+  background:#f4e8d4;
+  border-left:2px solid var(--ink);
+  font:700 10px/1.05 "Courier New",monospace;
+  letter-spacing:1.2px;
+  transform:rotate(-2deg) scale(.94);
+}
+.file-under{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:11px;
+  align-items:start;
+  padding:2px 12px 5px;
+}
+.file-under>span{
+  padding-top:6px;
+  color:#6e6458;
+  font:700 8px "Courier New",monospace;
+  letter-spacing:1.1px;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+}
+.file-under .classification{padding:0}
+.record-facts{
+  background:#f7ecda;
+  box-shadow:3px 3px 0 #17141122;
+}
+.tracklist-details{
+  position:relative;
+  margin-top:16px;
+  padding-top:2px;
+}
+.tracklist-details:before{
+  content:"RUNNING ORDER / FULL ALBUM";
+  position:absolute;
+  top:-12px;
+  left:0;
+  padding-right:8px;
+  background:#eee0c9;
+  color:#6b6155;
+  font:700 7px "Courier New",monospace;
+  letter-spacing:1px;
+}
+.tracklist-details summary{
+  margin-top:4px;
+  border-bottom:2px solid var(--ink);
+}
+.tracklist{
+  columns:2;
+  column-gap:24px;
+  column-rule:1px solid #17141155;
+  padding:8px 0 2px;
+  border-top:0;
+}
+.tracklist li{
+  break-inside:avoid;
+  grid-template-columns:28px minmax(0,1fr) auto;
+  padding:6px 3px;
+  border-bottom:1px dotted #17141170;
+}
+.tracklist li:nth-child(odd) .track-name{font-style:italic}
+.track-no{
+  color:var(--red);
+  font-weight:700;
+}
+.track-name{font-size:13px}
+.track-time{font-size:8px}
+@media(max-width:620px){
+  .record-file-strip{grid-template-columns:1fr 1fr}
+  .pull-stamp{grid-column:1/-1;min-height:44px;border-left:0;border-top:2px solid var(--ink)}
+  .tracklist{columns:1;column-rule:0}
+  .file-under{grid-template-columns:1fr}
+  .file-under>span{
+    writing-mode:horizontal-tb;
+    transform:none;
+    padding-top:0;
+  }
+}
