@@ -895,17 +895,17 @@ async function getMusicBrainzGroupDetails(a){
  musicBrainzDetailCache.set(group.id,promise);
  return promise;
 }
-function canonicalRelease(details){
+function releaseCandidates(details){
  const releases=(details?.releases||[]).filter(r=>r?.id);
- if(!releases.length)return null;
  const official=releases.filter(r=>!r.status||String(r.status).toLowerCase()==='official');
  const pool=official.length?official:releases;
  return pool.slice().sort((a,b)=>{
   const ad=String(a.date||'9999-99-99'),bd=String(b.date||'9999-99-99');
   if(ad!==bd)return ad.localeCompare(bd);
   return String(a.country||'').localeCompare(String(b.country||''));
- })[0];
+ });
 }
+function canonicalRelease(details){return releaseCandidates(details)[0]||null}
 async function getReleaseWithRecordings(releaseId){
  if(!releaseId)return null;
  if(musicBrainzReleaseCache.has(releaseId))return musicBrainzReleaseCache.get(releaseId);
@@ -1029,11 +1029,7 @@ async function enhanceSelectedMetadata(a){
    if(box.children.length>=5)break;
   }
  }
- const source=$('metadataSource');
- if(source&&source.textContent.includes('ITUNES'))source.textContent='MUSICBRAINZ + ITUNES STORE';
- loadSelectedAcousticProfile(a,details).then(profile=>{
-  if(profile&&$('metadataSource')&&pick&&key(pick)===key(a))$('metadataSource').textContent='MUSICBRAINZ + ITUNES + ACOUSTICBRAINZ';
- });
+ loadSelectedAcousticProfile(a,details);
 }
 async function findItunesAlbum(a){
  const cacheKey=key(a);
@@ -1172,21 +1168,26 @@ async function loadRecordFile(a){
   const details=await getMusicBrainzGroupDetails(a);
   if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
   if(details){
-   const release=canonicalRelease(details);
-   if(release?.id){
+   let best=null;
+   for(const release of releaseCandidates(details).slice(0,4)){
     const full=await getReleaseWithRecordings(release.id);
     if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
     const tracks=musicBrainzTracks(full);
-    if(tracks.length){
-     const album={
-      date:full?.date||release.date||details['first-release-date']||a.year||'',
-      trackCount:tracks.length
-     };
-     const cache={album,tracks,source:'MusicBrainz'};
-     try{sessionStorage.setItem(cacheId,JSON.stringify(cache))}catch{}
-     renderRecordFacts(a,album,tracks,'MusicBrainz');
-     return;
-    }
+    if(!tracks.length)continue;
+    const expected=(full?.media||[]).reduce((n,m)=>n+(Number(m['track-count'])||0),0);
+    const candidate={release,full,tracks,complete:!expected||tracks.length>=expected};
+    if(!best||candidate.tracks.length>best.tracks.length)best=candidate;
+    if(candidate.complete){best=candidate;break}
+   }
+   if(best){
+    const album={
+     date:best.full?.date||best.release.date||details['first-release-date']||a.year||'',
+     trackCount:best.tracks.length
+    };
+    const cache={album,tracks:best.tracks,source:'MusicBrainz'};
+    try{sessionStorage.setItem(cacheId,JSON.stringify(cache))}catch{}
+    renderRecordFacts(a,album,best.tracks,'MusicBrainz');
+    return;
    }
   }
 
