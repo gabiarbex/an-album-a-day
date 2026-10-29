@@ -1,0 +1,13 @@
+# Local/private listening data
+private/
+*.lastfm.csv
+gabiarbex.csv
+
+# Resumable catalog-build state
+data/catalog-checkpoint.json
+data/taste-checkpoint.json
+
+# Python
+__pycache__/
+*.pyc
+.DS_Store
