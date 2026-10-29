@@ -1123,6 +1123,7 @@ function renderRecordFacts(a,album,tracks,sourceLabel='catalogue'){
  if(album?.collectionExplicitness==='explicit')addFact('Advisory','Explicit');
 
  const list=$('tracklist');list.replaceChildren();
+ list.classList.toggle('is-long',tracks.length>12);
  $('trackCountLabel').textContent=tracks.length?`${tracks.length} TRACK${tracks.length===1?'':'S'}`:'UNAVAILABLE';
  if(!tracks.length){
   updateTrackOptions([]);
