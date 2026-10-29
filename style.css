@@ -1241,3 +1241,21 @@ dialog input,dialog textarea{width:100%;padding:11px;border:2px solid var(--ink)
   .recent-shelf-head{align-items:flex-start;flex-direction:column}
   .recent-pulls{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 13px}
 }
+
+
+.history-entry-actions{
+  display:flex;
+  gap:12px;
+  margin-top:10px;
+}
+.history-entry-actions button{
+  padding:2px 0;
+  color:#5c5248;
+  background:transparent;
+  border:0;
+  border-bottom:1px solid #5c5248;
+  font:700 8px "Courier New",monospace;
+  text-transform:uppercase;
+}
+.history-entry-actions button:last-child{color:var(--red);border-bottom-color:var(--red)}
+.history-entry-actions button:hover{color:var(--ink);border-bottom-color:var(--ink)}
