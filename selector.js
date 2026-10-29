@@ -86,8 +86,8 @@ const feelingLexicon={
  gritty:['raw','dirty','grunge','rough','punk','noise','sujo','bruto']
 };
 function interpretFeeling(text){
- const t=String(text||'').toLocaleLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');
- const moods={};for(const [m,terms] of Object.entries(feelingLexicon)){const hits=terms.filter(term=>t.includes(term.normalize('NFD').replace(/[\\u0300-\\u036f]/g,''))).length;if(hits)moods[m]=Math.min(hits,3)}
+ const t=String(text||'').toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const moods={};for(const [m,terms] of Object.entries(feelingLexicon)){const hits=terms.filter(term=>t.includes(term.normalize('NFD').replace(/[\u0300-\u036f]/g,''))).length;if(hits)moods[m]=Math.min(hits,3)}
  const ranked=Object.entries(moods).sort((a,b)=>b[1]-a[1]);
  const energy=/dance|party|run|scream|rage|festa|dancar|gritar|alive/.test(t)?8:/quiet|slow|soft|gentle|sleep|calm|silencio|devagar/.test(t)?3:null;
  return {moods,energy,summary:ranked.length?ranked.slice(0,2).map(([m])=>m).join(' and ')+' feelings':''};
