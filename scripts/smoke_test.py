@@ -62,6 +62,8 @@ def test_dump_builder():
         base=td/"base.json"
         base.write_text(json.dumps([{"artist":"Existing Artist","title":"Great Existing Album","moods":[],"energy_level":None,"comfort_vs_exploration":None,"length_min":None,"metadata":{}}]),encoding="utf-8")
         records=[
+          {"id":"00000000-0000-0000-0000-000000000000","title":"Great Existing Album","first-release-date":"2004-02-17","primary-type":"Album",
+           "artist-credit":[{"name":"Existing Artist"}],"genres":[{"name":"indie rock","count":9}],"tags":[{"name":"reflective","count":4}]},
           {"id":"00000000-0000-0000-0000-000000000001","title":"Dream Record","first-release-date":"1997-01-01","primary-type":"Album",
            "artist-credit":[{"name":"Test Artist"}],"genres":[{"name":"shoegaze","count":8}],"tags":[{"name":"dream pop","count":5}]},
           {"id":"00000000-0000-0000-0000-000000000002","title":"Noise Record","first-release-date":"1982","primary-type":"Album",
@@ -78,6 +80,10 @@ def test_dump_builder():
         albums=json.loads(output.read_text())["albums"]
         assert len(albums)==3
         assert albums[0]["title"]=="Great Existing Album"
+        assert albums[0].get("_catalog_source")=="original"
+        assert albums[0].get("_enriched_from")=="musicbrainz_dump"
+        assert albums[0].get("genres")
+        assert albums[0].get("metadata",{}).get("musicbrainz_id")
         assert any(a.get("genres") for a in albums[1:])
         assert any(a.get("moods") for a in albums[1:])
         assert all(a["title"]!="Not an Album" for a in albums)
