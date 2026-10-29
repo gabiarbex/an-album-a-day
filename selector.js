@@ -5,12 +5,25 @@ let rankingFeaturesAvailable=false,featureCoverage=0;
 const loadedShardFiles=new Set();
 const state={moods:[],energy:null,comfort:null,time:null};
 const $=id=>document.getElementById(id);
-const moods=['dark','cold','intense','reflective','energetic','melancholic','gritty','alienated','nostalgic','warm','dreamy','hopeful'];
+const moods=[
+ ['after dark','dark'],
+ ['cold air','cold'],
+ ['too much','intense'],
+ ['inside my head','reflective'],
+ ['moving','energetic'],
+ ['beautifully sad','melancholic'],
+ ['rough edges','gritty'],
+ ['somewhere else','alienated'],
+ ['memory lane','nostalgic'],
+ ['warm hands','warm'],
+ ['floaty','dreamy'],
+ ['light coming in','hopeful']
+];
 const groups=[
  ['moods',moods],
- ['energy',[['low',2],['medium',5],['high',9]]],
- ['comfort',['comfort','exploration']],
- ['time',[['30 min',30],['45 min',45],['60 min',60],['any length',null]]]
+ ['energy',[['low voltage',2],['steady pulse',5],['full blast',9]]],
+ ['comfort',[['stay close','comfort'],['open the strange door','exploration']]],
+ ['time',[['quick side',30],['proper sit-down',45],['long listen',60],['time is fake',null]]]
 ];
 
 for(const [id,values] of groups){
@@ -97,12 +110,23 @@ function hasRankingData(a){
         Boolean(a.comfort_vs_exploration) ||
         (a.length_min!==null&&a.length_min!==undefined&&Number.isFinite(Number(a.length_min)));
 }
+function updateSignalNote(){
+ const node=$('signalNote');if(!node)return;
+ if(rankingFeaturesAvailable){
+  node.classList.add('live');
+  node.textContent='The catalog has enough recommendation metadata for these controls to steer the ranking. Missing fields are still treated as unknown, never as zero.';
+ }else{
+  node.classList.remove('live');
+  node.textContent='These controls are being wired to real album metadata. Until coverage is high enough, they won’t pretend to steer the pick.';
+ }
+}
 function refreshFeatureCoverage(){
- if(!albums.length){featureCoverage=0;rankingFeaturesAvailable=false;return}
+ if(!albums.length){featureCoverage=0;rankingFeaturesAvailable=false;updateSignalNote();return}
  const enriched=albums.reduce((n,a)=>n+(hasRankingData(a)?1:0),0);
  featureCoverage=enriched/albums.length;
  // Until P1 normalises sparse records, do not pretend a partially enriched catalog is fair.
  rankingFeaturesAvailable=featureCoverage>=0.80;
+ updateSignalNote();
 }
 function libraryStatus(){
  const total=(catalogTotal||albums.length).toLocaleString();
@@ -303,7 +327,7 @@ function stars(){
  const area=$('stars');area.replaceChildren();
  for(let i=1;i<=5;i++){
   const b=document.createElement('button');b.type='button';b.className='star'+(i<=rating?' active':'');b.textContent='★';
-  b.setAttribute('aria-label',`${i} stars`);b.onclick=()=>{rating=i;stars()};area.append(b);
+  b.setAttribute('aria-label',`${i} stars`);b.setAttribute('role','radio');b.setAttribute('aria-checked',String(i===rating));b.onclick=()=>{rating=i;stars()};area.append(b);
  }
 }
 $('logForm').onsubmit=e=>{
@@ -400,6 +424,16 @@ function interpretFeeling(text){
  return {moods,energy,summary:ranked.length?ranked.slice(0,2).map(([m])=>m).join(' and ')+' feelings':''};
 }
 const feelingInput=$('feelingInput');
+document.querySelectorAll('.prompt-chip').forEach(button=>{
+ button.addEventListener('click',()=>{
+  if(!feelingInput)return;
+  const prompt=button.dataset.prompt||'';
+  const current=feelingInput.value.trim();
+  feelingInput.value=current ? current.replace(/[.!?]?$/,'')+', '+prompt : prompt;
+  feelingInput.dispatchEvent(new Event('input'));
+  feelingInput.focus();
+ });
+});
 if(feelingInput){
  feelingInput.addEventListener('input',()=>{
   const p=interpretFeeling(feelingInput.value);
