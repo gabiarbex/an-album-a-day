@@ -26,7 +26,7 @@ function choose(){
 }
 $('recommend').addEventListener('click',choose);
 function spotifyUrl(a){const source=a.metadata?.sources;const candidate=Array.isArray(source)?source.find(s=>typeof s==='string'&&s.includes('spotify.com')):source;if(typeof candidate==='string'&&/^https:\/\/open\.spotify\.com\//i.test(candidate))return candidate;return `https://open.spotify.com/search/${encodeURIComponent(`${a.artist} ${a.title}`)}`}
-function show(a){const stage=$('stage');stage.classList.remove('revealed');void stage.offsetWidth;const url=a.metadata?.cover_art||'./assets/placeholder.png';const cover=$('cover');cover.style.display='block';$('emptyCover').style.display='none';cover.onerror=()=>{cover.onerror=null;cover.src='./assets/placeholder.png'};cover.src=url;const info=$('details');info.replaceChildren();const tag=document.createElement('div');tag.className='eyebrow';tag.textContent='YOUR NEXT LISTEN ✳';const title=document.createElement('h2');title.textContent=a.title;const artist=document.createElement('p');artist.textContent=`${a.artist}${a.year?' · '+a.year:''}`;const meta=document.createElement('p');meta.textContent=[(a.moods||[]).join(' · '),a.length_min?`${Math.round(Number(a.length_min))} min`:null].filter(Boolean).join('  /  ');info.append(tag,title,artist,meta);const link=$('spotify');link.href=spotifyUrl(a);link.classList.remove('disabled');$('log').disabled=false;$('recordLabel').style.background=labelColor(a);requestAnimationFrame(()=>requestAnimationFrame(()=>stage.classList.add('revealed')));$('status').textContent=`${albums.length-seenAlbums.size} unseen albums remaining ✳`;loadArtwork(a,cover)}
+function show(a){const stage=$('stage');stage.classList.remove('revealed');void stage.offsetWidth;const url=a.metadata?.cover_art||artPlaceholder(a);const cover=$('cover');cover.style.display='block';$('emptyCover').style.display='none';cover.onerror=()=>{cover.onerror=null;cover.src=artPlaceholder(a)};cover.src=url;const info=$('details');info.replaceChildren();const tag=document.createElement('div');tag.className='eyebrow';tag.textContent='YOUR NEXT LISTEN ✳';const title=document.createElement('h2');title.textContent=a.title;const artist=document.createElement('p');artist.textContent=`${a.artist}${a.year?' · '+a.year:''}`;const meta=document.createElement('p');meta.textContent=[(a.moods||[]).join(' · '),a.length_min?`${Math.round(Number(a.length_min))} min`:null].filter(Boolean).join('  /  ');info.append(tag,title,artist,meta);const link=$('spotify');link.href=spotifyUrl(a);link.classList.remove('disabled');$('log').disabled=false;$('recordLabel').style.background=labelColor(a);requestAnimationFrame(()=>requestAnimationFrame(()=>stage.classList.add('revealed')));$('status').textContent=`${albums.length-seenAlbums.size} unseen albums remaining ✳`;loadArtwork(a,cover)}
 function labelColor(a){let n=0;for(const c of key(a))n=(n*31+c.charCodeAt(0))>>>0;return `hsl(${n%360} 58% 62%)`}
 function drawer(open){$('drawer').classList.toggle('open',open);$('drawer').setAttribute('aria-hidden',String(!open));$('overlay').hidden=!open} $('historyToggle').onclick=()=>drawer(true);$('closeDrawer').onclick=()=>drawer(false);$('overlay').onclick=()=>drawer(false);
 $('log').onclick=()=>{if(!pick)return;rating=0;$('track').value='';$('notes').value='';$('logAlbum').textContent=`${pick.artist} — ${pick.title}`;stars();$('logDialog').showModal()};$('closeDialog').onclick=()=>$('logDialog').close();function stars(){const area=$('stars');area.replaceChildren();for(let i=1;i<=5;i++){const b=document.createElement('button');b.type='button';b.className='star'+(i<=rating?' active':'');b.textContent='★';b.setAttribute('aria-label',`${i} stars`);b.onclick=()=>{rating=i;stars()};area.append(b)}}$('logForm').onsubmit=e=>{e.preventDefault();if(!pick)return;logs.push({date:getDate(),artist:pick.artist,album:pick.title,rating,favorite_track:$('track').value.trim(),notes:$('notes').value.trim(),cover_art:pick.metadata?.cover_art||''});persist();$('logDialog').close();$('status').textContent='Saved to your listening diary ♡'};$('export').onclick=()=>{const blob=new Blob([JSON.stringify(logs,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='listening_log.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
@@ -34,7 +34,7 @@ $('log').onclick=()=>{if(!pick)return;rating=0;$('track').value='';$('notes').va
 // Fetch artwork only for the currently selected album; avoid 10,000 API requests.
 let artworkRequest=0;
 async function loadArtwork(a,img){
- if(a.metadata?.cover_art)return;
+ if(a.metadata?.cover_art && /^https?:\/\//.test(a.metadata.cover_art))return;
  const request=++artworkRequest;
  try{
   const q=encodeURIComponent(`${a.artist} ${a.title}`);
@@ -44,6 +44,16 @@ async function loadArtwork(a,img){
   const norm=x=>String(x||'').normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
   const match=(data.results||[]).find(x=>norm(x.artistName)===norm(a.artist)&&norm(x.collectionName)===norm(a.title));
   if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
-  if(match?.artworkUrl100){img.src=match.artworkUrl100.replace(/100x100bb/,'600x600bb');}
+  if(match?.artworkUrl100){img.src=match.artworkUrl100.replace(/100x100bb/,'600x600bb');}else{const loose=(data.results||[]).find(x=>norm(x.artistName)===norm(a.artist)&&norm(x.collectionName).includes(norm(a.title)));if(loose?.artworkUrl100)img.src=loose.artworkUrl100.replace(/100x100bb/,'600x600bb');}
  }catch(e){console.info('Cover unavailable for',a.artist,a.title)}
+}
+
+// Always render a beautiful, readable sleeve even when a catalog has no cover image.
+function artPlaceholder(a){
+ const safe=x=>String(x||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const wrap=(v,n=19)=>{const words=String(v||'').split(/\\s+/),lines=[''];for(const w of words){const i=lines.length-1;if((lines[i]+' '+w).trim().length>n&&lines.length<4)lines.push(w);else lines[i]=(lines[i]+' '+w).trim()}return lines};
+ const title=wrap(a.title,17).map((v,i)=>'<text x="52" y="'+(330+i*62)+'" font-size="52" font-weight="800">'+safe(v)+'</text>').join('');
+ const hue=Number.parseInt(labelColor(a).match(/\\d+/)?.[0]||'270',10);
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="hsl('+hue+',55%,37%)"/><stop offset="1" stop-color="#150e22"/></linearGradient></defs><rect width="720" height="720" fill="url(#g)"/><circle cx="640" cy="100" r="240" fill="none" stroke="#ffffff" stroke-opacity=".14" stroke-width="1"/><circle cx="640" cy="100" r="180" fill="none" stroke="#ffffff" stroke-opacity=".12"/><g fill="#fff5f4" font-family="Arial, sans-serif"><text x="52" y="95" font-size="21" letter-spacing="6">AN ALBUM A DAY / DISCOVERY</text>'+title+'<text x="52" y="635" font-size="27">'+safe(a.artist).slice(0,37)+'</text><text x="52" y="680" font-size="18" letter-spacing="4">✳ LISTEN CLOSELY</text></g></svg>';
+ return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
