@@ -98,10 +98,15 @@ function resetPicker(){
  state.comfort=null;
  state.time=null;
  const field=$('feelingInput');
- if(field)field.value='';
+ if(field){
+  field.value='';
+  field.dispatchEvent(new Event('input',{bubbles:true}));
+ }
  renderPickerControls();
+ invalidateDailyPick();
  try{
   localStorage.removeItem(PICKER_STORAGE_KEY);
+  localStorage.removeItem('albumaday.picker');
   localStorage.removeItem('albumaday.dailyPick');
  }catch{}
  const url=new URL(location.href);
@@ -109,13 +114,11 @@ function resetPicker(){
   url.searchParams.delete('a');
   history.replaceState({},'',url.pathname+url.search+url.hash);
  }
- const insight=$('feelingInsight');
- if(insight)insight.textContent='start anywhere';
- const status=$('status');
- if(status)status.textContent='cleared — pick a new record.';
+ const fine=$('fineTune');if(fine)fine.open=true;
+ const insight=$('feelingInsight');if(insight)insight.textContent='';
+ const status=$('status');if(status)status.textContent='choose what you want and pick again.';
  showToast('Cleared.');
 }
-
 function key(a){return `${String(a.artist||'').toLowerCase()}::${String(a.title||'').toLowerCase()}`}
 function lookupId(a){
  if(a?.lookup_id)return a.lookup_id;
@@ -1491,17 +1494,18 @@ function coverArtUrls(a){
 }
 function setCoverSource(img,url,fallback,request){
  if(!url)return false;
- const probe=new Image();
- probe.decoding='async';
- try{probe.fetchPriority='high'}catch{}
- probe.onload=()=>{
-  if(request!==artworkRequest||!pick)return;
-  img.onerror=()=>{img.onerror=null;img.src=fallback};
-  img.src=url;
-  img.classList.add('cover-loaded');
+ if(request!==artworkRequest||!pick)return false;
+ img.onerror=()=>{
+  if(request!==artworkRequest)return;
+  img.onerror=null;
+  img.src=fallback;
  };
- probe.onerror=()=>{};
- probe.src=url;
+ img.onload=()=>{
+  if(request===artworkRequest)img.classList.add('cover-loaded');
+ };
+ // Put the real URL on the visible image immediately so the browser can
+ // decode/render it progressively instead of waiting behind a hidden preload.
+ img.src=url;
  return true;
 }
 async function loadArtwork(a,img){
