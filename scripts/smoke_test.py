@@ -64,6 +64,8 @@ def test_frontend_contract():
         fail("Surprise must bypass the saved daily pick")
     if "if(!surprise)saveDailyPick(" not in js:
         fail("Surprise must not overwrite the canonical daily pick")
+    if "let recommendationRequest=0" not in js or "if(request!==recommendationRequest)return;" not in js:
+        fail("Async recommendation results must be discarded after picker changes")
     if "albumaday.record.v4." not in js:
         fail("Tracklist cache version must invalidate stale pre-release results")
     if "$('tracklistStatus').hidden=true" not in js:
