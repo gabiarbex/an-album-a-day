@@ -1854,3 +1854,95 @@ main{
     max-height:82px!important;
   }
 }
+
+
+/* --- full-width mood matrix 2026-11-03 --- */
+.fine-tune{
+  width:100%!important;
+}
+.fine-tune[open]{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  width:100%!important;
+  align-items:stretch!important;
+}
+.fine-tune[open] > summary{
+  grid-column:1/-1!important;
+}
+.fine-tune[open] > .signal-note{
+  grid-column:1/-1!important;
+}
+.fine-tune[open] > .tuning-block:nth-child(3){
+  grid-column:1/-1!important;
+  grid-row:auto!important;
+}
+.fine-tune[open] > .tuning-block:nth-child(4){
+  grid-column:1!important;
+}
+.fine-tune[open] > .tuning-block:nth-child(5){
+  grid-column:2!important;
+}
+.fine-tune[open] > .tuning-block:nth-child(6){
+  grid-column:3!important;
+}
+.fine-tune[open] > .tuning-block:nth-child(4),
+.fine-tune[open] > .tuning-block:nth-child(5),
+.fine-tune[open] > .tuning-block:nth-child(6){
+  min-height:142px;
+}
+
+#moods{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(118px,1fr))!important;
+  gap:8px!important;
+  width:100%!important;
+}
+#moods .chip{
+  width:100%!important;
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  white-space:normal;
+}
+
+#energy,#comfort,#time{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(92px,1fr))!important;
+  gap:8px!important;
+  width:100%!important;
+}
+#energy .chip,#comfort .chip,#time .chip{
+  width:100%!important;
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+/* Let the spread use the viewport instead of feeling boxed into a narrow column. */
+main{
+  width:calc(100% - 40px)!important;
+  max-width:1720px!important;
+}
+.picker{
+  width:100%!important;
+}
+
+@media(max-width:760px){
+  .fine-tune[open]{
+    grid-template-columns:1fr!important;
+  }
+  .fine-tune[open] > .tuning-block:nth-child(n){
+    grid-column:1!important;
+    min-height:0;
+  }
+  #moods{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  #energy,#comfort,#time{
+    grid-template-columns:1fr 1fr!important;
+  }
+}
