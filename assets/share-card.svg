@@ -1,13 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#e9e1d2"/>
-  <rect x="54" y="50" width="1092" height="530" fill="none" stroke="#171411" stroke-width="3"/>
-  <rect x="84" y="86" width="148" height="18" fill="#b9412f"/>
-  <text x="84" y="148" fill="#171411" font-family="Courier New, monospace" font-size="18" letter-spacing="4">AN ALBUM A DAY / 2026</text>
-  <text x="80" y="315" fill="#171411" font-family="Georgia, serif" font-size="118">an album</text>
-  <text x="80" y="430" fill="#b9412f" font-family="Georgia, serif" font-size="132" font-style="italic">a day.</text>
-  <line x1="82" y1="484" x2="1110" y2="484" stroke="#171411" stroke-width="2"/>
-  <text x="84" y="530" fill="#171411" font-family="Courier New, monospace" font-size="18" letter-spacing="2">ONE RECORD EVERY DAY. LISTEN FIRST.</text>
-  <circle cx="1022" cy="184" r="74" fill="#171411"/>
-  <circle cx="1022" cy="184" r="19" fill="#b9412f"/>
-  <circle cx="1022" cy="184" r="4" fill="#e9e1d2"/>
+  <rect width="1200" height="630" fill="#f7f7f5"/>
+  <text x="72" y="94" fill="#777774" font-family="Arial, Helvetica, sans-serif" font-size="18" letter-spacing="2">AN ALBUM A DAY</text>
+  <text x="72" y="330" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="108" font-weight="500" letter-spacing="-5">one record</text>
+  <text x="72" y="438" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="108" font-weight="500" letter-spacing="-5">every day.</text>
+  <line x1="72" y1="515" x2="1128" y2="515" stroke="#d9d9d5" stroke-width="2"/>
+  <text x="72" y="558" fill="#777774" font-family="Arial, Helvetica, sans-serif" font-size="18">100,000 albums · listening diary · discovery</text>
 </svg>
