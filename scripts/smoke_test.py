@@ -43,6 +43,8 @@ def test_frontend_contract():
         fail("Reset/input changes must be able to invalidate the saved daily pick")
     if "state[id]===value?null:value" not in js:
         fail("Single-select filter chips must toggle off when clicked twice")
+    if "['any length',null]" in js or '["any length",null]' in js:
+        fail("A null-valued time chip conflicts with the cleared picker state")
     if "const existing=surprise?null:readDailyPick()" not in js:
         fail("Surprise must bypass the saved daily pick")
     if "albumaday.record.v4." not in js:
