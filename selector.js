@@ -491,7 +491,7 @@ async function load(){
    if(!albums.length)throw Error('Catalog manifest exists but no albums loaded');
    refreshFeatureCoverage();
    $('status').textContent=libraryStatus();
-   if(!(await restoreSharedPick()))restoreDailyPick();
+   await restoreSharedPick();
    return;
   }
  }catch(e){console.info('Large catalog not deployed yet; using base catalog.',e)}
@@ -504,13 +504,20 @@ async function load(){
   refreshFeatureCoverage();
   $('status').textContent=libraryStatus();
   if(!albums.length)throw Error('No albums found');
-  if(!(await restoreSharedPick()))restoreDailyPick();
+  await restoreSharedPick();
  }catch(e){
   $('status').textContent='Could not load the music library.';
   console.error(e);
  }
 }
-restorePickerState();
+try{
+ localStorage.removeItem(PICKER_STORAGE_KEY);
+ localStorage.removeItem('albumaday.picker');
+ localStorage.removeItem('albumaday.dailyPick');
+}catch{}
+state.moods=[];state.energy=null;state.comfort=null;state.time=null;
+if($('feelingInput'))$('feelingInput').value='';
+renderPickerControls();
 load();
 
 function score(a,intent){
@@ -595,14 +602,6 @@ async function chooseDaily(options={}){
  if(!albums.length){$('status').textContent='Still loading albums. Check your connection if this persists.';return}
  setPickBusy(true);
  try{
-  const existing=surprise?null:readDailyPick();
-  if(existing){
-   pick=existing.album;
-   show(pick,{mode:'daily',featuresUsed:Boolean(existing.featuresUsed),rankingMode:existing.rankingMode||'draw',restored:true});
-   $('reroll').hidden=false;
-   markTodayPicked();
-   return;
-  }
   const pool=await eligiblePool();
   if(!pool.length){$('status').textContent='Every available album has already been recommended.';return}
   const seed=`${getDate()}|${getUserSalt()}`;
@@ -624,7 +623,6 @@ async function chooseDaily(options={}){
   if(request!==recommendationRequest)return;
   pick=result.album;
   seenAlbums.add(hash32(key(pick)));persistSeen();
-  if(!surprise)saveDailyPick(pick,result.featuresUsed,result.mode);
   markTodayPicked();
   show(pick,{mode:'daily',featuresUsed:result.featuresUsed,rankingMode:result.mode,userTriggered:true});
   $('reroll').hidden=false;
@@ -1552,16 +1550,17 @@ function coverArtUrls(a){
 function setCoverSource(img,url,fallback,request){
  if(!url)return false;
  if(request!==artworkRequest||!pick)return false;
+ img.classList.remove('cover-loaded');
  img.onerror=()=>{
   if(request!==artworkRequest)return;
   img.onerror=null;
+  img.onload=null;
+  img.classList.remove('cover-loaded');
   img.src=fallback;
  };
  img.onload=()=>{
   if(request===artworkRequest)img.classList.add('cover-loaded');
  };
- // Put the real URL on the visible image immediately so the browser can
- // decode/render it progressively instead of waiting behind a hidden preload.
  img.src=url;
  return true;
 }
@@ -1576,43 +1575,46 @@ async function loadArtwork(a,img){
  const request=++artworkRequest;
  const fallback=artPlaceholder(a);
  img.classList.remove('cover-loaded');
- img.src=fallback;
+ img.onerror=null;img.onload=null;img.src=fallback;
 
  const {preview,full}=coverArtUrls(a);
- if(preview){
-  setCoverSource(img,preview,fallback,request);
-  if(full&&full!==preview){
-   const upgrade=()=>{
-    if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
-    const hi=new Image();hi.decoding='async';
-    hi.onload=()=>{if(request===artworkRequest&&pick&&key(pick)===key(a))img.src=full};
-    hi.src=full;
-   };
-   if('requestIdleCallback' in window)requestIdleCallback(upgrade,{timeout:1800});
-   else setTimeout(upgrade,900);
-  }
-  return;
- }
 
- // No catalog cover yet: use the storefront lookup immediately because it is
- // much faster than waiting behind the rate-limited MusicBrainz request queue.
+ // Try the catalog source immediately, but never let a missing CAA image block
+ // a storefront fallback. The first real image to load wins the initial slot.
+ if(preview)setCoverSource(img,preview,fallback,request);
+
  findItunesAlbum(a).then(album=>{
   if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
-  const url=storeArtworkUrl(album,300);
+  if(img.classList.contains('cover-loaded'))return;
+  const url=storeArtworkUrl(album,600);
   if(url)setCoverSource(img,url,fallback,request);
  }).catch(()=>{});
 
- // Resolve canonical CAA art later and replace the storefront image when found.
- const resolveLate=async()=>{
-  try{
-   const group=await findMusicBrainzGroup(a);
-   if(request!==artworkRequest||!pick||key(pick)!==key(a)||!group?.id)return;
-   const url='https://coverartarchive.org/release-group/'+group.id+'/front-250';
-   setCoverSource(img,url,fallback,request);
-  }catch{}
- };
- if('requestIdleCallback' in window)requestIdleCallback(()=>resolveLate(),{timeout:2200});
- else setTimeout(resolveLate,1200);
+ // If there is no ready catalog source, resolve the release-group later.
+ if(!preview){
+  const resolveLate=async()=>{
+   try{
+    const group=await findMusicBrainzGroup(a);
+    if(request!==artworkRequest||!pick||key(pick)!==key(a)||!group?.id)return;
+    if(img.classList.contains('cover-loaded'))return;
+    setCoverSource(img,'https://coverartarchive.org/release-group/'+group.id+'/front-500',fallback,request);
+   }catch{}
+  };
+  if('requestIdleCallback' in window)requestIdleCallback(()=>resolveLate(),{timeout:1800});
+  else setTimeout(resolveLate,700);
+ }
+
+ // Upgrade only after a real preview has rendered.
+ if(full&&full!==preview){
+  const upgrade=()=>{
+   if(request!==artworkRequest||!pick||key(pick)!==key(a)||!img.classList.contains('cover-loaded'))return;
+   const hi=new Image();hi.decoding='async';
+   hi.onload=()=>{if(request===artworkRequest&&pick&&key(pick)===key(a))img.src=full};
+   hi.src=full;
+  };
+  if('requestIdleCallback' in window)requestIdleCallback(upgrade,{timeout:1600});
+  else setTimeout(upgrade,900);
+ }
 }
 
 function artPlaceholder(a){
@@ -1644,8 +1646,10 @@ function explainPick(a,context={}){
  if(state.comfort==='comfort')reasons.push('familiar artist');
  if(state.comfort==='exploration')reasons.push('less familiar');
  if(state.time!==null){
-  const minutes=a._live?.runtimeMin??a._semantic?.runtimeMin??Number(a.length_min);
-  if(Number.isFinite(minutes)&&minutes<=state.time+3)reasons.push(Math.round(minutes)+' min');
+  const rawMinutes=[a._live?.runtimeMin,a._semantic?.runtimeMin,a.length_min]
+   .find(v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))&&Number(v)>0);
+  const minutes=rawMinutes===undefined?null:Number(rawMinutes);
+  if(minutes!==null&&minutes<=state.time+3)reasons.push(Math.round(minutes)+' min');
  }
  if(note){
   const genre=(intent.genres||[])[0];
