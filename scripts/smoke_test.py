@@ -30,6 +30,10 @@ def test_frontend_contract():
     missing_buttons=sorted(required_buttons-set(button_ids))
     if missing_buttons:
         fail(f"Required release buttons missing from HTML: {missing_buttons}")
+    for button_id in required_buttons:
+        match=re.search(rf'<button[^>]*id="{re.escape(button_id)}"[^>]*>',html)
+        if not match or 'type="button"' not in match.group(0):
+            fail(f"Non-submit release button must declare type=button: {button_id}")
     unwired=sorted(b for b in required_buttons if f"$('{b}')" not in js)
     if unwired:
         fail(f"Visible release buttons missing JS wiring: {unwired}")
