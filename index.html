@@ -110,9 +110,9 @@
 
     <section class="picker" aria-label="Choose a record">
       <div class="clerk-intro">
-        <div class="eyebrow">pick a record</div>
-        <h2>what are you in the mood for?</h2>
-        <p>choose as much or as little as you want.</p>
+        <div class="eyebrow">today’s listen</div>
+        <h2>what should today sound like?</h2>
+        <p>write a note, mark a few things, or leave it blank.</p>
         <div class="quick-actions">
           <button id="surpriseMe" type="button" class="quick-pick"><b>surprise me</b></button>
           <button id="resetPicker" type="button" class="quick-pick quiet" disabled><b>clear all</b></button>
@@ -120,8 +120,8 @@
       </div>
 
       <div class="feeling-field">
-        <label for="feelingInput" class="feeling-prompt">describe what you want to hear</label>
-        <textarea id="feelingInput" maxlength="1200" rows="5" placeholder="something warm and melodic for a late walk. not too sad."></textarea>
+        <label for="feelingInput" class="feeling-prompt">write it down</label>
+        <textarea id="feelingInput" maxlength="1200" rows="5" placeholder="late walk, restless, nothing too obvious..."></textarea>
         <div class="feeling-foot">
           <span id="feelingInsight" aria-live="polite"></span>
           <button id="clearFeeling" type="button" disabled>clear text</button>
@@ -130,7 +130,7 @@
 
       <details class="fine-tune" id="fineTune" open>
         <summary>
-          <span>filters</span>
+          <span>mark a few things</span>
           <small id="filterSummary">none selected</small>
         </summary>
 
