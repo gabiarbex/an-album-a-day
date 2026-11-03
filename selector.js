@@ -22,19 +22,92 @@ function showToast(message){
  }
 }
 const moods=[
- ['dark','dark'],
+ ['anxious','anxious'],
+ ['angry','angry'],
+ ['bittersweet','bittersweet'],
+ ['brooding','brooding'],
+ ['cathartic','cathartic'],
+ ['chaotic','chaotic'],
  ['cold','cold'],
- ['intense','intense'],
- ['reflective','reflective'],
- ['energetic','energetic'],
- ['melancholic','melancholic'],
- ['gritty','gritty'],
- ['alienated','alienated'],
- ['nostalgic','nostalgic'],
- ['warm','warm'],
+ ['curious','curious'],
+ ['dark','dark'],
+ ['defiant','defiant'],
+ ['detached','detached'],
  ['dreamy','dreamy'],
- ['hopeful','hopeful']
+ ['euphoric','euphoric'],
+ ['energetic','energetic'],
+ ['fragile','fragile'],
+ ['gritty','gritty'],
+ ['heartbroken','heartbroken'],
+ ['homesick','homesick'],
+ ['hopeful','hopeful'],
+ ['intense','intense'],
+ ['lonely','lonely'],
+ ['melancholic','melancholic'],
+ ['nostalgic','nostalgic'],
+ ['numb','numb'],
+ ['playful','playful'],
+ ['raw','raw'],
+ ['reflective','reflective'],
+ ['restless','restless'],
+ ['romantic','romantic'],
+ ['serene','serene'],
+ ['sensual','sensual'],
+ ['soft','soft'],
+ ['tender','tender'],
+ ['triumphant','triumphant'],
+ ['vulnerable','vulnerable'],
+ ['warm','warm'],
+ ['yearning','yearning']
 ];
+
+const MOOD_SIGNAL_MAP={
+ anxious:{intense:1,cold:.55,alienated:.35},
+ angry:{intense:1,gritty:.85,dark:.45},
+ bittersweet:{melancholic:.9,nostalgic:.8,warm:.45},
+ brooding:{dark:.95,reflective:.75,intense:.35},
+ cathartic:{intense:.85,melancholic:.55,hopeful:.5},
+ chaotic:{intense:1,energetic:.9,gritty:.55},
+ cold:{cold:1},
+ curious:{reflective:.65,hopeful:.5,dreamy:.25},
+ dark:{dark:1},
+ defiant:{intense:.8,gritty:.8,hopeful:.45},
+ detached:{cold:.9,alienated:.9,reflective:.25},
+ dreamy:{dreamy:1},
+ euphoric:{energetic:1,hopeful:1,warm:.4},
+ energetic:{energetic:1},
+ fragile:{melancholic:.75,reflective:.8,warm:.35},
+ gritty:{gritty:1},
+ heartbroken:{melancholic:1,reflective:.75,alienated:.4},
+ homesick:{nostalgic:1,melancholic:.8,warm:.5},
+ hopeful:{hopeful:1},
+ intense:{intense:1},
+ lonely:{alienated:1,melancholic:.9,reflective:.4},
+ melancholic:{melancholic:1},
+ nostalgic:{nostalgic:1},
+ numb:{cold:.9,alienated:.8,dark:.35},
+ playful:{energetic:.8,hopeful:.8,warm:.45},
+ raw:{gritty:.85,intense:.65,reflective:.35},
+ reflective:{reflective:1},
+ restless:{energetic:.8,intense:.65,alienated:.35},
+ romantic:{warm:.85,dreamy:.7,hopeful:.45},
+ serene:{warm:.7,dreamy:.65,reflective:.75},
+ sensual:{warm:.8,dreamy:.55,intense:.3},
+ soft:{warm:.8,dreamy:.6,reflective:.35},
+ tender:{warm:1,reflective:.65,melancholic:.25},
+ triumphant:{hopeful:1,energetic:.85,intense:.45},
+ vulnerable:{melancholic:.65,reflective:.9,warm:.35},
+ warm:{warm:1},
+ yearning:{melancholic:.75,hopeful:.45,reflective:.8}
+};
+function selectedMoodSignals(){
+ const out={};
+ for(const mood of state.moods){
+  const vector=MOOD_SIGNAL_MAP[mood]||{[mood]:1};
+  for(const [name,value] of Object.entries(vector))out[name]=Math.max(out[name]||0,Number(value)||0);
+ }
+ return out;
+}
 const groups=[
  ['moods',moods],
  ['energy',[['low',2],['medium',5],['high',9]]],
@@ -531,7 +604,7 @@ function score(a,intent){
  const moodVector=a.features?.moods&&Object.keys(a.features.moods).length
   ? a.features.moods
   : Object.fromEntries((a.moods||[]).map(m=>[String(m).toLowerCase(),1]));
- const requested={...Object.fromEntries(state.moods.map(m=>[m,1])),...intent.moods};
+ const requested={...selectedMoodSignals(),...intent.moods};
  for(const [m,w] of Object.entries(requested)){
   if(moodVector[m]===undefined)continue;
   const ww=2.6*confidence('moods',.65)*Math.max(1,Number(w)||1);
@@ -798,7 +871,7 @@ function liveScore(candidate,intent){
  let weighted=0,weight=0;
  const signals=candidate._live?.signals||{moods:{},energy:null,confidence:.35};
  const confidence=signals.confidence||.35;
- const requested={...Object.fromEntries(state.moods.map(m=>[m,1])),...intent.moods};
+ const requested={...selectedMoodSignals(),...intent.moods};
  for(const [m,w] of Object.entries(requested)){
   if(signals.moods[m]===undefined)continue;
   const ww=2.4*confidence*Math.max(1,Number(w)||1);
@@ -1680,7 +1753,11 @@ function explainPick(a,context={}){
  const albumMoods=(a.moods||[]).map(x=>String(x).toLowerCase());
  const intent=interpretFeeling(note);
 
- const selectedMoodMatches=state.moods.filter(m=>albumMoods.includes(m));
+ const albumMoodSet=new Set(albumMoods);
+ const selectedMoodMatches=state.moods.filter(m=>{
+  const vector=MOOD_SIGNAL_MAP[m]||{[m]:1};
+  return Object.keys(vector).some(base=>albumMoodSet.has(base));
+ });
  if(selectedMoodMatches.length)reasons.push(selectedMoodMatches.slice(0,2).join(' / '));
 
  const energyCandidates=[
