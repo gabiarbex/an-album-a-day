@@ -1043,3 +1043,483 @@ dialog input,dialog textarea{
 @media(prefers-reduced-motion:reduce){
   *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* --- zine editorial pass 2026-11-03 --- */
+:root{
+  --paper:#e9e3d7;
+  --paper-2:#f8f3e8;
+  --ink:#0a0a0a;
+  --pink:#e6442f;
+  --pink-soft:#f0b6a9;
+  --blue:#244cff;
+  --orange:#e6442f;
+  --acid:#d8ff46;
+  --yellow:#f5df59;
+  --muted:#5f5a51;
+}
+html{background:var(--paper)}
+body{
+  background:
+    radial-gradient(circle at 1px 1px,#00000012 0 .65px,transparent .8px) 0 0/7px 7px,
+    linear-gradient(90deg,transparent 0 49.8%,#00000008 50%,transparent 50.2%),
+    var(--paper);
+  font-family:Arial,Helvetica,sans-serif;
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.13;
+  mix-blend-mode:multiply;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 3px,#0000000c 4px,transparent 5px),
+    repeating-linear-gradient(90deg,transparent 0 17px,#00000008 18px,transparent 19px);
+  z-index:9999;
+}
+
+.masthead{
+  position:relative;
+  padding-top:12px;
+  border-top:8px solid var(--ink);
+  border-bottom:3px solid var(--ink);
+}
+.masthead:after{
+  content:"VOL. 01";
+  position:absolute;
+  right:26px;
+  bottom:-14px;
+  padding:3px 8px;
+  color:#fff;
+  background:var(--pink);
+  border:2px solid var(--ink);
+  font:900 10px/1 "Courier New",monospace;
+  transform:rotate(2deg);
+}
+.masthead-kicker{
+  margin:0 0 20px;
+  padding:5px 7px;
+  background:transparent;
+  color:var(--ink);
+  border-top:1px solid var(--ink);
+  border-bottom:1px solid var(--ink);
+}
+.masthead-kicker span{
+  background:var(--ink);
+  color:#fff;
+  transform:rotate(-1deg);
+}
+h1{
+  max-width:9ch;
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  font-size:clamp(62px,9vw,132px);
+  line-height:.72;
+  font-weight:900;
+  font-style:normal;
+  letter-spacing:-.09em;
+  text-transform:uppercase;
+}
+h1 span{font-style:normal}
+h1 em{
+  position:relative;
+  top:.05em;
+  margin-left:.02em;
+  color:var(--pink);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:.55em;
+  font-style:italic;
+  font-weight:700;
+  letter-spacing:-.06em;
+  text-transform:lowercase;
+  transform:rotate(-4deg);
+}
+.masthead p{
+  max-width:46ch;
+  margin-top:18px;
+  font-size:10px;
+  text-transform:uppercase;
+}
+.history-toggle{
+  min-width:0;
+  padding:9px 11px;
+  border:2px solid var(--ink);
+  background:var(--paper-2);
+  color:var(--ink);
+  box-shadow:4px 4px 0 var(--ink);
+  transform:rotate(.8deg);
+}
+.history-toggle:hover{background:var(--acid);color:var(--ink)}
+
+main{
+  gap:clamp(34px,5vw,72px);
+  padding-top:54px;
+}
+.showcase{position:relative}
+.showcase:before{
+  content:"SIDE A";
+  position:absolute;
+  top:25px;
+  left:-14px;
+  z-index:3;
+  padding:4px 8px;
+  color:#fff;
+  background:var(--ink);
+  font:900 10px/1 "Courier New",monospace;
+  transform:rotate(-90deg) translateX(-100%);
+  transform-origin:left top;
+}
+.showcase-rubric{
+  border-bottom:3px solid var(--ink);
+  font-size:10px;
+}
+.showcase-rubric span:first-child{
+  background:var(--ink);
+  transform:rotate(-1deg);
+}
+
+.record-stage{
+  isolation:isolate;
+  padding:15px;
+  background:var(--paper-2)!important;
+  border:3px solid var(--ink);
+  box-shadow:10px 10px 0 var(--ink);
+  transform:rotate(-.7deg);
+}
+.record-stage:before,
+.record-stage:after{
+  content:"";
+  display:block;
+  position:absolute;
+  z-index:5;
+  width:92px;
+  height:24px;
+  background:#d8cfb9cc;
+  border:1px solid #6d6559;
+  pointer-events:none;
+}
+.record-stage:before{
+  top:-12px;
+  left:50%;
+  transform:translateX(-50%) rotate(-2deg);
+}
+.record-stage:after{
+  right:-35px;
+  bottom:42px;
+  transform:rotate(84deg);
+}
+.sleeve{
+  border:2px solid var(--ink);
+  background:#d8d1c4;
+  box-shadow:none;
+}
+.sleeve img{
+  filter:saturate(.96) contrast(1.03);
+}
+.empty-cover{
+  background:
+    repeating-linear-gradient(-8deg,transparent 0 18px,#00000010 19px 20px),
+    var(--paper);
+  border:0;
+}
+.empty-cover strong{
+  max-width:7ch;
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  font-size:clamp(42px,6vw,82px);
+  text-transform:uppercase;
+}
+
+.album-details{
+  position:relative;
+  padding-top:30px;
+}
+.album-details .eyebrow{
+  background:var(--acid);
+  border:1px solid var(--ink);
+  transform:rotate(-1.5deg);
+}
+.album-details h2{
+  max-width:15ch;
+  margin-top:13px;
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  font-size:clamp(45px,5.8vw,84px);
+  line-height:.82;
+  font-style:normal;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:-.075em;
+}
+.album-details p{
+  max-width:56ch;
+  color:var(--ink);
+  font-size:11px;
+  text-transform:uppercase;
+}
+
+.actions{gap:9px;margin-top:23px}
+.primary,.secondary{
+  min-height:40px;
+  padding:0 13px;
+  border:2px solid var(--ink);
+  background:var(--paper-2);
+  box-shadow:3px 3px 0 var(--ink);
+  font-weight:900;
+  text-transform:uppercase;
+}
+.primary{background:var(--ink);color:#fff;transform:rotate(-.6deg)}
+.secondary:nth-child(2){background:var(--yellow);transform:rotate(.8deg)}
+.secondary:nth-child(3){background:var(--acid);transform:rotate(-.8deg)}
+.secondary:nth-child(4){background:var(--paper-2);transform:rotate(.4deg)}
+
+.why-panel{
+  max-width:620px;
+  margin-top:35px;
+  padding:16px 18px;
+  background:#f3e88f;
+  border:1px solid var(--ink);
+  box-shadow:5px 5px 0 #00000022;
+  transform:rotate(1deg);
+}
+.why-panel:after{
+  content:"";
+  position:absolute;
+  top:-10px;
+  left:42%;
+  width:100px;
+  height:20px;
+  background:#d8cfb9cc;
+  border:1px solid #857d70;
+  transform:rotate(-3deg);
+}
+.why-heading{font-size:9px}
+.why-panel p{
+  font-family:"Marker Felt","Chalkboard SE","Bradley Hand","Segoe Print",cursive;
+  font-size:18px;
+}
+
+.tracklist-panel{
+  background:var(--paper-2);
+  border:2px solid var(--ink);
+  border-left:2px solid var(--ink);
+  box-shadow:7px 7px 0 var(--blue);
+  transform:rotate(.25deg);
+}
+.tracklist-head{
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  font-style:normal;
+  text-transform:uppercase;
+}
+.track-no{color:var(--pink)}
+
+.picker{
+  position:relative;
+  padding:22px 20px 25px;
+  background:var(--paper-2);
+  border:3px solid var(--ink);
+  box-shadow:9px 9px 0 var(--blue);
+  transform:rotate(.35deg);
+}
+.picker:before{
+  content:"LISTENER'S NOTE";
+  position:absolute;
+  top:-14px;
+  left:20px;
+  padding:5px 10px;
+  background:var(--pink);
+  color:#fff;
+  border:2px solid var(--ink);
+  font:900 9px/1 "Courier New",monospace;
+  letter-spacing:.08em;
+  transform:rotate(-2deg);
+}
+.clerk-intro h2{
+  max-width:9ch;
+  margin:8px 0 10px;
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  font-size:clamp(44px,5vw,70px);
+  line-height:.8;
+  letter-spacing:-.07em;
+  text-transform:uppercase;
+}
+.clerk-intro p{
+  max-width:38ch;
+  font:700 11px/1.35 "Courier New",monospace;
+}
+.quick-actions{gap:7px}
+.quick-pick{
+  border:2px solid var(--ink);
+  border-radius:0;
+  background:var(--acid);
+  box-shadow:3px 3px 0 var(--ink);
+  text-transform:uppercase;
+  transform:rotate(-1deg);
+}
+.quick-pick.quiet{background:var(--paper)}
+
+.feeling-field{
+  margin:27px 0 24px;
+  padding:0;
+  background:transparent;
+  border:0;
+}
+.feeling-prompt{
+  display:inline-block;
+  margin-bottom:7px;
+  padding:3px 6px;
+  background:var(--ink);
+  color:#fff;
+  font:900 9px/1 "Courier New",monospace;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  transform:rotate(.7deg);
+}
+#feelingInput{
+  min-height:150px;
+  border:2px solid var(--ink);
+  border-radius:0;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 30px,#00000022 31px 32px),
+    #fbf6ec;
+  box-shadow:5px 5px 0 #000;
+  font-family:"Courier New",monospace;
+  font-size:13px;
+  line-height:32px;
+}
+#feelingInput::placeholder{color:#756f65}
+.feeling-foot button{
+  text-decoration:underline;
+  text-transform:uppercase;
+  font-size:9px;
+}
+
+.fine-tune{
+  border-top:3px solid var(--ink);
+  border-bottom:3px solid var(--ink);
+}
+.fine-tune>summary{
+  padding:10px 0;
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  font-size:16px;
+  text-transform:uppercase;
+}
+.tuning-block{
+  padding:15px 0;
+  border-top:1px solid var(--ink);
+}
+.tuning-block h3{
+  margin:4px 0 9px;
+  font:900 11px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.chips{gap:7px}
+.chip{
+  border:2px solid var(--ink);
+  border-radius:0;
+  background:var(--paper);
+  box-shadow:2px 2px 0 var(--ink);
+  font:900 10px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.chip:nth-child(3n+1){transform:rotate(-1deg)}
+.chip:nth-child(3n+2){transform:rotate(.7deg)}
+.chip:nth-child(3n){transform:rotate(-.3deg)}
+.chip.selected{
+  background:var(--ink);
+  color:#fff;
+  box-shadow:2px 2px 0 var(--pink);
+}
+
+.recommend{
+  border:3px solid var(--ink);
+  border-radius:0;
+  background:var(--pink);
+  color:#fff;
+  box-shadow:6px 6px 0 var(--ink);
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  text-transform:uppercase;
+  letter-spacing:-.02em;
+  transform:rotate(-.6deg);
+}
+.recommend:hover{background:var(--blue)}
+#status{
+  padding-top:8px;
+  font:700 9px/1.3 "Courier New",monospace;
+  text-transform:uppercase;
+}
+
+.record-file{
+  border-top:3px solid var(--ink);
+}
+.record-file-body{
+  background:var(--paper-2);
+  border:2px solid var(--ink);
+}
+.classification span{
+  border:1px solid var(--ink);
+  background:transparent;
+  font-weight:900;
+}
+.classification span:nth-child(odd){transform:rotate(-1deg)}
+.classification span:nth-child(even){transform:rotate(.7deg)}
+
+.recent-shelf{
+  border-top:6px solid var(--ink);
+  background:var(--paper);
+}
+.recent-shelf-head h2{
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  text-transform:uppercase;
+  letter-spacing:-.05em;
+}
+.recent-card{
+  border:2px solid var(--ink);
+  background:var(--paper-2);
+  box-shadow:4px 4px 0 var(--ink);
+}
+.recent-card:nth-child(odd){transform:rotate(-.4deg)}
+.recent-card:nth-child(even){transform:rotate(.35deg)}
+
+.site-footer{
+  border-top:3px solid var(--ink);
+  font-family:"Courier New",monospace;
+  text-transform:uppercase;
+}
+
+.drawer{
+  background:var(--paper);
+  border-left:4px solid var(--ink);
+}
+.drawer-head h2{
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  text-transform:uppercase;
+}
+.diary-stats>div{
+  background:var(--paper-2);
+  border:2px solid var(--ink);
+}
+.history-item{
+  border-bottom:2px solid var(--ink);
+}
+
+dialog{
+  border:3px solid var(--ink);
+  border-radius:0;
+  background:var(--paper-2);
+  box-shadow:10px 10px 0 var(--ink);
+}
+
+@media(max-width:1100px){
+  .picker{transform:none}
+  .record-stage{transform:rotate(-.35deg)}
+  .showcase:before{display:none}
+}
+@media(max-width:700px){
+  .masthead{padding-left:16px;padding-right:16px}
+  .masthead-row{align-items:flex-start}
+  h1{font-size:clamp(56px,18vw,92px)}
+  main{padding-left:16px;padding-right:16px}
+  .record-stage{padding:8px;box-shadow:6px 6px 0 var(--ink)}
+  .record-stage:after{display:none}
+  .picker{padding:20px 15px;box-shadow:6px 6px 0 var(--blue)}
+  .album-details h2{font-size:clamp(42px,13vw,68px)}
+  .clerk-intro h2{font-size:clamp(42px,13vw,64px)}
+}
