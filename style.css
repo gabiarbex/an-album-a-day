@@ -444,16 +444,18 @@ main{
 .picker{
   position:sticky;
   top:20px;
-  padding:24px;
-  background:var(--paper-2);
-  border:2px solid var(--ink);
+  padding:0;
+  background:transparent;
+  border:0;
 }
 .picker:before{display:none}
 .clerk-intro{
-  margin:-24px -24px 20px;
+  margin:0 0 18px;
   padding:22px 24px 20px;
   background:var(--yellow);
-  border-bottom:2px solid var(--ink);
+  border:2px solid var(--ink);
+  box-shadow:7px 7px 0 var(--orange);
+  transform:rotate(.25deg);
 }
 .clerk-intro .eyebrow{color:var(--blue)}
 .clerk-intro h2{
@@ -498,10 +500,13 @@ main{
 }
 
 .feeling-field{
-  padding:15px;
+  position:relative;
+  margin-left:18px;
+  padding:17px 16px 15px;
   background:#fff;
   border:2px solid var(--ink);
-  box-shadow:6px 6px 0 var(--pink-soft);
+  box-shadow:-8px 8px 0 var(--pink-soft);
+  transform:rotate(-.18deg);
 }
 .feeling-prompt{
   display:block;
@@ -559,22 +564,30 @@ main{
 
 
 .fine-tune{
-  margin-top:22px;
+  margin-top:26px;
   padding:0;
-  background:#fffdf6;
-  border:2px solid var(--ink);
+  background:transparent;
+  border:0;
+}
+.fine-tune[open]{
+  display:grid;
+  grid-template-columns:1.08fr .92fr;
+  gap:12px 14px;
 }
 .fine-tune summary{
+  grid-column:1/-1;
   display:flex;
   justify-content:space-between;
   gap:12px;
-  padding:11px 12px;
+  padding:9px 11px;
   list-style:none;
   color:#fff;
   background:var(--ink);
+  border:2px solid var(--ink);
   font:700 9px/1 "Courier New",monospace;
   text-transform:uppercase;
   letter-spacing:.06em;
+  transform:rotate(-.25deg);
 }
 .fine-tune summary::-webkit-details-marker{display:none}
 .fine-tune summary:after{content:"+";margin-left:auto}
@@ -586,20 +599,29 @@ main{
   font-size:8px;
 }
 .signal-note{
+  grid-column:1/-1;
   margin:0;
-  padding:0 12px 12px;
+  padding:0;
   color:var(--muted);
   font:italic 10px/1.4 Georgia,serif;
 }
 .tuning-block{
-  padding:13px 12px;
-  border-top:1px solid #bdb6aa;
+  min-width:0;
+  padding:14px 13px 13px;
+  border:1px solid var(--ink);
+  background:#fffaf0;
+  box-shadow:4px 4px 0 #00000014;
 }
+.tuning-block:nth-of-type(2){background:#ffd7e9;transform:rotate(-.35deg)}
+.tuning-block:nth-of-type(3){background:#dbe4ff;transform:rotate(.28deg)}
+.tuning-block:nth-of-type(4){background:#f5f0dd;transform:rotate(.22deg)}
+.tuning-block:nth-of-type(5){background:#e8ffc1;transform:rotate(-.2deg)}
 .tuning-block h3{
-  margin:5px 0 9px;
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:14px;
-  font-weight:400;
+  margin:5px 0 10px;
+  font-family:"Marker Felt","Chalkboard SE","Bradley Hand","Segoe Print",cursive;
+  font-size:15px;
+  font-weight:700;
+  line-height:1.05;
 }
 .chips{
   display:flex;
@@ -607,25 +629,29 @@ main{
   gap:5px;
 }
 .chip{
-  padding:6px 7px;
+  padding:5px 7px 4px;
   color:var(--ink);
   background:#fff;
   border:1px solid var(--ink);
   border-radius:0;
   font:700 8px/1 "Courier New",monospace;
+  box-shadow:1px 1px 0 var(--ink);
 }
-.chip:nth-child(3n+1){background:#ffd7e9}
-.chip:nth-child(3n+2){background:#f5f0dd}
-.chip:nth-child(3n){background:#dbe4ff}
-.chip:hover{background:var(--acid)}
+.chip:nth-child(3n+1){transform:rotate(-.6deg)}
+.chip:nth-child(3n+2){transform:rotate(.45deg)}
+.chip:nth-child(3n){transform:rotate(-.2deg)}
+.chip:hover{background:var(--yellow)}
 .chip.selected{
   color:#fff;
   background:var(--ink)!important;
+  transform:translate(1px,1px) rotate(0)!important;
+  box-shadow:none;
 }
 .chip:disabled{opacity:.35;cursor:not-allowed}
 
 .recommend{
-  width:100%;
+  width:calc(100% - 12px);
+  margin-left:12px;
   min-height:52px;
   display:flex;
   justify-content:space-between;
@@ -962,6 +988,7 @@ dialog input,dialog textarea{
     max-width:780px;
     order:-1;
   }
+  .fine-tune[open]{grid-template-columns:1fr 1fr}
   .showcase{order:0}
   .record-stage{scroll-margin-top:18px}
   .recent-pulls{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -979,11 +1006,21 @@ dialog input,dialog textarea{
   .actions{display:grid;grid-template-columns:1fr 1fr}
   .primary,.secondary{width:100%}
   .why-panel{margin-left:0}
-  .picker{padding:20px 18px}
+  .picker{padding:0}
   .clerk-intro{
-    margin:-20px -18px 18px;
+    margin:0 0 16px;
     padding:18px 18px 16px;
+    transform:none;
+    box-shadow:5px 5px 0 var(--orange);
   }
+  .feeling-field{
+    margin-left:0;
+    transform:none;
+    box-shadow:5px 5px 0 var(--pink-soft);
+  }
+  .fine-tune[open]{grid-template-columns:1fr}
+  .tuning-block:nth-of-type(n){transform:none}
+  .recommend{width:100%;margin-left:0}
   .recent-shelf{padding:28px 16px 58px}
   .recent-pulls{grid-template-columns:repeat(2,1fr);gap:14px}
   .recent-card{transform:none!important}
