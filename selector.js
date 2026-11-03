@@ -619,7 +619,7 @@ async function chooseDaily(options={}){
   seenAlbums.add(hash32(key(pick)));persistSeen();
   if(!surprise)saveDailyPick(pick,result.featuresUsed,result.mode);
   markTodayPicked();
-  show(pick,{mode:'daily',featuresUsed:result.featuresUsed,rankingMode:result.mode});
+  show(pick,{mode:'daily',featuresUsed:result.featuresUsed,rankingMode:result.mode,userTriggered:true});
   $('reroll').hidden=false;
  }finally{setPickBusy(false)}
 }
@@ -645,7 +645,7 @@ async function chooseAnother(){
   }
   pick=result.album;
   seenAlbums.add(hash32(key(pick)));persistSeen();
-  show(pick,{mode:'bonus',featuresUsed:result.featuresUsed,rankingMode:result.mode});
+  show(pick,{mode:'bonus',featuresUsed:result.featuresUsed,rankingMode:result.mode,userTriggered:true});
  }finally{setPickBusy(false)}
 }
 function rankFromStoredFeatures(pool,seed,daily){
@@ -1373,6 +1373,11 @@ function spotifyUrl(a){
  if(typeof candidate==='string'&&/^https:\/\/open\.spotify\.com\//i.test(candidate))return candidate;
  return `https://open.spotify.com/search/${encodeURIComponent(`${a.artist} ${a.title}`)}`;
 }
+function handoffToResult(){
+ if(window.matchMedia('(max-width:1100px)').matches){
+  requestAnimationFrame(()=>requestAnimationFrame(()=>$('stage')?.scrollIntoView({behavior:'smooth',block:'start'})));
+ }
+}
 function show(a,context={}){
  const stage=$('stage');stage.classList.remove('revealed');void stage.offsetWidth;
  const cover=$('cover');cover.style.display='block';cover.alt=`${a.title} by ${a.artist} album cover`;
@@ -1406,6 +1411,7 @@ function show(a,context={}){
  $('status').textContent=context.mode==='bonus'?`${unseen} still unheard.`:context.mode==='shared'?'shared record.':`${unseen} still unheard.`;
  loadArtwork(a,cover);
  loadRecordFile(a).finally(()=>enhanceSelectedMetadata(a));
+ if(context.userTriggered)handoffToResult();
 }
 function labelColor(a){
  const palette=['#c8432f','#2e5f76','#d5ad36','#65714b','#9a593f','#d9d0bc'];
@@ -1595,21 +1601,20 @@ function explainPick(a,context={}){
  const albumMoods=(a.moods||[]).map(x=>String(x).toLowerCase());
  const intent=interpretFeeling(note);
  const selectedMoodMatches=state.moods.filter(m=>albumMoods.includes(m));
- if(selectedMoodMatches.length)reasons.push(`matched ${selectedMoodMatches.slice(0,2).join(' / ')}`);
- if(state.energy!==null)reasons.push('fit your energy');
- if(state.comfort==='comfort')reasons.push('more familiar');
+ if(selectedMoodMatches.length)reasons.push(selectedMoodMatches.slice(0,2).join(' / '));
+ if(state.energy!==null)reasons.push(state.energy<=3?'low energy':state.energy>=7?'high energy':'medium energy');
+ if(state.comfort==='comfort')reasons.push('familiar artist');
  if(state.comfort==='exploration')reasons.push('less familiar');
  if(state.time!==null){
   const minutes=a._live?.runtimeMin??a._semantic?.runtimeMin??Number(a.length_min);
-  if(Number.isFinite(minutes)&&minutes<=state.time+3)reasons.push(`fits about ${Math.round(minutes)} minutes`);
+  if(Number.isFinite(minutes)&&minutes<=state.time+3)reasons.push(Math.round(minutes)+' min');
  }
  if(note){
   const genre=(intent.genres||[])[0];
-  if(genre)reasons.push(`matched the ${genre} note`);
-  else reasons.push('matched your note');
+  reasons.push(genre||'matches your note');
  }
  const personal=diaryTasteScore(a);
- if(personal.active)reasons.push('influenced by your ratings');
+ if(personal.active)reasons.push('your ratings');
  if(reasons.length)return reasons.slice(0,3).join(' · ')+'.';
  if(context.mode==='bonus')return 'another recommendation.';
  return 'recommended from the catalog.';
@@ -1620,16 +1625,6 @@ if($('todayDate')){
  $('todayDate').textContent=d.toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
 }
 const feelingInput=$('feelingInput');
-document.querySelectorAll('.prompt-chip').forEach(button=>{
- button.addEventListener('click',()=>{
-  if(!feelingInput)return;
-  const prompt=button.dataset.prompt||'';
-  const current=feelingInput.value.trim();
-  feelingInput.value=current ? current.replace(/[.!?]?$/,'')+', '+prompt : prompt;
-  feelingInput.dispatchEvent(new Event('input'));
-  feelingInput.focus();
- });
-});
 if(feelingInput){
  const updateInsight=()=>{
   const insight=$('feelingInsight');
