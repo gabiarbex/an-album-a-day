@@ -641,7 +641,7 @@ function setPickBusy(busy){
  }
  if($('recommend')){
   $('recommend').classList.toggle('is-loading',busy);
-  $('recommend').querySelector('span:first-child').textContent=busy?'✳ digging through the crates…':'✳ hand me today’s record';
+  $('recommend').querySelector('span:first-child').textContent=busy?'looking…':'find a record';
  }
 }
 $('recommend').addEventListener('click',()=>chooseDaily());
