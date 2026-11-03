@@ -458,7 +458,10 @@ async function load(){
      mergeAlbums(Array.isArray(base)?base:base.albums||[]);
     }
    }catch(e){console.info('Editorial base could not be preloaded',e)}
-   await loadMoreShards(6);
+   await loadMoreShards(2);
+   const warmMore=()=>loadMoreShards(4).catch(()=>{});
+   if('requestIdleCallback' in window)requestIdleCallback(warmMore,{timeout:3500});
+   else setTimeout(warmMore,2200);
    if(!albums.length)throw Error('Catalog manifest exists but no albums loaded');
    refreshFeatureCoverage();
    $('status').textContent=libraryStatus();
@@ -1662,7 +1665,7 @@ const feelingInput=$('feelingInput');
 if(feelingInput){
  const updateInsight=()=>{
   const insight=$('feelingInsight');
-  if(insight)insight.textContent=feelingInput.value.trim()?'note added':'';
+  if(insight)insight.textContent='';
  };
  updateInsight();
  feelingInput.addEventListener('input',()=>{
