@@ -21,7 +21,7 @@ body{
   background:
     radial-gradient(circle at 22% 31%,#00000008 0 .7px,transparent .9px) 0 0/23px 29px,
     radial-gradient(circle at 73% 67%,#00000006 0 .55px,transparent .8px) 8px 11px/31px 37px,
-    linear-gradient(92deg,#00000002,transparent 24%,#000000018 63%,transparent),
+    linear-gradient(92deg,#00000002,transparent 24%,#00000003 63%,transparent),
     var(--paper);
   font-family:Arial,Helvetica,sans-serif;
   -webkit-font-smoothing:antialiased;
