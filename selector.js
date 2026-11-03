@@ -1386,8 +1386,9 @@ function show(a,context={}){
  const meta=document.createElement('p');
  meta.textContent=[(a.moods||[]).join(' · '),a.length_min?`${Math.round(Number(a.length_min))} min`:null].filter(Boolean).join('  /  ');
  info.append(tag,title,artist,meta);
- const whyPanel=$('whyPanel');if(whyPanel)whyPanel.hidden=false;
- const why=$('whyText');if(why)why.textContent=explainPick(a,context);
+ const explanation=explainPick(a,context);
+ const whyPanel=$('whyPanel');if(whyPanel)whyPanel.hidden=!explanation;
+ const why=$('whyText');if(why)why.textContent=explanation;
  resetRecordFile(a);
  const link=$('spotify');link.href=spotifyUrl(a);link.classList.remove('disabled');link.setAttribute('aria-disabled','false');
  $('log').disabled=false;
@@ -1617,7 +1618,7 @@ function artPlaceholder(a){
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 function explainPick(a,context={}){
- if(context.rankingMode==='shared')return 'shared by another listener.';
+ if(context.rankingMode==='shared')return '';
  if(context.rankingMode==='surprise')return 'random pick.';
  const note=$('feelingInput')?.value.trim()||'';
  const reasons=[];
@@ -1657,8 +1658,7 @@ function explainPick(a,context={}){
  const personal=diaryTasteScore(a);
  if(personal.active&&personal.score>.15)reasons.push('your ratings');
  if(reasons.length)return reasons.slice(0,3).join(' · ')+'.';
- if(context.mode==='bonus')return 'another recommendation.';
- return 'recommended from the catalog.';
+ return '';
 }
 const interpretFeeling=globalThis.AlbumIntent?.interpretFeeling||(()=>({moods:{},avoidMoods:{},genres:[],avoidGenres:[],energy:null,exploration:0,summary:''}));
 if($('todayDate')){
