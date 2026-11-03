@@ -1543,7 +1543,7 @@ async function loadArtwork(a,img){
 
 function artPlaceholder(a){
  const safe=x=>String(x||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- const wrap=(v,n=22)=>{
+ const wrap=(v,n=19)=>{
   const words=String(v||'').split(/\s+/),lines=[''];
   for(const word of words){
    const i=lines.length-1;
@@ -1552,9 +1552,9 @@ function artPlaceholder(a){
   }
   return lines;
  };
- const lines=wrap(a.title,21);
- const title=lines.map((v,i)=>'<text x="42" y="'+(285+i*48)+'" font-size="42" font-weight="500">'+safe(v)+'</text>').join('');
- const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><rect width="720" height="720" fill="#e8e8e5"/><g fill="#111" font-family="Arial, Helvetica, sans-serif"><text x="42" y="62" font-size="13" letter-spacing="2">AN ALBUM A DAY</text>'+title+'<text x="42" y="650" font-size="16">'+safe(a.artist).slice(0,48)+'</text></g></svg>';
+ const lines=wrap(a.title,18);
+ const title=lines.map((v,i)=>'<text x="50" y="'+(300+i*54)+'" font-size="48" font-weight="900">'+safe(v)+'</text>').join('');
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><rect width="720" height="720" fill="#fffaf0"/><rect x="0" y="0" width="720" height="92" fill="#111"/><rect x="470" y="92" width="250" height="150" fill="#ff5aa7"/><rect x="0" y="550" width="220" height="170" fill="#c8ff37"/><rect x="220" y="600" width="500" height="120" fill="#2f5cff"/><g fill="#111" font-family="Arial, Helvetica, sans-serif"><text x="50" y="58" fill="#fff" font-family="Courier New, monospace" font-size="15" letter-spacing="3">AN ALBUM A DAY</text>'+title+'<text x="50" y="530" font-family="Courier New, monospace" font-size="17" font-weight="700">'+safe(a.artist).slice(0,44)+'</text><text x="246" y="657" fill="#fff" font-family="Courier New, monospace" font-size="12" letter-spacing="2">COVER LOADING</text></g></svg>';
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 function explainPick(a,context={}){
