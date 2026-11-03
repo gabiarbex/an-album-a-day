@@ -1127,7 +1127,7 @@ async function loadSelectedAcousticProfile(a,details){
  const facts=$('recordFacts');
  if(facts){
   const group=document.createElement('div');group.className='record-fact acoustic-fact';
-  const dt=document.createElement('dt');dt.textContent='Audio sample';
+  const dt=document.createElement('dt');dt.textContent='Audio profile';
   const dd=document.createElement('dd');dd.textContent=`${profile.tracksAnalyzed} track${profile.tracksAnalyzed===1?'':'s'} analyzed`;
   group.append(dt,dd);facts.append(group);
  }
@@ -1369,6 +1369,7 @@ function show(a,context={}){
  const meta=document.createElement('p');
  meta.textContent=[(a.moods||[]).join(' · '),a.length_min?`${Math.round(Number(a.length_min))} min`:null].filter(Boolean).join('  /  ');
  info.append(tag,title,artist,meta);
+ const whyPanel=$('whyPanel');if(whyPanel)whyPanel.hidden=false;
  const why=$('whyText');if(why)why.textContent=explainPick(a,context);
  resetRecordFile(a);
  const link=$('spotify');link.href=spotifyUrl(a);link.classList.remove('disabled');
