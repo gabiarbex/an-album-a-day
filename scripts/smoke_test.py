@@ -36,9 +36,11 @@ def test_frontend_contract():
         fail(f"Critical desktop CSS selectors missing: {missing_css}")
     if 'list-style:none' not in desktop_css or '.tracklist li::marker{content:""}' not in desktop_css:
         fail("Tracklist must suppress native ordered-list markers")
-    for name in ("resetPicker","savePickerState","restorePickerState","criteriaSignature"):
+    for name in ("resetPicker","savePickerState","restorePickerState","criteriaSignature","showToast"):
         if f"function {name}(" not in js:
-            fail(f"Required picker-state function missing: {name}")
+            fail(f"Required frontend helper missing: {name}")
+    if "resetButton.onclick" not in js:
+        fail("Clear-all button must have an explicit reset handler")
     if "localStorage.removeItem('albumaday.dailyPick')" not in js:
         fail("Reset/input changes must be able to invalidate the saved daily pick")
     if "state[id]===value?null:value" not in js:
