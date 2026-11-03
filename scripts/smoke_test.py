@@ -56,6 +56,8 @@ def test_frontend_contract():
     for name in ("resetPicker","savePickerState","criteriaSignature","showToast"):
         if f"function {name}(" not in js:
             fail(f"Required frontend helper missing: {name}")
+    if "async function load()" not in js or "load();" not in js:
+        fail("Catalog bootstrap loader is missing or never called")
     if "resetButton.onclick" not in js:
         fail("Clear-all button must have an explicit reset handler")
     if "localStorage.removeItem('albumaday.dailyPick')" not in js:
