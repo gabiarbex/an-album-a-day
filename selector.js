@@ -564,7 +564,7 @@ async function chooseDaily(options={}){
  if(!albums.length){$('status').textContent='Still loading albums. Check your connection if this persists.';return}
  setPickBusy(true);
  try{
-  const existing=readDailyPick();
+  const existing=surprise?null:readDailyPick();
   if(existing){
    pick=existing.album;
    show(pick,{mode:'daily',featuresUsed:Boolean(existing.featuresUsed),rankingMode:existing.rankingMode||'draw',restored:true});
@@ -1284,7 +1284,7 @@ async function loadRecordFile(a){
  const request=++recordFileRequest;
  resetRecordFile(a);
  const cacheKey=key(a);
- const cacheId='albumaday.record.v3.'+hash32(cacheKey);
+ const cacheId='albumaday.record.v4.'+hash32(cacheKey);
  try{
   let cached=null;
   try{cached=JSON.parse(sessionStorage.getItem(cacheId)||'null')}catch{}
