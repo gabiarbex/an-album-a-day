@@ -1601,34 +1601,58 @@ async function loadArtwork(a,img){
  img.style.display='block';
 
  const {preview,full}=coverArtUrls(a);
+ const candidateJobs=[];
 
- // Storefront art is usually the fastest and most reliable browser source.
- const store=await findItunesAlbum(a).catch(()=>null);
- if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
- const storeUrl=storeArtworkUrl(store,600);
- if(storeUrl&&await useArtwork(img,storeUrl,fallback,request)){
-  a.metadata={...(a.metadata||{}),cover_art:storeUrl};
-  return;
- }
+ const candidate=(promise,source)=>promise.then(async value=>{
+  const payload=typeof value==='string'?{url:value}:{...(value||{})};
+  const url=payload.url||'';
+  if(!url)throw Error('no artwork');
+  if(!await probeArtwork(url,request))throw Error('artwork failed');
+  return {...payload,url,source};
+ });
 
- // Keep catalogue-provided art as the second attempt.
- for(const url of [...new Set([full,preview].filter(Boolean))]){
-  if(await useArtwork(img,url,fallback,request))return;
- }
+ // Race independent sources. One slow API should never block a cover that is already available elsewhere.
+ if(full||preview)candidateJobs.push(candidate(Promise.resolve(full||preview),'catalogue'));
+ candidateJobs.push(candidate(
+  findItunesAlbum(a).then(album=>({url:storeArtworkUrl(album,600)})),
+  'store'
+ ));
+ candidateJobs.push(candidate(
+  findMusicBrainzGroup(a).then(group=>group?.id?{
+   url:'https://coverartarchive.org/release-group/'+group.id+'/front-500',
+   musicbrainz_id:group.id
+  }:null),
+  'musicbrainz'
+ ));
 
- // MusicBrainz is the last network fallback because it is rate-limited.
+ let winner=null;
  try{
-  const group=await findMusicBrainzGroup(a);
-  if(request!==artworkRequest||!pick||key(pick)!==key(a)||!group?.id)return;
-  const url='https://coverartarchive.org/release-group/'+group.id+'/front-500';
-  if(await useArtwork(img,url,fallback,request)){
-   a.metadata={...(a.metadata||{}),musicbrainz_id:group.id,cover_art:url};
-   return;
+  if(Promise.any)winner=await Promise.any(candidateJobs);
+  else{
+   const settled=await Promise.allSettled(candidateJobs);
+   winner=settled.find(x=>x.status==='fulfilled')?.value||null;
   }
  }catch{}
 
- // Leave the explicit missing-cover card in place. Never masquerade it as art.
- img.classList.remove('cover-loaded');
+ if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
+ if(!winner?.url){
+  img.classList.remove('cover-loaded');
+  return;
+ }
+
+ img.onerror=()=>{
+  if(request!==artworkRequest)return;
+  img.onerror=null;
+  img.classList.remove('cover-loaded');
+  img.src=fallback;
+ };
+ img.onload=()=>{if(request===artworkRequest)img.classList.add('cover-loaded')};
+ img.src=winner.url;
+ if(winner.musicbrainz_id){
+  a.metadata={...(a.metadata||{}),musicbrainz_id:winner.musicbrainz_id,cover_art:winner.url};
+ }else if(winner.source==='store'){
+  a.metadata={...(a.metadata||{}),cover_art:winner.url};
+ }
 }
 
 function artPlaceholder(a){
