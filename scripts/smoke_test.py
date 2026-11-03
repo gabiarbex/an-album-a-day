@@ -22,6 +22,20 @@ def test_frontend_contract():
     if missing: fail(f"JavaScript references missing DOM ids: {missing}")
 
     if css.count("{")!=css.count("}"): fail("CSS braces are unbalanced")
+
+    # Critical desktop components must exist before responsive overrides.
+    desktop_css=css.split("@media",1)[0]
+    critical_selectors=(
+        ".record-stage{",".sleeve{",".album-details{",
+        ".tracklist-panel{",".tracklist-head{",".tracklist{",".tracklist li{",
+        ".actions{",".primary,.secondary{",".why-panel{",".record-file{",
+        ".picker{",".fine-tune{",".note-extra{",".recent-pulls{",".drawer{","dialog{"
+    )
+    missing_css=[sel for sel in critical_selectors if sel not in desktop_css]
+    if missing_css:
+        fail(f"Critical desktop CSS selectors missing: {missing_css}")
+    if 'list-style:none' not in desktop_css or '.tracklist li::marker{content:""}' not in desktop_css:
+        fail("Tracklist must suppress native ordered-list markers")
     for name in ("resetPicker","savePickerState","restorePickerState","criteriaSignature"):
         if f"function {name}(" not in js:
             fail(f"Required picker-state function missing: {name}")
@@ -29,6 +43,12 @@ def test_frontend_contract():
         fail("Reset/input changes must be able to invalidate the saved daily pick")
     if "state[id]===value?null:value" not in js:
         fail("Single-select filter chips must toggle off when clicked twice")
+    if "const existing=surprise?null:readDailyPick()" not in js:
+        fail("Surprise must bypass the saved daily pick")
+    if "albumaday.record.v4." not in js:
+        fail("Tracklist cache version must invalidate stale pre-release results")
+    if "$('tracklistStatus').hidden=true" not in js:
+        fail("Successful tracklist rendering must hide the loading status")
     if "PRODUCT PASS" in css or "EDITORIAL RESET" in css or "HUMAN EDITORIAL PASS" in css:
         fail("Legacy layered CSS markers returned; release stylesheet should stay consolidated")
     if "selector.js?v=" not in html or "style.css?v=" not in html:
