@@ -8,6 +8,19 @@ const ENGINE_VERSION='semantic-100k-v4';
 const loadedShardFiles=new Set();
 const state={moods:[],energy:null,comfort:null,time:null};
 const $=id=>document.getElementById(id);
+let toastTimer=null;
+function showToast(message){
+ const node=$('toast');if(!node)return;
+ clearTimeout(toastTimer);
+ node.textContent=String(message||'');
+ node.hidden=!message;
+ if(message){
+  toastTimer=setTimeout(()=>{
+   node.hidden=true;
+   node.textContent='';
+  },2600);
+ }
+}
 const moods=[
  ['dark','dark'],
  ['cold','cold'],
