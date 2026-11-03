@@ -1461,7 +1461,7 @@ $('logForm').onsubmit=e=>{
  logs.push({
   date:getDate(),artist:pick.artist,album:pick.title,rating,
   favorite_track:$('track').value.trim(),notes:$('notes').value.trim(),
-  cover_art:pick.metadata?.cover_art||'',
+  cover_art:pick.metadata?.cover_art||(/^https?:/.test($('cover')?.src||'')?$('cover').src:''),
   genre:live.genre||(Array.isArray(pick.genres)?(typeof pick.genres[0]==='string'?pick.genres[0]:pick.genres[0]?.name):'')||'',
   signal_snapshot:{
    genre:live.genre||'',
@@ -1683,13 +1683,13 @@ $('lastfmFile')?.addEventListener('change',async e=>{
   const taste=buildLastfmTaste(parseCsv(await file.text()));
   localStorage.setItem('albumaday.lastfmTaste',JSON.stringify(taste));
   lastfmTaste=taste;lastfmTasteMap=new Map(taste.artists);invalidateTasteCaches();renderHistory();
-  showToast(`Last.fm taste prior ready: ${taste.unique_artists.toLocaleString()} artists. Raw CSV was not uploaded.`);
+  showToast(`Last.fm imported: ${taste.unique_artists.toLocaleString()} artists. The CSV stayed on this device.`);
  }catch(err){console.warn(err);showToast('Could not read that Last.fm CSV.')}
  e.target.value='';
 });
 $('clearLastfm')?.addEventListener('click',()=>{
  try{localStorage.removeItem('albumaday.lastfmTaste')}catch{}
- lastfmTaste=null;lastfmTasteMap=new Map();invalidateTasteCaches();renderHistory();showToast('Last.fm taste prior cleared.');
+ lastfmTaste=null;lastfmTasteMap=new Map();invalidateTasteCaches();renderHistory();showToast('Last.fm data cleared.');
 });
 
 $('importDiary')?.addEventListener('click',()=>$('importFile')?.click());
