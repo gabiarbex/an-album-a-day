@@ -449,7 +449,11 @@ main{
   border:1px solid var(--ink);
   font:700 9px/1 "Courier New",monospace;
 }
-.quick-pick:hover{background:var(--acid)}
+.quick-pick:hover:not(:disabled){background:var(--acid)}
+.quick-pick:disabled{
+  opacity:.35;
+  cursor:default;
+}
 
 .feeling-field{
   padding:15px;
@@ -555,7 +559,7 @@ main{
 .fine-tune summary::-webkit-details-marker{display:none}
 .fine-tune summary:after{content:"+";margin-left:auto}
 .fine-tune[open] summary:after{content:"−"}
-.fine-tune summary small{color:var(--muted);font-size:8px}
+.fine-tune summary small{color:var(--blue);font-size:8px}
 .signal-note{
   margin:0;
   padding:0 12px 12px;
