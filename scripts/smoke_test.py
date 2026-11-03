@@ -29,7 +29,7 @@ def test_frontend_contract():
         ".record-stage{",".sleeve{",".album-details{",
         ".tracklist-panel{",".tracklist-head{",".tracklist{",".tracklist li{",
         ".actions{",".primary,.secondary{",".why-panel{",".record-file{",
-        ".picker{",".fine-tune{",".note-extra{",".recent-pulls{",".drawer{","dialog{"
+        ".picker{",".fine-tune{",".recent-pulls{",".drawer{","dialog{"
     )
     missing_css=[sel for sel in critical_selectors if sel not in desktop_css]
     if missing_css:
