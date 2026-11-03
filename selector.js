@@ -814,7 +814,7 @@ async function getAlbumTracks(album){
 async function rankWithSemantic(seed,daily){
  const note=$('feelingInput')?.value.trim()||'';
  if(note.length<2||!globalThis.AlbumSemantic?.search||!catalogManifest)return null;
- $('status').textContent='looking through the shelves…';
+ $('status').textContent='searching albums…';
  let raw;
  try{raw=await globalThis.AlbumSemantic.search(note,120)}
  catch(e){console.info('Semantic index unavailable; using live fallback.',e);return null}
@@ -865,7 +865,7 @@ async function rankWithSemantic(seed,daily){
 async function rankWithLiveMetadata(pool,seed,daily){
  const intent=interpretFeeling($('feelingInput')?.value||'');
  const sample=sampleCandidates(pool,seed,12,daily);
- $('status').textContent='checking the shelves…';
+ $('status').textContent='checking albums…';
  const enriched=(await mapConcurrent(sample,4,async a=>{
   const meta=await findItunesAlbum(a);
   if(!meta)return {...a,_live:{matched:false}};
@@ -1468,7 +1468,7 @@ $('logForm').onsubmit=e=>{
    energy:pick._acoustic?.energy??live.signals?.energy??(pick.features?.energy!=null?Number(pick.features.energy)*10:null)??pick.energy_level??null
   }
  });
- persist();$('logDialog').close();$('status').textContent='Saved to your listening diary ♡';
+ persist();$('logDialog').close();$('status').textContent='saved.';
 };
 $('export').onclick=()=>{
  const blob=new Blob([JSON.stringify(logs,null,2)],{type:'application/json'});
@@ -1678,7 +1678,7 @@ $('importLastfm')?.addEventListener('click',()=>$('lastfmFile')?.click());
 $('lastfmFile')?.addEventListener('change',async e=>{
  const file=e.target.files?.[0];if(!file)return;
  try{
-  showToast('Reading Last.fm history locally…');
+  showToast('reading Last.fm history…');
   const taste=buildLastfmTaste(parseCsv(await file.text()));
   localStorage.setItem('albumaday.lastfmTaste',JSON.stringify(taste));
   lastfmTaste=taste;lastfmTasteMap=new Map(taste.artists);invalidateTasteCaches();renderHistory();
