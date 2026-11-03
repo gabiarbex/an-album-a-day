@@ -143,9 +143,11 @@ main{
   position:relative;
   width:100%;
   max-width:780px;
-  padding:22px;
-  background:var(--ink);
-  border:1px solid var(--ink);
+  padding:24px;
+  background:var(--mount-color,var(--blue));
+  border:2px solid var(--ink);
+  box-shadow:8px 8px 0 var(--pink-soft);
+  transform:rotate(-.12deg);
 }
 .record-stage:before{display:none}
 .record{display:none}
@@ -156,6 +158,7 @@ main{
   overflow:hidden;
   background:#ece7dc;
   border:10px solid #fff;
+  box-shadow:0 0 0 1px #000;
 }
 .sleeve:after{
   content:"";
