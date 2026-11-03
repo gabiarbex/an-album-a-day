@@ -485,21 +485,6 @@ main{
   line-height:28px;
 }
 #feelingInput::placeholder{color:#817b71}
-.prompt-shelf{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  margin-top:10px;
-}
-.prompt-chip{
-  padding:5px 7px;
-  background:var(--yellow);
-  border:1px solid var(--ink);
-  font:700 8px/1 "Courier New",monospace;
-}
-.prompt-chip:nth-child(2){background:var(--acid)}
-.prompt-chip:nth-child(3){background:#a9c4ff}
-.prompt-chip:hover{filter:brightness(.97)}
 .feeling-foot{
   display:flex;
   justify-content:space-between;
@@ -520,25 +505,6 @@ main{
 }
 
 
-.note-extra{
-  margin-top:14px;
-  border-top:1px solid var(--ink);
-}
-.note-extra summary{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  padding:11px 0;
-  list-style:none;
-  font:700 9px/1 "Courier New",monospace;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-}
-.note-extra summary::-webkit-details-marker{display:none}
-.note-extra summary:after{content:"+";margin-left:auto}
-.note-extra[open] summary:after{content:"−"}
-.note-extra summary small{color:var(--muted);font-size:8px}
-.note-extra .feeling-field{margin-bottom:4px}
 
 .fine-tune{
   margin-top:18px;
