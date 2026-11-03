@@ -21,6 +21,19 @@ def test_frontend_contract():
     missing=sorted(refs-set(ids))
     if missing: fail(f"JavaScript references missing DOM ids: {missing}")
 
+    button_ids=re.findall(r'<button[^>]*id="([^"]+)"',html)
+    required_buttons={
+        "historyToggle","log","sharePick","reroll","surpriseMe","resetPicker",
+        "clearFeeling","recommend","openDiaryFromShelf","closeDrawer","export",
+        "importDiary","importLastfm","clearLastfm","closeDialog"
+    }
+    missing_buttons=sorted(required_buttons-set(button_ids))
+    if missing_buttons:
+        fail(f"Required release buttons missing from HTML: {missing_buttons}")
+    unwired=sorted(b for b in required_buttons if f"$('{b}')" not in js)
+    if unwired:
+        fail(f"Visible release buttons missing JS wiring: {unwired}")
+
     if css.count("{")!=css.count("}"): fail("CSS braces are unbalanced")
 
     # Critical desktop components must exist before responsive overrides.
