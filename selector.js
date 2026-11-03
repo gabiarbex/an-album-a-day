@@ -1429,15 +1429,22 @@ function labelColor(a){
  return palette[n%palette.length];
 }
 
+let drawerReturnFocus=null;
 function drawer(open){
  const panel=$('drawer'),toggle=$('historyToggle');
+ if(open&&document.activeElement instanceof HTMLElement)drawerReturnFocus=document.activeElement;
  panel.classList.toggle('open',open);
  panel.setAttribute('aria-hidden',String(!open));
  toggle?.setAttribute('aria-expanded',String(open));
  $('overlay').hidden=!open;
  document.body.classList.toggle('drawer-open',open);
- if(open)requestAnimationFrame(()=>panel.focus({preventScroll:true}));
- else toggle?.focus({preventScroll:true});
+ if(open){
+  requestAnimationFrame(()=>panel.focus({preventScroll:true}));
+ }else{
+  const target=drawerReturnFocus&&document.contains(drawerReturnFocus)?drawerReturnFocus:toggle;
+  target?.focus({preventScroll:true});
+  drawerReturnFocus=null;
+ }
 }
 $('historyToggle').onclick=()=>drawer(true);
 $('openDiaryFromShelf')?.addEventListener('click',()=>drawer(true));
@@ -1515,7 +1522,9 @@ $('logForm').onsubmit=e=>{
 $('export').onclick=()=>{
  const blob=new Blob([JSON.stringify(logs,null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
- a.href=url;a.download='listening_log.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ a.href=url;a.download='album-a-day-diary.json';
+ document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
 
 let artworkRequest=0;
@@ -1683,6 +1692,18 @@ if(resetButton){
  };
 }
 
+async function copyText(text){
+ if(navigator.clipboard?.writeText){
+  await navigator.clipboard.writeText(text);
+  return true;
+ }
+ const area=document.createElement('textarea');
+ area.value=text;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';
+ document.body.append(area);area.select();
+ const ok=document.execCommand('copy');
+ area.remove();
+ return ok;
+}
 $('sharePick')?.addEventListener('click',async()=>{
  if(!pick)return;
  const url=new URL(location.origin+location.pathname);
@@ -1690,7 +1711,10 @@ $('sharePick')?.addEventListener('click',async()=>{
  const text=`${pick.title} — ${pick.artist} · An Album a Day`;
  try{
   if(navigator.share)await navigator.share({title:`${pick.title} — ${pick.artist}`,text,url:url.toString()});
-  else{await navigator.clipboard.writeText(text+'\n'+url.toString());showToast('Record link copied to clipboard.')}
+  else{
+   const copied=await copyText(text+'\n'+url.toString());
+   showToast(copied?'Record link copied.':'Could not copy the record link.');
+  }
  }catch(e){if(e?.name!=='AbortError')showToast('Could not share this record.')}
 });
 
