@@ -29,13 +29,13 @@
 </head>
 <body>
   <header class="masthead">
-    <div class="masthead-kicker">100,000 ALBUMS <span>2026</span></div>
+    <div class="masthead-kicker">ISSUE 01 / DAILY LISTENING <span>100,000 ALBUMS</span></div>
     <div class="masthead-row">
       <div>
-        <h1>an album a day</h1>
-        <p>one record, every day.</p>
+        <h1><span>an album</span> <em>a day</em></h1>
+        <p>one record every day. listen to the whole thing.</p>
       </div>
-      <button id="historyToggle" class="history-toggle" aria-controls="drawer" aria-expanded="false">
+      <button id="historyToggle" type="button" class="history-toggle" aria-controls="drawer" aria-expanded="false">
         ◷ listening diary
         <span id="count">0</span>
         <span class="history-sep">/</span>
@@ -78,9 +78,9 @@
 
       <div class="actions">
         <a id="spotify" class="primary disabled" target="_blank" rel="noopener noreferrer">spotify ↗</a>
-        <button id="log" class="secondary" disabled>save</button>
-        <button id="sharePick" class="secondary" disabled>share</button>
-        <button id="reroll" class="secondary reroll" hidden>another</button>
+        <button id="log" type="button" class="secondary" disabled>save</button>
+        <button id="sharePick" type="button" class="secondary" disabled>share</button>
+        <button id="reroll" type="button" class="secondary reroll" hidden>another</button>
       </div>
 
       <div class="why-panel" id="whyPanel" hidden>
@@ -159,7 +159,7 @@
         </div>
       </details>
 
-      <button id="recommend" class="recommend">
+      <button id="recommend" type="button" class="recommend">
         <span>pick an album</span>
         <span>↗</span>
       </button>
@@ -186,7 +186,7 @@
   <aside id="drawer" class="drawer" aria-hidden="true" tabindex="-1">
     <div class="drawer-head">
       <h2>listening diary</h2>
-      <button id="closeDrawer" aria-label="Close diary">✕</button>
+      <button id="closeDrawer" type="button" aria-label="Close diary">✕</button>
     </div>
     <div class="diary-stats" aria-label="Listening diary statistics">
       <div><b id="statListened">0</b><span>albums saved</span></div>
@@ -197,10 +197,10 @@
     </div>
     <div id="history"></div>
     <div class="drawer-actions">
-      <button id="export" class="secondary">↓ Export diary JSON</button>
-      <button id="importDiary" class="secondary">↑ Import diary JSON</button>
-      <button id="importLastfm" class="secondary">Import Last.fm CSV</button>
-      <button id="clearLastfm" class="secondary subtle" hidden>Clear Last.fm data</button>
+      <button id="export" type="button" class="secondary">↓ Export diary JSON</button>
+      <button id="importDiary" type="button" class="secondary">↑ Import diary JSON</button>
+      <button id="importLastfm" type="button" class="secondary">Import Last.fm CSV</button>
+      <button id="clearLastfm" type="button" class="secondary subtle" hidden>Clear Last.fm data</button>
       <input id="importFile" type="file" accept="application/json,.json" hidden>
       <input id="lastfmFile" type="file" accept=".csv,text/csv" hidden>
     </div>
