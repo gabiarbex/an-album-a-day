@@ -22,6 +22,15 @@ def test_frontend_contract():
     if missing: fail(f"JavaScript references missing DOM ids: {missing}")
 
     if css.count("{")!=css.count("}"): fail("CSS braces are unbalanced")
+    for name in ("resetPicker","savePickerState","restorePickerState","criteriaSignature"):
+        if f"function {name}(" not in js:
+            fail(f"Required picker-state function missing: {name}")
+    if "localStorage.removeItem('albumaday.dailyPick')" not in js:
+        fail("Reset/input changes must be able to invalidate the saved daily pick")
+    if "state[id]===value?null:value" not in js:
+        fail("Single-select filter chips must toggle off when clicked twice")
+    if "PRODUCT PASS" in css or "EDITORIAL RESET" in css or "HUMAN EDITORIAL PASS" in css:
+        fail("Legacy layered CSS markers returned; release stylesheet should stay consolidated")
     if "selector.js?v=" not in html or "style.css?v=" not in html:
         fail("Cache-busted CSS/JS references missing")
     if html.find("intent-core.js")<0 or html.find("semantic-core.js")<0:
@@ -38,6 +47,7 @@ def test_frontend_contract():
                     str(ROOT/"scripts/build_semantic_index.py"),
                     str(ROOT/"scripts/check_semantic_quality.py")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/intent_test.js")],check=True)
+    subprocess.run(["node",str(ROOT/"scripts/tracklist_test.js")],check=True)
 
 def test_base_catalog():
     raw=json.loads((ROOT/"data/albums.json").read_text(encoding="utf-8"))
