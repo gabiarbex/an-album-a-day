@@ -29,15 +29,15 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-018">
+  <link rel="stylesheet" href="style.css?v=zine-019">
 </head>
 <body>
   <header class="masthead">
-    <div class="masthead-kicker">ISSUE 01 / DAILY LISTENING <span>100,000 ALBUMS</span></div>
+    <div class="masthead-kicker">ISSUE 01 / ONE RECORD A DAY <span>100,000 RECORDS</span></div>
     <div class="masthead-row">
       <div>
         <h1><span>an album</span> <em>a day</em></h1>
-        <p>one record every day. listen to the whole thing.</p>
+        <p>one record. no repeats. play it front to back.</p>
       </div>
       <button id="historyToggle" type="button" class="history-toggle" aria-controls="drawer" aria-expanded="false">
         ◷ listening diary
@@ -66,9 +66,9 @@
       </div>
 
       <div class="album-details" id="details">
-        <div class="eyebrow">nothing playing yet</div>
-        <h2>find something.</h2>
-        <p>tell me what you want to hear.</p>
+        <div class="eyebrow">nothing pulled yet</div>
+        <h2>pull a record.</h2>
+        <p>start with a note, or leave it completely blank.</p>
       </div>
 
       <section id="tracklistPanel" class="tracklist-panel" hidden aria-live="polite">
@@ -89,7 +89,7 @@
 
       <div class="why-panel" id="whyPanel" hidden>
         <div>
-          <div class="why-heading">why this one</div>
+          <div class="why-heading">why it landed here</div>
           <p id="whyText">the notes will go here.</p>
         </div>
       </div>
@@ -113,8 +113,8 @@
     <section class="picker" aria-label="Choose a record">
       <div class="clerk-intro">
         <div class="eyebrow">today’s listen</div>
-        <h2>what should today sound like?</h2>
-        <p>write a note, mark a few things, or leave it blank.</p>
+        <h2>what are you after?</h2>
+        <p>write something. tick a few boxes. or don’t.</p>
         <div class="quick-actions">
           <button id="surpriseMe" type="button" class="quick-pick"><b>surprise me</b></button>
           <button id="resetPicker" type="button" class="quick-pick quiet" disabled><b>clear all</b></button>
@@ -123,7 +123,7 @@
 
       <div class="feeling-field">
         <label for="feelingInput" class="feeling-prompt">write it down</label>
-        <textarea id="feelingInput" maxlength="1200" rows="5" placeholder="late walk, restless, nothing too obvious..."></textarea>
+        <textarea id="feelingInput" maxlength="1200" rows="5" placeholder="2am bus home, restless, no obvious choices..."></textarea>
         <div class="feeling-foot">
           <span id="feelingInsight" aria-live="polite"></span>
           <button id="clearFeeling" type="button" disabled>clear text</button>
@@ -233,8 +233,8 @@
     </form>
   </dialog>
 
-  <script src="intent-core.js?v=zine-018"></script>
-  <script src="semantic-core.js?v=zine-018"></script>
-  <script src="selector.js?v=zine-018" defer></script>
+  <script src="intent-core.js?v=zine-019"></script>
+  <script src="semantic-core.js?v=zine-019"></script>
+  <script src="selector.js?v=zine-019" defer></script>
 </body>
 </html>
