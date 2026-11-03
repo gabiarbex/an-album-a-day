@@ -678,6 +678,7 @@ function setPickBusy(busy){
  }
  if($('recommend')){
   $('recommend').classList.toggle('is-loading',busy);
+  $('recommend').setAttribute('aria-busy',String(busy));
   $('recommend').querySelector('span:first-child').textContent=busy?'looking…':'pick an album';
  }
 }
