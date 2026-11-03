@@ -117,10 +117,19 @@
         </div>
       </div>
 
+      <div class="feeling-field">
+        <label for="feelingInput" class="feeling-prompt">describe what you want to hear</label>
+        <textarea id="feelingInput" maxlength="1200" rows="5" placeholder="warm, melodic, a little strange. good for walking home late."></textarea>
+        <div class="feeling-foot">
+          <span id="feelingInsight" aria-live="polite"></span>
+          <button id="clearFeeling" type="button">clear text</button>
+        </div>
+      </div>
+
       <details class="fine-tune" id="fineTune" open>
         <summary>
-          <span>your picks</span>
-          <small>all optional</small>
+          <span>filters</span>
+          <small>optional</small>
         </summary>
 
         <div class="signal-note" id="signalNote"></div>
@@ -147,18 +156,6 @@
           <div class="eyebrow">length</div>
           <h3>maximum listening time</h3>
           <div id="time" class="chips"></div>
-        </div>
-      </details>
-
-      <details class="note-extra">
-        <summary><span>add a note</span><small>optional</small></summary>
-        <div class="feeling-field">
-          <label for="feelingInput" class="feeling-prompt">anything else?</label>
-          <textarea id="feelingInput" maxlength="1200" rows="4" placeholder="good for a late walk, not too obvious..."></textarea>
-          <div class="feeling-foot">
-            <span id="feelingInsight" aria-live="polite"></span>
-            <button id="clearFeeling" type="button">clear note</button>
-          </div>
         </div>
       </details>
 
