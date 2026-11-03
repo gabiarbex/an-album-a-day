@@ -113,7 +113,7 @@
         <p>choose as much or as little as you want.</p>
         <div class="quick-actions">
           <button id="surpriseMe" type="button" class="quick-pick"><b>surprise me</b></button>
-          <button id="resetPicker" type="button" class="quick-pick quiet"><b>clear all</b></button>
+          <button id="resetPicker" type="button" class="quick-pick quiet" disabled><b>clear all</b></button>
         </div>
       </div>
 
@@ -129,7 +129,7 @@
       <details class="fine-tune" id="fineTune" open>
         <summary>
           <span>filters</span>
-          <small>optional</small>
+          <small id="filterSummary">none selected</small>
         </summary>
 
         <div class="signal-note" id="signalNote"></div>
@@ -174,7 +174,7 @@
       <button id="openDiaryFromShelf" type="button">open diary</button>
     </div>
     <div id="recentPulls" class="recent-pulls">
-      <p class="recent-empty">Nothing filed yet. Your shelf will grow as you listen.</p>
+      <p class="recent-empty">Nothing saved yet.</p>
     </div>
   </section>
 
@@ -189,7 +189,7 @@
       <button id="closeDrawer" aria-label="Close diary">✕</button>
     </div>
     <div class="diary-stats" aria-label="Listening diary statistics">
-      <div><b id="statListened">0</b><span>records filed</span></div>
+      <div><b id="statListened">0</b><span>albums saved</span></div>
       <div><b id="statAverage">—</b><span>average rating</span></div>
       <div><b id="statGenre">—</b><span>top genre</span></div>
       <div><b id="statTraining">0</b><span>rated records</span></div>
