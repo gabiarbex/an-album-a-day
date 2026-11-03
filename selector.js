@@ -1520,7 +1520,12 @@ function coverArtUrls(a){
   full=preferred.replace(/\/front-(?:250|500|1200)(?:\?.*)?$/i,'/front-500');
   preview=full.replace(/\/front-500(?:\?.*)?$/i,'/front-250');
  }else if(/^https?:\/\//i.test(preferred)){
-  full=preview=preferred;
+  if(/mzstatic\.com|itunes\.apple\.com/i.test(preferred)){
+   preview=preferred.replace(/\/\d+x\d+bb(?:-\d+)?\./i,'/300x300bb.');
+   full=preferred.replace(/\/\d+x\d+bb(?:-\d+)?\./i,'/600x600bb.');
+  }else{
+   full=preview=preferred;
+  }
  }else if(/^[0-9a-f-]{36}$/i.test(mbid)){
   preview='https://coverartarchive.org/release-group/'+mbid+'/front-250';
   full='https://coverartarchive.org/release-group/'+mbid+'/front-500';
