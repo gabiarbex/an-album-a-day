@@ -65,6 +65,7 @@ for(const [id,values] of groups){
 }
 
 const PICKER_STORAGE_KEY='albumaday.picker.v2';
+let recommendationRequest=0;
 
 function pickerSnapshot(){
  return {
@@ -117,6 +118,7 @@ function restorePickerState(){
  }catch{}
 }
 function invalidateDailyPick(){
+ recommendationRequest++;
  try{localStorage.removeItem('albumaday.dailyPick')}catch{}
 }
 function resetPicker(){
@@ -589,6 +591,7 @@ function hasRecommendationIntent(){
 }
 async function chooseDaily(options={}){
  const surprise=Boolean(options.surprise);
+ const request=++recommendationRequest;
  if(!albums.length){$('status').textContent='Still loading albums. Check your connection if this persists.';return}
  setPickBusy(true);
  try{
@@ -618,6 +621,7 @@ async function chooseDaily(options={}){
      : await rankWithLiveMetadata(pool,seed,true);
    }
   }
+  if(request!==recommendationRequest)return;
   pick=result.album;
   seenAlbums.add(hash32(key(pick)));persistSeen();
   if(!surprise)saveDailyPick(pick,result.featuresUsed,result.mode);
@@ -628,6 +632,7 @@ async function chooseDaily(options={}){
 }
 async function chooseAnother(){
  if(!albums.length)return;
+ const request=++recommendationRequest;
  setPickBusy(true);
  try{
   const pool=await eligiblePool();
@@ -646,6 +651,7 @@ async function chooseAnother(){
      : await rankWithLiveMetadata(pool,seed,false);
    }
   }
+  if(request!==recommendationRequest)return;
   pick=result.album;
   seenAlbums.add(hash32(key(pick)));persistSeen();
   show(pick,{mode:'bonus',featuresUsed:result.featuresUsed,rankingMode:result.mode,userTriggered:true});
