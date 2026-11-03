@@ -9,24 +9,24 @@ const loadedShardFiles=new Set();
 const state={moods:[],energy:null,comfort:null,time:null};
 const $=id=>document.getElementById(id);
 const moods=[
- ['after dark','dark'],
- ['cold air','cold'],
- ['too much','intense'],
- ['inside my head','reflective'],
- ['moving','energetic'],
- ['beautifully sad','melancholic'],
- ['rough edges','gritty'],
- ['somewhere else','alienated'],
- ['memory lane','nostalgic'],
- ['warm hands','warm'],
- ['floaty','dreamy'],
- ['light coming in','hopeful']
+ ['dark','dark'],
+ ['cold','cold'],
+ ['intense','intense'],
+ ['reflective','reflective'],
+ ['energetic','energetic'],
+ ['melancholic','melancholic'],
+ ['gritty','gritty'],
+ ['alienated','alienated'],
+ ['nostalgic','nostalgic'],
+ ['warm','warm'],
+ ['dreamy','dreamy'],
+ ['hopeful','hopeful']
 ];
 const groups=[
  ['moods',moods],
- ['energy',[['low voltage',2],['steady pulse',5],['full blast',9]]],
- ['comfort',[['stay close','comfort'],['open the strange door','exploration']]],
- ['time',[['quick side',30],['proper sit-down',45],['long listen',60],['time is fake',null]]]
+ ['energy',[['low',2],['medium',5],['high',9]]],
+ ['comfort',[['familiar','comfort'],['something new','exploration']]],
+ ['time',[['under 30 min',30],['around 45 min',45],['60+ min',60],['any length',null]]]
 ];
 
 for(const [id,values] of groups){
@@ -183,7 +183,7 @@ function renderRecentPulls(){
  area.replaceChildren();
  const recent=[...logs].reverse().slice(0,6);
  if(!recent.length){
-  const p=document.createElement('p');p.className='recent-empty';p.textContent='Nothing filed yet. Your shelf will grow as you listen.';area.append(p);return;
+  const p=document.createElement('p');p.className='recent-empty';p.textContent='Nothing saved yet. Albums you save will show up here.';area.append(p);return;
  }
  for(const entry of recent){
   const card=document.createElement('article');card.className='recent-card';
@@ -216,7 +216,7 @@ function renderHistory(){
  const area=$('history');area.replaceChildren();
  if(!logs.length){
   const empty=document.createElement('div');empty.className='history-empty';
-  empty.innerHTML='<b>no records filed yet.</b><span>listen to something, then leave yourself a note.</span>';
+  empty.innerHTML='<b>nothing saved yet.</b><span>save an album after you listen.</span>';
   area.append(empty);return;
  }
  for(const row of logs.map((entry,index)=>({entry,index})).reverse()){
@@ -270,7 +270,7 @@ function updateSignalNote(){
  if(rankingFeaturesAvailable){
   node.textContent='these choices affect the pick.';
  }else if(liveMetadataRankingAvailable){
-  node.textContent='these choices help narrow the shelf.';
+  node.textContent='these choices affect the recommendation.';
  }else{
   node.textContent='these choices are unavailable right now.';
  }
@@ -306,9 +306,9 @@ function refreshFeatureCoverage(){
 }
 function libraryStatus(){
  const total=(catalogTotal||albums.length).toLocaleString();
- if(rankingFeaturesAvailable)return `${total} records on the shelf.`;
- if(liveMetadataRankingAvailable)return `${total} records on the shelf.`;
- return `${total} records in the room.`;
+ if(rankingFeaturesAvailable)return `${total} albums loaded.`;
+ if(liveMetadataRankingAvailable)return `${total} albums loaded.`;
+ return `${total} albums loaded.`;
 }
 
 function mergeAlbumRecord(existing,incoming){
@@ -1563,7 +1563,7 @@ function artPlaceholder(a){
 }
 function explainPick(a,context={}){
  if(context.rankingMode==='shared')return 'shared by another listener.';
- if(context.rankingMode==='surprise')return 'a blind pick from the catalog.';
+ if(context.rankingMode==='surprise')return 'random pick.';
  const note=$('feelingInput')?.value.trim()||'';
  const reasons=[];
  const albumMoods=(a.moods||[]).map(x=>String(x).toLowerCase());
@@ -1571,8 +1571,8 @@ function explainPick(a,context={}){
  const selectedMoodMatches=state.moods.filter(m=>albumMoods.includes(m));
  if(selectedMoodMatches.length)reasons.push(`matched ${selectedMoodMatches.slice(0,2).join(' / ')}`);
  if(state.energy!==null)reasons.push('fit your energy');
- if(state.comfort==='comfort')reasons.push('stayed closer to familiar ground');
- if(state.comfort==='exploration')reasons.push('pushed further into discovery');
+ if(state.comfort==='comfort')reasons.push('more familiar');
+ if(state.comfort==='exploration')reasons.push('less familiar');
  if(state.time!==null){
   const minutes=a._live?.runtimeMin??a._semantic?.runtimeMin??Number(a.length_min);
   if(Number.isFinite(minutes)&&minutes<=state.time+3)reasons.push(`fits about ${Math.round(minutes)} minutes`);
@@ -1583,10 +1583,10 @@ function explainPick(a,context={}){
   else reasons.push('matched your note');
  }
  const personal=diaryTasteScore(a);
- if(personal.active)reasons.push('your diary helped');
+ if(personal.active)reasons.push('influenced by your ratings');
  if(reasons.length)return reasons.slice(0,3).join(' · ')+'.';
- if(context.mode==='bonus')return 'another pick from the catalog.';
- return 'picked from the catalog.';
+ if(context.mode==='bonus')return 'another recommendation.';
+ return 'recommended from the catalog.';
 }
 const interpretFeeling=globalThis.AlbumIntent?.interpretFeeling||(()=>({moods:{},avoidMoods:{},genres:[],avoidGenres:[],energy:null,exploration:0,summary:''}));
 if($('todayDate')){
