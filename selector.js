@@ -38,17 +38,82 @@ for(const [id,values] of groups){
   b.className='chip';b.type='button';b.textContent=label;b._value=value;
   b.setAttribute('aria-pressed','false');
   b.addEventListener('click',()=>{
-   if(id==='moods')state.moods=state.moods.includes(value)?state.moods.filter(x=>x!==value):[...state.moods,value];
-   else state[id]=value;
-   parent.querySelectorAll('button').forEach(x=>{
-    const active=id==='moods'?state.moods.includes(x._value):x===b;
-    x.classList.toggle('selected',active);
-    x.setAttribute('aria-pressed',String(active));
-   });
+   if(id==='moods'){
+    state.moods=state.moods.includes(value)?state.moods.filter(x=>x!==value):[...state.moods,value];
+   }else{
+    state[id]=state[id]===value?null:value;
+   }
+   renderPickerControls();
+   invalidateDailyPick();
    savePickerState();
   });
   parent.append(b);
  });
+}
+
+const PICKER_STORAGE_KEY='albumaday.picker.v2';
+
+function pickerSnapshot(){
+ return {
+  note:$('feelingInput')?.value||'',
+  moods:[...state.moods].sort(),
+  energy:state.energy,
+  comfort:state.comfort,
+  time:state.time
+ };
+}
+function criteriaSignature(){return JSON.stringify(pickerSnapshot())}
+function renderPickerControls(){
+ for(const [id] of groups){
+  const parent=$(id);if(!parent)continue;
+  parent.querySelectorAll('button').forEach(button=>{
+   const active=id==='moods'?state.moods.includes(button._value):state[id]===button._value;
+   button.classList.toggle('selected',active);
+   button.setAttribute('aria-pressed',String(active));
+  });
+ }
+}
+function savePickerState(){
+ try{localStorage.setItem(PICKER_STORAGE_KEY,JSON.stringify(pickerSnapshot()))}catch{}
+}
+function restorePickerState(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(PICKER_STORAGE_KEY)||'null');
+  if(!saved)return;
+  state.moods=Array.isArray(saved.moods)?saved.moods:[];
+  state.energy=saved.energy??null;
+  state.comfort=saved.comfort??null;
+  state.time=saved.time??null;
+  const field=$('feelingInput');
+  if(field&&typeof saved.note==='string')field.value=saved.note;
+  renderPickerControls();
+ }catch{}
+}
+function invalidateDailyPick(){
+ try{localStorage.removeItem('albumaday.dailyPick')}catch{}
+}
+function resetPicker(){
+ state.moods=[];
+ state.energy=null;
+ state.comfort=null;
+ state.time=null;
+ const field=$('feelingInput');
+ if(field)field.value='';
+ renderPickerControls();
+ try{
+  localStorage.removeItem(PICKER_STORAGE_KEY);
+  localStorage.removeItem('albumaday.dailyPick');
+ }catch{}
+ const url=new URL(location.href);
+ if(url.searchParams.has('a')){
+  url.searchParams.delete('a');
+  history.replaceState({},'',url.pathname+url.search+url.hash);
+ }
+ const insight=$('feelingInsight');
+ if(insight)insight.textContent='start anywhere';
+ const status=$('status');
+ if(status)status.textContent='cleared — pick a new record.';
+ showToast('Cleared.');
 }
 
 function key(a){return `${String(a.artist||'').toLowerCase()}::${String(a.title||'').toLowerCase()}`}
@@ -329,11 +394,20 @@ async function loadMoreShards(count=6){
 function readDailyPick(){
  try{
   const value=JSON.parse(localStorage.getItem('albumaday.dailyPick')||'null');
-  return value&&value.date===getDate()&&value.album&&value.engineVersion===ENGINE_VERSION?value:null;
+  return value&&value.date===getDate()&&value.album&&value.engineVersion===ENGINE_VERSION&&value.criteriaSignature===criteriaSignature()?value:null;
  }catch{return null}
 }
 function saveDailyPick(album,featuresUsed,rankingMode){
- try{localStorage.setItem('albumaday.dailyPick',JSON.stringify({date:getDate(),album,featuresUsed:Boolean(featuresUsed),rankingMode:rankingMode||'draw',engineVersion:ENGINE_VERSION}))}catch(e){console.warn('Could not save daily pick',e)}
+ try{
+  localStorage.setItem('albumaday.dailyPick',JSON.stringify({
+   date:getDate(),
+   album,
+   featuresUsed:Boolean(featuresUsed),
+   rankingMode:rankingMode||'draw',
+   engineVersion:ENGINE_VERSION,
+   criteriaSignature:criteriaSignature()
+  }));
+ }catch(e){console.warn('Could not save daily pick',e)}
 }
 async function restoreSharedPick(){
  const wanted=new URLSearchParams(location.search).get('a');
@@ -403,6 +477,7 @@ async function load(){
   console.error(e);
  }
 }
+restorePickerState();
 load();
 
 function score(a,intent){
@@ -1442,15 +1517,24 @@ document.querySelectorAll('.prompt-chip').forEach(button=>{
  });
 });
 if(feelingInput){
- restorePickerState();
- feelingInput.addEventListener('input',()=>{
+ const updateInsight=()=>{
   const p=interpretFeeling(feelingInput.value);
   if(feelingInput.value.trim())$('feelingInsight').textContent=p.summary?'heard: '+p.summary:'got it.';
-  else $('feelingInsight').textContent='your note stays here';
+  else $('feelingInsight').textContent='start anywhere';
+ };
+ updateInsight();
+ feelingInput.addEventListener('input',()=>{
+  updateInsight();
+  invalidateDailyPick();
   savePickerState();
  });
- feelingInput.dispatchEvent(new Event('input'));
- $('clearFeeling').addEventListener('click',()=>{feelingInput.value='';feelingInput.dispatchEvent(new Event('input'));feelingInput.focus()});
+ $('clearFeeling').addEventListener('click',()=>{
+  feelingInput.value='';
+  updateInsight();
+  invalidateDailyPick();
+  savePickerState();
+  feelingInput.focus();
+ });
  feelingInput.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){e.preventDefault();chooseDaily()}});
 }
 $('resetPicker')?.addEventListener('click',resetPicker);
