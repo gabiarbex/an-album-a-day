@@ -424,102 +424,6 @@ async function loadMoreShards(count=6){
  }));
  for(const batch of batches)mergeAlbums(batch);
 }
-function readDailyPick(){
- try{
-  const value=JSON.parse(localStorage.getItem('albumaday.dailyPick')||'null');
-  return value&&value.date===getDate()&&value.album&&value.engineVersion===ENGINE_VERSION&&value.criteriaSignature===criteriaSignature()?value:null;
- }catch{return null}
-}
-function saveDailyPick(album,featuresUsed,rankingMode){
- try{
-  localStorage.setItem('albumaday.dailyPick',JSON.stringify({
-   date:getDate(),
-   album,
-   featuresUsed:Boolean(featuresUsed),
-   rankingMode:rankingMode||'draw',
-   engineVersion:ENGINE_VERSION,
-   criteriaSignature:criteriaSignature()
-  }));
- }catch(e){console.warn('Could not save daily pick',e)}
-}
-async function restoreSharedPick(){
- const wanted=new URLSearchParams(location.search).get('a');
- if(!wanted)return false;
- let found=albums.find(a=>lookupId(a)===wanted);
- if(!found&&catalogManifest?.lookup_index){
-  try{
-   const index=await getCatalogLookupIndex();
-   const shard=index?.[wanted];
-   if(shard){await loadSpecificShard(shard);found=albums.find(a=>lookupId(a)===wanted)}
-  }catch(e){console.info('Shared-pick lookup unavailable',e)}
- }
- if(!found){
-  showToast('That shared record is not in the loaded catalog.');
-  return false;
- }
- pick=found;
- show(pick,{mode:'shared',featuresUsed:false,rankingMode:'shared'});
- $('reroll').hidden=false;
- return true;
-}
-function restoreDailyPick(){
- const daily=readDailyPick();
- if(!daily)return false;
- pick=daily.album;
- show(pick,{mode:'daily',featuresUsed:Boolean(daily.featuresUsed),rankingMode:daily.rankingMode||'draw',restored:true});
- $('reroll').hidden=false;
- markTodayPicked();
- return true;
-}
-async function load(){
- try{
-  const manifestResponse=await fetch('./data/catalog/manifest.json',{cache:'no-store'});
-  if(manifestResponse.ok){
-   catalogManifest=await manifestResponse.json();
-   catalogTotal=Number(catalogManifest.total_albums)||0;
-   // The original editorial catalog is always active. Once the global build
-   // exists, prefer its MusicBrainz-enriched base over legacy albums.json.
-   try{
-    const basePath=catalogManifest.base_file?'./data/catalog/'+catalogManifest.base_file:'./data/albums.json';
-    const baseResponse=await fetch(basePath,{cache:'force-cache'});
-    if(baseResponse.ok){
-     const base=await baseResponse.json();
-     mergeAlbums(Array.isArray(base)?base:base.albums||[]);
-    }
-   }catch(e){console.info('Editorial base could not be preloaded',e)}
-   await loadMoreShards(6);
-   if(!albums.length)throw Error('Catalog manifest exists but no albums loaded');
-   refreshFeatureCoverage();
-   $('status').textContent=libraryStatus();
-   await restoreSharedPick();
-   return;
-  }
- }catch(e){console.info('Large catalog not deployed yet; using base catalog.',e)}
- try{
-  const response=await fetch('./data/albums.json',{cache:'no-store'});
-  if(!response.ok)throw Error(`HTTP ${response.status}`);
-  const json=await response.json();
-  albums=(Array.isArray(json)?json:json.albums||[]).filter(a=>a.title&&a.artist);
-  catalogTotal=albums.length;
-  refreshFeatureCoverage();
-  $('status').textContent=libraryStatus();
-  if(!albums.length)throw Error('No albums found');
-  await restoreSharedPick();
- }catch(e){
-  $('status').textContent='Could not load the music library.';
-  console.error(e);
- }
-}
-try{
- localStorage.removeItem(PICKER_STORAGE_KEY);
- localStorage.removeItem('albumaday.picker');
- localStorage.removeItem('albumaday.dailyPick');
-}catch{}
-state.moods=[];state.energy=null;state.comfort=null;state.time=null;
-if($('feelingInput'))$('feelingInput').value='';
-renderPickerControls();
-load();
-
 function score(a,intent){
  let weighted=0,totalWeight=0;
  const confidence=(name,fallback=.7)=>{
@@ -1587,7 +1491,10 @@ async function loadArtwork(a,img){
   if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
   if(img.classList.contains('cover-loaded'))return;
   const url=storeArtworkUrl(album,600);
-  if(url)setCoverSource(img,url,fallback,request);
+  if(url){
+   a.metadata={...(a.metadata||{}),cover_art:url};
+   setCoverSource(img,url,fallback,request);
+  }
  }).catch(()=>{});
 
  // If there is no ready catalog source, resolve the release-group later.
@@ -1597,7 +1504,9 @@ async function loadArtwork(a,img){
     const group=await findMusicBrainzGroup(a);
     if(request!==artworkRequest||!pick||key(pick)!==key(a)||!group?.id)return;
     if(img.classList.contains('cover-loaded'))return;
-    setCoverSource(img,'https://coverartarchive.org/release-group/'+group.id+'/front-500',fallback,request);
+    const url='https://coverartarchive.org/release-group/'+group.id+'/front-500';
+    a.metadata={...(a.metadata||{}),musicbrainz_id:group.id,cover_art:url};
+    setCoverSource(img,url,fallback,request);
    }catch{}
   };
   if('requestIdleCallback' in window)requestIdleCallback(()=>resolveLate(),{timeout:1800});
@@ -1630,7 +1539,7 @@ function artPlaceholder(a){
  };
  const lines=wrap(a.title,18);
  const title=lines.map((v,i)=>'<text x="50" y="'+(300+i*54)+'" font-size="48" font-weight="900">'+safe(v)+'</text>').join('');
- const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><rect width="720" height="720" fill="#fffaf0"/><rect x="0" y="0" width="720" height="92" fill="#111"/><rect x="470" y="92" width="250" height="150" fill="#ff5aa7"/><rect x="0" y="550" width="220" height="170" fill="#c8ff37"/><rect x="220" y="600" width="500" height="120" fill="#2f5cff"/><g fill="#111" font-family="Arial, Helvetica, sans-serif"><text x="50" y="58" fill="#fff" font-family="Courier New, monospace" font-size="15" letter-spacing="3">AN ALBUM A DAY</text>'+title+'<text x="50" y="530" font-family="Courier New, monospace" font-size="17" font-weight="700">'+safe(a.artist).slice(0,44)+'</text><text x="246" y="657" fill="#fff" font-family="Courier New, monospace" font-size="12" letter-spacing="2">COVER LOADING</text></g></svg>';
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><rect width="720" height="720" fill="#fffaf0"/><rect x="0" y="0" width="720" height="92" fill="#111"/><rect x="470" y="92" width="250" height="150" fill="#ff5aa7"/><rect x="0" y="550" width="220" height="170" fill="#c8ff37"/><rect x="220" y="600" width="500" height="120" fill="#2f5cff"/><g fill="#111" font-family="Arial, Helvetica, sans-serif"><text x="50" y="58" fill="#fff" font-family="Courier New, monospace" font-size="15" letter-spacing="3">AN ALBUM A DAY</text>'+title+'<text x="50" y="530" font-family="Courier New, monospace" font-size="17" font-weight="700">'+safe(a.artist).slice(0,44)+'</text><text x="246" y="657" fill="#fff" font-family="Courier New, monospace" font-size="12" letter-spacing="2">CATALOG SLEEVE</text></g></svg>';
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 function explainPick(a,context={}){
