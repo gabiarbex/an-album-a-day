@@ -965,22 +965,68 @@ async function getMusicBrainzGroupDetails(a){
  const group=known?{id:known}:await findMusicBrainzGroup(a);
  if(!group?.id)return null;
  if(musicBrainzDetailCache.has(group.id))return musicBrainzDetailCache.get(group.id);
- const promise=musicBrainzJson('https://musicbrainz.org/ws/2/release-group/'+group.id+'?inc=releases+genres+tags+url-rels&fmt=json')
+ const promise=musicBrainzJson('https://musicbrainz.org/ws/2/release-group/'+group.id+'?inc=genres+tags+url-rels&fmt=json')
   .catch(e=>{console.info('MusicBrainz detail lookup unavailable',e);return null});
  musicBrainzDetailCache.set(group.id,promise);
  return promise;
 }
-function releaseCandidates(details){
- const releases=(details?.releases||[]).filter(r=>r?.id);
- const official=releases.filter(r=>!r.status||String(r.status).toLowerCase()==='official');
- const pool=official.length?official:releases;
- return pool.slice().sort((a,b)=>{
+const musicBrainzGroupReleaseCache=new Map();
+async function browseGroupReleases(groupId){
+ if(!groupId)return [];
+ if(musicBrainzGroupReleaseCache.has(groupId))return musicBrainzGroupReleaseCache.get(groupId);
+ const promise=(async()=>{
+  const all=[];let offset=0;
+  // MusicBrainz browse is paginated; releases are always returned whole.
+  // Two pages is far more than a normal album needs while keeping UI latency bounded.
+  for(let page=0;page<2;page++){
+   const url='https://musicbrainz.org/ws/2/release?release-group='+encodeURIComponent(groupId)
+    +'&status=official&inc=recordings+media&fmt=json&limit=100&offset='+offset;
+   const data=await musicBrainzJson(url);
+   const rows=(data?.releases||[]).filter(r=>r?.id);
+   all.push(...rows);
+   offset+=rows.length;
+   const total=Number(data?.['release-count']||0);
+   if(!rows.length||offset>=total)break;
+  }
+  return all;
+ })().catch(e=>{console.info('MusicBrainz release browse unavailable',e);return []});
+ musicBrainzGroupReleaseCache.set(groupId,promise);
+ return promise;
+}
+function releaseTrackCount(release){
+ const media=Array.isArray(release?.media)?release.media:[];
+ const fromMedia=media.reduce((n,m)=>n+(Number(m?.['track-count'])||Number(m?.tracks?.length)||0),0);
+ return fromMedia||Number(release?.['track-count'])||0;
+}
+function selectRepresentativeRelease(releases,firstReleaseDate=''){
+ const pool=(releases||[]).filter(r=>r?.id&&releaseTrackCount(r)>0);
+ if(!pool.length)return null;
+ const firstYear=Number.parseInt(String(firstReleaseDate||'').slice(0,4),10);
+ let eraPool=pool;
+ if(Number.isFinite(firstYear)){
+  const close=pool.filter(r=>{
+   const y=Number.parseInt(String(r.date||'').slice(0,4),10);
+   return Number.isFinite(y)&&y>=firstYear&&y<=firstYear+2;
+  });
+  if(close.length)eraPool=close;
+ }
+ const counts=new Map();
+ for(const r of eraPool){
+  const count=releaseTrackCount(r);
+  counts.set(count,(counts.get(count)||0)+1);
+ }
+ const preferredCount=[...counts.entries()]
+  .sort((a,b)=>b[1]-a[1]||b[0]-a[0])[0]?.[0];
+ const sameCount=eraPool.filter(r=>releaseTrackCount(r)===preferredCount);
+ const candidates=sameCount.length?sameCount:eraPool;
+ return candidates.slice().sort((a,b)=>{
   const ad=String(a.date||'9999-99-99'),bd=String(b.date||'9999-99-99');
   if(ad!==bd)return ad.localeCompare(bd);
-  return String(a.country||'').localeCompare(String(b.country||''));
- });
+  const ac=String(a.country||''),bc=String(b.country||'');
+  if(ac!==bc)return ac.localeCompare(bc);
+  return String(a.id).localeCompare(String(b.id));
+ })[0]||null;
 }
-function canonicalRelease(details){return releaseCandidates(details)[0]||null}
 async function getReleaseWithRecordings(releaseId){
  if(!releaseId)return null;
  if(musicBrainzReleaseCache.has(releaseId))return musicBrainzReleaseCache.get(releaseId);
@@ -1042,8 +1088,13 @@ function aggregateAcoustic(rows){
  return {moods,energy,tracksAnalyzed:rows.length,confidence:Math.min(.9,.52+rows.length*.04)};
 }
 async function loadSelectedAcousticProfile(a,details){
- const release=canonicalRelease(details);if(!release?.id)return null;
- const full=await getReleaseWithRecordings(release.id);if(!full||!pick||key(pick)!==key(a))return null;
+ let releaseId=a._selectedReleaseId;
+ if(!releaseId&&details?.id){
+  const releases=await browseGroupReleases(details.id);
+  releaseId=selectRepresentativeRelease(releases,details['first-release-date']||a.year)?.id||null;
+ }
+ if(!releaseId)return null;
+ const full=await getReleaseWithRecordings(releaseId);if(!full||!pick||key(pick)!==key(a))return null;
  const recordingIds=[];
  for(const medium of full.media||[]){
   for(const track of medium.tracks||[]){
@@ -1235,35 +1286,38 @@ async function loadRecordFile(a){
   let cached=null;
   try{cached=JSON.parse(sessionStorage.getItem(cacheId)||'null')}catch{}
   if(cached?.tracks?.length){
+   if(cached.releaseId)a._selectedReleaseId=cached.releaseId;
    if(request===recordFileRequest&&pick&&key(pick)===cacheKey)renderRecordFacts(a,cached.album,cached.tracks,cached.source||'catalogue');
    return;
   }
 
-  // MusicBrainz is the primary tracklist source because it exposes every medium
-  // and every track on the canonical release, rather than a storefront subset.
+  // Browse official releases and choose a representative original-era edition.
   const details=await getMusicBrainzGroupDetails(a);
   if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
-  if(details){
-   let best=null;
-   for(const release of releaseCandidates(details).slice(0,4)){
-    const full=await getReleaseWithRecordings(release.id);
+  if(details?.id){
+   const releases=await browseGroupReleases(details.id);
+   if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
+   const chosen=selectRepresentativeRelease(releases,details['first-release-date']||a.year);
+   if(chosen){
+    // Browse responses already include recordings+media; only fall back to lookup
+    // if an unusually sparse response has no actual track objects.
+    const full=(chosen.media||[]).some(m=>Array.isArray(m.tracks)&&m.tracks.length)
+      ? chosen
+      : await getReleaseWithRecordings(chosen.id);
     if(request!==recordFileRequest||!pick||key(pick)!==cacheKey)return;
     const tracks=musicBrainzTracks(full);
-    if(!tracks.length)continue;
-    const expected=(full?.media||[]).reduce((n,m)=>n+(Number(m['track-count'])||0),0);
-    const candidate={release,full,tracks,complete:!expected||tracks.length>=expected};
-    if(!best||candidate.tracks.length>best.tracks.length)best=candidate;
-    if(candidate.complete){best=candidate;break}
-   }
-   if(best){
-    const album={
-     date:best.full?.date||best.release.date||details['first-release-date']||a.year||'',
-     trackCount:best.tracks.length
-    };
-    const cache={album,tracks:best.tracks,source:'MusicBrainz'};
-    try{sessionStorage.setItem(cacheId,JSON.stringify(cache))}catch{}
-    renderRecordFacts(a,album,best.tracks,'MusicBrainz');
-    return;
+    if(tracks.length){
+     a._selectedReleaseId=chosen.id;
+     musicBrainzReleaseCache.set(chosen.id,Promise.resolve(full));
+     const album={
+      date:full?.date||chosen.date||details['first-release-date']||a.year||'',
+      trackCount:tracks.length
+     };
+     const cache={album,tracks,source:'MusicBrainz',releaseId:chosen.id};
+     try{sessionStorage.setItem(cacheId,JSON.stringify(cache))}catch{}
+     renderRecordFacts(a,album,tracks,'MusicBrainz');
+     return;
+    }
    }
   }
 
@@ -1322,8 +1376,7 @@ function show(a,context={}){
  const unseen=Math.max(0,(catalogTotal||albums.length)-seenAlbums.size).toLocaleString();
  $('status').textContent=context.mode==='bonus'?`${unseen} still unheard.`:context.mode==='shared'?'shared record.':`${unseen} still unheard.`;
  loadArtwork(a,cover);
- loadRecordFile(a);
- enhanceSelectedMetadata(a);
+ loadRecordFile(a).finally(()=>enhanceSelectedMetadata(a));
 }
 function labelColor(a){
  const palette=['#c8432f','#2e5f76','#d5ad36','#65714b','#9a593f','#d9d0bc'];
