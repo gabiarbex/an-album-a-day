@@ -1362,7 +1362,7 @@ function handoffToResult(){
  }
 }
 function show(a,context={}){
- const stage=$('stage');stage.classList.remove('revealed');void stage.offsetWidth;
+ const stage=$('stage');stage.classList.remove('revealed');stage.style.setProperty('--mount-color',labelColor(a));void stage.offsetWidth;
  const cover=$('cover');cover.style.display='block';cover.alt=`${a.title} by ${a.artist} album cover`;
  $('emptyCover').style.display='none';
  cover.src=artPlaceholder(a);
