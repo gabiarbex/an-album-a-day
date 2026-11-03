@@ -53,7 +53,7 @@ def test_frontend_contract():
         fail(f"Critical desktop CSS selectors missing: {missing_css}")
     if 'list-style:none' not in desktop_css or '.tracklist li::marker{content:""}' not in desktop_css:
         fail("Tracklist must suppress native ordered-list markers")
-    for name in ("resetPicker","savePickerState","restorePickerState","criteriaSignature","showToast"):
+    for name in ("resetPicker","savePickerState","criteriaSignature","showToast"):
         if f"function {name}(" not in js:
             fail(f"Required frontend helper missing: {name}")
     if "resetButton.onclick" not in js:
@@ -64,14 +64,23 @@ def test_frontend_contract():
         fail("Single-select filter chips must toggle off when clicked twice")
     if "['any length',null]" in js or '["any length",null]' in js:
         fail("A null-valued time chip conflicts with the cleared picker state")
-    if "const existing=surprise?null:readDailyPick()" not in js:
-        fail("Surprise must bypass the saved daily pick")
-    if "if(!surprise)saveDailyPick(" not in js:
-        fail("Surprise must not overwrite the canonical daily pick")
+    if "restorePickerState();" in js:
+        fail("Fresh visits must not restore the previous picker request")
+    load_start=js.find("async function load()")
+    load_end=js.find("function score(",load_start)
+    load_block=js[load_start:load_end] if load_start>=0 and load_end>load_start else ""
+    if "restoreDailyPick()" in load_block:
+        fail("Fresh visits must not auto-render the previous album")
+    if "localStorage.removeItem(PICKER_STORAGE_KEY)" not in js or "localStorage.removeItem('albumaday.dailyPick')" not in js:
+        fail("Fresh visits must clear persisted picker/daily-pick state")
+    if "await restoreSharedPick();" not in load_block:
+        fail("Explicit shared-record links must still restore their requested album")
     if "let recommendationRequest=0" not in js or "if(request!==recommendationRequest)return;" not in js:
         fail("Async recommendation results must be discarded after picker changes")
     if "albumaday.record.v4." not in js:
         fail("Tracklist cache version must invalidate stale pre-release results")
+    if "Number(v)>0" not in js:
+        fail("Recommendation rationale must reject zero/null runtimes")
     if "$('tracklistStatus').hidden=true" not in js:
         fail("Successful tracklist rendering must hide the loading status")
     if "PRODUCT PASS" in css or "EDITORIAL RESET" in css or "HUMAN EDITORIAL PASS" in css:
