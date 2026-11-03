@@ -1385,7 +1385,8 @@ function spotifyUrl(a){
 }
 function handoffToResult(){
  if(window.matchMedia('(max-width:1100px)').matches){
-  requestAnimationFrame(()=>requestAnimationFrame(()=>$('stage')?.scrollIntoView({behavior:'smooth',block:'start'})));
+  const behavior=window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>$('stage')?.scrollIntoView({behavior,block:'start'})));
  }
 }
 function show(a,context={}){
@@ -1694,8 +1695,10 @@ if(resetButton){
 
 async function copyText(text){
  if(navigator.clipboard?.writeText){
-  await navigator.clipboard.writeText(text);
-  return true;
+  try{
+   await navigator.clipboard.writeText(text);
+   return true;
+  }catch{}
  }
  const area=document.createElement('textarea');
  area.value=text;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';
