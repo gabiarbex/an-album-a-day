@@ -792,9 +792,11 @@ main{
 }
 .drawer-head h2,.dialog-head h2{
   margin:0;
-  font-family:Arial Black,Arial,sans-serif;
-  font-size:30px;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:32px;
   line-height:.9;
+  font-style:italic;
+  font-weight:700;
   letter-spacing:-.05em;
 }
 .drawer-head button,.dialog-head button{
@@ -815,7 +817,10 @@ main{
   border-right:1px solid var(--ink);
   border-bottom:1px solid var(--ink);
 }
-.diary-stats>div:nth-child(3n){background:var(--acid)}
+.diary-stats>div:nth-child(4n+1){background:#fffaf0}
+.diary-stats>div:nth-child(4n+2){background:#ffd7e9}
+.diary-stats>div:nth-child(4n+3){background:#dbe4ff}
+.diary-stats>div:nth-child(4n){background:var(--acid)}
 .diary-stats b{
   display:block;
   overflow:hidden;
