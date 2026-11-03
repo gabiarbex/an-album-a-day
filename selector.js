@@ -494,6 +494,10 @@ if($('feelingInput'))$('feelingInput').value='';
 renderPickerControls();
 load();
 
+window.addEventListener('pageshow',event=>{
+ if(event.persisted&&!new URLSearchParams(location.search).has('a'))location.reload();
+});
+
 function score(a,intent){
  let weighted=0,totalWeight=0;
  const confidence=(name,fallback=.7)=>{
