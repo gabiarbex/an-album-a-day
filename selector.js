@@ -1474,21 +1474,71 @@ $('export').onclick=()=>{
 };
 
 let artworkRequest=0;
+function coverArtUrls(a){
+ const preferred=String(a.metadata?.cover_art||'');
+ const mbid=String(a.metadata?.musicbrainz_id||a.id||'').replace(/^mb:/,'');
+ let full='',preview='';
+ if(/^https?:\/\/coverartarchive\.org\//i.test(preferred)){
+  full=preferred.replace(/\/front-(?:250|500|1200)(?:\?.*)?$/i,'/front-500');
+  preview=full.replace(/\/front-500(?:\?.*)?$/i,'/front-250');
+ }else if(/^https?:\/\//i.test(preferred)){
+  full=preview=preferred;
+ }else if(/^[0-9a-f-]{36}$/i.test(mbid)){
+  preview='https://coverartarchive.org/release-group/'+mbid+'/front-250';
+  full='https://coverartarchive.org/release-group/'+mbid+'/front-500';
+ }
+ return {preview,full};
+}
+function setCoverSource(img,url,fallback,request){
+ if(!url)return false;
+ const probe=new Image();
+ probe.decoding='async';
+ try{probe.fetchPriority='high'}catch{}
+ probe.onload=()=>{
+  if(request!==artworkRequest||!pick)return;
+  img.onerror=()=>{img.onerror=null;img.src=fallback};
+  img.src=url;
+  img.classList.add('cover-loaded');
+ };
+ probe.onerror=()=>{};
+ probe.src=url;
+ return true;
+}
 async function loadArtwork(a,img){
  const request=++artworkRequest;
  const fallback=artPlaceholder(a);
- const apply=url=>{
-  if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
-  img.onerror=()=>{img.onerror=null;img.src=fallback};
-  img.src=url;
+ img.classList.remove('cover-loaded');
+ img.src=fallback;
+
+ const {preview,full}=coverArtUrls(a);
+ if(preview){
+  setCoverSource(img,preview,fallback,request);
+  if(full&&full!==preview){
+   const upgrade=()=>{
+    if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
+    const hi=new Image();hi.decoding='async';
+    hi.onload=()=>{if(request===artworkRequest&&pick&&key(pick)===key(a))img.src=full};
+    hi.src=full;
+   };
+   if('requestIdleCallback' in window)requestIdleCallback(upgrade,{timeout:1800});
+   else setTimeout(upgrade,900);
+  }
+  return;
+ }
+
+ // Never make the visible cover wait behind the MusicBrainz request queue.
+ // For records without a catalog MBID, keep the instant local sleeve and
+ // resolve artwork only after the rest of the page is interactive.
+ const resolveLate=async()=>{
+  try{
+   const group=await findMusicBrainzGroup(a);
+   if(request!==artworkRequest||!pick||key(pick)!==key(a)||!group?.id)return;
+   const url='https://coverartarchive.org/release-group/'+group.id+'/front-250';
+   setCoverSource(img,url,fallback,request);
+  }catch{}
  };
- const preferred=a.metadata?.cover_art;
- if(preferred&&/^https?:\/\//.test(preferred)){apply(preferred);return}
- try{
-  const group=await findMusicBrainzGroup(a);
-  if(group?.id)apply('https://coverartarchive.org/release-group/'+group.id+'/front-500');
-  else apply(fallback);
- }catch{apply(fallback)}
+ if('requestIdleCallback' in window)requestIdleCallback(()=>resolveLate(),{timeout:2200});
+ else setTimeout(resolveLate,1200);
 }
 
 function artPlaceholder(a){
