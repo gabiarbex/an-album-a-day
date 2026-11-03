@@ -1493,18 +1493,18 @@ async function loadArtwork(a,img){
 
 function artPlaceholder(a){
  const safe=x=>String(x||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- const wrap=(v,n=19)=>{
+ const wrap=(v,n=22)=>{
   const words=String(v||'').split(/\s+/),lines=[''];
-  for(const w of words){
+  for(const word of words){
    const i=lines.length-1;
-   if((lines[i]+' '+w).trim().length>n&&lines.length<4)lines.push(w);
-   else lines[i]=(lines[i]+' '+w).trim();
+   if((lines[i]+' '+word).trim().length>n&&lines.length<4)lines.push(word);
+   else lines[i]=(lines[i]+' '+word).trim();
   }
   return lines;
  };
- const lines=wrap(a.title,17);
- const title=lines.map((v,i)=>'<text x="48" y="'+(300+i*58)+'" font-size="50">'+safe(v)+'</text>').join('');
- const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><rect width="720" height="720" fill="#ece3d4"/><rect x="34" y="34" width="652" height="652" fill="none" stroke="#171411" stroke-width="3"/><rect x="48" y="54" width="116" height="16" fill="#b9412f"/><g fill="#171411" font-family="Georgia, serif"><text x="48" y="118" font-family="Courier New, monospace" font-size="15" letter-spacing="3">AN ALBUM A DAY</text>'+title+'<text x="48" y="622" font-family="Courier New, monospace" font-size="17" letter-spacing="1">'+safe(a.artist).slice(0,44)+'</text><text x="48" y="662" font-family="Courier New, monospace" font-size="12" letter-spacing="2">MISSING SLEEVE / CATALOG COPY</text></g></svg>';
+ const lines=wrap(a.title,21);
+ const title=lines.map((v,i)=>'<text x="42" y="'+(285+i*48)+'" font-size="42" font-weight="500">'+safe(v)+'</text>').join('');
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><rect width="720" height="720" fill="#e8e8e5"/><g fill="#111" font-family="Arial, Helvetica, sans-serif"><text x="42" y="62" font-size="13" letter-spacing="2">AN ALBUM A DAY</text>'+title+'<text x="42" y="650" font-size="16">'+safe(a.artist).slice(0,48)+'</text></g></svg>';
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 function explainPick(a,context={}){
