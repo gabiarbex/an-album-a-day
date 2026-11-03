@@ -65,6 +65,7 @@ for(const [id,values] of groups){
 }
 
 const PICKER_STORAGE_KEY='albumaday.picker.v2';
+const SEEN_KEYS_STORAGE_KEY='albumaday.seenKeys.v1';
 let recommendationRequest=0;
 
 function pickerSnapshot(){
@@ -177,10 +178,38 @@ function readSeen(){
   return new Set((Array.isArray(raw)?raw:[]).map(v=>typeof v==='number'?v:hash32(String(v))));
  }catch{return new Set()}
 }
+function normalizeSeenKey(value){
+ return String(value||'')
+  .normalize('NFKD')
+  .replace(/[\u0300-\u036f]/g,'')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g,' ')
+  .trim();
+}
+function seenKey(a){return normalizeSeenKey(a?.artist)+'::'+normalizeSeenKey(a?.title)}
+function readSeenKeys(){
+ try{
+  const raw=JSON.parse(localStorage.getItem(SEEN_KEYS_STORAGE_KEY)||'[]');
+  return new Set(Array.isArray(raw)?raw.map(String):[]);
+ }catch{return new Set()}
+}
 let seenAlbums=readSeen();
+let seenAlbumKeys=readSeenKeys();
+function albumWasSeen(a){
+ const k=key(a);
+ return seenAlbumKeys.has(seenKey(a))||seenAlbums.has(hash32(k));
+}
 function persistSeen(){
- try{localStorage.setItem('albumaday.seen',JSON.stringify([...seenAlbums]))}
- catch(e){showToast('Could not save seen-history on this browser.');console.warn('Seen history storage unavailable',e)}
+ try{
+  localStorage.setItem('albumaday.seen',JSON.stringify([...seenAlbums]));
+  localStorage.setItem(SEEN_KEYS_STORAGE_KEY,JSON.stringify([...seenAlbumKeys]));
+ }catch(e){showToast('Could not save seen-history on this browser.');console.warn('Seen history storage unavailable',e)}
+}
+function markAlbumSeen(a){
+ if(!a)return;
+ seenAlbums.add(hash32(key(a)));
+ seenAlbumKeys.add(seenKey(a));
+ persistSeen();
 }
 function readLogs(){try{return JSON.parse(localStorage.getItem('albumaday.logs')||'[]')}catch{return []}}
 function readLastfmTaste(){try{return JSON.parse(localStorage.getItem('albumaday.lastfmTaste')||'null')}catch{return null}}
@@ -484,18 +513,13 @@ async function load(){
   console.error(e);
  }
 }
-try{
- localStorage.removeItem(PICKER_STORAGE_KEY);
- localStorage.removeItem('albumaday.picker');
- localStorage.removeItem('albumaday.dailyPick');
-}catch{}
-state.moods=[];state.energy=null;state.comfort=null;state.time=null;
-if($('feelingInput'))$('feelingInput').value='';
+restorePickerState();
 renderPickerControls();
 load();
 
-window.addEventListener('pageshow',event=>{
- if(event.persisted&&!new URLSearchParams(location.search).has('a'))location.reload();
+window.addEventListener('pageshow',()=>{
+ renderHistory();
+ renderRecentPulls();
 });
 
 function score(a,intent){
@@ -557,10 +581,10 @@ function score(a,intent){
 }
 async function eligiblePool(){
  const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
- let pool=albums.filter(a=>!seenAlbums.has(hash32(key(a)))&&!logged.has(key(a)));
+ let pool=albums.filter(a=>!albumWasSeen(a)&&!logged.has(key(a)));
  if(catalogManifest&&pool.length<350&&loadedShardFiles.size<catalogManifest.shards.length){
   await loadMoreShards(6);
-  pool=albums.filter(a=>!seenAlbums.has(hash32(key(a)))&&!logged.has(key(a)));
+  pool=albums.filter(a=>!albumWasSeen(a)&&!logged.has(key(a)));
  }
  return pool;
 }
@@ -600,7 +624,7 @@ async function chooseDaily(options={}){
   }
   if(request!==recommendationRequest)return;
   pick=result.album;
-  seenAlbums.add(hash32(key(pick)));persistSeen();
+  markAlbumSeen(pick);
   markTodayPicked();
   show(pick,{mode:'daily',featuresUsed:result.featuresUsed,rankingMode:result.mode,userTriggered:true});
   $('reroll').hidden=false;
@@ -629,7 +653,7 @@ async function chooseAnother(){
   }
   if(request!==recommendationRequest)return;
   pick=result.album;
-  seenAlbums.add(hash32(key(pick)));persistSeen();
+  markAlbumSeen(pick);
   show(pick,{mode:'bonus',featuresUsed:result.featuresUsed,rankingMode:result.mode,userTriggered:true});
  }finally{setPickBusy(false)}
 }
@@ -1526,23 +1550,40 @@ function coverArtUrls(a){
  }
  return {preview,full};
 }
-function setCoverSource(img,url,fallback,request){
- if(!url)return false;
- if(request!==artworkRequest||!pick)return false;
- img.classList.remove('cover-loaded');
+function probeArtwork(url,request,timeout=4200){
+ return new Promise(resolve=>{
+  if(!url||request!==artworkRequest)return resolve(false);
+  const probe=new Image();
+  let settled=false;
+  const finish=ok=>{
+   if(settled)return;
+   settled=true;
+   clearTimeout(timer);
+   probe.onload=null;probe.onerror=null;
+   resolve(ok);
+  };
+  const timer=setTimeout(()=>finish(false),timeout);
+  probe.onload=()=>finish(true);
+  probe.onerror=()=>finish(false);
+  probe.src=url;
+ });
+}
+async function useArtwork(img,url,fallback,request){
+ if(!url||request!==artworkRequest||!pick)return false;
+ const ok=await probeArtwork(url,request);
+ if(!ok||request!==artworkRequest||!pick)return false;
  img.onerror=()=>{
   if(request!==artworkRequest)return;
   img.onerror=null;
-  img.onload=null;
   img.classList.remove('cover-loaded');
   img.src=fallback;
  };
- img.onload=()=>{
-  if(request===artworkRequest)img.classList.add('cover-loaded');
- };
+ img.onload=()=>{if(request===artworkRequest)img.classList.add('cover-loaded')};
  img.src=url;
+ img.style.display='block';
  return true;
 }
+
 function storeArtworkUrl(album,size=300){
  const raw=String(album?.artworkUrl100||album?.artworkUrl60||'');
  if(!raw)return '';
@@ -1554,56 +1595,45 @@ async function loadArtwork(a,img){
  const request=++artworkRequest;
  const fallback=artPlaceholder(a);
  img.classList.remove('cover-loaded');
- img.onerror=null;img.onload=null;img.src=fallback;
+ img.onerror=null;
+ img.onload=null;
+ img.src=fallback;
+ img.style.display='block';
 
  const {preview,full}=coverArtUrls(a);
 
- // Try the catalog source immediately, but never let a missing CAA image block
- // a storefront fallback. The first real image to load wins the initial slot.
- if(preview)setCoverSource(img,preview,fallback,request);
+ // Storefront art is usually the fastest and most reliable browser source.
+ const store=await findItunesAlbum(a).catch(()=>null);
+ if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
+ const storeUrl=storeArtworkUrl(store,600);
+ if(storeUrl&&await useArtwork(img,storeUrl,fallback,request)){
+  a.metadata={...(a.metadata||{}),cover_art:storeUrl};
+  return;
+ }
 
- findItunesAlbum(a).then(album=>{
-  if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
-  if(img.classList.contains('cover-loaded'))return;
-  const url=storeArtworkUrl(album,600);
-  if(url){
-   a.metadata={...(a.metadata||{}),cover_art:url};
-   setCoverSource(img,url,fallback,request);
+ // Keep catalogue-provided art as the second attempt.
+ for(const url of [...new Set([full,preview].filter(Boolean))]){
+  if(await useArtwork(img,url,fallback,request))return;
+ }
+
+ // MusicBrainz is the last network fallback because it is rate-limited.
+ try{
+  const group=await findMusicBrainzGroup(a);
+  if(request!==artworkRequest||!pick||key(pick)!==key(a)||!group?.id)return;
+  const url='https://coverartarchive.org/release-group/'+group.id+'/front-500';
+  if(await useArtwork(img,url,fallback,request)){
+   a.metadata={...(a.metadata||{}),musicbrainz_id:group.id,cover_art:url};
+   return;
   }
- }).catch(()=>{});
+ }catch{}
 
- // If there is no ready catalog source, resolve the release-group later.
- if(!preview){
-  const resolveLate=async()=>{
-   try{
-    const group=await findMusicBrainzGroup(a);
-    if(request!==artworkRequest||!pick||key(pick)!==key(a)||!group?.id)return;
-    if(img.classList.contains('cover-loaded'))return;
-    const url='https://coverartarchive.org/release-group/'+group.id+'/front-500';
-    a.metadata={...(a.metadata||{}),musicbrainz_id:group.id,cover_art:url};
-    setCoverSource(img,url,fallback,request);
-   }catch{}
-  };
-  if('requestIdleCallback' in window)requestIdleCallback(()=>resolveLate(),{timeout:1800});
-  else setTimeout(resolveLate,700);
- }
-
- // Upgrade only after a real preview has rendered.
- if(full&&full!==preview){
-  const upgrade=()=>{
-   if(request!==artworkRequest||!pick||key(pick)!==key(a)||!img.classList.contains('cover-loaded'))return;
-   const hi=new Image();hi.decoding='async';
-   hi.onload=()=>{if(request===artworkRequest&&pick&&key(pick)===key(a))img.src=full};
-   hi.src=full;
-  };
-  if('requestIdleCallback' in window)requestIdleCallback(upgrade,{timeout:1600});
-  else setTimeout(upgrade,900);
- }
+ // Leave the explicit missing-cover card in place. Never masquerade it as art.
+ img.classList.remove('cover-loaded');
 }
 
 function artPlaceholder(a){
  const safe=x=>String(x||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- const wrap=(v,n=19)=>{
+ const wrap=(v,n=18)=>{
   const words=String(v||'').split(/\s+/),lines=[''];
   for(const word of words){
    const i=lines.length-1;
@@ -1612,11 +1642,12 @@ function artPlaceholder(a){
   }
   return lines;
  };
- const lines=wrap(a.title,18);
- const title=lines.map((v,i)=>'<text x="50" y="'+(300+i*54)+'" font-size="48" font-weight="900">'+safe(v)+'</text>').join('');
- const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><rect width="720" height="720" fill="#fffaf0"/><rect x="0" y="0" width="720" height="92" fill="#111"/><rect x="470" y="92" width="250" height="150" fill="#ff5aa7"/><rect x="0" y="550" width="220" height="170" fill="#c8ff37"/><rect x="220" y="600" width="500" height="120" fill="#2f5cff"/><g fill="#111" font-family="Arial, Helvetica, sans-serif"><text x="50" y="58" fill="#fff" font-family="Courier New, monospace" font-size="15" letter-spacing="3">AN ALBUM A DAY</text>'+title+'<text x="50" y="530" font-family="Courier New, monospace" font-size="17" font-weight="700">'+safe(a.artist).slice(0,44)+'</text><text x="246" y="657" fill="#fff" font-family="Courier New, monospace" font-size="12" letter-spacing="2">CATALOG SLEEVE</text></g></svg>';
+ const lines=wrap(a.title,17);
+ const title=lines.map((v,i)=>'<text x="54" y="'+(300+i*58)+'" font-size="50" font-weight="900">'+safe(v)+'</text>').join('');
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><rect width="720" height="720" fill="#e9e3d7"/><path d="M0 112H720M0 118H720M0 610H720" stroke="#111" stroke-width="3"/><g fill="#111" font-family="Arial, Helvetica, sans-serif"><text x="54" y="73" font-family="Courier New, monospace" font-size="14" font-weight="700" letter-spacing="3">COVER NOT FILED</text>'+title+'<text x="54" y="565" font-family="Courier New, monospace" font-size="18" font-weight="700">'+safe(a.artist).slice(0,46)+'</text></g><g transform="translate(456 58) rotate(-4)"><rect width="205" height="58" fill="#e6442f"/><text x="16" y="37" fill="#fff" font-family="Courier New, monospace" font-size="15" font-weight="700">IMAGE MISSING</text></g><circle cx="603" cy="542" r="62" fill="none" stroke="#111" stroke-width="3"/><circle cx="603" cy="542" r="9" fill="#111"/></svg>';
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
+
 function explainPick(a,context={}){
  if(context.rankingMode==='shared')return '';
  if(context.rankingMode==='surprise')return 'random pick.';
@@ -1652,11 +1683,11 @@ function explainPick(a,context={}){
 
  if(note&&['semantic','live','stored'].includes(context.rankingMode)){
   const genre=(intent.genres||[])[0];
-  reasons.push(genre?genre:'matched your note');
+  if(genre)reasons.push(genre);
  }
 
  const personal=diaryTasteScore(a);
- if(personal.active&&personal.score>.15)reasons.push('your ratings');
+ if(personal.active&&personal.score>.15)reasons.push('diary overlap');
  if(reasons.length)return reasons.slice(0,3).join(' · ')+'.';
  return '';
 }
