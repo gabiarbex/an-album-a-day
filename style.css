@@ -1738,3 +1738,57 @@ main{
   .tuning-block:nth-of-type(2){border-top:0!important}
   .record-stage:not(.revealed) .sleeve{aspect-ratio:4/3}
 }
+
+
+/* --- note field correction 2026-11-03 --- */
+.feeling-field{
+  position:relative;
+  margin:22px 0 18px;
+  padding:0 0 26px;
+}
+.feeling-prompt{
+  margin-bottom:6px;
+}
+#feelingInput{
+  display:block;
+  width:100%;
+  min-height:92px;
+  height:112px;
+  max-height:160px;
+  padding:13px 16px 12px;
+  resize:vertical;
+  line-height:24px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 23px,
+      #00000016 24px 25px
+    ),
+    #fbf6ec;
+  box-shadow:4px 4px 0 var(--ink);
+}
+.feeling-foot{
+  position:absolute;
+  right:0;
+  bottom:0;
+  margin:0;
+  min-height:18px;
+}
+#feelingInsight{display:none}
+#clearFeeling{
+  padding:2px 0 1px;
+  border:0;
+  border-bottom:1px solid currentColor;
+  color:#777066;
+  font:700 8px/1 "Courier New",monospace;
+  letter-spacing:.05em;
+}
+#clearFeeling:hover{color:var(--ink)}
+#clearFeeling:disabled{visibility:hidden}
+
+@media(max-width:760px){
+  #feelingInput{
+    height:104px;
+    min-height:88px;
+  }
+}
