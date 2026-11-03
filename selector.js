@@ -605,7 +605,7 @@ async function chooseDaily(options={}){
   }
   pick=result.album;
   seenAlbums.add(hash32(key(pick)));persistSeen();
-  saveDailyPick(pick,result.featuresUsed,result.mode);
+  if(!surprise)saveDailyPick(pick,result.featuresUsed,result.mode);
   markTodayPicked();
   show(pick,{mode:'daily',featuresUsed:result.featuresUsed,rankingMode:result.mode});
   $('reroll').hidden=false;
@@ -657,7 +657,7 @@ function setPickBusy(busy){
  }
  if($('recommend')){
   $('recommend').classList.toggle('is-loading',busy);
-  $('recommend').querySelector('span:first-child').textContent=busy?'looking…':'find a record';
+  $('recommend').querySelector('span:first-child').textContent=busy?'looking…':'pick an album';
  }
 }
 $('recommend').addEventListener('click',()=>chooseDaily());
@@ -1439,7 +1439,7 @@ $('log').onclick=()=>{
  if(!pick)return;
  editingLogIndex=null;
  rating=0;$('track').value='';$('notes').value='';
- $('track').placeholder=activeTracklist.length?'Choose from the tracklist or type your own':'The one you replayed';
+ $('track').placeholder=activeTracklist.length?'Choose from the tracklist or type your own':'Favorite track';
  $('logAlbum').textContent=`${pick.artist} — ${pick.title}`;
  stars();$('logDialog').showModal();
 };
@@ -1650,7 +1650,7 @@ $('sharePick')?.addEventListener('click',async()=>{
  if(!pick)return;
  const url=new URL(location.origin+location.pathname);
  url.searchParams.set('a',lookupId(pick));
- const text=`Today's record: ${pick.title} — ${pick.artist} · An Album a Day`;
+ const text=`${pick.title} — ${pick.artist} · An Album a Day`;
  try{
   if(navigator.share)await navigator.share({title:`${pick.title} — ${pick.artist}`,text,url:url.toString()});
   else{await navigator.clipboard.writeText(text+'\n'+url.toString());showToast('Record link copied to clipboard.')}
