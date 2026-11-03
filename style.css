@@ -252,8 +252,10 @@ main{
   font-variant-numeric:tabular-nums;
 }
 .track-no{color:var(--blue)}
-.track-time{color:#807a70}
+.track-time{color:#807a70;white-space:nowrap}
 .track-name{
+  min-width:0;
+  overflow-wrap:anywhere;
   font-family:Georgia,"Times New Roman",serif;
   font-size:13px;
   line-height:1.2;
