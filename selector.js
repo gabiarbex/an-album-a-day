@@ -1640,12 +1640,14 @@ if(feelingInput){
   updateInsight();
   invalidateDailyPick();
   savePickerState();
+  updatePickerStateUI();
  });
  $('clearFeeling').addEventListener('click',()=>{
   feelingInput.value='';
   updateInsight();
   invalidateDailyPick();
   savePickerState();
+  updatePickerStateUI();
   feelingInput.focus();
  });
  feelingInput.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){e.preventDefault();chooseDaily()}});
