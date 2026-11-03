@@ -26,7 +26,7 @@ const groups=[
  ['moods',moods],
  ['energy',[['low',2],['medium',5],['high',9]]],
  ['comfort',[['familiar','comfort'],['something new','exploration']]],
- ['time',[['under 30 min',30],['around 45 min',45],['60+ min',60],['any length',null]]]
+ ['time',[['up to 30 min',30],['up to 45 min',45],['up to 60 min',60]]]
 ];
 
 for(const [id,values] of groups){
@@ -1128,7 +1128,7 @@ async function loadSelectedAcousticProfile(a,details){
  if(facts){
   const group=document.createElement('div');group.className='record-fact acoustic-fact';
   const dt=document.createElement('dt');dt.textContent='Audio sample';
-  const dd=document.createElement('dd');dd.textContent=`${profile.tracksAnalyzed} track${profile.tracksAnalyzed===1?'':'s'} / AB`;
+  const dd=document.createElement('dd');dd.textContent=`${profile.tracksAnalyzed} track${profile.tracksAnalyzed===1?'':'s'} analyzed`;
   group.append(dt,dd);facts.append(group);
  }
  return profile;
