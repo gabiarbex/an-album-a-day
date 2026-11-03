@@ -79,7 +79,7 @@ h1 em{
   display:inline-block;
   margin-left:.08em;
   color:var(--blue);
-  font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive;
+  font-family:"Marker Felt","Chalkboard SE","Bradley Hand","Segoe Print",cursive;
   font-size:.58em;
   font-style:normal;
   font-weight:700;
@@ -358,7 +358,7 @@ main{
 .why-panel p{
   margin:8px 0 0;
   color:var(--ink);
-  font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive;
+  font-family:"Marker Felt","Chalkboard SE","Bradley Hand","Segoe Print",cursive;
   font-size:17px;
   line-height:1.35;
   transform:rotate(-.35deg);
@@ -497,7 +497,7 @@ main{
 .feeling-prompt{
   display:block;
   margin-bottom:9px;
-  font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive;
+  font-family:"Marker Felt","Chalkboard SE","Bradley Hand","Segoe Print",cursive;
   font-size:15px;
   font-weight:700;
   line-height:1.1;
@@ -966,8 +966,13 @@ dialog input,dialog textarea{
   .primary,.secondary{width:100%}
   .why-panel{margin-left:0}
   .picker{padding:20px 18px}
+  .clerk-intro{
+    margin:-20px -18px 18px;
+    padding:18px 18px 16px;
+  }
   .recent-shelf{padding:28px 16px 58px}
   .recent-pulls{grid-template-columns:repeat(2,1fr);gap:14px}
+  .recent-card{transform:none!important}
   .recent-art{padding:8px}
   .site-footer{padding:14px 16px 20px}
   #metadataSource{display:none}
