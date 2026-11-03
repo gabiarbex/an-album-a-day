@@ -83,8 +83,11 @@ function updatePickerStateUI(){
  const count=pickerSelectionCount();
  const summary=$('filterSummary');
  if(summary)summary.textContent=count?(count+' selected'):'none selected';
+ const hasText=Boolean($('feelingInput')?.value.trim());
  const reset=$('resetPicker');
- if(reset)reset.disabled=!(count||$('feelingInput')?.value.trim());
+ if(reset)reset.disabled=!(count||hasText);
+ const clearText=$('clearFeeling');
+ if(clearText)clearText.disabled=!hasText;
 }
 function renderPickerControls(){
  for(const [id] of groups){
