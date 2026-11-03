@@ -49,6 +49,8 @@ def test_frontend_contract():
         fail("A null-valued time chip conflicts with the cleared picker state")
     if "const existing=surprise?null:readDailyPick()" not in js:
         fail("Surprise must bypass the saved daily pick")
+    if "if(!surprise)saveDailyPick(" not in js:
+        fail("Surprise must not overwrite the canonical daily pick")
     if "albumaday.record.v4." not in js:
         fail("Tracklist cache version must invalidate stale pre-release results")
     if "$('tracklistStatus').hidden=true" not in js:
