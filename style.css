@@ -19,8 +19,9 @@ body{
   min-height:100vh;
   color:var(--ink);
   background:
-    radial-gradient(circle at 15% 20%,#00000009 0 1px,transparent 1.5px) 0 0/9px 9px,
-    linear-gradient(90deg,#fff0 0 98%,#00000005 98% 100%),
+    radial-gradient(circle at 22% 31%,#00000008 0 .7px,transparent .9px) 0 0/23px 29px,
+    radial-gradient(circle at 73% 67%,#00000006 0 .55px,transparent .8px) 8px 11px/31px 37px,
+    linear-gradient(92deg,#00000002,transparent 24%,#000000018 63%,transparent),
     var(--paper);
   font-family:Arial,Helvetica,sans-serif;
   -webkit-font-smoothing:antialiased;
@@ -481,6 +482,14 @@ main{
   background:var(--paper-2);
   border:1px solid var(--ink);
   font:700 9px/1 "Courier New",monospace;
+}
+.quick-pick:first-child{
+  color:#fff;
+  background:var(--blue);
+}
+.quick-pick:first-child:hover:not(:disabled){
+  color:var(--ink);
+  background:var(--acid);
 }
 .quick-pick:hover:not(:disabled){background:var(--acid)}
 .quick-pick:disabled{
