@@ -1543,6 +1543,13 @@ function setCoverSource(img,url,fallback,request){
  img.src=url;
  return true;
 }
+function storeArtworkUrl(album,size=300){
+ const raw=String(album?.artworkUrl100||album?.artworkUrl60||'');
+ if(!raw)return '';
+ return raw
+  .replace(/\/\d+x\d+bb(?:-\d+)?\./i,'/'+size+'x'+size+'bb.')
+  .replace(/\/\d+x\d+bb\./i,'/'+size+'x'+size+'bb.');
+}
 async function loadArtwork(a,img){
  const request=++artworkRequest;
  const fallback=artPlaceholder(a);
@@ -1565,9 +1572,15 @@ async function loadArtwork(a,img){
   return;
  }
 
- // Never make the visible cover wait behind the MusicBrainz request queue.
- // For records without a catalog MBID, keep the instant local sleeve and
- // resolve artwork only after the rest of the page is interactive.
+ // No catalog cover yet: use the storefront lookup immediately because it is
+ // much faster than waiting behind the rate-limited MusicBrainz request queue.
+ findItunesAlbum(a).then(album=>{
+  if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
+  const url=storeArtworkUrl(album,300);
+  if(url)setCoverSource(img,url,fallback,request);
+ }).catch(()=>{});
+
+ // Resolve canonical CAA art later and replace the storefront image when found.
  const resolveLate=async()=>{
   try{
    const group=await findMusicBrainzGroup(a);
