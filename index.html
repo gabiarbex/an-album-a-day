@@ -25,7 +25,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=4">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-004">
+  <link rel="stylesheet" href="style.css?v=zine-005">
 </head>
 <body>
   <header class="masthead">
@@ -109,71 +109,66 @@
 
     <section class="picker" aria-label="Choose a record">
       <div class="clerk-intro">
-        <div class="eyebrow">find a record</div>
-        <h2>what do you want to hear?</h2>
-        <p>a mood, a place, a person, a scene.</p>
+        <div class="eyebrow">pick a record</div>
+        <h2>what are you in the mood for?</h2>
+        <p>choose as much or as little as you want.</p>
         <div class="quick-actions">
           <button id="surpriseMe" type="button" class="quick-pick"><b>surprise me</b></button>
-          <button id="resetPicker" type="button" class="quick-pick quiet"><b>clear</b></button>
+          <button id="resetPicker" type="button" class="quick-pick quiet"><b>clear all</b></button>
         </div>
       </div>
 
-      <div class="feeling-field">
-        <label for="feelingInput" class="feeling-prompt">describe it</label>
-        <textarea id="feelingInput" maxlength="1200" rows="6" placeholder="warm, strange, good for walking home after midnight..."></textarea>
-
-        <div class="prompt-shelf" aria-label="Writing prompts">
-          <button type="button" class="prompt-chip" data-prompt="something for a 2am walk">2am walk</button>
-          <button type="button" class="prompt-chip" data-prompt="something warm and human">warm</button>
-          <button type="button" class="prompt-chip" data-prompt="give me a left turn, not something obvious">left turn</button>
-        </div>
-
-        <div class="feeling-foot">
-          <span id="feelingInsight" aria-live="polite">start anywhere</span>
-          <button id="clearFeeling" type="button">clear text</button>
-        </div>
-      </div>
-
-      <details class="fine-tune" id="fineTune">
+      <details class="fine-tune" id="fineTune" open>
         <summary>
-          <span>filters</span>
-          <small>optional</small>
+          <span>your picks</span>
+          <small>all optional</small>
         </summary>
 
         <div class="signal-note" id="signalNote"></div>
 
         <div class="tuning-block">
           <div class="eyebrow">mood</div>
-          <h3>what's in the air?</h3>
+          <h3>what sounds right?</h3>
           <div id="moods" class="chips"></div>
         </div>
 
         <div class="tuning-block">
           <div class="eyebrow">energy</div>
-          <h3>how loud is the day?</h3>
+          <h3>how much movement?</h3>
           <div id="energy" class="chips"></div>
         </div>
 
         <div class="tuning-block">
           <div class="eyebrow">familiarity</div>
-          <h3>close to home or somewhere else?</h3>
+          <h3>comfort or discovery?</h3>
           <div id="comfort" class="chips"></div>
         </div>
 
         <div class="tuning-block">
           <div class="eyebrow">length</div>
-          <h3>how much time?</h3>
+          <h3>how much time do you have?</h3>
           <div id="time" class="chips"></div>
         </div>
       </details>
 
+      <details class="note-extra">
+        <summary><span>add a note</span><small>optional</small></summary>
+        <div class="feeling-field">
+          <label for="feelingInput" class="feeling-prompt">anything else?</label>
+          <textarea id="feelingInput" maxlength="1200" rows="4" placeholder="good for a late walk, not too obvious..."></textarea>
+          <div class="feeling-foot">
+            <span id="feelingInsight" aria-live="polite"></span>
+            <button id="clearFeeling" type="button">clear note</button>
+          </div>
+        </div>
+      </details>
+
       <button id="recommend" class="recommend">
-        <span>find a record</span>
+        <span>pick an album</span>
         <span>↗</span>
       </button>
 
       <p id="status" role="status">loading albums…</p>
-
     </section>
   </main>
 
@@ -238,8 +233,8 @@
     </form>
   </dialog>
 
-  <script src="intent-core.js?v=zine-004"></script>
-  <script src="semantic-core.js?v=zine-004"></script>
-  <script src="selector.js?v=zine-004" defer></script>
+  <script src="intent-core.js?v=zine-005"></script>
+  <script src="semantic-core.js?v=zine-005"></script>
+  <script src="selector.js?v=zine-005" defer></script>
 </body>
 </html>
