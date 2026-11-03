@@ -503,6 +503,11 @@ main{
   border-bottom:1px solid var(--ink);
   font:700 8px/1 "Courier New",monospace;
 }
+#clearFeeling:disabled{
+  opacity:.35;
+  border-bottom-color:transparent;
+  cursor:default;
+}
 
 
 
@@ -886,7 +891,10 @@ dialog input,dialog textarea{
   .picker{
     position:static;
     max-width:780px;
+    order:-1;
   }
+  .showcase{order:0}
+  .record-stage{scroll-margin-top:18px}
   .recent-pulls{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(max-width:720px){
