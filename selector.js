@@ -1562,50 +1562,31 @@ function artPlaceholder(a){
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 function explainPick(a,context={}){
- if(context.rankingMode==='shared')return 'someone sent you this one.';
- if(context.rankingMode==='surprise')return 'no clues. just a straight pull from the shelf.';
- if(context.rankingMode==='semantic'){
-  const note=$('feelingInput')?.value.trim()||'';
-  const intent=interpretFeeling(note);
-  const bits=[];
-  const cues=[
-   ...Object.keys(intent.moods||{}).slice(0,2),
-   ...(intent.genres||[]).slice(0,1)
-  ];
-  if(cues.length)bits.push(`your note leaned ${cues.join(' / ')}.`);
-  else bits.push('your note pointed here.');
-  if(state.time!==null&&a._semantic?.runtimeMin)bits.push(`it runs about ${Math.round(a._semantic.runtimeMin)} minutes.`);
-  const personal=diaryTasteScore(a);
-  if(personal.active)bits.push('your diary nudged it a little closer.');
-  return bits.join(' ');
+ if(context.rankingMode==='shared')return 'shared by another listener.';
+ if(context.rankingMode==='surprise')return 'a blind pick from the catalog.';
+ const note=$('feelingInput')?.value.trim()||'';
+ const reasons=[];
+ const albumMoods=(a.moods||[]).map(x=>String(x).toLowerCase());
+ const intent=interpretFeeling(note);
+ const selectedMoodMatches=state.moods.filter(m=>albumMoods.includes(m));
+ if(selectedMoodMatches.length)reasons.push(`matched ${selectedMoodMatches.slice(0,2).join(' / ')}`);
+ if(state.energy!==null)reasons.push('fit your energy');
+ if(state.comfort==='comfort')reasons.push('stayed closer to familiar ground');
+ if(state.comfort==='exploration')reasons.push('pushed further into discovery');
+ if(state.time!==null){
+  const minutes=a._live?.runtimeMin??a._semantic?.runtimeMin??Number(a.length_min);
+  if(Number.isFinite(minutes)&&minutes<=state.time+3)reasons.push(`fits about ${Math.round(minutes)} minutes`);
  }
- if(context.rankingMode==='live'&&a._live?.matched){
-  const bits=[];
-  const genre=a._live.genre;
-  if(genre)bits.push(`filed near ${genre.toLowerCase()}.`);
-  const intent=interpretFeeling($('feelingInput')?.value||'');
-  const requested=[...state.moods,...Object.keys(intent.moods||{})];
-  const overlaps=[...new Set(requested.filter(m=>a._live.signals?.moods?.[m]!==undefined))];
-  if(overlaps.length)bits.push(`it sits close to ${overlaps.slice(0,2).join(' / ')}.`);
-  if(state.time!==null&&a._live.runtimeMin)bits.push(`about ${Math.round(a._live.runtimeMin)} minutes.`);
-  const personal=diaryTasteScore(a);
-  if(personal.active)bits.push('your diary had a small say.');
-  return bits.join(' ')||'this one came up closest to what you asked for.';
+ if(note){
+  const genre=(intent.genres||[])[0];
+  if(genre)reasons.push(`matched the ${genre} note`);
+  else reasons.push('matched your note');
  }
- if(!context.featuresUsed){
-  return context.mode==='bonus'?'another pull from the shelf.':'a straight pull from the shelf.';
- }
- const am=(a.moods||[]).map(x=>String(x).toLowerCase());
- const intent=interpretFeeling($('feelingInput')?.value||'');
- const matches=[...new Set([
-  ...state.moods.filter(m=>am.includes(m)),
-  ...Object.keys(intent.moods||{}).filter(m=>am.includes(m))
- ])].slice(0,2);
- const notes=[];
- if(matches.length)notes.push(`it matches ${matches.join(' / ')}.`);
- if(state.time!==null&&Number.isFinite(Number(a.length_min))&&Number(a.length_min)<=state.time)notes.push('it fits the time you gave me.');
- if(!notes.length)notes.push('this one came up closest to what you asked for.');
- return notes.join(' ');
+ const personal=diaryTasteScore(a);
+ if(personal.active)reasons.push('your diary helped');
+ if(reasons.length)return reasons.slice(0,3).join(' · ')+'.';
+ if(context.mode==='bonus')return 'another pick from the catalog.';
+ return 'picked from the catalog.';
 }
 const interpretFeeling=globalThis.AlbumIntent?.interpretFeeling||(()=>({moods:{},avoidMoods:{},genres:[],avoidGenres:[],energy:null,exploration:0,summary:''}));
 if($('todayDate')){
@@ -1625,9 +1606,8 @@ document.querySelectorAll('.prompt-chip').forEach(button=>{
 });
 if(feelingInput){
  const updateInsight=()=>{
-  const p=interpretFeeling(feelingInput.value);
-  if(feelingInput.value.trim())$('feelingInsight').textContent=p.summary?'heard: '+p.summary:'got it.';
-  else $('feelingInsight').textContent='start anywhere';
+  const insight=$('feelingInsight');
+  if(insight)insight.textContent=feelingInput.value.trim()?'note added':'';
  };
  updateInsight();
  feelingInput.addEventListener('input',()=>{
@@ -1644,7 +1624,13 @@ if(feelingInput){
  });
  feelingInput.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){e.preventDefault();chooseDaily()}});
 }
-$('resetPicker')?.addEventListener('click',resetPicker);
+const resetButton=$('resetPicker');
+if(resetButton){
+ resetButton.onclick=e=>{
+  e.preventDefault();
+  resetPicker();
+ };
+}
 
 $('sharePick')?.addEventListener('click',async()=>{
  if(!pick)return;
