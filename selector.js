@@ -1411,7 +1411,7 @@ function show(a,context={}){
  const whyPanel=$('whyPanel');if(whyPanel)whyPanel.hidden=false;
  const why=$('whyText');if(why)why.textContent=explainPick(a,context);
  resetRecordFile(a);
- const link=$('spotify');link.href=spotifyUrl(a);link.classList.remove('disabled');
+ const link=$('spotify');link.href=spotifyUrl(a);link.classList.remove('disabled');link.setAttribute('aria-disabled','false');
  $('log').disabled=false;
  $('sharePick').disabled=false;
  $('recordLabel').style.background=labelColor(a);
