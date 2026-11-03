@@ -424,6 +424,73 @@ async function loadMoreShards(count=6){
  }));
  for(const batch of batches)mergeAlbums(batch);
 }
+async function restoreSharedPick(){
+ const wanted=new URLSearchParams(location.search).get('a');
+ if(!wanted)return false;
+ let found=albums.find(a=>lookupId(a)===wanted);
+ if(!found&&catalogManifest?.lookup_index){
+  try{
+   const index=await getCatalogLookupIndex();
+   const shard=index?.[wanted];
+   if(shard){await loadSpecificShard(shard);found=albums.find(a=>lookupId(a)===wanted)}
+  }catch(e){console.info('Shared-pick lookup unavailable',e)}
+ }
+ if(!found){
+  showToast('That shared record is not in the loaded catalog.');
+  return false;
+ }
+ pick=found;
+ show(pick,{mode:'shared',featuresUsed:false,rankingMode:'shared'});
+ $('reroll').hidden=false;
+ return true;
+}
+async function load(){
+ try{
+  const manifestResponse=await fetch('./data/catalog/manifest.json',{cache:'no-store'});
+  if(manifestResponse.ok){
+   catalogManifest=await manifestResponse.json();
+   catalogTotal=Number(catalogManifest.total_albums)||0;
+   try{
+    const basePath=catalogManifest.base_file?'./data/catalog/'+catalogManifest.base_file:'./data/albums.json';
+    const baseResponse=await fetch(basePath,{cache:'force-cache'});
+    if(baseResponse.ok){
+     const base=await baseResponse.json();
+     mergeAlbums(Array.isArray(base)?base:base.albums||[]);
+    }
+   }catch(e){console.info('Editorial base could not be preloaded',e)}
+   await loadMoreShards(6);
+   if(!albums.length)throw Error('Catalog manifest exists but no albums loaded');
+   refreshFeatureCoverage();
+   $('status').textContent=libraryStatus();
+   await restoreSharedPick();
+   return;
+  }
+ }catch(e){console.info('Large catalog not deployed yet; using base catalog.',e)}
+ try{
+  const response=await fetch('./data/albums.json',{cache:'no-store'});
+  if(!response.ok)throw Error(`HTTP ${response.status}`);
+  const json=await response.json();
+  albums=(Array.isArray(json)?json:json.albums||[]).filter(a=>a.title&&a.artist);
+  catalogTotal=albums.length;
+  refreshFeatureCoverage();
+  $('status').textContent=libraryStatus();
+  if(!albums.length)throw Error('No albums found');
+  await restoreSharedPick();
+ }catch(e){
+  $('status').textContent='Could not load the music library.';
+  console.error(e);
+ }
+}
+try{
+ localStorage.removeItem(PICKER_STORAGE_KEY);
+ localStorage.removeItem('albumaday.picker');
+ localStorage.removeItem('albumaday.dailyPick');
+}catch{}
+state.moods=[];state.energy=null;state.comfort=null;state.time=null;
+if($('feelingInput'))$('feelingInput').value='';
+renderPickerControls();
+load();
+
 function score(a,intent){
  let weighted=0,totalWeight=0;
  const confidence=(name,fallback=.7)=>{
