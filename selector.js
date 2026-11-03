@@ -1285,7 +1285,7 @@ function renderRecordFacts(a,album,tracks,sourceLabel='catalogue'){
  if(album?.collectionExplicitness==='explicit')addFact('Advisory','Explicit');
 
  const list=$('tracklist');list.replaceChildren();
- list.classList.toggle('is-long',tracks.length>12);
+ list.classList.toggle('is-long',tracks.length>9);
  $('trackCountLabel').textContent=tracks.length?`${tracks.length} TRACK${tracks.length===1?'':'S'}`:'UNAVAILABLE';
  if(!tracks.length){
   updateTrackOptions([]);
@@ -1640,23 +1640,39 @@ function explainPick(a,context={}){
  const reasons=[];
  const albumMoods=(a.moods||[]).map(x=>String(x).toLowerCase());
  const intent=interpretFeeling(note);
+
  const selectedMoodMatches=state.moods.filter(m=>albumMoods.includes(m));
  if(selectedMoodMatches.length)reasons.push(selectedMoodMatches.slice(0,2).join(' / '));
- if(state.energy!==null)reasons.push(state.energy<=3?'low energy':state.energy>=7?'high energy':'medium energy');
- if(state.comfort==='comfort')reasons.push('familiar artist');
- if(state.comfort==='exploration')reasons.push('less familiar');
+
+ const energyCandidates=[
+  a._acoustic?.energy,
+  a._live?.signals?.energy,
+  a.features?.energy!=null?Number(a.features.energy)*10:null,
+  a.energy_level
+ ].filter(v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v)));
+ const actualEnergy=energyCandidates.length?Number(energyCandidates[0]):null;
+ if(state.energy!==null&&actualEnergy!==null&&Math.abs(actualEnergy-Number(state.energy))<=2.5){
+  reasons.push(actualEnergy<=3?'low energy':actualEnergy>=7?'high energy':'medium energy');
+ }
+
+ const familiarity=artistFamiliarity(a.artist);
+ if(state.comfort==='comfort'&&familiarity>=.2)reasons.push('familiar artist');
+ if(state.comfort==='exploration'&&familiarity<=.15)reasons.push('new artist');
+
  if(state.time!==null){
   const rawMinutes=[a._live?.runtimeMin,a._semantic?.runtimeMin,a.length_min]
    .find(v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))&&Number(v)>0);
   const minutes=rawMinutes===undefined?null:Number(rawMinutes);
   if(minutes!==null&&minutes<=state.time+3)reasons.push(Math.round(minutes)+' min');
  }
- if(note){
+
+ if(note&&['semantic','live','stored'].includes(context.rankingMode)){
   const genre=(intent.genres||[])[0];
-  reasons.push(genre||'matches your note');
+  reasons.push(genre?genre:'matched your note');
  }
+
  const personal=diaryTasteScore(a);
- if(personal.active)reasons.push('your ratings');
+ if(personal.active&&personal.score>.15)reasons.push('your ratings');
  if(reasons.length)return reasons.slice(0,3).join(' · ')+'.';
  if(context.mode==='bonus')return 'another recommendation.';
  return 'recommended from the catalog.';
