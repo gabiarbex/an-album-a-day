@@ -46,13 +46,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   display:flex;
   justify-content:space-between;
   gap:16px;
-  margin-bottom:12px;
-  padding-bottom:8px;
-  border-bottom:1px solid var(--ink);
-  font:700 10px/1 "Courier New",monospace;
+  margin-bottom:14px;
+  padding:7px 9px 6px;
+  color:#fff;
+  background:var(--ink);
+  font:700 9px/1 "Courier New",monospace;
   letter-spacing:.08em;
 }
-.masthead-kicker span{color:var(--blue)}
+.masthead-kicker span{
+  padding:0 4px;
+  color:var(--ink);
+  background:var(--acid);
+}
 .masthead-row{
   display:flex;
   align-items:flex-end;
@@ -62,12 +67,24 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .masthead-row>div{min-width:0}
 h1{
   margin:0;
-  font-family:Arial Black,Arial,Helvetica,sans-serif;
-  font-size:clamp(44px,6.5vw,94px);
-  line-height:.82;
-  font-weight:900;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(52px,7.5vw,108px);
+  line-height:.78;
+  font-weight:700;
   letter-spacing:-.075em;
   text-transform:lowercase;
+}
+h1 span{font-style:italic}
+h1 em{
+  display:inline-block;
+  margin-left:.08em;
+  color:var(--blue);
+  font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive;
+  font-size:.58em;
+  font-style:normal;
+  font-weight:700;
+  letter-spacing:-.04em;
+  transform:rotate(-2deg) translateY(-.08em);
 }
 .masthead p{
   margin:13px 0 0 3px;
@@ -188,13 +205,14 @@ main{
   background:var(--yellow);
 }
 .album-details h2{
-  margin:10px 0 5px;
-  max-width:12ch;
-  font-family:Arial Black,Arial,Helvetica,sans-serif;
-  font-size:clamp(40px,5vw,72px);
-  line-height:.88;
-  font-weight:900;
-  letter-spacing:-.07em;
+  margin:10px 0 7px;
+  max-width:13ch;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(42px,5.2vw,76px);
+  line-height:.9;
+  font-weight:700;
+  font-style:italic;
+  letter-spacing:-.065em;
 }
 .album-details p{
   margin:4px 0;
@@ -205,22 +223,26 @@ main{
 
 /* tracklist / newspaper insert */
 .tracklist-panel{
+  position:relative;
   max-width:780px;
-  margin-top:28px;
-  padding:16px 18px 18px;
+  margin-top:30px;
+  padding:18px 20px 20px;
   background:#fffef9;
-  border:1px solid var(--ink);
-  border-left:8px solid var(--blue);
+  border:2px solid var(--ink);
+  border-left:10px solid var(--blue);
+  box-shadow:6px 6px 0 var(--pink-soft);
 }
 .tracklist-head{
   display:flex;
   justify-content:space-between;
+  align-items:end;
   gap:14px;
   padding:0 0 10px;
-  border-bottom:3px solid var(--ink);
-  font:900 13px/1 Arial Black,Arial,sans-serif;
-  text-transform:uppercase;
-  letter-spacing:-.02em;
+  border-bottom:2px solid var(--ink);
+  font:700 25px/.9 Georgia,"Times New Roman",serif;
+  font-style:italic;
+  text-transform:lowercase;
+  letter-spacing:-.04em;
 }
 .tracklist-head span:last-child{
   color:var(--pink);
@@ -296,6 +318,7 @@ main{
   border:1px solid var(--ink);
   border-radius:0;
   background:var(--paper-2);
+  box-shadow:2px 2px 0 var(--ink);
   text-decoration:none;
   font:700 10px/1 "Courier New",monospace;
   text-transform:lowercase;
@@ -306,6 +329,8 @@ main{
 }
 .primary:hover,.secondary:hover:not(:disabled){
   background:var(--yellow);
+  transform:translate(1px,1px);
+  box-shadow:1px 1px 0 var(--ink);
 }
 .secondary:nth-child(2){background:var(--pink-soft)}
 .secondary:nth-child(3){background:var(--acid)}
@@ -315,26 +340,28 @@ main{
 /* annotation / speech bubble reference */
 .why-panel{
   position:relative;
-  max-width:780px;
-  margin:24px 0 0;
-  padding:14px 16px;
-  color:#fff;
-  background:var(--ink);
+  max-width:680px;
+  margin:28px 0 0 auto;
+  padding:17px 20px 18px;
+  color:var(--ink);
+  background:var(--pink-soft);
+  border:2px solid var(--ink);
 }
 .why-panel:before{display:none}
 .why-icon{display:none}
 .why-heading{
-  color:var(--pink);
-  font:700 9px/1 "Courier New",monospace;
+  color:var(--ink);
+  font:700 8px/1 "Courier New",monospace;
   text-transform:uppercase;
   letter-spacing:.08em;
 }
 .why-panel p{
-  margin:7px 0 0;
-  color:#fff;
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:14px;
-  line-height:1.45;
+  margin:8px 0 0;
+  color:var(--ink);
+  font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive;
+  font-size:17px;
+  line-height:1.35;
+  transform:rotate(-.35deg);
 }
 
 .record-file{
@@ -418,19 +445,25 @@ main{
   top:20px;
   padding:24px;
   background:var(--paper-2);
-  border:1px solid var(--ink);
-  border-top:12px solid var(--pink);
+  border:2px solid var(--ink);
 }
 .picker:before{display:none}
+.clerk-intro{
+  margin:-24px -24px 20px;
+  padding:22px 24px 20px;
+  background:var(--yellow);
+  border-bottom:2px solid var(--ink);
+}
 .clerk-intro .eyebrow{color:var(--blue)}
 .clerk-intro h2{
   margin:7px 0 0;
-  max-width:9ch;
-  font-family:Arial Black,Arial,sans-serif;
-  font-size:clamp(36px,4vw,58px);
-  line-height:.85;
-  font-weight:900;
-  letter-spacing:-.07em;
+  max-width:10ch;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(38px,4.4vw,64px);
+  line-height:.86;
+  font-weight:700;
+  font-style:italic;
+  letter-spacing:-.065em;
 }
 .clerk-intro p{
   max-width:390px;
@@ -457,15 +490,20 @@ main{
 
 .feeling-field{
   padding:15px;
-  background:var(--paper-2);
-  border:1px solid var(--ink);
+  background:#fff;
+  border:2px solid var(--ink);
+  box-shadow:6px 6px 0 var(--pink-soft);
 }
 .feeling-prompt{
   display:block;
-  margin-bottom:8px;
-  font:700 9px/1 "Courier New",monospace;
-  text-transform:uppercase;
-  letter-spacing:.08em;
+  margin-bottom:9px;
+  font-family:"Bradley Hand","Segoe Print","Comic Sans MS",cursive;
+  font-size:15px;
+  font-weight:700;
+  line-height:1.1;
+  text-transform:none;
+  letter-spacing:0;
+  transform:rotate(-.5deg);
 }
 #feelingInput{
   width:100%;
@@ -512,10 +550,10 @@ main{
 
 
 .fine-tune{
-  margin-top:18px;
+  margin-top:22px;
   padding:0;
   background:#fffdf6;
-  border:1px solid var(--ink);
+  border:2px solid var(--ink);
 }
 .fine-tune summary{
   display:flex;
@@ -523,6 +561,8 @@ main{
   gap:12px;
   padding:11px 12px;
   list-style:none;
+  color:#fff;
+  background:var(--ink);
   font:700 9px/1 "Courier New",monospace;
   text-transform:uppercase;
   letter-spacing:.06em;
@@ -530,7 +570,12 @@ main{
 .fine-tune summary::-webkit-details-marker{display:none}
 .fine-tune summary:after{content:"+";margin-left:auto}
 .fine-tune[open] summary:after{content:"−"}
-.fine-tune summary small{color:var(--blue);font-size:8px}
+.fine-tune summary small{
+  padding:2px 5px;
+  color:var(--ink);
+  background:var(--acid);
+  font-size:8px;
+}
 .signal-note{
   margin:0;
   padding:0 12px 12px;
@@ -572,21 +617,26 @@ main{
 
 .recommend{
   width:100%;
-  min-height:50px;
+  min-height:52px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-top:18px;
+  margin-top:20px;
   padding:0 14px;
   color:#fff;
-  background:var(--ink);
-  border:1px solid var(--ink);
+  background:var(--blue);
+  border:2px solid var(--ink);
   border-radius:0;
-  border-left:8px solid var(--blue);
+  box-shadow:5px 5px 0 var(--ink);
   font:700 10px/1 "Courier New",monospace;
   text-transform:uppercase;
 }
-.recommend:hover{background:#2a2a2a}
+.recommend:hover{
+  color:var(--ink);
+  background:var(--acid);
+  transform:translate(2px,2px);
+  box-shadow:3px 3px 0 var(--ink);
+}
 .recommend:disabled{opacity:.45;cursor:progress}
 .recommend.is-loading span:last-child{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -620,10 +670,11 @@ main{
 }
 .recent-shelf-head h2{
   margin:8px 0 0;
-  font-family:Arial Black,Arial,sans-serif;
-  font-size:clamp(34px,4vw,58px);
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(36px,4.2vw,62px);
   line-height:.9;
-  letter-spacing:-.06em;
+  font-style:italic;
+  letter-spacing:-.055em;
 }
 .recent-shelf-head button{
   padding:7px 9px;
@@ -638,7 +689,11 @@ main{
   gap:20px;
   align-items:start;
 }
-.recent-card{min-width:0}
+.recent-card{min-width:0;transform-origin:center top}
+.recent-card:nth-child(4n+1){transform:rotate(-.35deg)}
+.recent-card:nth-child(4n+2){transform:rotate(.28deg)}
+.recent-card:nth-child(4n+3){transform:rotate(-.2deg)}
+.recent-card:nth-child(4n){transform:rotate(.38deg)}
 .recent-art{
   width:100%;
   aspect-ratio:1;
