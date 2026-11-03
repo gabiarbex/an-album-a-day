@@ -76,6 +76,16 @@ function pickerSnapshot(){
  };
 }
 function criteriaSignature(){return JSON.stringify(pickerSnapshot())}
+function pickerSelectionCount(){
+ return state.moods.length+[state.energy,state.comfort,state.time].filter(v=>v!==null).length;
+}
+function updatePickerStateUI(){
+ const count=pickerSelectionCount();
+ const summary=$('filterSummary');
+ if(summary)summary.textContent=count?(count+' selected'):'none selected';
+ const reset=$('resetPicker');
+ if(reset)reset.disabled=!(count||$('feelingInput')?.value.trim());
+}
 function renderPickerControls(){
  for(const [id] of groups){
   const parent=$(id);if(!parent)continue;
@@ -85,6 +95,7 @@ function renderPickerControls(){
    button.setAttribute('aria-pressed',String(active));
   });
  }
+ updatePickerStateUI();
 }
 function savePickerState(){
  try{localStorage.setItem(PICKER_STORAGE_KEY,JSON.stringify(pickerSnapshot()))}catch{}
@@ -129,7 +140,8 @@ function resetPicker(){
  }
  const fine=$('fineTune');if(fine)fine.open=true;
  const insight=$('feelingInsight');if(insight)insight.textContent='';
- const status=$('status');if(status)status.textContent='choose what you want and pick again.';
+ const status=$('status');if(status)status.textContent='ready for a new pick.';
+ updatePickerStateUI();
  showToast('Cleared.');
 }
 function key(a){return `${String(a.artist||'').toLowerCase()}::${String(a.title||'').toLowerCase()}`}
@@ -280,12 +292,12 @@ function updateSignalNote(){
  });
  $('fineTune')?.classList.toggle('unavailable',!active);
  node.classList.toggle('live',active);
- if(rankingFeaturesAvailable){
-  node.textContent='these choices affect the pick.';
- }else if(liveMetadataRankingAvailable){
-  node.textContent='these choices affect the recommendation.';
+ if(rankingFeaturesAvailable||liveMetadataRankingAvailable){
+  node.hidden=true;
+  node.textContent='';
  }else{
-  node.textContent='these choices are unavailable right now.';
+  node.hidden=false;
+  node.textContent='filters unavailable right now.';
  }
 }
 function refreshFeatureCoverage(){
