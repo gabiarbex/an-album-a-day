@@ -59,6 +59,14 @@ def test_frontend_contract():
         fail("Legacy layered CSS markers returned; release stylesheet should stay consolidated")
     if "selector.js?v=" not in html or "style.css?v=" not in html:
         fail("Cache-busted CSS/JS references missing")
+    feeling_pos=html.find('id="feelingInput"')
+    filters_pos=html.find('class="fine-tune"')
+    if feeling_pos < 0 or filters_pos < 0 or feeling_pos > filters_pos:
+        fail("Descriptive music request must stay visible before optional filters")
+    forbidden_copy=("open the strange door","warm hands","beautifully sad","low voltage","steady pulse","full blast","time is fake")
+    present=[phrase for phrase in forbidden_copy if phrase in (html+" "+js).lower()]
+    if present:
+        fail(f"AI-style picker copy returned: {present}")
     if html.find("intent-core.js")<0 or html.find("semantic-core.js")<0:
         fail("Intent/semantic browser cores are missing from index.html")
     if not (html.find("intent-core.js") < html.find("selector.js") and html.find("semantic-core.js") < html.find("selector.js")):
