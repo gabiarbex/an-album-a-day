@@ -645,10 +645,11 @@ main{
 .chip:nth-child(3n){transform:rotate(-.2deg)}
 .chip:hover{background:var(--yellow)}
 .chip.selected{
-  color:#fff;
-  background:var(--ink)!important;
-  transform:translate(1px,1px) rotate(0)!important;
-  box-shadow:none;
+  color:var(--ink);
+  background:transparent!important;
+  border-color:var(--ink);
+  box-shadow:inset 0 -.72em 0 var(--acid),1px 1px 0 var(--ink);
+  transform:rotate(-.35deg)!important;
 }
 .chip:disabled{opacity:.35;cursor:not-allowed}
 
