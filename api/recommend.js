@@ -106,7 +106,7 @@ function explanation(row, body) {
   return bits.join(' · ');
 }
 
-async function cachedCandidateVectors(candidates) {
+async function cachedCandidateVectors(candidates, origin) {
   const groups = new Map();
   for (const candidate of candidates) {
     if (!candidate.catalogFile) continue;
@@ -118,7 +118,7 @@ async function cachedCandidateVectors(candidates) {
 
   const byId = new Map();
   await Promise.all([...groups.values()].map(async group => {
-    const stored = await loadVectorChunk(group.file, group.chunk).catch(() => null);
+    const stored = await loadVectorChunk(group.file, group.chunk, origin).catch(() => null);
     if (!stored?.map) return;
     for (const candidate of group.candidates) {
       const vector = stored.map.get(String(candidate.id));
@@ -143,7 +143,7 @@ export default {
       const [queryVector] = await embedTexts([query], EMBEDDING_DIMENSIONS);
       if (!queryVector?.length) throw new Error('Query embedding was empty.');
 
-      const cached = await cachedCandidateVectors(candidates);
+      const cached = await cachedCandidateVectors(candidates, new URL(request.url).origin);
       const missing = candidates.filter(candidate => !cached.has(String(candidate.id)));
 
       if (missing.length) {
