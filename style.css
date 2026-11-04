@@ -891,3 +891,40 @@ dialog input,dialog textarea{width:100%;padding:10px;border:var(--rule);border-r
 @media(prefers-reduced-motion:reduce){
   *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+
+/* recommendation feedback */
+.feedback-bar{
+  max-width:720px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:7px;
+  margin-top:15px;
+  padding-top:12px;
+  border-top:1px dashed #8d8579;
+}
+.feedback-bar>span{
+  margin-right:4px;
+  color:var(--grey);
+  font:800 8px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.feedback-bar button{
+  padding:6px 8px 5px;
+  background:var(--paper-2);
+  border:1px solid var(--ink);
+  box-shadow:2px 2px 0 var(--ink);
+  font:800 8px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.feedback-bar button:nth-of-type(odd){transform:rotate(-.5deg)}
+.feedback-bar button:nth-of-type(even){transform:rotate(.45deg)}
+.feedback-bar button:hover,
+.feedback-bar button.is-sent{
+  background:var(--acid);
+}
+.feedback-bar button[data-feedback="love_this"]:hover,
+.feedback-bar button[data-feedback="love_this"].is-sent{
+  background:var(--pink);
+}
