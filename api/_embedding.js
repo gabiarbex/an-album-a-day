@@ -80,12 +80,14 @@ export function albumProfile(album) {
     album.length_min,
     album.duration,
   ].find(value => value !== null && value !== undefined && Number.isFinite(Number(value)));
+  const energySource = String(album.energySource || album.provenance?.energy?.source || '');
+  const translatedEnergyGuess = energySource === 'musicbrainz-tag-translation';
   const energy = [
     album._acoustic?.energy,
     album._live?.signals?.energy,
-    album.features?.energy != null ? Number(album.features.energy) * 10 : null,
-    album.energy_level,
-    album.energy,
+    translatedEnergyGuess ? null : (album.features?.energy != null ? Number(album.features.energy) * 10 : null),
+    translatedEnergyGuess ? null : album.energy_level,
+    translatedEnergyGuess ? null : album.energy,
   ].find(value => value !== null && value !== undefined && Number.isFinite(Number(value)));
 
   return [
