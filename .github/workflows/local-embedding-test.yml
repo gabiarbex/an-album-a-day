@@ -1,0 +1,29 @@
+name: Local MiniLM bundle test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "api/_embedding.js"
+      - "models/Xenova/all-MiniLM-L6-v2/**"
+      - "scripts/local_embedding_test.js"
+      - ".github/workflows/local-embedding-test.yml"
+      - "package.json"
+
+jobs:
+  test-local-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install runtime dependencies
+        run: npm install
+
+      - name: Embed using bundled files only
+        run: node scripts/local_embedding_test.js
