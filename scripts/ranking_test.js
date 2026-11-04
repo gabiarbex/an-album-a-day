@@ -75,6 +75,19 @@ const candidate = overrides => ({
   );
 }
 
+
+// Sparse metadata must temper an apparently strong neural match.
+{
+  const rich = candidate({ profileQuality: 1 });
+  const sparse = candidate({ profileQuality: 0.18 });
+  const richScore = scoreCandidate(rich, 0.5, baseBody);
+  const sparseScore = scoreCandidate(sparse, 0.72, baseBody);
+  assert.ok(
+    richScore > sparseScore,
+    `rich semantic evidence should beat sparse title-heavy vector: ${richScore} vs ${sparseScore}`,
+  );
+}
+
 // Learned positive/negative taste should move otherwise equal records apart.
 {
   const liked = scoreCandidate(candidate({}), 0.5, baseBody, { score: 0.8, confidence: 0.8 });
