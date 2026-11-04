@@ -1,4 +1,5 @@
 import { put } from '@vercel/blob';
+import { getVercelOidcToken } from '@vercel/oidc';
 
 function cors(request) {
   const origin = request.headers.get('origin') || '';
@@ -73,8 +74,10 @@ export default {
     try {
       const event = sanitize(await request.json());
       let stored = false;
+      const oidcToken = await getVercelOidcToken().catch(() => null);
+      const storeId = process.env.ALBUM_FEEDBACK_STORE_ID || 'store_faCPNPhG4INYfqDO';
 
-      if (process.env.BLOB_READ_WRITE_TOKEN) {
+      if (oidcToken && storeId) {
         const date = event.created_at.slice(0, 10);
         await put(
           `feedback/${date}/${event.id}.json`,
@@ -83,6 +86,8 @@ export default {
             access: 'private',
             addRandomSuffix: false,
             contentType: 'application/json',
+            oidcToken,
+            storeId,
           },
         );
         stored = true;
