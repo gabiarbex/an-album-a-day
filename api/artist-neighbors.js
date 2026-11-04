@@ -155,24 +155,26 @@ export default {
         try {
           const neighbors = await similarArtists(seed.mbid, mode, 12);
           neighbors.forEach((neighbor, rank) => {
-            const name = normalize(neighbor.name);
-            if (!name || seedNames.has(name)) return;
+            const key = normalize(neighbor.name);
+            if (!key || seedNames.has(key)) return;
             const rankWeight = 1 / (1 + rank * 0.42);
             const popularityDamp = neighbor.listens > 0
               ? Math.min(1, 0.35 + Math.log10(neighbor.listens + 10) / 8)
               : 0.55;
             const contribution = seed.weight * rankWeight * popularityDamp;
-            aggregate.set(name, (aggregate.get(name) || 0) + contribution);
+            const current = aggregate.get(key) || { name: String(neighbor.name).trim(), score: 0 };
+            current.score += contribution;
+            aggregate.set(key, current);
           });
         } catch {}
         await sleep(250);
       }
 
-      const ranked = [...aggregate.entries()].sort((a, b) => b[1] - a[1]).slice(0, 80);
-      const max = ranked[0]?.[1] || 1;
-      const neighbors = ranked.map(([name, score]) => [
-        name,
-        Number(Math.min(1, score / max).toFixed(6)),
+      const ranked = [...aggregate.values()].sort((a, b) => b.score - a.score).slice(0, 80);
+      const max = ranked[0]?.score || 1;
+      const neighbors = ranked.map(row => [
+        row.name,
+        Number(Math.min(1, row.score / max).toFixed(6)),
       ]);
 
       return json({
