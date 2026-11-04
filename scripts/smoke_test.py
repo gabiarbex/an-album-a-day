@@ -123,6 +123,7 @@ def test_frontend_contract():
         "api/_catalog-indexer.js",
         "api/index-catalog.js",
         "api/index-status.js",
+        "api/taste-bootstrap.js",
     ]:
         subprocess.run(["node","--check",str(ROOT/api_file)],check=True)
 
