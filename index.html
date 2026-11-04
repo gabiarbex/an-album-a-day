@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-044">
+  <link rel="stylesheet" href="style.css?v=zine-045">
 </head>
 <body>
   <header class="masthead">
@@ -50,12 +50,17 @@
           <path d="M101 67 l7 -8 l7 8 l-7 8 z" />
         </svg>
       </div>
-      <button id="historyToggle" type="button" class="history-toggle" aria-controls="drawer" aria-expanded="false">
-        ◷ listening diary
-        <span id="count">0</span>
-        <span class="history-sep">/</span>
-        <span id="streak">0 day streak</span>
-      </button>
+      <div class="masthead-actions">
+        <button id="accountToggle" type="button" class="account-toggle" hidden aria-controls="accountDialog">
+          ☁ <span data-account-label>save history</span>
+        </button>
+        <button id="historyToggle" type="button" class="history-toggle" aria-controls="drawer" aria-expanded="false">
+          ◷ listening diary
+          <span id="count">0</span>
+          <span class="history-sep">/</span>
+          <span id="streak">0 day streak</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -242,6 +247,46 @@
   <div id="overlay" class="overlay" hidden></div>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
+  <dialog id="accountDialog" class="account-dialog">
+    <div class="dialog-head">
+      <div>
+        <small class="account-kicker">optional cloud copy</small>
+        <h2>keep your diary.</h2>
+      </div>
+      <button type="button" id="closeAccountDialog" aria-label="Close account dialog">✕</button>
+    </div>
+
+    <p class="account-intro">sync your diary, no-repeat history, streak and taste profile across devices. guest mode still works exactly as before.</p>
+
+    <div id="accountGuest">
+      <button id="googleSignIn" type="button" class="account-provider" hidden>continue with google</button>
+      <div class="account-or"><span>or</span></div>
+      <form id="accountEmailForm" class="account-email-form">
+        <label for="accountEmailInput">email me a sign-in link</label>
+        <div class="account-email-row">
+          <input id="accountEmailInput" type="email" autocomplete="email" placeholder="you@example.com" required>
+          <button id="emailMagicLink" type="submit">send link</button>
+        </div>
+      </form>
+      <p id="accountEmailSent" class="account-sent" hidden></p>
+      <p class="account-privacy">no password. your raw Last.fm CSV stays on this device. creating an account merges your existing guest diary instead of replacing it.</p>
+    </div>
+
+    <div id="accountMember" hidden>
+      <div class="account-ticket">
+        <small>signed in as</small>
+        <strong id="accountEmail"></strong>
+        <span>your local copy still works offline.</span>
+      </div>
+      <div class="account-member-actions">
+        <button id="accountSyncNow" type="button">sync now</button>
+        <button id="accountSignOut" type="button" class="subtle">sign out</button>
+      </div>
+    </div>
+
+    <div id="accountSyncStatus" class="account-sync-status" data-state="guest">guest mode · saved on this browser</div>
+  </dialog>
+
   <dialog id="logDialog">
     <form id="logForm">
       <div class="dialog-head">
@@ -262,8 +307,11 @@
     </form>
   </dialog>
 
-  <script src="intent-core.js?v=zine-044"></script>
-  <script src="semantic-core.js?v=zine-044"></script>
-  <script src="selector.js?v=zine-044" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="auth-config.js?v=zine-045" defer></script>
+  <script src="intent-core.js?v=zine-045"></script>
+  <script src="semantic-core.js?v=zine-045"></script>
+  <script src="selector.js?v=zine-045" defer></script>
+  <script src="auth-sync.js?v=zine-045" defer></script>
 </body>
 </html>
