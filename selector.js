@@ -679,7 +679,8 @@ function backendUrl(path){
   if(override)return override.replace(/\/$/,'')+path;
  }catch{}
  const host=location.hostname;
- if(host.endsWith('github.io')||host==='localhost'||host==='127.0.0.1')return null;
+ if(host.endsWith('github.io'))return 'https://an-album-a-day.vercel.app'+path;
+ if(host==='localhost'||host==='127.0.0.1')return null;
  return path;
 }
 function backendCandidate(a,intent,semanticScore=0){
