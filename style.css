@@ -369,6 +369,7 @@ main{
 }
 .tracklist{list-style:none;margin:0;padding:6px 0 0}
 .tracklist.is-long{columns:2;column-gap:26px;column-rule:1px solid #aaa399}
+.tracklist li::marker{content:""}
 .tracklist li{
   display:grid;
   grid-template-columns:27px minmax(0,1fr) auto;
