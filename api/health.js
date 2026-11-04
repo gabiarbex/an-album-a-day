@@ -43,10 +43,25 @@ async function validatedStaticIndex(origin) {
 export default {
   async fetch(request) {
     const origin = new URL(request.url).origin;
-    const [blobState, staticVectorIndex] = await Promise.all([
+    const [blobState, staticVectorIndex, neuralRetrieval] = await Promise.all([
       loadIndexState().catch(() => null),
       validatedStaticIndex(origin).catch(() => null),
+      fetch(new URL('/data/neural-retrieval/v1/manifest.json', origin), { cache: 'no-store' })
+        .then(response => response.ok ? response.json() : null)
+        .catch(() => null),
     ]);
+
+    const neuralRetrievalIndex = neuralRetrieval &&
+      neuralRetrieval.catalogBlobSha &&
+      neuralRetrieval.catalogBlobSha === staticVectorIndex?.catalogBlobSha
+      ? {
+          totalAlbums: Number(neuralRetrieval.totalAlbums) || 0,
+          dimensions: Number(neuralRetrieval.dimensions) || 0,
+          sourceDimensions: Number(neuralRetrieval.sourceDimensions) || 0,
+          sourceProfileVersion: neuralRetrieval.sourceProfileVersion || null,
+          catalogBlobSha: neuralRetrieval.catalogBlobSha,
+        }
+      : null;
 
     return Response.json({
       ok: true,
@@ -57,6 +72,7 @@ export default {
       dimensions: EMBEDDING_DIMENSIONS,
       profileVersion: PROFILE_VERSION,
       staticVectorIndex,
+      neuralRetrievalIndex,
       fallbackVectorIndex: blobState,
     }, {
       headers: { 'Cache-Control': 'no-store' },
