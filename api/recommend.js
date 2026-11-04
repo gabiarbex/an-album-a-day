@@ -10,6 +10,7 @@ import {
   EMBEDDING_DIMENSIONS,
 } from './_embedding.js';
 import { loadVectorChunk } from './_vector-store.js';
+import { loadTasteProfile, tasteSimilarity } from './_taste-store.js';
 
 const MAX_CANDIDATES = 96;
 
@@ -65,7 +66,7 @@ function energyPenalty(candidate, body) {
   return Math.min(0.32, (distance - 1.5) * 0.055);
 }
 
-function scoreCandidate(candidate, neural, body) {
+function scoreCandidate(candidate, neural, body, taste = { score: 0, confidence: 0 }) {
   const local = clamp(candidate.localScore ?? 0.5);
   const lexical = clamp(((Number(candidate.semanticScore) || 0) + 1) / 2);
   const familiarity = clamp(candidate.familiarity ?? 0);
@@ -96,6 +97,11 @@ function scoreCandidate(candidate, neural, body) {
   const duration = Number(candidate.duration);
   if (Number.isFinite(maxRuntime) && Number.isFinite(duration) && duration > maxRuntime) {
     score -= Math.min(0.45, 0.1 + (duration - maxRuntime) / 65);
+  }
+
+  if (taste.confidence > 0) {
+    const modeFactor = body.comfort === 'comfort' ? 1.25 : body.comfort === 'exploration' ? 0.75 : 1;
+    score += 0.16 * taste.confidence * taste.score * modeFactor;
   }
 
   return score;
@@ -157,13 +163,19 @@ export default {
         missing.forEach((candidate, index) => cached.set(String(candidate.id), liveVectors[index]));
       }
 
+      const tasteProfile = body.client_id
+        ? await loadTasteProfile(body.client_id).catch(() => null)
+        : null;
+
       const ranked = candidates.map(candidate => {
         const vector = cached.get(String(candidate.id));
         const neural = vector ? cosine(queryVector, vector) : 0;
+        const taste = vector ? tasteSimilarity(tasteProfile, vector) : { score: 0, confidence: 0 };
         return {
           candidate,
           neural,
-          score: scoreCandidate(candidate, neural, body),
+          taste,
+          score: scoreCandidate(candidate, neural, body, taste),
         };
       }).sort((a, b) => b.score - a.score);
 
@@ -185,12 +197,15 @@ export default {
           candidates: candidates.length,
           vectorCacheHits: cacheHits,
           liveEmbeddings: missing.length,
+          taste: Number((chosen.taste?.score || 0).toFixed(6)),
+          tasteConfidence: Number((chosen.taste?.confidence || 0).toFixed(6)),
         },
         reason: explanation(chosen, body),
         alternatives: top.slice(0, 5).map(row => ({
           id: row.candidate.id,
           score: Number(row.score.toFixed(6)),
           neural: Number(row.neural.toFixed(6)),
+          taste: Number((row.taste?.score || 0).toFixed(6)),
         })),
       }, 200, headers);
     } catch (error) {
