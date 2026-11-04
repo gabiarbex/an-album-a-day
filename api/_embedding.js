@@ -1,0 +1,169 @@
+import { getVercelOidcToken } from '@vercel/oidc';
+
+export const EMBEDDING_MODEL = process.env.ALBUM_EMBEDDING_MODEL || 'openai/text-embedding-3-small';
+export const EMBEDDING_DIMENSIONS = 128;
+export const PROFILE_VERSION = 'album-profile-v2';
+export const MAX_PROFILE_TEXT = 900;
+
+export function clamp(value, low = 0, high = 1) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return low;
+  return Math.max(low, Math.min(high, n));
+}
+
+export function cleanArray(values, limit = 16) {
+  if (!Array.isArray(values)) return [];
+  return values
+    .map(value => typeof value === 'string' ? value : value?.name)
+    .filter(Boolean)
+    .map(value => String(value).trim().replace(/\s+/g, ' ').slice(0, 100))
+    .filter(Boolean)
+    .slice(0, limit);
+}
+
+export function energyLabel(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return '';
+  if (n <= 2.5) return 'very low energy, hushed, restrained';
+  if (n <= 4) return 'low energy, calm, restrained';
+  if (n >= 8.5) return 'very high energy, forceful, lively';
+  if (n >= 6.5) return 'high energy, driving, lively';
+  return 'medium energy';
+}
+
+export function stableAlbumId(album) {
+  if (album?.lookup_id) return String(album.lookup_id);
+  const text = String(album?.artist || '').trim().toLowerCase() + '\0' + String(album?.title || '').trim().toLowerCase();
+  let h = 14695981039346656037n;
+  const p = 1099511628211n;
+  const mask = (1n << 64n) - 1n;
+  for (const ch of text) {
+    h ^= BigInt(ch.codePointAt(0));
+    h = (h * p) & mask;
+  }
+  return h.toString(16).padStart(16, '0');
+}
+
+function decadeLabel(year) {
+  const n = Number(String(year || '').slice(0, 4));
+  if (!Number.isFinite(n) || n < 1900 || n > 2100) return '';
+  return `${Math.floor(n / 10) * 10}s`;
+}
+
+export function albumProfile(album) {
+  const genres = cleanArray(album.genres, 14);
+  const tags = cleanArray(album.tags, 24);
+  const moods = cleanArray(album.moods, 16);
+  const featureMoods = album.features?.moods && typeof album.features.moods === 'object'
+    ? Object.entries(album.features.moods)
+        .filter(([, value]) => Number(value) >= 0.35)
+        .sort((a, b) => Number(b[1]) - Number(a[1]))
+        .slice(0, 12)
+        .map(([name]) => name)
+    : [];
+  const year = String(album.year || album.metadata?.year || '').slice(0, 4);
+  const decade = decadeLabel(year);
+  const duration = [
+    album._live?.runtimeMin,
+    album._semantic?.runtimeMin,
+    album.features?.duration_min,
+    album.length_min,
+    album.duration,
+  ].find(value => value !== null && value !== undefined && Number.isFinite(Number(value)));
+  const energy = [
+    album._acoustic?.energy,
+    album._live?.signals?.energy,
+    album.features?.energy != null ? Number(album.features.energy) * 10 : null,
+    album.energy_level,
+    album.energy,
+  ].find(value => value !== null && value !== undefined && Number.isFinite(Number(value)));
+
+  return [
+    `artist: ${String(album.artist || '').slice(0, 140)}`,
+    `album: ${String(album.title || '').slice(0, 180)}`,
+    year ? `released: ${year}` : '',
+    decade ? `era: ${decade}` : '',
+    genres.length ? `genres and styles: ${genres.join(', ')}` : '',
+    tags.length ? `descriptive music tags: ${tags.join(', ')}` : '',
+    moods.length ? `catalog mood tags: ${moods.join(', ')}` : '',
+    featureMoods.length ? `estimated emotional qualities: ${featureMoods.join(', ')}` : '',
+    energy === undefined ? '' : energyLabel(Number(energy)),
+    duration === undefined ? '' : `runtime: about ${Math.round(Number(duration))} minutes`,
+    'Represent the sound, emotional character, atmosphere, intensity, and listening context of this record.',
+  ].filter(Boolean).join('. ').slice(0, MAX_PROFILE_TEXT);
+}
+
+export function queryProfile(body) {
+  const note = String(body.note || '').trim().replace(/\s+/g, ' ').slice(0, 1000);
+  const moods = cleanArray(body.moods, 24);
+  const avoidMoods = cleanArray(body.intent?.avoidMoods ? Object.keys(body.intent.avoidMoods) : [], 16);
+  const genres = cleanArray(body.intent?.genres, 12);
+  const avoidGenres = cleanArray(body.intent?.avoidGenres, 12);
+  const energy = body.energy == null ? '' : energyLabel(body.energy);
+  const familiarity = body.comfort === 'comfort'
+    ? 'prefer familiar artists or sounds'
+    : body.comfort === 'exploration'
+      ? 'prefer discovery, novelty, and unfamiliar artists'
+      : '';
+  const runtime = body.time == null ? '' : `maximum runtime around ${Number(body.time)} minutes`;
+
+  return [
+    'Recommend one album for this listener.',
+    note ? `listener description: ${note}` : '',
+    moods.length ? `desired emotional qualities: ${moods.join(', ')}` : '',
+    avoidMoods.length ? `avoid these emotional qualities: ${avoidMoods.join(', ')}` : '',
+    genres.length ? `requested genres or styles: ${genres.join(', ')}` : '',
+    avoidGenres.length ? `avoid these genres or styles: ${avoidGenres.join(', ')}` : '',
+    energy,
+    familiarity,
+    runtime,
+    'Match the emotional and sonic character first. Do not reward literal word overlap when the musical vibe is wrong.',
+  ].filter(Boolean).join(' ').slice(0, 1800);
+}
+
+export function normalizedVector(values) {
+  const out = Float32Array.from(values || [], value => Number(value) || 0);
+  let norm = 0;
+  for (const value of out) norm += value * value;
+  norm = Math.sqrt(norm);
+  if (!norm) return out;
+  for (let i = 0; i < out.length; i++) out[i] /= norm;
+  return out;
+}
+
+export function cosine(a, b) {
+  const n = Math.min(a.length, b.length);
+  let dot = 0;
+  for (let i = 0; i < n; i++) dot += a[i] * b[i];
+  return dot;
+}
+
+export async function embedTexts(input, dimensions = EMBEDDING_DIMENSIONS) {
+  const rows = Array.isArray(input) ? input : [input];
+  if (!rows.length) return [];
+  const token = process.env.AI_GATEWAY_API_KEY || await getVercelOidcToken();
+  if (!token) throw new Error('AI Gateway authentication is unavailable.');
+
+  const response = await fetch('https://ai-gateway.vercel.sh/v1/embeddings', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: EMBEDDING_MODEL,
+      input: rows,
+      dimensions,
+    }),
+  });
+
+  if (!response.ok) {
+    const detail = (await response.text()).slice(0, 600);
+    throw new Error(`Embedding request failed (${response.status}): ${detail}`);
+  }
+
+  const payload = await response.json();
+  return (payload.data || [])
+    .sort((a, b) => a.index - b.index)
+    .map(row => normalizedVector(row.embedding));
+}
