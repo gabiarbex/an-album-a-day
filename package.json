@@ -6,5 +6,9 @@
     "@vercel/blob": "latest",
     "@vercel/oidc": "latest",
     "@huggingface/transformers": "latest"
+  },
+  "allowScripts": {
+    "onnxruntime-node@1.30.0": true,
+    "protobufjs@7.6.6": true
   }
 }
