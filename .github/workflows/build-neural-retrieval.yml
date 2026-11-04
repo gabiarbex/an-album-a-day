@@ -1,0 +1,56 @@
+name: Build neural retrieval index
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build_neural_retrieval.py"
+      - ".github/workflows/build-neural-retrieval.yml"
+      - "data/vectors/v3/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: neural-retrieval-v1
+  cancel-in-progress: true
+
+jobs:
+  build-neural-retrieval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install numpy
+        run: python -m pip install --upgrade numpy
+
+      - name: Build 100k compact neural retrieval index
+        run: python scripts/build_neural_retrieval.py
+
+      - name: Inspect generated index
+        run: |
+          du -sh data/neural-retrieval/v1
+          ls -lh data/neural-retrieval/v1
+
+      - name: Commit retrieval index
+        run: |
+          git config user.name "album-a-day retrieval bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/neural-retrieval/v1
+          if git diff --cached --quiet; then
+            echo "Neural retrieval index already up to date."
+            exit 0
+          fi
+          git commit -m "Build compact 100k neural retrieval index"
+          git pull --rebase origin main
+          git push origin HEAD:main
