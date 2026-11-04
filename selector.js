@@ -384,6 +384,7 @@ function renderHistory(){
  const topGenre=Object.entries(genreCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
  if($('statGenre'))$('statGenre').textContent=topGenre;
  if($('statTraining'))$('statTraining').textContent=logs.filter(x=>Number(x.rating)>0&&x.signal_snapshot).length;
+ if($('trainFromDiary'))$('trainFromDiary').disabled=!logs.some(x=>Number(x.rating)>0);
  if($('statLastfm'))$('statLastfm').textContent=lastfmTaste?.unique_artists?Number(lastfmTaste.unique_artists).toLocaleString():'—';
  if($('clearLastfm'))$('clearLastfm').hidden=!lastfmTaste;
  const area=$('history');area.replaceChildren();
@@ -2360,6 +2361,63 @@ $('lastfmFile')?.addEventListener('change',async e=>{
 $('clearLastfm')?.addEventListener('click',()=>{
  try{localStorage.removeItem('albumaday.lastfmTaste')}catch{}
  lastfmTaste=null;lastfmTasteMap=new Map();invalidateTasteCaches();renderHistory();showToast('Last.fm data cleared.');
+});
+
+async function diaryTasteTrainingRows(limit=60){
+ const rated=[...logs].filter(entry=>Number(entry.rating)>0).slice(-limit);
+ if(!rated.length)return [];
+
+ const byId=new Map(albums.map(album=>[lookupId(album),album]));
+ const lookup=await getCatalogLookupIndex();
+ const files=[];
+ for(const entry of rated){
+  const id=lookupId({artist:entry.artist,title:entry.album});
+  if(byId.has(id))continue;
+  const file=lookup?.[id];
+  if(file&&!files.includes(file))files.push(file);
+ }
+ if(files.length)await Promise.all(files.slice(0,24).map(loadSpecificShard));
+
+ const refreshed=new Map(albums.map(album=>[lookupId(album),album]));
+ return rated.map(entry=>{
+  const id=lookupId({artist:entry.artist,title:entry.album});
+  const album=refreshed.get(id);
+  if(!album)return null;
+  return {
+   rating:Number(entry.rating),
+   album:backendCandidate(album,interpretFeeling(''),0)
+  };
+ }).filter(Boolean);
+}
+
+$('trainFromDiary')?.addEventListener('click',async()=>{
+ const button=$('trainFromDiary');
+ const endpoint=backendUrl('/api/taste-bootstrap');
+ if(!endpoint){showToast('Taste training is available on the live site.');return}
+ const original=button.textContent;
+ button.disabled=true;button.textContent='training…';
+ try{
+  const ratings=await diaryTasteTrainingRows(60);
+  if(!ratings.length){showToast('No rated catalog records to train from yet.');return}
+  const response=await fetch(endpoint,{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({client_id:clientFeedbackId(),ratings})
+  });
+  if(!response.ok)throw Error('taste bootstrap HTTP '+response.status);
+  const data=await response.json();
+  showToast(
+   data.learned
+    ? `trained on ${data.learned} rated record${data.learned===1?'':'s'} — notes stayed local.`
+    : 'those ratings are already in the taste model.'
+  );
+ }catch(err){
+  console.warn('Diary taste training failed',err);
+  showToast('Could not train from the diary right now.');
+ }finally{
+  button.textContent=original;
+  button.disabled=!logs.some(x=>Number(x.rating)>0);
+ }
 });
 
 $('importDiary')?.addEventListener('click',()=>$('importFile')?.click());
