@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { env, LogLevel, pipeline } from '@huggingface/transformers';
 
 export const EMBEDDING_MODEL = process.env.ALBUM_EMBEDDING_MODEL || 'Xenova/all-MiniLM-L6-v2';
@@ -5,10 +6,14 @@ export const EMBEDDING_DIMENSIONS = 384;
 export const PROFILE_VERSION = 'album-profile-v4-minilm-clean';
 export const MAX_PROFILE_TEXT = 900;
 
-env.allowRemoteModels = true;
+const BUNDLED_MODEL_ROOT = path.join(process.cwd(), 'models') + path.sep;
+const PREFER_BUNDLED_MODEL = process.env.VERCEL === '1' || process.env.ALBUM_LOCAL_MODEL === '1';
+
 env.allowLocalModels = true;
-env.useFSCache = true;
-env.cacheDir = '/tmp/album-a-day-transformers-cache';
+env.localModelPath = BUNDLED_MODEL_ROOT;
+env.allowRemoteModels = !PREFER_BUNDLED_MODEL;
+env.useFSCache = !PREFER_BUNDLED_MODEL;
+env.cacheDir = PREFER_BUNDLED_MODEL ? null : '/tmp/album-a-day-transformers-cache';
 if (LogLevel) env.logLevel = LogLevel.ERROR;
 
 let extractorPromise = null;
@@ -150,12 +155,29 @@ export function cosine(a, b) {
   return dot;
 }
 
-async function getExtractor() {
-  if (!extractorPromise) {
-    extractorPromise = pipeline('feature-extraction', EMBEDDING_MODEL, {
+async function createExtractor() {
+  try {
+    return await pipeline('feature-extraction', EMBEDDING_MODEL, {
       dtype: 'q8',
       device: 'cpu',
-    }).catch(error => {
+      local_files_only: PREFER_BUNDLED_MODEL,
+    });
+  } catch (error) {
+    if (!PREFER_BUNDLED_MODEL) throw error;
+    console.warn('bundled_embedding_model_unavailable_falling_back_remote', String(error?.message || error).slice(0, 240));
+    env.allowRemoteModels = true;
+    env.useFSCache = true;
+    env.cacheDir = '/tmp/album-a-day-transformers-cache';
+    return pipeline('feature-extraction', EMBEDDING_MODEL, {
+      dtype: 'q8',
+      device: 'cpu',
+    });
+  }
+}
+
+async function getExtractor() {
+  if (!extractorPromise) {
+    extractorPromise = createExtractor().catch(error => {
       extractorPromise = null;
       throw error;
     });
