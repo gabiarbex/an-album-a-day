@@ -127,6 +127,7 @@ def test_frontend_contract():
         "api/taste-bootstrap.js",
         "api/artist-neighbors.js",
         "api/_ranking-core.js",
+        "api/neural-retrieve.js",
     ]:
         subprocess.run(["node","--check",str(ROOT/api_file)],check=True)
 
