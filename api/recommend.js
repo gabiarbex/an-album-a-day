@@ -48,13 +48,18 @@ function genreConflict(candidate, avoided) {
 function moodConflict(candidate, avoided) {
   const avoid = new Set((avoided || []).map(value => String(value).toLowerCase()));
   if (!avoid.size) return false;
-  const albumMoods = [...cleanArray(candidate.moods, 20), ...cleanArray(candidate.tags, 24)]
+  const translatedGuess = String(candidate.moodSource || '') === 'musicbrainz-tag-translation';
+  const reliableMoods = translatedGuess ? [] : cleanArray(candidate.moods, 20);
+  const albumMoods = [...reliableMoods, ...cleanArray(candidate.tags, 24)]
     .map(value => String(value).toLowerCase());
   return albumMoods.some(value => [...avoid].some(needle => value.includes(needle)));
 }
 
 function energyPenalty(candidate, body) {
   if (body.energy == null || candidate.energy == null) return 0;
+  const translatedGuess = String(candidate.energySource || '') === 'musicbrainz-tag-translation';
+  const confidence = Number(candidate.energyConfidence) || 0;
+  if (translatedGuess && confidence < 0.6) return 0;
   const distance = Math.abs(Number(body.energy) - Number(candidate.energy));
   if (!Number.isFinite(distance) || distance <= 1.5) return 0;
   return Math.min(0.32, (distance - 1.5) * 0.055);
