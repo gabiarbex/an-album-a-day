@@ -1,0 +1,8 @@
+{
+  "name": "an-album-a-day",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vercel/blob": "latest"
+  }
+}
