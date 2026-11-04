@@ -5,7 +5,7 @@
       "maxDuration": 90
     },
     "api/feedback.js": {
-      "maxDuration": 15
+      "maxDuration": 90
     },
     "api/index-catalog.js": {
       "maxDuration": 300
