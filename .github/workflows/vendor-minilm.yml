@@ -1,0 +1,53 @@
+name: Vendor MiniLM model
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/vendor-minilm.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vendor-minilm
+  cancel-in-progress: true
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download exact Transformers.js model files
+        run: |
+          set -euo pipefail
+          ROOT="models/Xenova/all-MiniLM-L6-v2"
+          mkdir -p "$ROOT/onnx"
+          BASE="https://huggingface.co/Xenova/all-MiniLM-L6-v2/resolve/main"
+          curl -fL --retry 4 --retry-delay 2 "$BASE/config.json" -o "$ROOT/config.json"
+          curl -fL --retry 4 --retry-delay 2 "$BASE/tokenizer.json" -o "$ROOT/tokenizer.json"
+          curl -fL --retry 4 --retry-delay 2 "$BASE/tokenizer_config.json" -o "$ROOT/tokenizer_config.json"
+          curl -fL --retry 4 --retry-delay 2 "$BASE/special_tokens_map.json" -o "$ROOT/special_tokens_map.json"
+          curl -fL --retry 4 --retry-delay 2 "$BASE/vocab.txt" -o "$ROOT/vocab.txt"
+          curl -fL --retry 4 --retry-delay 2 "$BASE/onnx/model_quantized.onnx" -o "$ROOT/onnx/model_quantized.onnx"
+          echo "afdb6f1a0e45b715d0bb9b11772f032c399babd23bfc31fed1c170afc848bdb1  $ROOT/onnx/model_quantized.onnx" | sha256sum -c -
+          du -sh "$ROOT"
+
+      - name: Commit local model bundle
+        run: |
+          git config user.name "album-a-day model bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add models/Xenova/all-MiniLM-L6-v2
+          if git diff --cached --quiet; then
+            echo "MiniLM bundle already current."
+            exit 0
+          fi
+          git commit -m "Vendor quantized MiniLM model for fast serverless startup"
+          git pull --rebase origin main
+          git push origin HEAD:main
