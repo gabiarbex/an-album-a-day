@@ -72,19 +72,27 @@ async function resolveArtist(name) {
 }
 
 function parseSimilarArtists(payload, seedMbid) {
-  let rows = [];
-  if (Array.isArray(payload)) rows = payload;
-  else if (payload && typeof payload === 'object') {
-    rows = payload.payload || payload.recordings || payload.results || [];
-    if (rows && typeof rows === 'object' && !Array.isArray(rows)) {
-      rows = rows.recordings || rows.results || [];
+  const rows = [];
+  const visit = (value, depth = 0) => {
+    if (depth > 5 || value == null) return;
+    if (Array.isArray(value)) {
+      value.forEach(item => visit(item, depth + 1));
+      return;
     }
-  }
+    if (typeof value !== 'object') return;
+
+    if (value.similar_artist_mbid || value.artist_mbid) {
+      rows.push(value);
+      return;
+    }
+
+    Object.values(value).forEach(item => visit(item, depth + 1));
+  };
+  visit(payload);
 
   const out = [];
   const seen = new Set();
-  for (const row of Array.isArray(rows) ? rows : []) {
-    if (!row || typeof row !== 'object') continue;
+  for (const row of rows) {
     const mbid = row.similar_artist_mbid || row.artist_mbid;
     const name = row.similar_artist_name || row.artist_name;
     if (!mbid || !name || mbid === seedMbid || seen.has(mbid)) continue;
