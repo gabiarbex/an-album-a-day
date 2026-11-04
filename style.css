@@ -929,3 +929,47 @@ dialog input,dialog textarea{width:100%;padding:10px;border:var(--rule);border-r
 .feedback-bar button[data-feedback="love_this"].is-sent{
   background:var(--pink);
 }
+
+
+/* --- compact taste print / 2026-11-04 --- */
+.taste-print{
+ margin:16px 0 18px;
+ padding:10px 0 11px;
+ border-top:2px solid var(--ink);
+ border-bottom:1px solid var(--ink);
+ font-family:"Courier New",Courier,monospace;
+}
+.taste-print[hidden]{display:none!important}
+.taste-print-head{
+ display:flex;
+ justify-content:space-between;
+ align-items:baseline;
+ gap:12px;
+ margin-bottom:8px;
+ text-transform:uppercase;
+}
+.taste-print-head span{
+ font-family:Impact,"Arial Black",sans-serif;
+ font-size:18px;
+ letter-spacing:.03em;
+}
+.taste-print-head small{
+ font-size:9px;
+ letter-spacing:.1em;
+}
+.taste-print-row{
+ display:grid;
+ grid-template-columns:76px minmax(0,1fr);
+ gap:10px;
+ padding:5px 0;
+ border-top:1px dashed rgba(17,17,17,.4);
+ font-size:10px;
+ line-height:1.45;
+}
+.taste-print-row b{
+ text-transform:uppercase;
+ letter-spacing:.08em;
+}
+.taste-print-row div{
+ overflow-wrap:anywhere;
+}
