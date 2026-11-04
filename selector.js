@@ -2806,6 +2806,7 @@ $('importFile')?.addEventListener('change',async e=>{
   let added=0;
   for(const entry of valid){
    const k=`${entry.date||''}|${entry.artist}|${entry.album}`;
+   unmarkDiaryDeleted(entry);
    if(existing.has(k))continue;
    logs.push(entry);existing.add(k);added++;
   }
