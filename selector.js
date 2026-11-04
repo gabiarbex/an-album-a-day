@@ -377,8 +377,38 @@ function renderRecentPulls(){
   copy.append(date,title,artist,rating);card.append(art,copy);area.append(card);
  }
 }
+function renderTastePrint(){
+ const box=$('tastePrint'),tagNode=$('tastePrintTags'),neighborNode=$('tastePrintNeighbors');
+ if(!box||!tagNode||!neighborNode)return;
+ const hasTaste=lastfmTasteMap.size>0||logs.some(entry=>Number(entry.rating)>3);
+ if(!hasTaste){box.hidden=true;return}
+
+ const noise=/^(seen live|favorites?|favourites?|albums i own|spotify|last\.fm|male vocalists?|female vocalists?)$/i;
+ let tags=[];
+ if(albums.length){
+  const ctx=tasteTagContext();
+  tags=[...ctx.weights.entries()]
+   .filter(([name,weight])=>weight>0&&!noise.test(name))
+   .sort((a,b)=>b[1]-a[1])
+   .slice(0,6)
+   .map(([name])=>name);
+ }
+
+ const neighbors=[...lastfmNeighborMap.entries()]
+  .filter(([,weight])=>weight>0)
+  .sort((a,b)=>b[1]-a[1])
+  .slice(0,5)
+  .map(([name])=>name);
+
+ tagNode.textContent=tags.length?tags.join(' / '):'building from your rated records';
+ neighborNode.textContent=neighbors.length
+  ? neighbors.join(' / ')
+  : (lastfmTaste?'optional — deepen the Last.fm graph':'add Last.fm for behavioral neighbors');
+ box.hidden=false;
+}
 function renderHistory(){
  $('count').textContent=logs.length;
+ renderTastePrint();
  renderStreak();
  if($('statListened'))$('statListened').textContent=logs.length;
  const rated=logs.filter(x=>Number(x.rating)>0);
@@ -529,6 +559,7 @@ function mergeAlbums(items){
  }
  tasteTagContextCache=null;
  refreshFeatureCoverage();
+ if($('drawer')?.getAttribute('aria-hidden')==='false')renderTastePrint();
 }
 let catalogLookupPromise=null;
 async function getCatalogLookupIndex(){
