@@ -18,6 +18,9 @@
     },
     "api/artist-neighbors.js": {
       "maxDuration": 90
+    },
+    "api/neural-retrieve.js": {
+      "maxDuration": 90
     }
   }
 }
