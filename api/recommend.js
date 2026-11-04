@@ -4,6 +4,7 @@ import {
   clamp,
   cosine,
   embedTexts,
+  normalizedVector,
   energyLabel,
   queryProfile,
   EMBEDDING_MODEL,
@@ -72,8 +73,18 @@ export default {
       const candidates = Array.isArray(body.candidates) ? body.candidates.slice(0, MAX_CANDIDATES) : [];
       if (candidates.length < 2) return json({ error: 'Not enough candidates.' }, 400, headers);
 
-      const query = queryProfile(body);
-      const [queryVector] = await embedTexts([query], EMBEDDING_DIMENSIONS);
+      const suppliedQuery = Array.isArray(body.queryVector) && body.queryVector.length === EMBEDDING_DIMENSIONS
+        ? body.queryVector
+        : null;
+      let queryVector;
+      let queryVectorSource = 'embedded';
+      if (suppliedQuery && suppliedQuery.every(value => Number.isFinite(Number(value)))) {
+        queryVector = normalizedVector(suppliedQuery);
+        queryVectorSource = 'retrieval-reuse';
+      } else {
+        const query = queryProfile(body);
+        [queryVector] = await embedTexts([query], EMBEDDING_DIMENSIONS);
+      }
       if (!queryVector?.length) throw new Error('Query embedding was empty.');
 
       const cached = await cachedCandidateVectors(candidates, new URL(request.url).origin);
@@ -119,6 +130,7 @@ export default {
           candidates: candidates.length,
           vectorCacheHits: cacheHits,
           liveEmbeddings: missing.length,
+          queryVectorSource,
           taste: Number((chosen.taste?.score || 0).toFixed(6)),
           tasteConfidence: Number((chosen.taste?.confidence || 0).toFixed(6)),
           tasteAdjacency: Number((chosen.candidate.tasteAdjacency || 0).toFixed(6)),
