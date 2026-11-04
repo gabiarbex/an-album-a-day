@@ -101,7 +101,9 @@ def album_profile(album):
     ]
     duration = next((float(v) for v in duration_candidates if v is not None and _finite(v)), None)
 
-    energy_candidates = [
+    energy_provenance = provenance.get("energy") if isinstance(provenance.get("energy"), dict) else {}
+    translated_energy_guess = str(energy_provenance.get("source") or "") == "musicbrainz-tag-translation"
+    energy_candidates = [] if translated_energy_guess else [
         float(features.get("energy")) * 10 if features.get("energy") is not None and _finite(features.get("energy")) else None,
         album.get("energy_level"),
         album.get("energy"),
