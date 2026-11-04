@@ -733,41 +733,83 @@ async function rankWithBackend(pool,seed,daily){
  const note=$('feelingInput')?.value.trim()||'';
  const intent=interpretFeeling(note);
  const rows=new Map();
- const add=(a,semanticScore=0)=>{
+ const sourceCounts={semantic:0,controls:0,taste:0,explore:0};
+ const add=(a,semanticScore=0,source='controls')=>{
   if(!a||albumWasSeen(a))return;
   const id=lookupId(a);
   const current=rows.get(id);
-  if(!current||Math.abs(Number(semanticScore)||0)>Math.abs(Number(current.semanticScore)||0)){
-   rows.set(id,{album:a,semanticScore:Number(semanticScore)||0});
+  if(!current){
+   rows.set(id,{album:a,semanticScore:Number(semanticScore)||0,sources:new Set([source])});
+   sourceCounts[source]=(sourceCounts[source]||0)+1;
+   return;
+  }
+  current.sources.add(source);
+  if(Math.abs(Number(semanticScore)||0)>Math.abs(Number(current.semanticScore)||0)){
+   current.semanticScore=Number(semanticScore)||0;
   }
  };
 
+ // Lexical/SVD retrieval is useful for recall, but it no longer owns the shortlist.
  if(note.length>=2&&globalThis.AlbumSemantic?.search&&catalogManifest){
   try{
-   const raw=await globalThis.AlbumSemantic.search(note,84);
+   const raw=await globalThis.AlbumSemantic.search(note,64);
    const resolved=await resolveSemanticResults(raw,6);
-   for(const row of resolved)add(row.album,row.semanticScore);
+   for(const row of resolved.slice(0,36))add(row.album,row.semanticScore,'semantic');
   }catch(e){console.info('Candidate retrieval fallback',e)}
  }
 
- const local=sampleCandidates(pool,seed+'|backend-local',Math.min(1600,pool.length),daily)
+ // Explicit controls and mood intent always get a substantial share.
+ const local=sampleCandidates(pool,seed+'|backend-controls',Math.min(2600,pool.length),daily)
   .map(a=>({a,v:score(a,intent)}))
   .sort((x,y)=>y.v-x.v)
-  .slice(0,68);
- for(const row of local)add(row.a,0);
+  .slice(0,42);
+ for(const row of local)add(row.a,0,'controls');
 
- if(state.comfort==='comfort'||lastfmTasteMap.size){
-  const familiar=pool
-   .filter(a=>artistFamiliarity(a.artist)>0)
-   .sort((a,b)=>artistFamiliarity(b.artist)-artistFamiliarity(a.artist))
-   .slice(0,18);
-  for(const a of familiar)add(a,0);
+ // Taste-adjacent candidates are a separate source, not just a tie-breaker.
+ const tasteCandidates=pool
+  .filter(a=>artistFamiliarity(a.artist)>0)
+  .sort((a,b)=>artistFamiliarity(b.artist)-artistFamiliarity(a.artist))
+  .slice(0,state.comfort==='exploration'?8:16);
+ for(const a of tasteCandidates)add(a,0,'taste');
+
+ // Preserve discovery: give the neural model a few candidates the old systems would never surface.
+ const exploration=sampleCandidates(
+  pool,
+  seed+'|backend-explore',
+  Math.min(420,pool.length),
+  daily
+ ).filter(a=>artistFamiliarity(a.artist)<.2).slice(0,18);
+ for(const a of exploration)add(a,0,'explore');
+
+ const allRows=[...rows.values()];
+ // Interleave sources so no retrieval method can monopolize the 96 slots.
+ const buckets={
+  semantic:allRows.filter(row=>row.sources.has('semantic')),
+  controls:allRows.filter(row=>row.sources.has('controls')),
+  taste:allRows.filter(row=>row.sources.has('taste')),
+  explore:allRows.filter(row=>row.sources.has('explore'))
+ };
+ const shortlist=[];
+ const used=new Set();
+ const quotas={semantic:34,controls:40,taste:12,explore:10};
+ for(const source of ['semantic','controls','taste','explore']){
+  for(const row of buckets[source]){
+   const id=lookupId(row.album);
+   if(used.has(id))continue;
+   shortlist.push(row);used.add(id);
+   if(shortlist.filter(x=>x.sources.has(source)).length>=quotas[source])break;
+  }
  }
-
- const shortlist=[...rows.values()].slice(0,96);
+ for(const row of allRows){
+  if(shortlist.length>=96)break;
+  const id=lookupId(row.album);
+  if(used.has(id))continue;
+  shortlist.push(row);used.add(id);
+ }
  if(shortlist.length<2)return null;
+
  const byId=new Map(shortlist.map(row=>[lookupId(row.album),row.album]));
- const candidates=shortlist.map(row=>backendCandidate(row.album,intent,row.semanticScore));
+ const candidates=shortlist.slice(0,96).map(row=>backendCandidate(row.album,intent,row.semanticScore));
 
  $('status').textContent='neural reranking…';
  try{
@@ -784,6 +826,12 @@ async function rankWithBackend(pool,seed,daily){
     time:state.time,
     intent,
     recentArtists:logs.slice(-12).map(x=>x.artist),
+    retrieval:{
+     semantic:sourceCounts.semantic,
+     controls:sourceCounts.controls,
+     taste:sourceCounts.taste,
+     exploration:sourceCounts.explore
+    },
     candidates
    })
   });
@@ -792,7 +840,7 @@ async function rankWithBackend(pool,seed,daily){
   const album=byId.get(String(data.albumId||''));
   if(!album)throw Error('backend returned unknown album');
   album._backendRank={
-   engine:data.engine||'hybrid-neural-reranker-v1',
+   engine:data.engine||'hybrid-neural-reranker-v2',
    score:Number(data.score)||0,
    neural:Number(data.diagnostics?.neural)||0,
    taste:Number(data.diagnostics?.taste)||0,
