@@ -1,6 +1,6 @@
 import { env, LogLevel, pipeline } from '@huggingface/transformers';
 
-export const EMBEDDING_MODEL = process.env.ALBUM_EMBEDDING_MODEL || 'onnx-community/all-MiniLM-L6-v2-ONNX';
+export const EMBEDDING_MODEL = process.env.ALBUM_EMBEDDING_MODEL || 'Xenova/all-MiniLM-L6-v2';
 export const EMBEDDING_DIMENSIONS = 384;
 export const PROFILE_VERSION = 'album-profile-v3-minilm';
 export const MAX_PROFILE_TEXT = 900;
