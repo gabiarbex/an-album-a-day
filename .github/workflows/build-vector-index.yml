@@ -50,4 +50,5 @@ jobs:
             exit 0
           fi
           git commit -m "Build 100k MiniLM album vector index"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main
