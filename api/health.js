@@ -1,11 +1,18 @@
+import { getVercelOidcToken } from '@vercel/oidc';
+
 export default {
   async fetch() {
+    let oidc = false;
+    try {
+      oidc = Boolean(await getVercelOidcToken());
+    } catch {}
+
     return Response.json({
       ok: true,
       service: 'album-a-day-recommender',
       engine: 'hybrid-neural-reranker-v1',
-      aiGateway: Boolean(process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN),
-      feedbackStore: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      aiGateway: Boolean(process.env.AI_GATEWAY_API_KEY || oidc),
+      feedbackStore: oidc,
     }, {
       headers: { 'Cache-Control': 'no-store' },
     });
