@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 import re
 from pathlib import Path
@@ -197,11 +198,14 @@ def main():
         print(f"Embedding {file_name} ({len(rows)} albums) [{i}/{len(manifest.get('shards', []))}]")
         chunks.append(write_chunk(model, file_name, 0, rows))
 
+    catalog_fingerprint = hashlib.sha256((CATALOG / "lookup.json").read_bytes()).hexdigest()
+
     vector_manifest = {
         "version": 3,
         "profileVersion": PROFILE_VERSION,
         "model": MODEL_ID,
         "dimensions": DIMENSIONS,
+        "catalogFingerprint": catalog_fingerprint,
         "quantization": {"type": "int8", "scale": SCALE},
         "totalAlbums": sum(chunk["count"] for chunk in chunks),
         "chunks": chunks,
