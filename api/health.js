@@ -1,14 +1,41 @@
+import { createHash } from 'node:crypto';
 import { loadIndexState } from './_vector-store.js';
 import { EMBEDDING_MODEL, EMBEDDING_DIMENSIONS, PROFILE_VERSION } from './_embedding.js';
+
+async function validatedStaticIndex(origin) {
+  const [manifestResponse, lookupResponse] = await Promise.all([
+    fetch(new URL('/data/vectors/v3/manifest.json', origin), { cache: 'no-store' }).catch(() => null),
+    fetch(new URL('/data/catalog/lookup.json', origin), { cache: 'no-store' }).catch(() => null),
+  ]);
+  if (!manifestResponse?.ok || !lookupResponse?.ok) return null;
+
+  const manifest = await manifestResponse.json();
+  if (
+    manifest?.profileVersion !== PROFILE_VERSION ||
+    Number(manifest?.dimensions) !== EMBEDDING_DIMENSIONS ||
+    !manifest?.catalogFingerprint
+  ) return null;
+
+  const lookupBytes = Buffer.from(await lookupResponse.arrayBuffer());
+  const fingerprint = createHash('sha256').update(lookupBytes).digest('hex');
+  if (fingerprint !== manifest.catalogFingerprint) return null;
+
+  return {
+    totalAlbums: manifest.totalAlbums || 0,
+    chunks: Array.isArray(manifest.chunks) ? manifest.chunks.length : 0,
+    profileVersion: manifest.profileVersion,
+    model: manifest.model,
+    dimensions: manifest.dimensions,
+    catalogFingerprint: manifest.catalogFingerprint,
+  };
+}
 
 export default {
   async fetch(request) {
     const origin = new URL(request.url).origin;
-    const [blobState, staticManifest] = await Promise.all([
+    const [blobState, staticVectorIndex] = await Promise.all([
       loadIndexState().catch(() => null),
-      fetch(new URL('/data/vectors/v3/manifest.json', origin), { cache: 'no-store' })
-        .then(response => response.ok ? response.json() : null)
-        .catch(() => null),
+      validatedStaticIndex(origin).catch(() => null),
     ]);
 
     return Response.json({
@@ -19,12 +46,7 @@ export default {
       model: EMBEDDING_MODEL,
       dimensions: EMBEDDING_DIMENSIONS,
       profileVersion: PROFILE_VERSION,
-      staticVectorIndex: staticManifest ? {
-        totalAlbums: staticManifest.totalAlbums || 0,
-        chunks: Array.isArray(staticManifest.chunks) ? staticManifest.chunks.length : 0,
-        profileVersion: staticManifest.profileVersion || null,
-        model: staticManifest.model || null,
-      } : null,
+      staticVectorIndex,
       fallbackVectorIndex: blobState,
     }, {
       headers: { 'Cache-Control': 'no-store' },
