@@ -41,7 +41,7 @@ export default {
     return Response.json({
       ok: true,
       service: 'album-a-day-recommender',
-      engine: 'hybrid-neural-reranker-v2',
+      engine: 'hybrid-neural-reranker-v3',
       embeddingBackend: 'transformers-js',
       model: EMBEDDING_MODEL,
       dimensions: EMBEDDING_DIMENSIONS,
