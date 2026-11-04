@@ -3,7 +3,8 @@ const src=fs.readFileSync('selector.js','utf8');
 const start=src.indexOf('function releaseTrackCount');
 const end=src.indexOf('async function getReleaseWithRecordings',start);
 if(start<0||end<0)throw new Error('tracklist selector helpers missing');
-eval(src.slice(start,end));
+const helpers=new Function(src.slice(start,end)+'; return {releaseTrackCount, selectRepresentativeRelease};')();
+const {selectRepresentativeRelease}=helpers;
 
 function release(id,date,count){
  return {id,date,status:'Official',media:[{position:1,'track-count':count,tracks:Array.from({length:count},(_,i)=>({position:i+1,title:'Track '+(i+1)}))}]};
