@@ -322,6 +322,7 @@ function persistSeen(){
   localStorage.setItem('albumaday.seen',JSON.stringify([...seenAlbums]));
   localStorage.setItem(SEEN_KEYS_STORAGE_KEY,JSON.stringify([...seenAlbumKeys]));
  }catch(e){showToast('Could not save seen-history on this browser.');console.warn('Seen history storage unavailable',e)}
+ queueCloudSync();
 }
 function markAlbumSeen(a){
  if(!a)return;
@@ -330,6 +331,33 @@ function markAlbumSeen(a){
  rememberRecommendedArtist(a.artist);
  persistSeen();
 }
+const DIARY_DELETED_KEY='albumaday.diaryDeleted.v1';
+function diaryEntrySyncKey(entry){
+ return [
+  String(entry?.date||''),
+  normalizeArtistName(entry?.artist),
+  String(entry?.album||'').trim().toLowerCase().replace(/\s+/g,' ')
+ ].join('::');
+}
+function readDiaryDeleted(){
+ try{
+  const raw=JSON.parse(localStorage.getItem(DIARY_DELETED_KEY)||'[]');
+  return new Set(Array.isArray(raw)?raw.map(String):[]);
+ }catch{return new Set()}
+}
+function persistDiaryDeleted(){
+ try{localStorage.setItem(DIARY_DELETED_KEY,JSON.stringify([...deletedDiaryKeys].slice(-1000)))}catch{}
+}
+function markDiaryDeleted(entry){
+ const key=diaryEntrySyncKey(entry);
+ if(!key)return;
+ deletedDiaryKeys.add(key);persistDiaryDeleted();
+}
+function unmarkDiaryDeleted(entry){
+ const key=diaryEntrySyncKey(entry);
+ if(deletedDiaryKeys.delete(key))persistDiaryDeleted();
+}
+function queueCloudSync(){window.AlbumAuth?.scheduleSync?.()}
 function readLogs(){try{return JSON.parse(localStorage.getItem('albumaday.logs')||'[]')}catch{return []}}
 function readLastfmTaste(){try{return JSON.parse(localStorage.getItem('albumaday.lastfmTaste')||'null')}catch{return null}}
 function normalizeArtistName(value){return String(value||'').trim().toLowerCase().replace(/\s+/g,' ')}
@@ -357,12 +385,16 @@ function buildLastfmNeighborMap(taste){
  return new Map((taste?.neighbors||[]).map(([artist,weight])=>[normalizeArtistName(artist),Number(weight)||0]));
 }
 logs=readLogs();
+let deletedDiaryKeys=readDiaryDeleted();
 let lastfmTaste=readLastfmTaste();
 let lastfmTasteMap=buildLastfmTasteMap(lastfmTaste);
 let lastfmNeighborMap=buildLastfmNeighborMap(lastfmTaste);
 let diaryArtistCache=null,diaryTasteCache=null,tasteTagContextCache=null;
 function invalidateTasteCaches(){diaryArtistCache=null;diaryTasteCache=null;tasteTagContextCache=null}
-function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));invalidateTasteCaches();renderHistory();renderRecentPulls()}
+function persist(){
+ localStorage.setItem('albumaday.logs',JSON.stringify(logs));
+ invalidateTasteCaches();renderHistory();renderRecentPulls();queueCloudSync();
+}
 
 function readPickDays(){try{return JSON.parse(localStorage.getItem('albumaday.pickDays')||'[]')}catch{return []}}
 function markTodayPicked(){
@@ -372,7 +404,7 @@ function markTodayPicked(){
   const trimmed=[...days].sort().slice(-730);
   localStorage.setItem('albumaday.pickDays',JSON.stringify(trimmed));
  }catch(e){console.warn('Could not save daily streak',e)}
- renderStreak();
+ renderStreak();queueCloudSync();
 }
 function renderStreak(){
  const node=$('streak');if(!node)return;
@@ -708,6 +740,55 @@ async function load(){
   console.error(e);
  }
 }
+function exportCloudSyncState(){
+ return {
+  diary:logs.map(entry=>({...entry})),
+  deletedDiaryKeys:[...deletedDiaryKeys],
+  seenKeys:[...seenAlbumKeys],
+  recentArtists:[...recentRecommendedArtists],
+  pickDays:readPickDays(),
+  lastfmProfile:lastfmTaste?JSON.parse(JSON.stringify(lastfmTaste)):null
+ };
+}
+function applyCloudSyncState(next={}){
+ try{
+  if(Array.isArray(next.diary)){
+   logs=next.diary.filter(entry=>entry&&typeof entry==='object');
+   localStorage.setItem('albumaday.logs',JSON.stringify(logs));
+  }
+  if(Array.isArray(next.deletedDiaryKeys)){
+   deletedDiaryKeys=new Set(next.deletedDiaryKeys.map(String));
+   persistDiaryDeleted();
+  }
+  if(Array.isArray(next.seenKeys)){
+   seenAlbumKeys=new Set(next.seenKeys.map(String));
+   localStorage.setItem(SEEN_KEYS_STORAGE_KEY,JSON.stringify([...seenAlbumKeys]));
+  }
+  if(Array.isArray(next.recentArtists)){
+   recentRecommendedArtists=next.recentArtists.map(normalizeArtistName).filter(Boolean).slice(-18);
+   localStorage.setItem(RECENT_RECOMMENDED_ARTISTS_KEY,JSON.stringify(recentRecommendedArtists));
+  }
+  if(Array.isArray(next.pickDays)){
+   localStorage.setItem('albumaday.pickDays',JSON.stringify([...new Set(next.pickDays.map(String))].sort().slice(-730)));
+  }
+  if(next.lastfmProfile){
+   lastfmTaste=next.lastfmProfile;
+   localStorage.setItem('albumaday.lastfmTaste',JSON.stringify(lastfmTaste));
+  }else{
+   lastfmTaste=null;
+   localStorage.removeItem('albumaday.lastfmTaste');
+  }
+  lastfmTasteMap=buildLastfmTasteMap(lastfmTaste);
+  lastfmNeighborMap=buildLastfmNeighborMap(lastfmTaste);
+  invalidateTasteCaches();
+  renderHistory();renderRecentPulls();renderStreak();
+ }catch(error){console.warn('Could not apply cloud state',error)}
+}
+window.AlbumPickerSync={
+ exportState:exportCloudSyncState,
+ applyState:applyCloudSyncState
+};
+
 restorePickerState();
 renderPickerControls();
 load();
@@ -2060,6 +2141,8 @@ function labelColor(a){
 
 const FEEDBACK_QUEUE_KEY='albumaday.feedback.v1';
 function clientFeedbackId(){
+ const accountId=window.AlbumAuth?.clientId?.();
+ if(accountId)return accountId;
  try{return localStorage.getItem('albumaday.salt')||getUserSalt()}catch{return getUserSalt()}
 }
 function feedbackPayload(event,ratingValue=null){
@@ -2186,6 +2269,7 @@ document.addEventListener('keydown',e=>{
 function removeDiaryEntry(index){
  const entry=logs[index];if(!entry)return;
  if(!confirm(`Remove "${entry.album}" by ${entry.artist} from your diary?`))return;
+ markDiaryDeleted(entry);
  logs.splice(index,1);persist();showToast('Diary entry removed.');
 }
 function editDiaryEntry(index){
@@ -2243,7 +2327,7 @@ $('logForm').onsubmit=e=>{
  const staticEnergy=translatedEnergyGuess
   ? null
   : ((pick.features?.energy!=null?Number(pick.features.energy)*10:null)??pick.energy_level??null);
- logs.push({
+ const newEntry={
   date:getDate(),artist:pick.artist,album:pick.title,rating,
   favorite_track:$('track').value.trim(),notes:$('notes').value.trim(),
   cover_art:pick.metadata?.cover_art||(/^https?:/.test($('cover')?.src||'')?$('cover').src:''),
@@ -2257,7 +2341,9 @@ $('logForm').onsubmit=e=>{
    instrumental:Number.isFinite(pick._acoustic?.instrumental)?Number(pick._acoustic.instrumental):null,
    source:pick._acoustic?'acousticbrainz-selected-sample':(live.signals?'live-genre-prior':'catalog')
   }
- });
+ };
+ unmarkDiaryDeleted(newEntry);
+ logs.push(newEntry);
  persist();
  recordFeedback('save',rating||null).catch(()=>{});
  if(rating)recordFeedback('rating',rating).catch(()=>{});
@@ -2579,14 +2665,14 @@ $('lastfmFile')?.addEventListener('change',async e=>{
   lastfmTaste=taste;
   lastfmTasteMap=buildLastfmTasteMap(taste);
   lastfmNeighborMap=buildLastfmNeighborMap(taste);
-  invalidateTasteCaches();renderHistory();
+  invalidateTasteCaches();renderHistory();queueCloudSync();
   showToast(`Last.fm imported: ${taste.unique_artists.toLocaleString()} artists. The CSV stayed on this device.`);
  }catch(err){console.warn(err);showToast('Could not read that Last.fm CSV.')}
  e.target.value='';
 });
 $('clearLastfm')?.addEventListener('click',()=>{
  try{localStorage.removeItem('albumaday.lastfmTaste')}catch{}
- lastfmTaste=null;lastfmTasteMap=new Map();lastfmNeighborMap=new Map();invalidateTasteCaches();renderHistory();showToast('Last.fm data cleared.');
+ lastfmTaste=null;lastfmTasteMap=new Map();lastfmNeighborMap=new Map();invalidateTasteCaches();renderHistory();queueCloudSync();showToast('Last.fm data cleared.');
 });
 
 $('deepenLastfm')?.addEventListener('click',async()=>{
@@ -2615,7 +2701,7 @@ $('deepenLastfm')?.addEventListener('click',async()=>{
   };
   localStorage.setItem('albumaday.lastfmTaste',JSON.stringify(lastfmTaste));
   lastfmNeighborMap=buildLastfmNeighborMap(lastfmTaste);
-  invalidateTasteCaches();renderHistory();
+  invalidateTasteCaches();renderHistory();queueCloudSync();
   showToast(
    neighbors.length
     ? `added ${neighbors.length} listening-neighbors — raw CSV stayed local.`
