@@ -3,7 +3,7 @@ import { getVercelOidcToken } from '@vercel/oidc';
 import { EMBEDDING_MODEL, EMBEDDING_DIMENSIONS, PROFILE_VERSION, normalizedVector } from './_embedding.js';
 
 const STORE_ID = process.env.ALBUM_VECTOR_STORE_ID || 'store_faCPNPhG4INYfqDO';
-const PREFIX = 'vectors/v2';
+const PREFIX = 'vectors/v3';
 const shardCache = new Map();
 
 function safeKey(value) {
@@ -44,36 +44,72 @@ async function writeJson(pathname, value) {
   });
 }
 
-export async function loadVectorChunk(file, chunk = 0) {
-  if (!file) return null;
-  const cacheKey = vectorChunkKey(file, chunk);
-  if (shardCache.has(cacheKey)) return shardCache.get(cacheKey);
+async function loadStaticVectorChunk(file, chunk, origin) {
+  if (!origin) return null;
+  const stem = vectorChunkKey(file, chunk);
+  const base = new URL('/data/vectors/v3/', origin);
+  const idsUrl = new URL(stem + '.ids.json', base);
+  const vectorsUrl = new URL(stem + '.i8.bin', base);
 
-  const payload = await readJson(vectorPath(file, chunk));
-  if (!payload || payload.profileVersion !== PROFILE_VERSION || payload.dimensions !== EMBEDDING_DIMENSIONS) {
-    shardCache.set(cacheKey, null);
-    return null;
+  const [idsResponse, vectorsResponse] = await Promise.all([
+    fetch(idsUrl, { cache: 'force-cache' }).catch(() => null),
+    fetch(vectorsUrl, { cache: 'force-cache' }).catch(() => null),
+  ]);
+  if (!idsResponse?.ok || !vectorsResponse?.ok) return null;
+
+  const ids = await idsResponse.json();
+  const bytes = new Int8Array(await vectorsResponse.arrayBuffer());
+  if (!Array.isArray(ids) || bytes.length !== ids.length * EMBEDDING_DIMENSIONS) return null;
+
+  const map = new Map();
+  for (let row = 0; row < ids.length; row += 1) {
+    const offset = row * EMBEDDING_DIMENSIONS;
+    const vector = new Float32Array(EMBEDDING_DIMENSIONS);
+    for (let i = 0; i < EMBEDDING_DIMENSIONS; i += 1) vector[i] = bytes[offset + i] / 127;
+    map.set(String(ids[row]), normalizedVector(vector));
   }
+
+  return {
+    map,
+    model: EMBEDDING_MODEL,
+    dimensions: EMBEDDING_DIMENSIONS,
+    profileVersion: PROFILE_VERSION,
+    source: 'static-int8',
+  };
+}
+
+async function loadBlobVectorChunk(file, chunk) {
+  const payload = await readJson(vectorPath(file, chunk));
+  if (!payload || payload.profileVersion !== PROFILE_VERSION || payload.dimensions !== EMBEDDING_DIMENSIONS) return null;
 
   const map = new Map();
   for (const row of payload.rows || []) {
     if (!Array.isArray(row) || !row[0] || !Array.isArray(row[1])) continue;
     map.set(String(row[0]), normalizedVector(row[1]));
   }
-
-  const entry = {
+  return {
     map,
     model: payload.model,
     dimensions: payload.dimensions,
     profileVersion: payload.profileVersion,
+    source: 'blob-float',
   };
-  shardCache.set(cacheKey, entry);
+}
 
-  if (shardCache.size > 16) {
+export async function loadVectorChunk(file, chunk = 0, origin = null) {
+  if (!file) return null;
+  const cacheKey = (origin ? 'static:' + origin : 'blob:') + vectorChunkKey(file, chunk);
+  if (shardCache.has(cacheKey)) return shardCache.get(cacheKey);
+
+  let entry = await loadStaticVectorChunk(file, chunk, origin).catch(() => null);
+  if (!entry) entry = await loadBlobVectorChunk(file, chunk).catch(() => null);
+
+  shardCache.set(cacheKey, entry || null);
+  if (shardCache.size > 18) {
     const oldest = shardCache.keys().next().value;
     shardCache.delete(oldest);
   }
-  return entry;
+  return entry || null;
 }
 
 export async function saveVectorChunk(file, chunk, rows) {
@@ -81,9 +117,8 @@ export async function saveVectorChunk(file, chunk, rows) {
     String(id),
     Array.from(vector, value => Number(Number(value).toFixed(6))),
   ]);
-
   const payload = {
-    version: 2,
+    version: 3,
     profileVersion: PROFILE_VERSION,
     model: EMBEDDING_MODEL,
     dimensions: EMBEDDING_DIMENSIONS,
@@ -93,15 +128,14 @@ export async function saveVectorChunk(file, chunk, rows) {
     generatedAt: new Date().toISOString(),
     rows: compactRows,
   };
-
   await writeJson(vectorPath(file, chunk), payload);
-  shardCache.delete(vectorChunkKey(file, chunk));
+  shardCache.clear();
   return payload;
 }
 
 export async function loadIndexState() {
   return await readJson(`${PREFIX}/state.json`) || {
-    version: 2,
+    version: 3,
     profileVersion: PROFILE_VERSION,
     nextUnit: 0,
     completed: false,
@@ -113,7 +147,7 @@ export async function loadIndexState() {
 export async function saveIndexState(state) {
   const payload = {
     ...state,
-    version: 2,
+    version: 3,
     profileVersion: PROFILE_VERSION,
     updatedAt: new Date().toISOString(),
   };
