@@ -756,6 +756,25 @@ function backendUrl(path){
  if(host==='localhost'||host==='127.0.0.1')return null;
  return path;
 }
+function albumProfileQuality(a){
+ let quality=.18;
+ const genres=(a?.genres||[]).filter(Boolean).length;
+ const tags=(a?.tags||[]).filter(Boolean).length;
+ const translatedMood=String(a?.provenance?.moods?.source||'')==='musicbrainz-tag-translation';
+ const reliableMoods=translatedMood
+  ? 0
+  : (a?.features?.moods&&Object.keys(a.features.moods).length
+    ? Object.keys(a.features.moods).length
+    : (a?.moods||[]).length);
+
+ quality+=Math.min(.22,genres*.055);
+ quality+=Math.min(.3,tags*.025);
+ quality+=Math.min(.16,reliableMoods*.04);
+ if(a?._acoustic)quality+=.22;
+ else if(a?._live?.matched)quality+=.06;
+ if(a?.year)quality+=.03;
+ return Math.max(.18,Math.min(1,quality));
+}
 function backendCandidate(a,intent,semanticScore=0){
  const translatedMoodGuess=String(a.provenance?.moods?.source||'')==='musicbrainz-tag-translation';
  const translatedEnergyGuess=String(a.provenance?.energy?.source||'')==='musicbrainz-tag-translation';
@@ -788,6 +807,7 @@ function backendCandidate(a,intent,semanticScore=0){
   duration:duration===undefined?null:Number(duration),
   familiarity:artistFamiliarity(a.artist),
   tasteAdjacency:tasteAdjacency(a),
+  profileQuality:albumProfileQuality(a),
   localScore:score(a,intent),
   semanticScore:Number(semanticScore)||0,
   moodSource:String(a.provenance?.moods?.source||''),
