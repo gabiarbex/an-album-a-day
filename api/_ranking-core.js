@@ -68,8 +68,13 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
       ? 0.02
       : 0.045;
 
+  const rawNeuralFit = clamp((neural + 1) / 2);
+  const profileQuality = clamp(candidate.profileQuality ?? 0.65, 0.18, 1);
+  const neuralReliability = 0.45 + 0.55 * profileQuality;
+  const neuralFit = 0.5 + (rawNeuralFit - 0.5) * neuralReliability;
+
   let score =
-    0.72 * clamp((neural + 1) / 2) +
+    0.72 * neuralFit +
     0.16 * local +
     0.025 * lexical +
     0.055 * modePreference +
