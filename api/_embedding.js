@@ -2,7 +2,7 @@ import { env, LogLevel, pipeline } from '@huggingface/transformers';
 
 export const EMBEDDING_MODEL = process.env.ALBUM_EMBEDDING_MODEL || 'Xenova/all-MiniLM-L6-v2';
 export const EMBEDDING_DIMENSIONS = 384;
-export const PROFILE_VERSION = 'album-profile-v3-minilm';
+export const PROFILE_VERSION = 'album-profile-v4-minilm-clean';
 export const MAX_PROFILE_TEXT = 900;
 
 env.allowRemoteModels = true;
@@ -61,8 +61,10 @@ function decadeLabel(year) {
 export function albumProfile(album) {
   const genres = cleanArray(album.genres, 14);
   const tags = cleanArray(album.tags, 24);
-  const moods = cleanArray(album.moods, 16);
-  const featureMoods = album.features?.moods && typeof album.features.moods === 'object'
+  const moodSource = String(album.moodSource || album.provenance?.moods?.source || '');
+  const translatedMoodGuess = moodSource === 'musicbrainz-tag-translation';
+  const moods = translatedMoodGuess ? [] : cleanArray(album.moods, 16);
+  const featureMoods = !translatedMoodGuess && album.features?.moods && typeof album.features.moods === 'object'
     ? Object.entries(album.features.moods)
         .filter(([, value]) => Number(value) >= 0.35)
         .sort((a, b) => Number(b[1]) - Number(a[1]))
