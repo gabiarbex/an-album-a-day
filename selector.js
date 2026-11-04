@@ -481,6 +481,7 @@ function mergeAlbums(items){
   if(existing){mergeAlbumRecord(existing,a);continue}
   byKey.set(k,a);albums.push(a);
  }
+ tasteTagContextCache=null;
  refreshFeatureCoverage();
 }
 let catalogLookupPromise=null;
@@ -1022,7 +1023,7 @@ async function mapConcurrent(items,limit,fn){
 }
 function diaryArtistSet(){
  if(diaryArtistCache)return diaryArtistCache;
- diaryArtistCache=new Set(logs.map(x=>String(x.artist||'').toLowerCase()));
+ diaryArtistCache=new Set(logs.map(x=>normalizeArtistName(x.artist)).filter(Boolean));
  return diaryArtistCache;
 }
 function lastfmFamiliarity(artist){
