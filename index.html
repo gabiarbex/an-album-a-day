@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-029">
+  <link rel="stylesheet" href="style.css?v=zine-030">
 </head>
 <body>
   <header class="masthead">
@@ -96,6 +96,15 @@
         <button id="log" type="button" class="secondary" disabled>save</button>
         <button id="sharePick" type="button" class="secondary" disabled>share</button>
         <button id="reroll" type="button" class="secondary reroll" hidden>another</button>
+      </div>
+
+      <div id="feedbackBar" class="feedback-bar" hidden aria-label="Recommendation feedback">
+        <span>was it off?</span>
+        <button type="button" data-feedback="wrong_vibe">wrong vibe</button>
+        <button type="button" data-feedback="too_upbeat">too upbeat</button>
+        <button type="button" data-feedback="too_slow">too slow</button>
+        <button type="button" data-feedback="too_obvious">too obvious</button>
+        <button type="button" data-feedback="love_this">love this</button>
       </div>
 
       <div class="why-panel" id="whyPanel" hidden>
@@ -246,8 +255,8 @@
     </form>
   </dialog>
 
-  <script src="intent-core.js?v=zine-029"></script>
-  <script src="semantic-core.js?v=zine-029"></script>
-  <script src="selector.js?v=zine-029" defer></script>
+  <script src="intent-core.js?v=zine-030"></script>
+  <script src="semantic-core.js?v=zine-030"></script>
+  <script src="selector.js?v=zine-030" defer></script>
 </body>
 </html>
