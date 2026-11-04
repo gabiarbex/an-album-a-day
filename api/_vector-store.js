@@ -61,12 +61,23 @@ async function validatedStaticManifest(origin) {
     if (
       manifest?.profileVersion !== PROFILE_VERSION ||
       Number(manifest?.dimensions) !== EMBEDDING_DIMENSIONS ||
-      !manifest?.catalogFingerprint
+      (!manifest?.catalogFingerprint && !manifest?.catalogBlobSha)
     ) return null;
 
     const lookupBytes = Buffer.from(await lookupResponse.arrayBuffer());
-    const fingerprint = createHash('sha256').update(lookupBytes).digest('hex');
-    if (fingerprint !== manifest.catalogFingerprint) {
+    let matches = false;
+
+    if (manifest.catalogFingerprint) {
+      const fingerprint = createHash('sha256').update(lookupBytes).digest('hex');
+      matches = fingerprint === manifest.catalogFingerprint;
+    }
+    if (!matches && manifest.catalogBlobSha) {
+      const header = Buffer.from('blob ' + lookupBytes.length + '\0');
+      const blobSha = createHash('sha1').update(Buffer.concat([header, lookupBytes])).digest('hex');
+      matches = blobSha === manifest.catalogBlobSha;
+    }
+
+    if (!matches) {
       console.warn('Static vector index rejected: catalog fingerprint mismatch.');
       return null;
     }
