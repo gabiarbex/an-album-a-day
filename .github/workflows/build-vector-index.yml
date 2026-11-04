@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: album-vector-index
+  group: album-vector-index-v4-clean
   cancel-in-progress: true
 
 jobs:
