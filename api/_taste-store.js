@@ -45,6 +45,7 @@ function blankProfile() {
     positive: { weight: 0, count: 0, vector: null },
     negative: { weight: 0, count: 0, vector: null },
     interactions: 0,
+    bootstrapIds: [],
     updatedAt: null,
   };
 }
@@ -109,6 +110,101 @@ async function albumVector(album, origin) {
   const [vector] = await embedTexts([albumProfile(album)]);
   return vector || null;
 }
+
+async function albumVectors(albums, origin) {
+  const rows = Array.isArray(albums) ? albums : [];
+  const vectors = new Array(rows.length).fill(null);
+  const groups = new Map();
+
+  rows.forEach((album, index) => {
+    if (!album?.catalogFile) return;
+    const chunk = Number(album.catalogChunk) || 0;
+    const key = album.catalogFile + '::' + chunk;
+    if (!groups.has(key)) groups.set(key, { file: album.catalogFile, chunk, items: [] });
+    groups.get(key).items.push({ album, index });
+  });
+
+  await Promise.all([...groups.values()].map(async group => {
+    const stored = await loadVectorChunk(group.file, group.chunk, origin).catch(() => null);
+    if (!stored?.map) return;
+    for (const item of group.items) {
+      const vector = stored.map.get(String(item.album.id));
+      if (vector) vectors[item.index] = vector;
+    }
+  }));
+
+  const missing = [];
+  rows.forEach((album, index) => {
+    if (!vectors[index] && album?.id) missing.push({ album, index });
+  });
+
+  if (missing.length) {
+    const live = await embedTexts(missing.map(item => albumProfile(item.album)));
+    missing.forEach((item, i) => {
+      if (live[i]) vectors[item.index] = live[i];
+    });
+  }
+
+  return vectors;
+}
+
+export async function learnTasteFromRatings(clientId, ratingRows, request) {
+  const id = String(clientId || '');
+  if (!id) return { learned: 0, skipped: 0, reason: 'no-client' };
+
+  const deduped = new Map();
+  for (const row of ratingRows || []) {
+    if (!row?.album?.id) continue;
+    const rating = Number(row.rating);
+    if (!Number.isFinite(rating) || rating <= 0) continue;
+    deduped.set(String(row.album.id), { album: row.album, rating: Math.max(0, Math.min(5, rating)) });
+  }
+
+  const profile = await loadTasteProfile(id) || blankProfile();
+  const already = new Set(Array.isArray(profile.bootstrapIds) ? profile.bootstrapIds.map(String) : []);
+  const pending = [...deduped.values()].filter(row => !already.has(String(row.album.id)));
+  if (!pending.length) {
+    return {
+      learned: 0,
+      skipped: deduped.size,
+      interactions: Number(profile.interactions) || 0,
+      positiveCount: Number(profile.positive?.count) || 0,
+      negativeCount: Number(profile.negative?.count) || 0,
+    };
+  }
+
+  const vectors = await albumVectors(pending.map(row => row.album), new URL(request.url).origin);
+  let learned = 0;
+
+  pending.forEach((row, index) => {
+    const vector = vectors[index];
+    if (!vector?.length) return;
+    const weights = tasteWeights('rating', row.rating);
+    if (!weights.positive && !weights.negative) {
+      already.add(String(row.album.id));
+      return;
+    }
+    if (weights.positive) profile.positive = updateCentroid(profile.positive, vector, weights.positive);
+    if (weights.negative) profile.negative = updateCentroid(profile.negative, vector, weights.negative);
+    already.add(String(row.album.id));
+    learned += 1;
+  });
+
+  profile.bootstrapIds = [...already].slice(-500);
+  profile.interactions = (Number(profile.interactions) || 0) + learned;
+  profile.updatedAt = new Date().toISOString();
+  await writeJson(profilePath(id), profile);
+
+  return {
+    learned,
+    skipped: deduped.size - learned,
+    interactions: profile.interactions,
+    positiveCount: profile.positive.count,
+    negativeCount: profile.negative.count,
+  };
+}
+
+
 
 export async function learnTasteFromFeedback(event, request) {
   const clientId = String(event?.client_id || '');
