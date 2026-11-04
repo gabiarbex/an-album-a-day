@@ -12,6 +12,9 @@
     },
     "api/index-status.js": {
       "maxDuration": 15
+    },
+    "api/taste-bootstrap.js": {
+      "maxDuration": 90
     }
   }
 }
