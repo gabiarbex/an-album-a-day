@@ -871,11 +871,12 @@ async function rankWithBackend(pool,seed,daily){
   const album=byId.get(String(data.albumId||''));
   if(!album)throw Error('backend returned unknown album');
   album._backendRank={
-   engine:data.engine||'hybrid-neural-reranker-v2',
+   engine:data.engine||'hybrid-neural-reranker-v3',
    score:Number(data.score)||0,
    neural:Number(data.diagnostics?.neural)||0,
    taste:Number(data.diagnostics?.taste)||0,
    tasteConfidence:Number(data.diagnostics?.tasteConfidence)||0,
+   tasteAdjacency:Number(data.diagnostics?.tasteAdjacency)||0,
    reason:String(data.reason||'')
   };
   return {album,featuresUsed:true,mode:'backend'};
