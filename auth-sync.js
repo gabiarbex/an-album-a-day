@@ -283,6 +283,10 @@ function bind(){
  $('accountSignOut')?.addEventListener('click',signOut);
  const google=$('googleSignIn');
  if(google)google.hidden=!CONFIG.googleEnabled;
+ const emailForm=$('accountEmailForm');
+ if(emailForm)emailForm.hidden=!CONFIG.emailEnabled;
+ const emailOr=document.querySelector('.account-or');
+ if(emailOr)emailOr.hidden=!CONFIG.emailEnabled;
 }
 async function init(){
  if(initialized)return;
@@ -292,6 +296,10 @@ async function init(){
   renderAuth();
   return;
  }
+ const emailForm=$('accountEmailForm');
+ if(emailForm)emailForm.hidden=!CONFIG.emailEnabled;
+ const emailOr=document.querySelector('.account-or');
+ if(emailOr)emailOr.hidden=!CONFIG.emailEnabled;
  try{
   client=window.supabase.createClient(CONFIG.url,CONFIG.publishableKey,{
    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
