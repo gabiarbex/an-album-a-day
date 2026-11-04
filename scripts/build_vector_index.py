@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "data" / "catalog"
 OUT = ROOT / "data" / "vectors" / "v3"
 MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2"
-PROFILE_VERSION = "album-profile-v3-minilm"
+PROFILE_VERSION = "album-profile-v4-minilm-clean"
 DIMENSIONS = 384
 SCALE = 127.0
 
@@ -77,11 +77,14 @@ def decade_label(year):
 def album_profile(album):
     genres = clean_array(album.get("genres"), 14)
     tags = clean_array(album.get("tags"), 24)
-    moods = clean_array(album.get("moods"), 16)
+    provenance = album.get("provenance") if isinstance(album.get("provenance"), dict) else {}
+    mood_provenance = provenance.get("moods") if isinstance(provenance.get("moods"), dict) else {}
+    translated_mood_guess = str(mood_provenance.get("source") or "") == "musicbrainz-tag-translation"
+    moods = [] if translated_mood_guess else clean_array(album.get("moods"), 16)
 
     features = album.get("features") if isinstance(album.get("features"), dict) else {}
     feature_moods = features.get("moods") if isinstance(features.get("moods"), dict) else {}
-    feature_mood_names = [
+    feature_mood_names = [] if translated_mood_guess else [
         name
         for name, value in sorted(feature_moods.items(), key=lambda item: float(item[1] or 0), reverse=True)
         if float(value or 0) >= 0.35
