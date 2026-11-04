@@ -1,10 +1,11 @@
 // Public Supabase browser configuration.
 // The publishable key is intentionally client-visible; Row Level Security protects user data.
+// Google credentials are present, but the provider remains hidden until Supabase reports it enabled.
 window.ALBUM_AUTH_CONFIG = {
-  enabled: true,
+  enabled: false,
   url: 'https://dlgzfcrwxrpqublvyxzn.supabase.co',
   publishableKey: 'sb_publishable_-dEbkKjcLp6JJVWQoWdO4g_2gp7-2yk',
-  googleEnabled: true,
+  googleEnabled: false,
   emailEnabled: false,
   redirectTo: 'https://gabiarbex.github.io/an-album-a-day/'
 };
