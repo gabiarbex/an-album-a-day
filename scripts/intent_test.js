@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-require('../intent-core.js');
+await import('../intent-core.js');
 const {interpretFeeling}=globalThis.AlbumIntent;
 const assert=(cond,msg)=>{if(!cond)throw new Error(msg)};
 
