@@ -4,7 +4,7 @@ let albums=[],logs=[],pick=null,rating=0,editingLogIndex=null,catalogManifest=nu
 let rankingFeaturesAvailable=false;
 let featureCoverage={genre:0,mood:0,energy:0,duration:0};
 const liveMetadataRankingAvailable=true;
-const ENGINE_VERSION='semantic-100k-v4';
+const ENGINE_VERSION='hybrid-backend-v1';
 const loadedShardFiles=new Set();
 const state={moods:[],energy:null,comfort:null,time:null};
 const $=id=>document.getElementById(id);
@@ -671,6 +671,114 @@ function hasRecommendationIntent(){
   logs.filter(x=>Number(x.rating)>0&&x.signal_snapshot).length>=8
  );
 }
+
+let backendUnavailableUntil=0;
+function backendUrl(path){
+ try{
+  const override=localStorage.getItem('albumaday.apiBase');
+  if(override)return override.replace(/\/$/,'')+path;
+ }catch{}
+ const host=location.hostname;
+ if(host.endsWith('github.io')||host==='localhost'||host==='127.0.0.1')return null;
+ return path;
+}
+function backendCandidate(a,intent,semanticScore=0){
+ const featureMoods=a.features?.moods&&Object.keys(a.features.moods).length?Object.keys(a.features.moods):(a.moods||[]);
+ const duration=[a._live?.runtimeMin,a._semantic?.runtimeMin,a.features?.duration_min,a.length_min]
+  .find(v=>v!==null&&v!==undefined&&Number.isFinite(Number(v)));
+ const energy=[a._acoustic?.energy,a._live?.signals?.energy,a.features?.energy!=null?Number(a.features.energy)*10:null,a.energy_level]
+  .find(v=>v!==null&&v!==undefined&&Number.isFinite(Number(v)));
+ return {
+  id:lookupId(a),
+  artist:a.artist,
+  title:a.title,
+  year:a.year||'',
+  genres:(a.genres||[]).slice(0,10),
+  tags:(a.tags||[]).slice(0,18),
+  moods:featureMoods.slice(0,12),
+  energy:energy===undefined?null:Number(energy),
+  duration:duration===undefined?null:Number(duration),
+  familiarity:artistFamiliarity(a.artist),
+  localScore:score(a,intent),
+  semanticScore:Number(semanticScore)||0
+ };
+}
+async function rankWithBackend(pool,seed,daily){
+ const endpoint=backendUrl('/api/recommend');
+ if(!endpoint||Date.now()<backendUnavailableUntil)return null;
+ const note=$('feelingInput')?.value.trim()||'';
+ const intent=interpretFeeling(note);
+ const rows=new Map();
+ const add=(a,semanticScore=0)=>{
+  if(!a||albumWasSeen(a))return;
+  const id=lookupId(a);
+  const current=rows.get(id);
+  if(!current||Math.abs(Number(semanticScore)||0)>Math.abs(Number(current.semanticScore)||0)){
+   rows.set(id,{album:a,semanticScore:Number(semanticScore)||0});
+  }
+ };
+
+ if(note.length>=2&&globalThis.AlbumSemantic?.search&&catalogManifest){
+  try{
+   const raw=await globalThis.AlbumSemantic.search(note,84);
+   const resolved=await resolveSemanticResults(raw,6);
+   for(const row of resolved)add(row.album,row.semanticScore);
+  }catch(e){console.info('Candidate retrieval fallback',e)}
+ }
+
+ const local=sampleCandidates(pool,seed+'|backend-local',Math.min(1600,pool.length),daily)
+  .map(a=>({a,v:score(a,intent)}))
+  .sort((x,y)=>y.v-x.v)
+  .slice(0,68);
+ for(const row of local)add(row.a,0);
+
+ if(state.comfort==='comfort'||lastfmTasteMap.size){
+  const familiar=pool
+   .filter(a=>artistFamiliarity(a.artist)>0)
+   .sort((a,b)=>artistFamiliarity(b.artist)-artistFamiliarity(a.artist))
+   .slice(0,18);
+  for(const a of familiar)add(a,0);
+ }
+
+ const shortlist=[...rows.values()].slice(0,96);
+ if(shortlist.length<2)return null;
+ const byId=new Map(shortlist.map(row=>[lookupId(row.album),row.album]));
+ const candidates=shortlist.map(row=>backendCandidate(row.album,intent,row.semanticScore));
+
+ $('status').textContent='neural reranking…';
+ try{
+  const response=await fetch(endpoint,{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({
+    seed,
+    note,
+    moods:[...state.moods],
+    energy:state.energy,
+    comfort:state.comfort,
+    time:state.time,
+    intent,
+    recentArtists:logs.slice(-12).map(x=>x.artist),
+    candidates
+   })
+  });
+  if(!response.ok)throw Error('backend HTTP '+response.status);
+  const data=await response.json();
+  const album=byId.get(String(data.albumId||''));
+  if(!album)throw Error('backend returned unknown album');
+  album._backendRank={
+   engine:data.engine||'hybrid-neural-reranker-v1',
+   score:Number(data.score)||0,
+   neural:Number(data.diagnostics?.neural)||0,
+   reason:String(data.reason||'')
+  };
+  return {album,featuresUsed:true,mode:'backend'};
+ }catch(e){
+  console.info('Recommendation backend unavailable; using browser fallback.',e);
+  backendUnavailableUntil=Date.now()+120000;
+  return null;
+ }
+}
 async function chooseDaily(options={}){
  const surprise=Boolean(options.surprise);
  const request=++recommendationRequest;
@@ -687,8 +795,11 @@ async function chooseDaily(options={}){
    const album=candidates[Math.floor(seededUnit(seed+'|'+suffix+'-final')*candidates.length)]||pool[0];
    result={album,featuresUsed:false,mode:surprise?'surprise':'draw'};
   }else{
-   const hasNote=Boolean($('feelingInput')?.value.trim());
-   result=hasNote?await rankWithSemantic(seed,true):null;
+   result=await rankWithBackend(pool,seed,true);
+   if(!result){
+    const hasNote=Boolean($('feelingInput')?.value.trim());
+    result=hasNote?await rankWithSemantic(seed,true):null;
+   }
    if(!result){
     result=rankingFeaturesAvailable
      ? rankFromStoredFeatures(pool,seed,true)
@@ -705,6 +816,7 @@ async function chooseDaily(options={}){
 }
 async function chooseAnother(){
  if(!albums.length)return;
+ if(pick)recordFeedback('reroll').catch(()=>{});
  const request=++recommendationRequest;
  setPickBusy(true);
  try{
@@ -716,8 +828,11 @@ async function chooseAnother(){
    const candidates=sampleCandidates(pool,seed,Math.min(250,pool.length),false);
    result={album:candidates[Math.floor(Math.random()*candidates.length)]||pool[0],featuresUsed:false,mode:'draw'};
   }else{
-   const hasNote=Boolean($('feelingInput')?.value.trim());
-   result=hasNote?await rankWithSemantic(seed,false):null;
+   result=await rankWithBackend(pool,seed,false);
+   if(!result){
+    const hasNote=Boolean($('feelingInput')?.value.trim());
+    result=hasNote?await rankWithSemantic(seed,false):null;
+   }
    if(!result){
     result=rankingFeaturesAvailable
      ? rankFromStoredFeatures(pool,seed,false)
@@ -1471,6 +1586,7 @@ function show(a,context={}){
  const tag=document.createElement('div');tag.className='eyebrow';
  const modeLabels={
   shared:'SHARED RECORD',
+  backend:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD',
   semantic:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD',
   live:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD',
   stored:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD',
@@ -1496,6 +1612,11 @@ function show(a,context={}){
  $('status').textContent=context.mode==='bonus'?`${unseen} still unheard.`:context.mode==='shared'?'shared record.':`${unseen} still unheard.`;
  loadArtwork(a,cover);
  loadRecordFile(a).finally(()=>enhanceSelectedMetadata(a));
+ const feedback=$('feedbackBar');
+ if(feedback){
+  feedback.hidden=context.mode==='shared';
+  feedback.querySelectorAll('button').forEach(button=>button.classList.remove('is-sent'));
+ }
  if(context.userTriggered)handoffToResult();
 }
 function labelColor(a){
@@ -1503,6 +1624,71 @@ function labelColor(a){
  let n=0;for(const c of key(a))n=(n*31+c.charCodeAt(0))>>>0;
  return palette[n%palette.length];
 }
+
+const FEEDBACK_QUEUE_KEY='albumaday.feedback.v1';
+function clientFeedbackId(){
+ try{return localStorage.getItem('albumaday.salt')||getUserSalt()}catch{return getUserSalt()}
+}
+function feedbackPayload(event,ratingValue=null){
+ if(!pick)return null;
+ return {
+  event,
+  client_id:clientFeedbackId(),
+  album:{id:lookupId(pick),artist:pick.artist,title:pick.title},
+  rating:ratingValue,
+  query:pickerSnapshot(),
+  ranking:{
+   engine:pick._backendRank?.engine||ENGINE_VERSION,
+   score:pick._backendRank?.score??null,
+   neural:pick._backendRank?.neural??null,
+   mode:pick._backendRank?'backend':'browser'
+  }
+ };
+}
+function readFeedbackQueue(){
+ try{
+  const raw=JSON.parse(localStorage.getItem(FEEDBACK_QUEUE_KEY)||'[]');
+  return Array.isArray(raw)?raw:[];
+ }catch{return []}
+}
+function writeFeedbackQueue(rows){
+ try{localStorage.setItem(FEEDBACK_QUEUE_KEY,JSON.stringify(rows.slice(-250)))}catch{}
+}
+async function flushFeedbackQueue(){
+ const endpoint=backendUrl('/api/feedback');
+ if(!endpoint)return;
+ const queue=readFeedbackQueue();
+ if(!queue.length)return;
+ const remaining=[];
+ for(const event of queue.slice(0,12)){
+  try{
+   const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(event)});
+   if(!response.ok)throw Error('feedback HTTP '+response.status);
+  }catch{
+   remaining.push(event);
+  }
+ }
+ writeFeedbackQueue([...remaining,...queue.slice(12)]);
+}
+async function recordFeedback(event,ratingValue=null){
+ const payload=feedbackPayload(event,ratingValue);
+ if(!payload)return;
+ const queue=readFeedbackQueue();
+ queue.push(payload);
+ writeFeedbackQueue(queue);
+ await flushFeedbackQueue();
+}
+$('feedbackBar')?.querySelectorAll('[data-feedback]').forEach(button=>{
+ button.addEventListener('click',()=>{
+  const event=button.dataset.feedback;
+  button.classList.add('is-sent');
+  recordFeedback(event).catch(()=>{});
+  showToast(event==='love_this'?'noted — more like this.':'noted — training the picker.');
+ });
+});
+$('spotify')?.addEventListener('click',()=>recordFeedback('spotify_open').catch(()=>{}));
+if('requestIdleCallback' in window)requestIdleCallback(()=>flushFeedbackQueue(),{timeout:3000});
+else setTimeout(()=>flushFeedbackQueue(),1800);
 
 let drawerReturnFocus=null;
 function drawer(open){
@@ -1592,7 +1778,10 @@ $('logForm').onsubmit=e=>{
    energy:pick._acoustic?.energy??live.signals?.energy??(pick.features?.energy!=null?Number(pick.features.energy)*10:null)??pick.energy_level??null
   }
  });
- persist();$('logDialog').close();$('status').textContent='saved.';
+ persist();
+ recordFeedback('save',rating||null).catch(()=>{});
+ if(rating)recordFeedback('rating',rating).catch(()=>{});
+ $('logDialog').close();$('status').textContent='saved.';
 };
 $('export').onclick=()=>{
  const blob=new Blob([JSON.stringify(logs,null,2)],{type:'application/json'});
@@ -1748,6 +1937,7 @@ function artPlaceholder(a){
 function explainPick(a,context={}){
  if(context.rankingMode==='shared')return '';
  if(context.rankingMode==='surprise')return 'random pick.';
+ if(context.rankingMode==='backend'&&a._backendRank?.reason)return a._backendRank.reason+'.';
  const note=$('feelingInput')?.value.trim()||'';
  const reasons=[];
  const albumMoods=(a.moods||[]).map(x=>String(x).toLowerCase());
