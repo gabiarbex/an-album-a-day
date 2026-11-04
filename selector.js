@@ -858,7 +858,8 @@ async function rankWithBackend(pool,seed,daily){
  const comfort=recommendationComfort();
  const effectiveEnergy=recommendationEnergy(intent);
  const rows=new Map();
- const sourceCounts={semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
+ let retrievalQueryVector=null;
+ const sourceCounts={neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
  const add=(a,semanticScore=0,source='controls')=>{
   if(!a||albumWasSeen(a))return;
   const id=lookupId(a);
@@ -873,6 +874,43 @@ async function rankWithBackend(pool,seed,daily){
    current.semanticScore=Number(semanticScore)||0;
   }
  };
+
+ // Full-catalog MiniLM recall: search all 100k projected vectors before final reranking.
+ const neuralQueryActive=Boolean(
+  note.length>=2 ||
+  state.moods.length ||
+  effectiveEnergy!==null ||
+  (intent.genres||[]).length ||
+  Object.keys(intent.moods||{}).length
+ );
+ if(neuralQueryActive&&catalogManifest){
+  const retrievalEndpoint=backendUrl('/api/neural-retrieve');
+  if(retrievalEndpoint){
+   try{
+    $('status').textContent='searching 100,000 neural records…';
+    const response=await fetch(retrievalEndpoint,{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({
+      note,
+      moods:[...state.moods],
+      energy:effectiveEnergy,
+      comfort,
+      time:state.time,
+      intent,
+      limit:64
+     })
+    });
+    if(response.ok){
+     const data=await response.json();
+     const raw=(data.matches||[]).map(row=>({id:String(row.id),score:Number(row.score)||0}));
+     const resolved=await resolveSemanticResults(raw,14);
+     for(const row of resolved.slice(0,52))add(row.album,row.semanticScore,'neural');
+     if(Array.isArray(data.queryVector)&&data.queryVector.length===384)retrievalQueryVector=data.queryVector;
+    }
+   }catch(e){console.info('Full-catalog neural retrieval unavailable; using mixed recall.',e)}
+  }
+ }
 
  // Lexical/SVD retrieval is useful for recall, but it no longer owns the shortlist.
  if(note.length>=2&&globalThis.AlbumSemantic?.search&&catalogManifest){
@@ -917,6 +955,7 @@ async function rankWithBackend(pool,seed,daily){
  const allRows=[...rows.values()];
  // Interleave sources so no retrieval method can monopolize the 96 slots.
  const buckets={
+  neural:allRows.filter(row=>row.sources.has('neural')),
   semantic:allRows.filter(row=>row.sources.has('semantic')),
   controls:allRows.filter(row=>row.sources.has('controls')),
   adjacent:allRows.filter(row=>row.sources.has('adjacent')),
@@ -926,11 +965,11 @@ async function rankWithBackend(pool,seed,daily){
  const shortlist=[];
  const used=new Set();
  const quotas=comfort==='exploration'
-  ? {semantic:28,controls:34,adjacent:22,familiar:2,explore:10}
+  ? {neural:30,semantic:16,controls:28,adjacent:16,familiar:2,explore:4}
   : comfort==='comfort'
-    ? {semantic:28,controls:34,adjacent:10,familiar:18,explore:6}
-    : {semantic:30,controls:36,adjacent:16,familiar:6,explore:8};
- for(const source of ['semantic','controls','adjacent','familiar','explore']){
+    ? {neural:28,semantic:16,controls:28,adjacent:8,familiar:12,explore:4}
+    : {neural:30,semantic:16,controls:28,adjacent:12,familiar:6,explore:4};
+ for(const source of ['neural','semantic','controls','adjacent','familiar','explore']){
   let taken=0;
   for(const row of buckets[source]){
    const id=lookupId(row.album);
@@ -965,7 +1004,9 @@ async function rankWithBackend(pool,seed,daily){
     time:state.time,
     intent,
     recentArtists:logs.slice(-12).map(x=>x.artist),
+    queryVector:retrievalQueryVector,
     retrieval:{
+     neural:sourceCounts.neural,
      semantic:sourceCounts.semantic,
      controls:sourceCounts.controls,
      adjacent:sourceCounts.adjacent,
