@@ -1,9 +1,17 @@
-import { getVercelOidcToken } from '@vercel/oidc';
+import { env, LogLevel, pipeline } from '@huggingface/transformers';
 
-export const EMBEDDING_MODEL = process.env.ALBUM_EMBEDDING_MODEL || 'openai/text-embedding-3-small';
-export const EMBEDDING_DIMENSIONS = 128;
-export const PROFILE_VERSION = 'album-profile-v2';
+export const EMBEDDING_MODEL = process.env.ALBUM_EMBEDDING_MODEL || 'onnx-community/all-MiniLM-L6-v2-ONNX';
+export const EMBEDDING_DIMENSIONS = 384;
+export const PROFILE_VERSION = 'album-profile-v3-minilm';
 export const MAX_PROFILE_TEXT = 900;
+
+env.allowRemoteModels = true;
+env.allowLocalModels = true;
+env.useFSCache = true;
+env.cacheDir = '/tmp/album-a-day-transformers-cache';
+if (LogLevel) env.logLevel = LogLevel.ERROR;
+
+let extractorPromise = null;
 
 export function clamp(value, low = 0, high = 1) {
   const n = Number(value);
@@ -138,32 +146,24 @@ export function cosine(a, b) {
   return dot;
 }
 
-export async function embedTexts(input, dimensions = EMBEDDING_DIMENSIONS) {
+async function getExtractor() {
+  if (!extractorPromise) {
+    extractorPromise = pipeline('feature-extraction', EMBEDDING_MODEL, {
+      dtype: 'q8',
+      device: 'cpu',
+    }).catch(error => {
+      extractorPromise = null;
+      throw error;
+    });
+  }
+  return extractorPromise;
+}
+
+export async function embedTexts(input) {
   const rows = Array.isArray(input) ? input : [input];
   if (!rows.length) return [];
-  const token = process.env.AI_GATEWAY_API_KEY || await getVercelOidcToken();
-  if (!token) throw new Error('AI Gateway authentication is unavailable.');
-
-  const response = await fetch('https://ai-gateway.vercel.sh/v1/embeddings', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: EMBEDDING_MODEL,
-      input: rows,
-      dimensions,
-    }),
-  });
-
-  if (!response.ok) {
-    const detail = (await response.text()).slice(0, 600);
-    throw new Error(`Embedding request failed (${response.status}): ${detail}`);
-  }
-
-  const payload = await response.json();
-  return (payload.data || [])
-    .sort((a, b) => a.index - b.index)
-    .map(row => normalizedVector(row.embedding));
+  const extractor = await getExtractor();
+  const output = await extractor(rows, { pooling: 'mean', normalize: true });
+  const nested = output.tolist();
+  return nested.map(normalizedVector);
 }
