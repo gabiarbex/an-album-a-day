@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@vercel/blob": "latest",
-    "@vercel/oidc": "latest"
+    "@vercel/oidc": "latest",
+    "@huggingface/transformers": "latest"
   }
 }
