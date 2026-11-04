@@ -66,21 +66,28 @@ function energyPenalty(candidate, body) {
   return Math.min(0.32, (distance - 1.5) * 0.055);
 }
 
-function scoreCandidate(candidate, neural, body, taste = { score: 0, confidence: 0 }) {
+function scoreCandidate(candidate, neural, body, learnedTaste = { score: 0, confidence: 0 }) {
   const local = clamp(candidate.localScore ?? 0.5);
   const lexical = clamp(((Number(candidate.semanticScore) || 0) + 1) / 2);
   const familiarity = clamp(candidate.familiarity ?? 0);
-  const taste = body.comfort === 'comfort'
+  const modePreference = body.comfort === 'comfort'
     ? familiarity
     : body.comfort === 'exploration'
       ? 1 - familiarity
       : 0.5;
+  const adjacency = familiarity < 0.25 ? clamp(candidate.tasteAdjacency ?? 0) : 0;
+  const adjacencyWeight = body.comfort === 'exploration'
+    ? 0.08
+    : body.comfort === 'comfort'
+      ? 0.02
+      : 0.045;
 
   let score =
     0.72 * clamp((neural + 1) / 2) +
-    0.18 * local +
-    0.03 * lexical +
-    0.07 * taste;
+    0.16 * local +
+    0.025 * lexical +
+    0.055 * modePreference +
+    adjacencyWeight * adjacency;
 
   score -= energyPenalty(candidate, body);
 
@@ -99,9 +106,9 @@ function scoreCandidate(candidate, neural, body, taste = { score: 0, confidence:
     score -= Math.min(0.45, 0.1 + (duration - maxRuntime) / 65);
   }
 
-  if (taste.confidence > 0) {
+  if (learnedTaste.confidence > 0) {
     const modeFactor = body.comfort === 'comfort' ? 1.25 : body.comfort === 'exploration' ? 0.75 : 1;
-    score += 0.16 * taste.confidence * taste.score * modeFactor;
+    score += 0.16 * learnedTaste.confidence * learnedTaste.score * modeFactor;
   }
 
   return score;
@@ -113,6 +120,12 @@ function explanation(row, body) {
   if (body.energy != null) bits.push(energyLabel(body.energy).split(',')[0]);
   if (body.comfort === 'exploration') bits.push('new territory');
   if (body.comfort === 'comfort') bits.push('closer to your orbit');
+  if (
+    row?.candidate &&
+    Number(row.candidate.tasteAdjacency) >= 0.35 &&
+    Number(row.candidate.familiarity) < 0.25
+  ) bits.push('adjacent to your listening history');
+  if (row?.taste?.confidence >= 0.2 && row?.taste?.score > 0.08) bits.push('learned from your ratings');
   if (!bits.length) bits.push('closest overall fit');
   return bits.join(' · ');
 }
@@ -185,7 +198,7 @@ export default {
 
       return json({
         ok: true,
-        engine: 'hybrid-neural-reranker-v2',
+        engine: 'hybrid-neural-reranker-v3',
         model: EMBEDDING_MODEL,
         dimensions: EMBEDDING_DIMENSIONS,
         albumId: chosen.candidate.id,
@@ -199,6 +212,7 @@ export default {
           liveEmbeddings: missing.length,
           taste: Number((chosen.taste?.score || 0).toFixed(6)),
           tasteConfidence: Number((chosen.taste?.confidence || 0).toFixed(6)),
+          tasteAdjacency: Number((chosen.candidate.tasteAdjacency || 0).toFixed(6)),
         },
         reason: explanation(chosen, body),
         alternatives: top.slice(0, 5).map(row => ({
@@ -206,6 +220,7 @@ export default {
           score: Number(row.score.toFixed(6)),
           neural: Number(row.neural.toFixed(6)),
           taste: Number((row.taste?.score || 0).toFixed(6)),
+          tasteAdjacency: Number((row.candidate.tasteAdjacency || 0).toFixed(6)),
         })),
       }, 200, headers);
     } catch (error) {
