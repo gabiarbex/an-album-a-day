@@ -459,6 +459,14 @@ function mergeAlbumRecord(existing,incoming){
  if(incoming._enriched_from&&!existing._enriched_from)existing._enriched_from=incoming._enriched_from;
  return existing;
 }
+function tagCatalogItems(items,file,chunkSize=1000,offset=0){
+ return (items||[]).map((album,index)=>{
+  if(!album||typeof album!=='object')return album;
+  album._catalogFile=file||album._catalogFile||null;
+  album._catalogChunk=Math.floor((offset+index)/Math.max(1,Number(chunkSize)||1000));
+  return album;
+ });
+}
 function mergeAlbums(items){
  const byKey=new Map(albums.map(a=>[key(a),a]));
  for(const a of items||[]){
@@ -505,7 +513,8 @@ async function loadSpecificShard(file){
   const r=await fetch('./data/catalog/'+file,{cache:'force-cache'});
   if(!r.ok)throw Error('HTTP '+r.status);
   const data=await r.json();loadedShardFiles.add(file);
-  mergeAlbums(Array.isArray(data)?data:data.albums||[]);
+  const rows=Array.isArray(data)?data:data.albums||[];
+  mergeAlbums(tagCatalogItems(rows,file,catalogManifest?.shard_size||1000,0));
  }catch(e){console.warn('Could not load requested catalog shard',file,e)}
 }
 async function loadMoreShards(count=6){
@@ -521,7 +530,8 @@ async function loadMoreShards(count=6){
    const r=await fetch('./data/catalog/'+shard.file,{cache:'force-cache'});
    if(!r.ok)throw Error('HTTP '+r.status);
    const data=await r.json();loadedShardFiles.add(shard.file);
-   return Array.isArray(data)?data:data.albums||[];
+   const rows=Array.isArray(data)?data:data.albums||[];
+   return tagCatalogItems(rows,shard.file,catalogManifest?.shard_size||1000,0);
   }catch(e){console.warn('Could not load catalog shard',shard.file,e);return []}
  }));
  for(const batch of batches)mergeAlbums(batch);
@@ -557,7 +567,8 @@ async function load(){
     const baseResponse=await fetch(basePath,{cache:'force-cache'});
     if(baseResponse.ok){
      const base=await baseResponse.json();
-     mergeAlbums(Array.isArray(base)?base:base.albums||[]);
+     const rows=Array.isArray(base)?base:base.albums||[];
+     mergeAlbums(tagCatalogItems(rows,catalogManifest.base_file||'base.json',catalogManifest.shard_size||1000,0));
     }
    }catch(e){console.info('Editorial base could not be preloaded',e)}
    await loadMoreShards(2);
@@ -575,7 +586,7 @@ async function load(){
   const response=await fetch('./data/albums.json',{cache:'no-store'});
   if(!response.ok)throw Error(`HTTP ${response.status}`);
   const json=await response.json();
-  albums=(Array.isArray(json)?json:json.albums||[]).filter(a=>a.title&&a.artist);
+  albums=tagCatalogItems((Array.isArray(json)?json:json.albums||[]),'albums.json',1000,0).filter(a=>a.title&&a.artist);
   catalogTotal=albums.length;
   refreshFeatureCoverage();
   $('status').textContent=libraryStatus();
@@ -701,7 +712,9 @@ function backendCandidate(a,intent,semanticScore=0){
   duration:duration===undefined?null:Number(duration),
   familiarity:artistFamiliarity(a.artist),
   localScore:score(a,intent),
-  semanticScore:Number(semanticScore)||0
+  semanticScore:Number(semanticScore)||0,
+  catalogFile:a._catalogFile||null,
+  catalogChunk:Number(a._catalogChunk)||0
  };
 }
 async function rankWithBackend(pool,seed,daily){
