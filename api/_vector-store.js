@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { get, put } from '@vercel/blob';
 import { getVercelOidcToken } from '@vercel/oidc';
 import { EMBEDDING_MODEL, EMBEDDING_DIMENSIONS, PROFILE_VERSION, normalizedVector } from './_embedding.js';
@@ -5,6 +6,7 @@ import { EMBEDDING_MODEL, EMBEDDING_DIMENSIONS, PROFILE_VERSION, normalizedVecto
 const STORE_ID = process.env.ALBUM_VECTOR_STORE_ID || 'store_faCPNPhG4INYfqDO';
 const PREFIX = 'vectors/v3';
 const shardCache = new Map();
+const staticManifestCache = new Map();
 
 function safeKey(value) {
   return String(value || 'unknown')
@@ -44,9 +46,46 @@ async function writeJson(pathname, value) {
   });
 }
 
+async function validatedStaticManifest(origin) {
+  if (!origin) return null;
+  if (staticManifestCache.has(origin)) return staticManifestCache.get(origin);
+
+  const promise = (async () => {
+    const [manifestResponse, lookupResponse] = await Promise.all([
+      fetch(new URL('/data/vectors/v3/manifest.json', origin), { cache: 'force-cache' }).catch(() => null),
+      fetch(new URL('/data/catalog/lookup.json', origin), { cache: 'force-cache' }).catch(() => null),
+    ]);
+    if (!manifestResponse?.ok || !lookupResponse?.ok) return null;
+
+    const manifest = await manifestResponse.json();
+    if (
+      manifest?.profileVersion !== PROFILE_VERSION ||
+      Number(manifest?.dimensions) !== EMBEDDING_DIMENSIONS ||
+      !manifest?.catalogFingerprint
+    ) return null;
+
+    const lookupBytes = Buffer.from(await lookupResponse.arrayBuffer());
+    const fingerprint = createHash('sha256').update(lookupBytes).digest('hex');
+    if (fingerprint !== manifest.catalogFingerprint) {
+      console.warn('Static vector index rejected: catalog fingerprint mismatch.');
+      return null;
+    }
+    return manifest;
+  })();
+
+  staticManifestCache.set(origin, promise);
+  const result = await promise;
+  if (!result) staticManifestCache.delete(origin);
+  return result;
+}
+
 async function loadStaticVectorChunk(file, chunk, origin) {
   if (!origin) return null;
+  const manifest = await validatedStaticManifest(origin);
+  if (!manifest) return null;
   const stem = vectorChunkKey(file, chunk);
+  const expected = (manifest.chunks || []).some(row => row.file === file && Number(row.chunk || 0) === Number(chunk || 0));
+  if (!expected) return null;
   const base = new URL('/data/vectors/v3/', origin);
   const idsUrl = new URL(stem + '.ids.json', base);
   const vectorsUrl = new URL(stem + '.i8.bin', base);
