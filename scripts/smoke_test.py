@@ -66,15 +66,15 @@ def test_frontend_contract():
         fail("Single-select filter chips must toggle off when clicked twice")
     if "['any length',null]" in js or '["any length",null]' in js:
         fail("A null-valued time chip conflicts with the cleared picker state")
-    if "restorePickerState();" in js:
-        fail("Fresh visits must not restore the previous picker request")
+    if "restorePickerState();" not in js:
+        fail("Picker request should persist across visits")
     load_start=js.find("async function load()")
     load_end=js.find("function score(",load_start)
     load_block=js[load_start:load_end] if load_start>=0 and load_end>load_start else ""
     if "restoreDailyPick()" in load_block:
         fail("Fresh visits must not auto-render the previous album")
-    if "localStorage.removeItem(PICKER_STORAGE_KEY)" not in js or "localStorage.removeItem('albumaday.dailyPick')" not in js:
-        fail("Fresh visits must clear persisted picker/daily-pick state")
+    if "albumaday.seenKeys.v1" not in js or "albumWasSeen(" not in js:
+        fail("Seen-album history must persist across visits")
     if "await restoreSharedPick();" not in load_block:
         fail("Explicit shared-record links must still restore their requested album")
     if "let recommendationRequest=0" not in js or "if(request!==recommendationRequest)return;" not in js:
@@ -109,7 +109,8 @@ def test_frontend_contract():
                     str(ROOT/"scripts/build_catalog_from_dump.py"),
                     str(ROOT/"scripts/shard_catalog.py"),
                     str(ROOT/"scripts/build_semantic_index.py"),
-                    str(ROOT/"scripts/check_semantic_quality.py")],check=True)
+                    str(ROOT/"scripts/check_semantic_quality.py"),
+                    str(ROOT/"scripts/build_vector_index.py")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/intent_test.js")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/tracklist_test.js")],check=True)
 
