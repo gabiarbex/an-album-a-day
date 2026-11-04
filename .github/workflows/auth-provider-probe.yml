@@ -1,0 +1,20 @@
+name: Google auth provider probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "auth-config.js"
+      - "auth-sync.js"
+      - "scripts/auth_provider_probe.py"
+      - ".github/workflows/auth-provider-probe.yml"
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Supabase redirects Google OAuth correctly
+        run: python scripts/auth_provider_probe.py
