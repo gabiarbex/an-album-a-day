@@ -7,7 +7,44 @@ const liveMetadataRankingAvailable=true;
 const ENGINE_VERSION='hybrid-backend-v1';
 const loadedShardFiles=new Set();
 const state={moods:[],energy:null,comfort:null,time:null};
+let nextPickCorrection=null;
 const $=id=>document.getElementById(id);
+
+function mergeUnique(values){
+ return [...new Set((values||[]).filter(Boolean))];
+}
+function correctedIntent(base){
+ const intent={
+  ...(base||{}),
+  moods:{...((base&&base.moods)||{})},
+  avoidMoods:{...((base&&base.avoidMoods)||{})},
+  genres:[...((base&&base.genres)||[])],
+  avoidGenres:[...((base&&base.avoidGenres)||[])]
+ };
+ const correction=nextPickCorrection;
+ if(!correction)return intent;
+ for(const [name,value] of Object.entries(correction.avoidMoods||{})){
+  intent.avoidMoods[name]=Math.max(Number(intent.avoidMoods[name])||0,Number(value)||1);
+ }
+ intent.avoidGenres=mergeUnique([...intent.avoidGenres,...(correction.avoidGenres||[])]);
+ if(correction.forceExplore)intent.exploration=Math.max(Number(intent.exploration)||0,1);
+ return intent;
+}
+function recommendationEnergy(intent){
+ let value=state.energy!==null?Number(state.energy):Number(intent?.energy);
+ if(!Number.isFinite(value))value=null;
+ const delta=Number(nextPickCorrection?.energyDelta)||0;
+ if(delta){
+  if(value===null)value=5;
+  value=Math.max(1,Math.min(10,value+delta));
+ }
+ return value;
+}
+function recommendationComfort(){
+ return nextPickCorrection?.forceExplore?'exploration':state.comfort;
+}
+function clearNextPickCorrection(){nextPickCorrection=null}
+
 let toastTimer=null;
 function showToast(message){
  const node=$('toast');if(!node)return;
@@ -614,6 +651,7 @@ window.addEventListener('pageshow',()=>{
 });
 
 function score(a,intent){
+ intent=correctedIntent(intent);
  let weighted=0,totalWeight=0;
  const confidence=(name,fallback=.7)=>{
   const value=Number(a.provenance?.[name]?.confidence);
@@ -653,7 +691,7 @@ function score(a,intent){
   : (a.features?.energy!==null&&a.features?.energy!==undefined
     ? Number(a.features.energy)*10
     : Number(a.energy_level));
- const targetEnergy=state.energy!==null?Number(state.energy):intent.energy;
+ const targetEnergy=recommendationEnergy(intent);
  if(targetEnergy!==null&&targetEnergy!==undefined&&Number.isFinite(rawEnergy)){
   const ww=1.8*confidence('energy',.75);
   weighted+=ww*Math.max(0,1-Math.abs(rawEnergy-targetEnergy)/10);totalWeight+=ww;
@@ -667,10 +705,11 @@ function score(a,intent){
  }
 
  const familiarity=artistFamiliarity(a.artist);
- if(state.comfort==='comfort'){
+ const comfort=recommendationComfort();
+ if(comfort==='comfort'){
   const ww=.75;weighted+=ww*(.2+.8*familiarity);totalWeight+=ww;
  }
- if(state.comfort==='exploration'||intent.exploration>0){
+ if(comfort==='exploration'||intent.exploration>0){
   const ww=.75;weighted+=ww*(1-.95*familiarity);totalWeight+=ww;
  }
 
@@ -692,6 +731,7 @@ function hasRecommendationIntent(){
   state.energy!==null ||
   state.comfort!==null ||
   state.time!==null ||
+  Boolean(nextPickCorrection) ||
   logs.filter(x=>Number(x.rating)>0&&x.signal_snapshot).length>=8
  );
 }
@@ -747,7 +787,9 @@ async function rankWithBackend(pool,seed,daily){
  const endpoint=backendUrl('/api/recommend');
  if(!endpoint||Date.now()<backendUnavailableUntil)return null;
  const note=$('feelingInput')?.value.trim()||'';
- const intent=interpretFeeling(note);
+ const intent=correctedIntent(interpretFeeling(note));
+ const comfort=recommendationComfort();
+ const effectiveEnergy=recommendationEnergy(intent);
  const rows=new Map();
  const sourceCounts={semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
  const add=(a,semanticScore=0,source='controls')=>{
@@ -793,7 +835,7 @@ async function rankWithBackend(pool,seed,daily){
   .map(a=>({a,v:tasteAdjacency(a)}))
   .filter(row=>row.v>0)
   .sort((x,y)=>y.v-x.v)
-  .slice(0,state.comfort==='exploration'?28:20);
+  .slice(0,comfort==='exploration'?28:20);
  for(const row of adjacencySample)add(row.a,0,'adjacent');
 
  // Preserve true discovery outside the existing taste neighborhood.
@@ -816,9 +858,9 @@ async function rankWithBackend(pool,seed,daily){
  };
  const shortlist=[];
  const used=new Set();
- const quotas=state.comfort==='exploration'
+ const quotas=comfort==='exploration'
   ? {semantic:28,controls:34,adjacent:22,familiar:2,explore:10}
-  : state.comfort==='comfort'
+  : comfort==='comfort'
     ? {semantic:28,controls:34,adjacent:10,familiar:18,explore:6}
     : {semantic:30,controls:36,adjacent:16,familiar:6,explore:8};
  for(const source of ['semantic','controls','adjacent','familiar','explore']){
@@ -851,8 +893,8 @@ async function rankWithBackend(pool,seed,daily){
     client_id:clientFeedbackId(),
     note,
     moods:[...state.moods],
-    energy:state.energy,
-    comfort:state.comfort,
+    energy:effectiveEnergy,
+    comfort,
     time:state.time,
     intent,
     recentArtists:logs.slice(-12).map(x=>x.artist),
@@ -918,6 +960,7 @@ async function chooseDaily(options={}){
   markAlbumSeen(pick);
   markTodayPicked();
   show(pick,{mode:'daily',featuresUsed:result.featuresUsed,rankingMode:result.mode,userTriggered:true});
+  clearNextPickCorrection();
   $('reroll').hidden=false;
  }finally{setPickBusy(false)}
 }
@@ -950,10 +993,11 @@ async function chooseAnother(){
   pick=result.album;
   markAlbumSeen(pick);
   show(pick,{mode:'bonus',featuresUsed:result.featuresUsed,rankingMode:result.mode,userTriggered:true});
+  clearNextPickCorrection();
  }finally{setPickBusy(false)}
 }
 function rankFromStoredFeatures(pool,seed,daily){
- const intent=interpretFeeling($('feelingInput')?.value||'');
+ const intent=correctedIntent(interpretFeeling($('feelingInput')?.value||''));
  const candidates=sampleCandidates(pool,seed,Math.min(1800,pool.length),daily)
   .map(a=>({a,v:score(a,intent)}))
   .sort((x,y)=>y.v-x.v);
@@ -971,6 +1015,7 @@ function setPickBusy(busy){
  for(const id of ['recommend','surpriseMe','reroll']){
   const node=$(id);if(node)node.disabled=busy;
  }
+ $('feedbackBar')?.querySelectorAll('button').forEach(button=>{button.disabled=busy});
  if($('recommend')){
   $('recommend').classList.toggle('is-loading',busy);
   $('recommend').setAttribute('aria-busy',String(busy));
@@ -983,27 +1028,28 @@ $('reroll').addEventListener('click',chooseAnother);
 
 
 const genreSignalRules=[
- {re:/metal|hard rock/i,energy:8.6,moods:{dark:.9,intense:.95,gritty:.85,energetic:.7}},
- {re:/punk|hardcore/i,energy:8.4,moods:{gritty:.95,intense:.85,energetic:.85,alienated:.55}},
- {re:/hip-hop|hip hop|rap/i,energy:7.2,moods:{gritty:.65,intense:.6,energetic:.72,reflective:.45}},
- {re:/electronic|dance|house|techno|trance/i,energy:7.8,moods:{energetic:.9,dreamy:.48,cold:.45,intense:.5}},
- {re:/ambient|new age/i,energy:2.4,moods:{dreamy:.95,reflective:.78,cold:.5,warm:.32}},
- {re:/alternative|indie|rock/i,energy:6.2,moods:{gritty:.55,intense:.5,reflective:.48,energetic:.55,alienated:.4}},
- {re:/r&b|soul/i,energy:5.2,moods:{warm:.85,reflective:.65,melancholic:.45,hopeful:.42}},
- {re:/singer\/songwriter|folk/i,energy:3.8,moods:{reflective:.9,warm:.62,melancholic:.58,nostalgic:.52}},
- {re:/jazz/i,energy:4.5,moods:{reflective:.78,warm:.58,dreamy:.48,intense:.28}},
- {re:/classical/i,energy:3.8,moods:{reflective:.86,dreamy:.62,cold:.38,intense:.35}},
- {re:/country|americana/i,energy:4.6,moods:{warm:.62,nostalgic:.7,reflective:.58,melancholic:.38}},
- {re:/reggae|ska/i,energy:5.8,moods:{warm:.78,hopeful:.72,energetic:.55}},
- {re:/latin|brazilian|samba|bossa|mpb/i,energy:5.7,moods:{warm:.74,reflective:.5,hopeful:.55,nostalgic:.38}},
- {re:/pop/i,energy:6.4,moods:{warm:.55,hopeful:.58,energetic:.72,dreamy:.28}},
- {re:/soundtrack|score/i,energy:4.3,moods:{dreamy:.68,reflective:.7,intense:.4}},
+ {re:/metal|hard rock/i,energy:8.2,moods:{dark:.78,intense:.82,gritty:.72,energetic:.62},confidence:.68},
+ {re:/punk|hardcore/i,energy:8.1,moods:{gritty:.82,intense:.76,energetic:.76,alienated:.42},confidence:.68},
+ {re:/hip-hop|hip hop|rap/i,energy:6.4,moods:{gritty:.38,intense:.32,energetic:.42,reflective:.3},confidence:.34},
+ {re:/electronic|dance|house|techno|trance/i,energy:7.3,moods:{energetic:.7,dreamy:.3,cold:.22,intense:.3},confidence:.52},
+ {re:/ambient|new age/i,energy:2.5,moods:{dreamy:.78,reflective:.62,cold:.3,warm:.2},confidence:.64},
+ {re:/alternative|indie|rock/i,energy:5.2,moods:{reflective:.2},confidence:.14},
+ {re:/r&b|soul/i,energy:4.9,moods:{warm:.58,reflective:.4,melancholic:.24},confidence:.38},
+ {re:/singer\/songwriter|folk/i,energy:3.8,moods:{reflective:.68,warm:.4,melancholic:.36,nostalgic:.28},confidence:.5},
+ {re:/jazz/i,energy:4.5,moods:{reflective:.48,warm:.34,dreamy:.28},confidence:.32},
+ {re:/classical/i,energy:4.0,moods:{reflective:.58,dreamy:.38},confidence:.36},
+ {re:/country|americana/i,energy:4.6,moods:{warm:.34,nostalgic:.42,reflective:.34},confidence:.3},
+ {re:/reggae|ska/i,energy:5.8,moods:{warm:.5,hopeful:.42,energetic:.34},confidence:.4},
+ {re:/latin|brazilian|samba|bossa|mpb/i,energy:5.2,moods:{warm:.4,reflective:.28,hopeful:.26,nostalgic:.22},confidence:.28},
+ {re:/pop/i,energy:5.7,moods:{warm:.22,hopeful:.2,energetic:.28},confidence:.16},
+ {re:/soundtrack|score/i,energy:4.3,moods:{dreamy:.42,reflective:.46,intense:.22},confidence:.28},
 ];
 function genreSignals(genre){
- const out={moods:{},energy:null,confidence:.42};
+ const out={moods:{},energy:null,confidence:.18};
  for(const rule of genreSignalRules){
   if(!rule.re.test(String(genre||'')))continue;
   out.energy=rule.energy;
+  out.confidence=Number(rule.confidence)||.18;
   for(const [m,v] of Object.entries(rule.moods))out.moods[m]=Math.max(out.moods[m]||0,v);
   break;
  }
@@ -1160,6 +1206,7 @@ function diaryTasteScore(candidate){
  return {active:true,score:weight?total/weight:.5,count:profile.count};
 }
 function liveScore(candidate,intent){
+ intent=correctedIntent(intent);
  let weighted=0,weight=0;
  const signals=candidate._live?.signals||{moods:{},energy:null,confidence:.35};
  const confidence=signals.confidence||.35;
@@ -1181,14 +1228,15 @@ function liveScore(candidate,intent){
  for(const avoided of intent.avoidGenres||[]){
   const ww=1.8;weighted+=ww*(genre.includes(avoided)||avoided.includes(genre)?0:1);weight+=ww;
  }
- const targetEnergy=state.energy!==null?Number(state.energy):intent.energy;
+ const targetEnergy=recommendationEnergy(intent);
  if(targetEnergy!==null&&targetEnergy!==undefined&&signals.energy!==null){
   const similarity=Math.max(0,1-Math.abs(Number(signals.energy)-Number(targetEnergy))/10);
   const ww=1.8*confidence;weighted+=ww*similarity;weight+=ww;
  }
  const familiarity=artistFamiliarity(candidate.artist);
- if(state.comfort==='comfort'){const ww=.8;weighted+=ww*(.2+.8*familiarity);weight+=ww}
- if(state.comfort==='exploration'||intent.exploration>0){const ww=.8;weighted+=ww*(1-.95*familiarity);weight+=ww}
+ const comfort=recommendationComfort();
+ if(comfort==='comfort'){const ww=.8;weighted+=ww*(.2+.8*familiarity);weight+=ww}
+ if(comfort==='exploration'||intent.exploration>0){const ww=.8;weighted+=ww*(1-.95*familiarity);weight+=ww}
  if(intent.moods.nostalgic&&candidate._live?.year){
   const y=Number(candidate._live.year),age=Math.max(0,new Date().getFullYear()-y);
   const ww=.35;weighted+=ww*Math.min(1,age/35);weight+=ww;
@@ -1222,7 +1270,7 @@ async function rankWithSemantic(seed,daily){
 
  const resolved=await resolveSemanticResults(raw,6);
  const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
- const intent=interpretFeeling(note);
+ const intent=correctedIntent(interpretFeeling(note));
  let ranked=resolved
   .filter(row=>!seenAlbums.has(hash32(key(row.album)))&&!logged.has(key(row.album)))
   .map(row=>{
@@ -1263,7 +1311,7 @@ async function rankWithSemantic(seed,daily){
 }
 
 async function rankWithLiveMetadata(pool,seed,daily){
- const intent=interpretFeeling($('feelingInput')?.value||'');
+ const intent=correctedIntent(interpretFeeling($('feelingInput')?.value||''));
  const sample=sampleCandidates(pool,seed,12,daily);
  $('status').textContent='checking albums…';
  const enriched=(await mapConcurrent(sample,4,async a=>{
@@ -1855,12 +1903,47 @@ async function recordFeedback(event,ratingValue=null){
  writeFeedbackQueue(queue);
  await flushFeedbackQueue();
 }
+function reliablePickMoods(album){
+ if(!album||String(album.provenance?.moods?.source||'')==='musicbrainz-tag-translation')return [];
+ const vector=album.features?.moods&&Object.keys(album.features.moods).length
+  ? Object.entries(album.features.moods).sort((a,b)=>Number(b[1])-Number(a[1])).map(([name])=>name)
+  : (album.moods||[]);
+ return vector.map(x=>String(x).toLowerCase()).filter(Boolean).slice(0,2);
+}
+function correctionForFeedback(event,album){
+ if(event==='too_upbeat')return {energyDelta:-2.5};
+ if(event==='too_slow')return {energyDelta:2.5};
+ if(event==='too_obvious')return {forceExplore:true};
+ if(event==='wrong_vibe'){
+  const avoidMoods=Object.fromEntries(reliablePickMoods(album).map(name=>[name,1]));
+  const requestedGenres=correctedIntent(interpretFeeling($('feelingInput')?.value||'')).genres||[];
+  const firstGenre=(album?.genres||[]).map(x=>String(typeof x==='string'?x:x?.name||'').toLowerCase()).find(Boolean);
+  const avoidGenres=firstGenre&&!requestedGenres.some(g=>firstGenre.includes(g)||String(g).includes(firstGenre))
+   ? [firstGenre]
+   : [];
+  return {avoidMoods,avoidGenres,forceExplore:!Object.keys(avoidMoods).length&&!avoidGenres.length};
+ }
+ return null;
+}
+function feedbackToast(event){
+ if(event==='love_this')return 'noted — more like this.';
+ if(event==='too_upbeat')return 'going calmer.';
+ if(event==='too_slow')return 'going harder.';
+ if(event==='too_obvious')return 'going further out.';
+ return 'switching the angle.';
+}
 $('feedbackBar')?.querySelectorAll('[data-feedback]').forEach(button=>{
  button.addEventListener('click',()=>{
   const event=button.dataset.feedback;
   button.classList.add('is-sent');
   recordFeedback(event).catch(()=>{});
-  showToast(event==='love_this'?'noted — more like this.':'noted — training the picker.');
+  if(event==='love_this'){
+   showToast(feedbackToast(event));
+   return;
+  }
+  nextPickCorrection=correctionForFeedback(event,pick);
+  showToast(feedbackToast(event));
+  chooseAnother().catch(err=>console.warn('Corrective reroll failed',err));
  });
 });
 $('spotify')?.addEventListener('click',()=>recordFeedback('spotify_open').catch(()=>{}));
@@ -1943,7 +2026,15 @@ $('logForm').onsubmit=e=>{
  }
  if(!pick)return;
  const live=pick._live||{};
- const staticMoods=Array.isArray(pick.moods)?Object.fromEntries(pick.moods.map(m=>[m,1])):{};
+ const translatedMoodGuess=String(pick.provenance?.moods?.source||'')==='musicbrainz-tag-translation';
+ const translatedEnergyGuess=String(pick.provenance?.energy?.source||'')==='musicbrainz-tag-translation';
+ const staticMoods=translatedMoodGuess
+  ? {}
+  : (Array.isArray(pick.moods)?Object.fromEntries(pick.moods.map(m=>[m,1])):{});
+ const staticFeatureMoods=translatedMoodGuess?null:pick.features?.moods;
+ const staticEnergy=translatedEnergyGuess
+  ? null
+  : ((pick.features?.energy!=null?Number(pick.features.energy)*10:null)??pick.energy_level??null);
  logs.push({
   date:getDate(),artist:pick.artist,album:pick.title,rating,
   favorite_track:$('track').value.trim(),notes:$('notes').value.trim(),
@@ -1951,8 +2042,8 @@ $('logForm').onsubmit=e=>{
   genre:live.genre||(Array.isArray(pick.genres)?(typeof pick.genres[0]==='string'?pick.genres[0]:pick.genres[0]?.name):'')||'',
   signal_snapshot:{
    genre:live.genre||'',
-   moods:pick._acoustic?.moods||live.signals?.moods||pick.features?.moods||staticMoods,
-   energy:pick._acoustic?.energy??live.signals?.energy??(pick.features?.energy!=null?Number(pick.features.energy)*10:null)??pick.energy_level??null
+   moods:pick._acoustic?.moods||live.signals?.moods||staticFeatureMoods||staticMoods,
+   energy:pick._acoustic?.energy??live.signals?.energy??staticEnergy
   }
  });
  persist();
