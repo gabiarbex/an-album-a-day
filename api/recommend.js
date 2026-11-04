@@ -1,3 +1,5 @@
+import { getVercelOidcToken } from '@vercel/oidc';
+
 const EMBEDDING_MODEL = process.env.ALBUM_EMBEDDING_MODEL || 'openai/text-embedding-3-small';
 const MAX_CANDIDATES = 96;
 const MAX_TEXT = 700;
@@ -115,7 +117,7 @@ function queryProfile(body) {
 }
 
 async function embed(input) {
-  const token = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
+  const token = process.env.AI_GATEWAY_API_KEY || await getVercelOidcToken();
   if (!token) throw new Error('AI Gateway authentication is unavailable.');
 
   const response = await fetch('https://ai-gateway.vercel.sh/v1/embeddings', {
