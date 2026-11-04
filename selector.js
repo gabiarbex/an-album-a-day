@@ -612,9 +612,12 @@ function score(a,intent){
   const value=Number(a.provenance?.[name]?.confidence);
   return Number.isFinite(value)?Math.max(.1,Math.min(1,value)):fallback;
  };
- const moodVector=a.features?.moods&&Object.keys(a.features.moods).length
-  ? a.features.moods
-  : Object.fromEntries((a.moods||[]).map(m=>[String(m).toLowerCase(),1]));
+ const translatedMoodGuess=String(a.provenance?.moods?.source||'')==='musicbrainz-tag-translation';
+ const moodVector=translatedMoodGuess
+  ? {}
+  : (a.features?.moods&&Object.keys(a.features.moods).length
+    ? a.features.moods
+    : Object.fromEntries((a.moods||[]).map(m=>[String(m).toLowerCase(),1])));
  const requested={...selectedMoodSignals(),...intent.moods};
  for(const [m,w] of Object.entries(requested)){
   if(moodVector[m]===undefined)continue;
@@ -637,9 +640,12 @@ function score(a,intent){
   weighted+=ww*(albumGenres.some(x=>x.includes(g)||g.includes(x))?0:1);totalWeight+=ww;
  }
 
- const rawEnergy=a.features?.energy!==null&&a.features?.energy!==undefined
-  ? Number(a.features.energy)*10
-  : Number(a.energy_level);
+ const translatedEnergyGuess=String(a.provenance?.energy?.source||'')==='musicbrainz-tag-translation';
+ const rawEnergy=translatedEnergyGuess
+  ? NaN
+  : (a.features?.energy!==null&&a.features?.energy!==undefined
+    ? Number(a.features.energy)*10
+    : Number(a.energy_level));
  const targetEnergy=state.energy!==null?Number(state.energy):intent.energy;
  if(targetEnergy!==null&&targetEnergy!==undefined&&Number.isFinite(rawEnergy)){
   const ww=1.8*confidence('energy',.75);
