@@ -113,6 +113,7 @@ def test_frontend_contract():
                     str(ROOT/"scripts/build_vector_index.py")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/intent_test.js")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/tracklist_test.js")],check=True)
+    subprocess.run(["node",str(ROOT/"scripts/ranking_test.js")],check=True)
     for api_file in [
         "api/recommend.js",
         "api/feedback.js",
@@ -125,6 +126,7 @@ def test_frontend_contract():
         "api/index-status.js",
         "api/taste-bootstrap.js",
         "api/artist-neighbors.js",
+        "api/_ranking-core.js",
     ]:
         subprocess.run(["node","--check",str(ROOT/api_file)],check=True)
 
