@@ -84,7 +84,9 @@ function mergeState(remote,local){
   seenKeys,
   recentArtists:recent,
   pickDays,
-  lastfmProfile:cloudLastfm(local?.lastfmProfile||remote?.lastfm_profile||remote?.lastfmProfile||null)
+  lastfmProfile:dirty
+   ? cloudLastfm(local?.lastfmProfile||null)
+   : cloudLastfm(local?.lastfmProfile||remote?.lastfm_profile||remote?.lastfmProfile||null)
  };
 }
 function migrationKey(){return session?.user?.id?MIGRATION_PREFIX+session.user.id:null}
@@ -120,6 +122,7 @@ function applyLocal(state){
   localStorage.setItem('albumaday.recentRecommendedArtists.v1',JSON.stringify(state.recentArtists||[]));
   localStorage.setItem('albumaday.pickDays',JSON.stringify(state.pickDays||[]));
   if(state.lastfmProfile)localStorage.setItem('albumaday.lastfmTaste',JSON.stringify(state.lastfmProfile));
+  else localStorage.removeItem('albumaday.lastfmTaste');
  }catch{}
 }
 function rowToState(row){
