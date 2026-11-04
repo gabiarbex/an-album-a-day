@@ -776,7 +776,13 @@ function backendCandidate(a,intent,semanticScore=0){
   title:a.title,
   year:a.year||'',
   genres:(a.genres||[]).slice(0,10),
-  tags:(a.tags||[]).slice(0,18),
+  tags:[
+   ...(a.tags||[]),
+   ...(a._acoustic?.acoustic>=.68?['acoustic']:[]),
+   ...(a._acoustic?.instrumental>=.68?['instrumental']:[]),
+   ...(Number.isFinite(a._acoustic?.bpm)&&a._acoustic.bpm>=135?['fast tempo']:[]),
+   ...(Number.isFinite(a._acoustic?.bpm)&&a._acoustic.bpm<=80?['slow tempo']:[])
+  ].slice(0,22),
   moods:featureMoods.slice(0,12),
   energy:energy===undefined?null:Number(energy),
   duration:duration===undefined?null:Number(duration),
@@ -836,7 +842,7 @@ async function rankWithBackend(pool,seed,daily){
  const familiarCandidates=pool
   .filter(a=>artistFamiliarity(a.artist)>=.25)
   .sort((a,b)=>artistFamiliarity(b.artist)-artistFamiliarity(a.artist))
-  .slice(0,state.comfort==='comfort'?24:10);
+  .slice(0,comfort==='comfort'?24:10);
  for(const a of familiarCandidates)add(a,0,'familiar');
 
  const adjacencySample=sampleCandidates(pool,seed+'|backend-adjacent',Math.min(3200,pool.length),daily)
@@ -1400,6 +1406,7 @@ const musicBrainzGroupCache=new Map();
 const musicBrainzDetailCache=new Map();
 const musicBrainzReleaseCache=new Map();
 const acousticBrainzCache=new Map();
+const acousticBrainzLowCache=new Map();
 function musicBrainzJson(url){
  const job=musicBrainzChain.then(async()=>{
   const wait=Math.max(0,1100-(Date.now()-musicBrainzLastRequest));
@@ -1507,32 +1514,69 @@ async function fetchAcousticHighLevel(mbid){
   .catch(()=>null);
  acousticBrainzCache.set(mbid,promise);return promise;
 }
+async function fetchAcousticLowLevel(mbid){
+ if(acousticBrainzLowCache.has(mbid))return acousticBrainzLowCache.get(mbid);
+ const promise=fetch('https://acousticbrainz.org/api/v1/'+mbid+'/low-level',{cache:'force-cache'})
+  .then(r=>{if(!r.ok)throw Error('AcousticBrainz low-level HTTP '+r.status);return r.json()})
+  .catch(()=>null);
+ acousticBrainzLowCache.set(mbid,promise);return promise;
+}
+async function fetchAcousticPair(mbid){
+ const [high,low]=await Promise.all([fetchAcousticHighLevel(mbid),fetchAcousticLowLevel(mbid)]);
+ return high||low?{high,low}:null;
+}
 function classifierProbability(highlevel,section,label){
  const value=Number(highlevel?.[section]?.all?.[label]);
  return Number.isFinite(value)?Math.max(0,Math.min(1,value)):null;
 }
 function aggregateAcoustic(rows){
  if(!rows.length)return null;
- const sums={sad:0,happy:0,aggressive:0,relaxed:0,party:0,danceable:0,dark:0,electronic:0};
+ const sums={
+  sad:0,happy:0,aggressive:0,relaxed:0,party:0,danceable:0,
+  dark:0,electronic:0,acoustic:0,instrumental:0
+ };
  const counts=Object.fromEntries(Object.keys(sums).map(k=>[k,0]));
  const mappings=[
   ['sad','mood_sad','sad'],['happy','mood_happy','happy'],
   ['aggressive','mood_aggressive','aggressive'],['relaxed','mood_relaxed','relaxed'],
   ['party','mood_party','party'],['danceable','danceability','danceable'],
-  ['dark','timbre','dark'],['electronic','mood_electronic','electronic']
+  ['dark','timbre','dark'],['electronic','mood_electronic','electronic'],
+  ['acoustic','mood_acoustic','acoustic'],['instrumental','voice_instrumental','instrumental']
  ];
+ const bpms=[],loudness=[],keys=[];
  for(const row of rows){
-  const high=row?.highlevel||row;
+  const high=row?.high?.highlevel||row?.highlevel||row?.high||{};
+  const low=row?.low||{};
   for(const [name,section,label] of mappings){
    const p=classifierProbability(high,section,label);
    if(p===null)continue;sums[name]+=p;counts[name]++;
   }
+  const bpm=Number(low?.rhythm?.bpm);
+  if(Number.isFinite(bpm)&&bpm>=30&&bpm<=300)bpms.push(bpm);
+  const loud=Number(low?.lowlevel?.average_loudness);
+  if(Number.isFinite(loud))loudness.push(Math.max(0,Math.min(1,loud)));
+  const keyName=String(low?.tonal?.key_key||'').trim();
+  const scale=String(low?.tonal?.key_scale||'').trim();
+  if(keyName)keys.push(scale?keyName+' '+scale:keyName);
  }
  const avg=name=>counts[name]?sums[name]/counts[name]:null;
  const sad=avg('sad'),happy=avg('happy'),aggressive=avg('aggressive'),relaxed=avg('relaxed');
  const party=avg('party'),dance=avg('danceable'),dark=avg('dark'),electronic=avg('electronic');
+ const acoustic=avg('acoustic'),instrumental=avg('instrumental');
  const values=arr=>arr.filter(v=>v!==null&&Number.isFinite(v));
  const mean=arr=>{const v=values(arr);return v.length?v.reduce((n,x)=>n+x,0)/v.length:null};
+ const median=arr=>{
+  const v=values(arr).slice().sort((a,b)=>a-b);
+  if(!v.length)return null;
+  const mid=Math.floor(v.length/2);
+  return v.length%2?v[mid]:(v[mid-1]+v[mid])/2;
+ };
+ const modes=arr=>{
+  const counts=new Map();
+  for(const value of arr)counts.set(value,(counts.get(value)||0)+1);
+  return [...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0]?.[0]||null;
+ };
+ const bpm=median(bpms),averageLoudness=mean(loudness),keyName=modes(keys);
  const moods={};
  const put=(name,value)=>{if(value!==null&&Number.isFinite(value))moods[name]=Math.max(0,Math.min(1,value))};
  put('melancholic',sad);
@@ -1545,13 +1589,23 @@ function aggregateAcoustic(rows){
  put('gritty',aggressive);
  put('reflective',mean([sad,relaxed]));
  put('cold',mean([dark,electronic]));
+
+ const tempoEnergy=bpm===null?null:Math.max(0,Math.min(1,(bpm-55)/115));
  const energyParts=[
-  [dance,.4],[aggressive,.25],[party,.2],[relaxed===null?null:1-relaxed,.15]
+  [dance,.28],[aggressive,.22],[party,.15],[relaxed===null?null:1-relaxed,.12],
+  [tempoEnergy,.13],[averageLoudness,.10]
  ].filter(([v])=>v!==null&&Number.isFinite(v));
  const energy=energyParts.length
   ?10*energyParts.reduce((n,[v,w])=>n+v*w,0)/energyParts.reduce((n,[,w])=>n+w,0)
   :null;
- return {moods,energy,tracksAnalyzed:rows.length,confidence:Math.min(.9,.52+rows.length*.04)};
+
+ const highCoverage=rows.filter(row=>row?.high).length;
+ const lowCoverage=rows.filter(row=>row?.low).length;
+ const confidence=Math.min(.94,.5+highCoverage*.035+lowCoverage*.025);
+ return {
+  moods,energy,bpm,averageLoudness,key:keyName,acoustic,instrumental,
+  tracksAnalyzed:rows.length,highLevelTracks:highCoverage,lowLevelTracks:lowCoverage,confidence
+ };
 }
 async function loadSelectedAcousticProfile(a,details){
  let releaseId=a._selectedReleaseId;
@@ -1571,7 +1625,7 @@ async function loadSelectedAcousticProfile(a,details){
  // Bound network work: sample up to 8 evenly spread recordings from the album.
  const take=Math.min(8,recordingIds.length),sample=[];
  for(let i=0;i<take;i++)sample.push(recordingIds[Math.floor(i*(recordingIds.length-1)/Math.max(1,take-1))]);
- const rows=(await mapConcurrent([...new Set(sample)],4,fetchAcousticHighLevel)).filter(Boolean);
+ const rows=(await mapConcurrent([...new Set(sample)],4,fetchAcousticPair)).filter(Boolean);
  if(!rows.length||!pick||key(pick)!==key(a))return null;
  const profile=aggregateAcoustic(rows);if(!profile)return null;
  a._acoustic=profile;
@@ -1586,12 +1640,22 @@ async function loadSelectedAcousticProfile(a,details){
   for(const [m,v] of top){
    const tag=document.createElement('span');tag.className='audio-class';tag.textContent=m.toUpperCase();classification.append(tag);
   }
+  if(profile.acoustic>=.68){
+   const tag=document.createElement('span');tag.className='audio-class';tag.textContent='ACOUSTIC';classification.append(tag);
+  }
+  if(profile.instrumental>=.68){
+   const tag=document.createElement('span');tag.className='audio-class';tag.textContent='INSTRUMENTAL';classification.append(tag);
+  }
  }
  const facts=$('recordFacts');
  if(facts){
   const group=document.createElement('div');group.className='record-fact acoustic-fact';
   const dt=document.createElement('dt');dt.textContent='Audio profile';
-  const dd=document.createElement('dd');dd.textContent=`${profile.tracksAnalyzed} track${profile.tracksAnalyzed===1?'':'s'} analyzed`;
+  const dd=document.createElement('dd');
+  const parts=[`${profile.tracksAnalyzed} track${profile.tracksAnalyzed===1?'':'s'} analyzed`];
+  if(Number.isFinite(profile.bpm))parts.push(`${Math.round(profile.bpm)} BPM`);
+  if(profile.key)parts.push(profile.key);
+  dd.textContent=parts.join(' · ');
   group.append(dt,dd);facts.append(group);
  }
  return profile;
