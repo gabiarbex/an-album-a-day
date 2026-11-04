@@ -327,9 +327,13 @@ function normalizeArtistName(value){return String(value||'').trim().toLowerCase(
 function buildLastfmTasteMap(taste){
  return new Map((taste?.artists||[]).map(([artist,weight])=>[normalizeArtistName(artist),Number(weight)||0]));
 }
+function buildLastfmNeighborMap(taste){
+ return new Map((taste?.neighbors||[]).map(([artist,weight])=>[normalizeArtistName(artist),Number(weight)||0]));
+}
 logs=readLogs();
 let lastfmTaste=readLastfmTaste();
 let lastfmTasteMap=buildLastfmTasteMap(lastfmTaste);
+let lastfmNeighborMap=buildLastfmNeighborMap(lastfmTaste);
 let diaryArtistCache=null,diaryTasteCache=null,tasteTagContextCache=null;
 function invalidateTasteCaches(){diaryArtistCache=null;diaryTasteCache=null;tasteTagContextCache=null}
 function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));invalidateTasteCaches();renderHistory();renderRecentPulls()}
@@ -386,6 +390,10 @@ function renderHistory(){
  if($('statTraining'))$('statTraining').textContent=logs.filter(x=>Number(x.rating)>0&&x.signal_snapshot).length;
  if($('trainFromDiary'))$('trainFromDiary').disabled=!logs.some(x=>Number(x.rating)>0);
  if($('statLastfm'))$('statLastfm').textContent=lastfmTaste?.unique_artists?Number(lastfmTaste.unique_artists).toLocaleString():'—';
+ if($('deepenLastfm')){
+  $('deepenLastfm').hidden=!lastfmTaste;
+  $('deepenLastfm').textContent=lastfmTaste?.neighbors?.length?'refresh Last.fm graph':'deepen Last.fm graph';
+ }
  if($('clearLastfm'))$('clearLastfm').hidden=!lastfmTaste;
  const area=$('history');area.replaceChildren();
  if(!logs.length){
@@ -1134,15 +1142,21 @@ function tasteTagContext(){
 }
 function tasteAdjacency(album){
  if(!album||artistFamiliarity(album.artist)>=.25)return 0;
+ const artist=normalizeArtistName(album.artist);
+ const collaborative=Math.max(0,Math.min(1,Number(lastfmNeighborMap.get(artist)||0)));
  const ctx=tasteTagContext();
- if(!ctx.seededArtists||!ctx.norm)return 0;
- let dot=0,norm=0;
- for(const token of albumTasteTokens(album)){
-  const idf=Math.log((ctx.n+1)/(Number(ctx.df.get(token)||0)+1))+1;
-  dot+=(ctx.weights.get(token)||0)*idf;
-  norm+=idf*idf;
+ let tagScore=0;
+ if(ctx.seededArtists&&ctx.norm){
+  let dot=0,norm=0;
+  for(const token of albumTasteTokens(album)){
+   const idf=Math.log((ctx.n+1)/(Number(ctx.df.get(token)||0)+1))+1;
+   dot+=(ctx.weights.get(token)||0)*idf;
+   norm+=idf*idf;
+  }
+  if(norm)tagScore=Math.max(0,Math.min(1,dot/(ctx.norm*Math.sqrt(norm))));
  }
- return norm?Math.max(0,Math.min(1,dot/(ctx.norm*Math.sqrt(norm)))):0;
+ if(collaborative>0)return Math.max(tagScore,Math.min(1,.9*collaborative+.1*tagScore));
+ return tagScore;
 }
 function diaryTasteProfile(){
  if(diaryTasteCache)return diaryTasteCache;
@@ -2353,14 +2367,58 @@ $('lastfmFile')?.addEventListener('change',async e=>{
   showToast('reading Last.fm history…');
   const taste=buildLastfmTaste(parseCsv(await file.text()));
   localStorage.setItem('albumaday.lastfmTaste',JSON.stringify(taste));
-  lastfmTaste=taste;lastfmTasteMap=buildLastfmTasteMap(taste);invalidateTasteCaches();renderHistory();
+  lastfmTaste=taste;
+  lastfmTasteMap=buildLastfmTasteMap(taste);
+  lastfmNeighborMap=buildLastfmNeighborMap(taste);
+  invalidateTasteCaches();renderHistory();
   showToast(`Last.fm imported: ${taste.unique_artists.toLocaleString()} artists. The CSV stayed on this device.`);
  }catch(err){console.warn(err);showToast('Could not read that Last.fm CSV.')}
  e.target.value='';
 });
 $('clearLastfm')?.addEventListener('click',()=>{
  try{localStorage.removeItem('albumaday.lastfmTaste')}catch{}
- lastfmTaste=null;lastfmTasteMap=new Map();invalidateTasteCaches();renderHistory();showToast('Last.fm data cleared.');
+ lastfmTaste=null;lastfmTasteMap=new Map();lastfmNeighborMap=new Map();invalidateTasteCaches();renderHistory();showToast('Last.fm data cleared.');
+});
+
+$('deepenLastfm')?.addEventListener('click',async()=>{
+ if(!lastfmTaste?.artists?.length){showToast('Import Last.fm first.');return}
+ const endpoint=backendUrl('/api/artist-neighbors');
+ if(!endpoint){showToast('Collaborative graph is available on the live site.');return}
+ const button=$('deepenLastfm');
+ const original=button.textContent;
+ button.disabled=true;button.textContent='building graph…';
+ try{
+  const artists=lastfmTaste.artists.slice(0,8).map(([name,weight])=>({name,weight}));
+  const response=await fetch(endpoint,{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({artists,mode:'medium'})
+  });
+  if(!response.ok)throw Error('artist neighbors HTTP '+response.status);
+  const data=await response.json();
+  const neighbors=Array.isArray(data.neighbors)?data.neighbors:[];
+  lastfmTaste={
+   ...lastfmTaste,
+   neighbors,
+   neighbor_source:String(data.source||'listenbrainz-artist-radio'),
+   neighbor_seed_count:Number(data.resolvedSeeds)||0,
+   neighbor_updated_at:new Date().toISOString()
+  };
+  localStorage.setItem('albumaday.lastfmTaste',JSON.stringify(lastfmTaste));
+  lastfmNeighborMap=buildLastfmNeighborMap(lastfmTaste);
+  invalidateTasteCaches();renderHistory();
+  showToast(
+   neighbors.length
+    ? `added ${neighbors.length} listening-neighbors — raw CSV stayed local.`
+    : 'No reliable listening-neighbors found for those seeds.'
+  );
+ }catch(err){
+  console.warn('Last.fm graph enrichment failed',err);
+  showToast('Could not deepen the Last.fm graph right now.');
+ }finally{
+  button.disabled=false;
+  button.textContent=lastfmTaste?.neighbors?.length?'refresh Last.fm graph':original;
+ }
 });
 
 async function diaryTasteTrainingRows(limit=60){
