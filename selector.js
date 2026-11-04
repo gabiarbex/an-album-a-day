@@ -713,6 +713,10 @@ function backendCandidate(a,intent,semanticScore=0){
   familiarity:artistFamiliarity(a.artist),
   localScore:score(a,intent),
   semanticScore:Number(semanticScore)||0,
+  moodSource:String(a.provenance?.moods?.source||''),
+  moodConfidence:Number(a.provenance?.moods?.confidence)||0,
+  energySource:a._acoustic?.energy!=null?'audio':(a._live?.signals?.energy!=null?'live':String(a.provenance?.energy?.source||'')),
+  energyConfidence:a._acoustic?.energy!=null||a._live?.signals?.energy!=null?1:(Number(a.provenance?.energy?.confidence)||0),
   catalogFile:a._catalogFile||null,
   catalogChunk:Number(a._catalogChunk)||0
  };
