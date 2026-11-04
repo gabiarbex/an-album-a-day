@@ -394,11 +394,12 @@ function renderTastePrint(){
    .map(([name])=>name);
  }
 
- const neighbors=[...lastfmNeighborMap.entries()]
-  .filter(([,weight])=>weight>0)
-  .sort((a,b)=>b[1]-a[1])
+ const neighbors=(lastfmTaste?.neighbors||[])
+  .filter(([,weight])=>Number(weight)>0)
+  .slice()
+  .sort((a,b)=>Number(b[1])-Number(a[1]))
   .slice(0,5)
-  .map(([name])=>name);
+  .map(([name])=>String(name));
 
  tagNode.textContent=tags.length?tags.join(' / '):'building from your rated records';
  neighborNode.textContent=neighbors.length
