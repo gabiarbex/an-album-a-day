@@ -115,19 +115,50 @@ function scoreCandidate(candidate, neural, body, learnedTaste = { score: 0, conf
 }
 
 function explanation(row, body) {
+  const candidate = row?.candidate || {};
   const bits = [];
-  if (body.moods?.length) bits.push(body.moods.slice(0, 2).join(' + '));
-  if (body.energy != null) bits.push(energyLabel(body.energy).split(',')[0]);
-  if (body.comfort === 'exploration') bits.push('new territory');
-  if (body.comfort === 'comfort') bits.push('closer to your orbit');
-  if (
-    row?.candidate &&
-    Number(row.candidate.tasteAdjacency) >= 0.35 &&
-    Number(row.candidate.familiarity) < 0.25
-  ) bits.push('adjacent to your listening history');
-  if (row?.taste?.confidence >= 0.2 && row?.taste?.score > 0.08) bits.push('learned from your ratings');
-  if (!bits.length) bits.push('closest overall fit');
-  return bits.join(' · ');
+
+  const selected = Array.isArray(body.moods) ? body.moods.filter(Boolean) : [];
+  const inferred = body.intent?.moods && typeof body.intent.moods === 'object'
+    ? Object.entries(body.intent.moods)
+        .sort((a, b) => Number(b[1]) - Number(a[1]))
+        .map(([name]) => name)
+    : [];
+  const moodBits = (selected.length ? selected : inferred).slice(0, 2);
+  bits.push(...moodBits);
+
+  if (body.energy != null) {
+    const label = energyLabel(body.energy);
+    if (label.includes('very low') || label.includes('low energy')) bits.push('low energy');
+    else if (label.includes('very high') || label.includes('high energy')) bits.push('high energy');
+    else bits.push('medium energy');
+  }
+
+  const adjacency = Number(candidate.tasteAdjacency) || 0;
+  const familiarity = Number(candidate.familiarity) || 0;
+  if (adjacency >= 0.35 && familiarity < 0.25) bits.push('taste-neighbor');
+  if (row?.taste?.confidence >= 0.2 && row?.taste?.score > 0.08) bits.push('learned taste');
+
+  if (body.comfort === 'comfort' && familiarity >= 0.25) bits.push('known artist');
+  if (body.comfort === 'exploration' && familiarity < 0.25 && adjacency < 0.35) bits.push('new artist');
+
+  const maxRuntime = Number(body.time);
+  const duration = Number(candidate.duration);
+  if (Number.isFinite(maxRuntime) && Number.isFinite(duration) && duration <= maxRuntime + 3) {
+    bits.push(`${Math.round(duration)} min`);
+  }
+
+  const wantedGenres = cleanArray(body.intent?.genres, 8).map(value => String(value).toLowerCase());
+  if (wantedGenres.length) {
+    const haystack = [...cleanArray(candidate.genres, 12), ...cleanArray(candidate.tags, 18)]
+      .join(' ')
+      .toLowerCase();
+    const genre = wantedGenres.find(value => haystack.includes(value));
+    if (genre) bits.push(genre);
+  }
+
+  const unique = [...new Set(bits.filter(Boolean))].slice(0, 3);
+  return unique.length ? unique.join(' · ') : 'closest overall fit';
 }
 
 async function cachedCandidateVectors(candidates, origin) {
