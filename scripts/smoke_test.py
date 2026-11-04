@@ -114,6 +114,8 @@ def test_frontend_contract():
     subprocess.run(["node",str(ROOT/"scripts/intent_test.js")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/tracklist_test.js")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/ranking_test.js")],check=True)
+    subprocess.run(["node","--check",str(ROOT/"auth-sync.js")],check=True)
+    subprocess.run(["node","--check",str(ROOT/"auth-config.js")],check=True)
     for api_file in [
         "api/recommend.js",
         "api/feedback.js",
