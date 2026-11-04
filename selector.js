@@ -770,6 +770,7 @@ async function rankWithBackend(pool,seed,daily){
    headers:{'Content-Type':'application/json'},
    body:JSON.stringify({
     seed,
+    client_id:clientFeedbackId(),
     note,
     moods:[...state.moods],
     energy:state.energy,
@@ -788,6 +789,8 @@ async function rankWithBackend(pool,seed,daily){
    engine:data.engine||'hybrid-neural-reranker-v1',
    score:Number(data.score)||0,
    neural:Number(data.diagnostics?.neural)||0,
+   taste:Number(data.diagnostics?.taste)||0,
+   tasteConfidence:Number(data.diagnostics?.tasteConfidence)||0,
    reason:String(data.reason||'')
   };
   return {album,featuresUsed:true,mode:'backend'};
@@ -1652,7 +1655,7 @@ function feedbackPayload(event,ratingValue=null){
  return {
   event,
   client_id:clientFeedbackId(),
-  album:{id:lookupId(pick),artist:pick.artist,title:pick.title},
+  album:backendCandidate(pick,interpretFeeling($('feelingInput')?.value||''),0),
   rating:ratingValue,
   query:pickerSnapshot(),
   ranking:{
