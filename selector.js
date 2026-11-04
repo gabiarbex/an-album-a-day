@@ -303,8 +303,16 @@ function readSeenKeys(){
   return new Set(Array.isArray(raw)?raw.map(String):[]);
  }catch{return new Set()}
 }
+const RECENT_RECOMMENDED_ARTISTS_KEY='albumaday.recentRecommendedArtists.v1';
+function readRecentRecommendedArtists(){
+ try{
+  const raw=JSON.parse(localStorage.getItem(RECENT_RECOMMENDED_ARTISTS_KEY)||'[]');
+  return Array.isArray(raw)?raw.map(normalizeArtistName).filter(Boolean).slice(-18):[];
+ }catch{return []}
+}
 let seenAlbums=readSeen();
 let seenAlbumKeys=readSeenKeys();
+let recentRecommendedArtists=[];
 function albumWasSeen(a){
  const k=key(a);
  return seenAlbumKeys.has(seenKey(a))||seenAlbums.has(hash32(k));
@@ -319,11 +327,29 @@ function markAlbumSeen(a){
  if(!a)return;
  seenAlbums.add(hash32(key(a)));
  seenAlbumKeys.add(seenKey(a));
+ rememberRecommendedArtist(a.artist);
  persistSeen();
 }
 function readLogs(){try{return JSON.parse(localStorage.getItem('albumaday.logs')||'[]')}catch{return []}}
 function readLastfmTaste(){try{return JSON.parse(localStorage.getItem('albumaday.lastfmTaste')||'null')}catch{return null}}
 function normalizeArtistName(value){return String(value||'').trim().toLowerCase().replace(/\s+/g,' ')}
+recentRecommendedArtists=readRecentRecommendedArtists();
+function rememberRecommendedArtist(artist){
+ const name=normalizeArtistName(artist);
+ if(!name)return;
+ recentRecommendedArtists=recentRecommendedArtists.filter(value=>value!==name);
+ recentRecommendedArtists.push(name);
+ recentRecommendedArtists=recentRecommendedArtists.slice(-18);
+ try{localStorage.setItem(RECENT_RECOMMENDED_ARTISTS_KEY,JSON.stringify(recentRecommendedArtists))}catch{}
+}
+function recentArtistPenalty(artist){
+ const name=normalizeArtistName(artist);
+ if(!name)return 0;
+ const reverse=[...recentRecommendedArtists].reverse();
+ const index=reverse.indexOf(name);
+ if(index<0)return 0;
+ return Math.max(.18,.9-index*.08);
+}
 function buildLastfmTasteMap(taste){
  return new Map((taste?.artists||[]).map(([artist,weight])=>[normalizeArtistName(artist),Number(weight)||0]));
 }
@@ -754,6 +780,11 @@ function score(a,intent){
   const ww=.75;weighted+=ww*(1-.95*familiarity);totalWeight+=ww;
  }
 
+ const repeatPenalty=recentArtistPenalty(a.artist);
+ if(repeatPenalty>0){
+  const ww=1.25*repeatPenalty;
+  weighted+=ww*.05;totalWeight+=ww;
+ }
  return totalWeight?weighted/totalWeight:.5;
 }
 async function eligiblePool(){
@@ -1003,7 +1034,10 @@ async function rankWithBackend(pool,seed,daily){
     comfort,
     time:state.time,
     intent,
-    recentArtists:logs.slice(-12).map(x=>x.artist),
+    recentArtists:mergeUnique([
+     ...recentRecommendedArtists.slice(-12),
+     ...logs.slice(-8).map(x=>normalizeArtistName(x.artist))
+    ]).slice(-16),
     queryVector:retrievalQueryVector,
     retrieval:{
      neural:sourceCounts.neural,
@@ -1391,8 +1425,10 @@ async function rankWithSemantic(seed,daily){
    const semantic=Math.max(0,Math.min(1,(Number(row.semanticScore)+1)/2));
    const controls=score(row.album,intent);
    const personal=diaryTasteScore(row.album);
+   const repeat=recentArtistPenalty(row.album.artist);
    let relevance=.74*semantic+.18*controls;
    if(personal.active)relevance+=.08*personal.score;
+   if(repeat>0)relevance-=.16*repeat;
    return {...row,v:relevance,semantic};
   })
   .sort((a,b)=>b.v-a.v);
