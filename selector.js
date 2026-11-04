@@ -286,11 +286,15 @@ function markAlbumSeen(a){
 }
 function readLogs(){try{return JSON.parse(localStorage.getItem('albumaday.logs')||'[]')}catch{return []}}
 function readLastfmTaste(){try{return JSON.parse(localStorage.getItem('albumaday.lastfmTaste')||'null')}catch{return null}}
+function normalizeArtistName(value){return String(value||'').trim().toLowerCase().replace(/\s+/g,' ')}
+function buildLastfmTasteMap(taste){
+ return new Map((taste?.artists||[]).map(([artist,weight])=>[normalizeArtistName(artist),Number(weight)||0]));
+}
 logs=readLogs();
 let lastfmTaste=readLastfmTaste();
-let lastfmTasteMap=new Map(lastfmTaste?.artists||[]);
-let diaryArtistCache=null,diaryTasteCache=null;
-function invalidateTasteCaches(){diaryArtistCache=null;diaryTasteCache=null}
+let lastfmTasteMap=buildLastfmTasteMap(lastfmTaste);
+let diaryArtistCache=null,diaryTasteCache=null,tasteTagContextCache=null;
+function invalidateTasteCaches(){diaryArtistCache=null;diaryTasteCache=null;tasteTagContextCache=null}
 function persist(){localStorage.setItem('albumaday.logs',JSON.stringify(logs));invalidateTasteCaches();renderHistory();renderRecentPulls()}
 
 function readPickDays(){try{return JSON.parse(localStorage.getItem('albumaday.pickDays')||'[]')}catch{return []}}
@@ -379,10 +383,12 @@ function albumHasGenre(a){
  return Array.isArray(a.genres)&&a.genres.some(g=>Boolean(typeof g==='string'?g:g?.name));
 }
 function albumHasMood(a){
+ if(String(a.provenance?.moods?.source||'')==='musicbrainz-tag-translation')return false;
  return (Array.isArray(a.moods)&&a.moods.length>0) ||
         Boolean(a.features?.moods&&Object.keys(a.features.moods).length);
 }
 function albumHasEnergy(a){
+ if(String(a.provenance?.energy?.source||'')==='musicbrainz-tag-translation')return false;
  return (a.energy_level!==null&&a.energy_level!==undefined&&Number.isFinite(Number(a.energy_level))) ||
         (a.features?.energy!==null&&a.features?.energy!==undefined&&Number.isFinite(Number(a.features.energy)));
 }
@@ -701,11 +707,19 @@ function backendUrl(path){
  return path;
 }
 function backendCandidate(a,intent,semanticScore=0){
- const featureMoods=a.features?.moods&&Object.keys(a.features.moods).length?Object.keys(a.features.moods):(a.moods||[]);
+ const translatedMoodGuess=String(a.provenance?.moods?.source||'')==='musicbrainz-tag-translation';
+ const translatedEnergyGuess=String(a.provenance?.energy?.source||'')==='musicbrainz-tag-translation';
+ const featureMoods=translatedMoodGuess
+  ? []
+  : (a.features?.moods&&Object.keys(a.features.moods).length?Object.keys(a.features.moods):(a.moods||[]));
  const duration=[a._live?.runtimeMin,a._semantic?.runtimeMin,a.features?.duration_min,a.length_min]
   .find(v=>v!==null&&v!==undefined&&Number.isFinite(Number(v)));
- const energy=[a._acoustic?.energy,a._live?.signals?.energy,a.features?.energy!=null?Number(a.features.energy)*10:null,a.energy_level]
-  .find(v=>v!==null&&v!==undefined&&Number.isFinite(Number(v)));
+ const energy=[
+  a._acoustic?.energy,
+  a._live?.signals?.energy,
+  translatedEnergyGuess?null:(a.features?.energy!=null?Number(a.features.energy)*10:null),
+  translatedEnergyGuess?null:a.energy_level
+ ].find(v=>v!==null&&v!==undefined&&Number.isFinite(Number(v)));
  return {
   id:lookupId(a),
   artist:a.artist,
@@ -717,6 +731,7 @@ function backendCandidate(a,intent,semanticScore=0){
   energy:energy===undefined?null:Number(energy),
   duration:duration===undefined?null:Number(duration),
   familiarity:artistFamiliarity(a.artist),
+  tasteAdjacency:tasteAdjacency(a),
   localScore:score(a,intent),
   semanticScore:Number(semanticScore)||0,
   moodSource:String(a.provenance?.moods?.source||''),
@@ -733,7 +748,7 @@ async function rankWithBackend(pool,seed,daily){
  const note=$('feelingInput')?.value.trim()||'';
  const intent=interpretFeeling(note);
  const rows=new Map();
- const sourceCounts={semantic:0,controls:0,taste:0,explore:0};
+ const sourceCounts={semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
  const add=(a,semanticScore=0,source='controls')=>{
   if(!a||albumWasSeen(a))return;
   const id=lookupId(a);
@@ -765,20 +780,28 @@ async function rankWithBackend(pool,seed,daily){
   .slice(0,42);
  for(const row of local)add(row.a,0,'controls');
 
- // Taste-adjacent candidates are a separate source, not just a tie-breaker.
- const tasteCandidates=pool
-  .filter(a=>artistFamiliarity(a.artist)>0)
+ // Familiar records and adjacent-but-new artists are distinct signals.
+ const familiarCandidates=pool
+  .filter(a=>artistFamiliarity(a.artist)>=.25)
   .sort((a,b)=>artistFamiliarity(b.artist)-artistFamiliarity(a.artist))
-  .slice(0,state.comfort==='exploration'?8:16);
- for(const a of tasteCandidates)add(a,0,'taste');
+  .slice(0,state.comfort==='comfort'?24:10);
+ for(const a of familiarCandidates)add(a,0,'familiar');
 
- // Preserve discovery: give the neural model a few candidates the old systems would never surface.
+ const adjacencySample=sampleCandidates(pool,seed+'|backend-adjacent',Math.min(3200,pool.length),daily)
+  .filter(a=>artistFamiliarity(a.artist)<.25)
+  .map(a=>({a,v:tasteAdjacency(a)}))
+  .filter(row=>row.v>0)
+  .sort((x,y)=>y.v-x.v)
+  .slice(0,state.comfort==='exploration'?28:20);
+ for(const row of adjacencySample)add(row.a,0,'adjacent');
+
+ // Preserve true discovery outside the existing taste neighborhood.
  const exploration=sampleCandidates(
   pool,
   seed+'|backend-explore',
-  Math.min(420,pool.length),
+  Math.min(520,pool.length),
   daily
- ).filter(a=>artistFamiliarity(a.artist)<.2).slice(0,18);
+ ).filter(a=>artistFamiliarity(a.artist)<.2&&tasteAdjacency(a)<.25).slice(0,18);
  for(const a of exploration)add(a,0,'explore');
 
  const allRows=[...rows.values()];
@@ -786,18 +809,24 @@ async function rankWithBackend(pool,seed,daily){
  const buckets={
   semantic:allRows.filter(row=>row.sources.has('semantic')),
   controls:allRows.filter(row=>row.sources.has('controls')),
-  taste:allRows.filter(row=>row.sources.has('taste')),
+  adjacent:allRows.filter(row=>row.sources.has('adjacent')),
+  familiar:allRows.filter(row=>row.sources.has('familiar')),
   explore:allRows.filter(row=>row.sources.has('explore'))
  };
  const shortlist=[];
  const used=new Set();
- const quotas={semantic:34,controls:40,taste:12,explore:10};
- for(const source of ['semantic','controls','taste','explore']){
+ const quotas=state.comfort==='exploration'
+  ? {semantic:28,controls:34,adjacent:22,familiar:2,explore:10}
+  : state.comfort==='comfort'
+    ? {semantic:28,controls:34,adjacent:10,familiar:18,explore:6}
+    : {semantic:30,controls:36,adjacent:16,familiar:6,explore:8};
+ for(const source of ['semantic','controls','adjacent','familiar','explore']){
+  let taken=0;
   for(const row of buckets[source]){
    const id=lookupId(row.album);
    if(used.has(id))continue;
-   shortlist.push(row);used.add(id);
-   if(shortlist.filter(x=>x.sources.has(source)).length>=quotas[source])break;
+   shortlist.push(row);used.add(id);taken++;
+   if(taken>=quotas[source])break;
   }
  }
  for(const row of allRows){
@@ -829,7 +858,8 @@ async function rankWithBackend(pool,seed,daily){
     retrieval:{
      semantic:sourceCounts.semantic,
      controls:sourceCounts.controls,
-     taste:sourceCounts.taste,
+     adjacent:sourceCounts.adjacent,
+     familiar:sourceCounts.familiar,
      exploration:sourceCounts.explore
     },
     candidates
@@ -996,10 +1026,74 @@ function diaryArtistSet(){
  return diaryArtistCache;
 }
 function lastfmFamiliarity(artist){
- return Number(lastfmTasteMap.get(String(artist||'').trim().toLowerCase())||0);
+ return Number(lastfmTasteMap.get(normalizeArtistName(artist))||0);
 }
 function artistFamiliarity(artist){
- return Math.max(diaryArtistSet().has(String(artist||'').toLowerCase())?1:0,lastfmFamiliarity(artist));
+ return Math.max(diaryArtistSet().has(normalizeArtistName(artist))?1:0,lastfmFamiliarity(artist));
+}
+function albumTasteTokens(album){
+ const values=[...(album?.genres||[]),...(album?.tags||[])];
+ const out=new Set();
+ for(const value of values){
+  const token=String(typeof value==='string'?value:value?.name||'').trim().toLowerCase().replace(/\s+/g,' ');
+  if(token.length>=2&&token.length<=80)out.add(token);
+ }
+ return [...out];
+}
+function positiveDiaryArtistWeights(){
+ const weights=new Map();
+ for(const entry of logs){
+  const rating=Number(entry.rating);
+  if(!Number.isFinite(rating)||rating<=3)continue;
+  const artist=normalizeArtistName(entry.artist);
+  if(!artist)continue;
+  const weight=Math.min(1,(rating-3)/2);
+  weights.set(artist,Math.max(weights.get(artist)||0,weight));
+ }
+ return weights;
+}
+function tasteTagContext(){
+ if(tasteTagContextCache)return tasteTagContextCache;
+ const df=new Map(),artistTokens=new Map();
+ for(const album of albums){
+  const tokens=albumTasteTokens(album);
+  if(!tokens.length)continue;
+  for(const token of tokens)df.set(token,(df.get(token)||0)+1);
+  const artist=normalizeArtistName(album.artist);
+  if(!artist)continue;
+  let set=artistTokens.get(artist);
+  if(!set){set=new Set();artistTokens.set(artist,set)}
+  for(const token of tokens)set.add(token);
+ }
+ const diaryWeights=positiveDiaryArtistWeights();
+ const tasteWeights=new Map();
+ let seededArtists=0;
+ const n=Math.max(1,albums.length);
+ for(const [artist,tokens] of artistTokens){
+  const seed=Math.max(Number(lastfmTasteMap.get(artist)||0),Number(diaryWeights.get(artist)||0));
+  if(seed<=0)continue;
+  seededArtists++;
+  for(const token of tokens){
+   const idf=Math.log((n+1)/(Number(df.get(token)||0)+1))+1;
+   tasteWeights.set(token,(tasteWeights.get(token)||0)+seed*idf);
+  }
+ }
+ let norm=0;
+ for(const value of tasteWeights.values())norm+=value*value;
+ tasteTagContextCache={weights:tasteWeights,df,n,norm:Math.sqrt(norm),seededArtists};
+ return tasteTagContextCache;
+}
+function tasteAdjacency(album){
+ if(!album||artistFamiliarity(album.artist)>=.25)return 0;
+ const ctx=tasteTagContext();
+ if(!ctx.seededArtists||!ctx.norm)return 0;
+ let dot=0,norm=0;
+ for(const token of albumTasteTokens(album)){
+  const idf=Math.log((ctx.n+1)/(Number(ctx.df.get(token)||0)+1))+1;
+  dot+=(ctx.weights.get(token)||0)*idf;
+  norm+=idf*idf;
+ }
+ return norm?Math.max(0,Math.min(1,dot/(ctx.norm*Math.sqrt(norm)))):0;
 }
 function diaryTasteProfile(){
  if(diaryTasteCache)return diaryTasteCache;
@@ -1023,12 +1117,18 @@ function candidateSignalBundle(candidate){
    genre:String(candidate._live.genre||'').toLowerCase()
   };
  }
- const moods=candidate.features?.moods&&Object.keys(candidate.features.moods).length
-  ? candidate.features.moods
-  : Object.fromEntries((candidate.moods||[]).map(m=>[String(m).toLowerCase(),1]));
- const energy=candidate.features?.energy!==null&&candidate.features?.energy!==undefined
-  ? Number(candidate.features.energy)*10
-  : candidate.energy_level;
+ const translatedMoodGuess=String(candidate.provenance?.moods?.source||'')==='musicbrainz-tag-translation';
+ const translatedEnergyGuess=String(candidate.provenance?.energy?.source||'')==='musicbrainz-tag-translation';
+ const moods=translatedMoodGuess
+  ? {}
+  : (candidate.features?.moods&&Object.keys(candidate.features.moods).length
+    ? candidate.features.moods
+    : Object.fromEntries((candidate.moods||[]).map(m=>[String(m).toLowerCase(),1])));
+ const energy=translatedEnergyGuess
+  ? null
+  : (candidate.features?.energy!==null&&candidate.features?.energy!==undefined
+    ? Number(candidate.features.energy)*10
+    : candidate.energy_level);
  const firstGenre=(candidate.genres||[])[0];
  return {
   moods,
@@ -2159,7 +2259,7 @@ $('lastfmFile')?.addEventListener('change',async e=>{
   showToast('reading Last.fm history…');
   const taste=buildLastfmTaste(parseCsv(await file.text()));
   localStorage.setItem('albumaday.lastfmTaste',JSON.stringify(taste));
-  lastfmTaste=taste;lastfmTasteMap=new Map(taste.artists);invalidateTasteCaches();renderHistory();
+  lastfmTaste=taste;lastfmTasteMap=buildLastfmTasteMap(taste);invalidateTasteCaches();renderHistory();
   showToast(`Last.fm imported: ${taste.unique_artists.toLocaleString()} artists. The CSV stayed on this device.`);
  }catch(err){console.warn(err);showToast('Could not read that Last.fm CSV.')}
  e.target.value='';
