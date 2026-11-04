@@ -113,6 +113,18 @@ def test_frontend_contract():
                     str(ROOT/"scripts/build_vector_index.py")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/intent_test.js")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/tracklist_test.js")],check=True)
+    for api_file in [
+        "api/recommend.js",
+        "api/feedback.js",
+        "api/health.js",
+        "api/_embedding.js",
+        "api/_vector-store.js",
+        "api/_taste-store.js",
+        "api/_catalog-indexer.js",
+        "api/index-catalog.js",
+        "api/index-status.js",
+    ]:
+        subprocess.run(["node","--check",str(ROOT/api_file)],check=True)
 
 def test_base_catalog():
     raw=json.loads((ROOT/"data/albums.json").read_text(encoding="utf-8"))
