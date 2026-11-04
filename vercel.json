@@ -2,25 +2,30 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "api/recommend.js": {
-      "maxDuration": 90
+      "maxDuration": 90,
+      "includeFiles": "models/Xenova/all-MiniLM-L6-v2/**"
     },
     "api/feedback.js": {
-      "maxDuration": 90
+      "maxDuration": 90,
+      "includeFiles": "models/Xenova/all-MiniLM-L6-v2/**"
     },
     "api/index-catalog.js": {
-      "maxDuration": 300
+      "maxDuration": 300,
+      "includeFiles": "models/Xenova/all-MiniLM-L6-v2/**"
     },
     "api/index-status.js": {
       "maxDuration": 15
     },
     "api/taste-bootstrap.js": {
-      "maxDuration": 90
+      "maxDuration": 90,
+      "includeFiles": "models/Xenova/all-MiniLM-L6-v2/**"
     },
     "api/artist-neighbors.js": {
       "maxDuration": 90
     },
     "api/neural-retrieve.js": {
-      "maxDuration": 90
+      "maxDuration": 90,
+      "includeFiles": "models/Xenova/all-MiniLM-L6-v2/**"
     }
   }
 }
