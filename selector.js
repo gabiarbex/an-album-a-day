@@ -2122,7 +2122,11 @@ $('logForm').onsubmit=e=>{
   signal_snapshot:{
    genre:live.genre||'',
    moods:pick._acoustic?.moods||live.signals?.moods||staticFeatureMoods||staticMoods,
-   energy:pick._acoustic?.energy??live.signals?.energy??staticEnergy
+   energy:pick._acoustic?.energy??live.signals?.energy??staticEnergy,
+   bpm:Number.isFinite(pick._acoustic?.bpm)?Number(pick._acoustic.bpm):null,
+   acoustic:Number.isFinite(pick._acoustic?.acoustic)?Number(pick._acoustic.acoustic):null,
+   instrumental:Number.isFinite(pick._acoustic?.instrumental)?Number(pick._acoustic.instrumental):null,
+   source:pick._acoustic?'acousticbrainz-selected-sample':(live.signals?'live-genre-prior':'catalog')
   }
  });
  persist();
@@ -2505,10 +2509,32 @@ async function diaryTasteTrainingRows(limit=60){
   const id=lookupId({artist:entry.artist,title:entry.album});
   const album=refreshed.get(id);
   if(!album)return null;
-  return {
-   rating:Number(entry.rating),
-   album:backendCandidate(album,interpretFeeling(''),0)
-  };
+  const candidate=backendCandidate(album,interpretFeeling(''),0);
+  const snap=entry.signal_snapshot||{};
+  const audioSnapshot=snap.source==='acousticbrainz-selected-sample';
+
+  if(snap.moods&&typeof snap.moods==='object'&&Object.keys(snap.moods).length){
+   candidate.moods=Object.entries(snap.moods)
+    .sort((a,b)=>Number(b[1])-Number(a[1]))
+    .map(([name])=>name)
+    .slice(0,12);
+   candidate.moodSource=audioSnapshot?'diary-acousticbrainz':'diary-snapshot';
+   candidate.moodConfidence=audioSnapshot?.88:.62;
+  }
+  if(Number.isFinite(Number(snap.energy))){
+   candidate.energy=Number(snap.energy);
+   candidate.energySource=audioSnapshot?'diary-acousticbrainz':'diary-snapshot';
+   candidate.energyConfidence=audioSnapshot?.9:.62;
+  }
+
+  const extraTags=[];
+  if(Number(snap.acoustic)>=.68)extraTags.push('acoustic');
+  if(Number(snap.instrumental)>=.68)extraTags.push('instrumental');
+  if(Number.isFinite(Number(snap.bpm))&&Number(snap.bpm)>=135)extraTags.push('fast tempo');
+  if(Number.isFinite(Number(snap.bpm))&&Number(snap.bpm)<=80)extraTags.push('slow tempo');
+  candidate.tags=mergeUnique([...(candidate.tags||[]),...extraTags]).slice(0,24);
+
+  return {rating:Number(entry.rating),album:candidate};
  }).filter(Boolean);
 }
 
