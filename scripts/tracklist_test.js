@@ -1,4 +1,4 @@
-const fs=require('fs');
+import fs from 'node:fs';
 const src=fs.readFileSync('selector.js','utf8');
 const start=src.indexOf('function releaseTrackCount');
 const end=src.indexOf('async function getReleaseWithRecordings',start);
