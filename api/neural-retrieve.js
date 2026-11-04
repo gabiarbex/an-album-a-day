@@ -158,9 +158,21 @@ export default {
   async fetch(request) {
     const headers = cors(request);
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
-    if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405, headers);
 
     try {
+      if (request.method === 'GET') {
+        const index = await loadIndex(new URL(request.url).origin);
+        return json({
+          ok: true,
+          engine: 'full-catalog-neural-retrieval-v1',
+          totalAlbums: index.ids.length,
+          dimensions: index.dims,
+          sourceDimensions: index.sourceDims,
+          catalogBlobSha: index.manifest.catalogBlobSha,
+        }, 200, headers);
+      }
+      if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405, headers);
+
       const body = await request.json();
       const limit = Math.max(20, Math.min(120, Number(body.limit) || 64));
       const queryText = queryProfile(body);
