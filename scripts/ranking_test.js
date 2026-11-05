@@ -92,7 +92,7 @@ const candidate = overrides => ({
 {
   const liked = scoreCandidate(candidate({}), 0.5, baseBody, { score: 0.8, confidence: 0.8 });
   const disliked = scoreCandidate(candidate({}), 0.5, baseBody, { score: -0.8, confidence: 0.8 });
-  assert.ok(liked > disliked + 0.15, 'learned taste should materially affect ranking');
+  assert.ok(liked > disliked + 0.10, 'learned taste should influence ranking without dominating intent');
 }
 
 // Runtime constraint should matter.

@@ -75,6 +75,10 @@ def test_frontend_contract():
         fail("Fresh visits must not auto-render the previous album")
     if "albumaday.seenKeys.v1" not in js or "albumWasSeen(" not in js:
         fail("Seen-album history must persist across visits")
+    if "if(!a||albumWasSeen(a)||logged.has(key(a)))return;" not in js:
+        fail("Backend recall must not reintroduce seen or diary-saved albums")
+    if ".filter(row=>!albumWasSeen(row.album)&&!logged.has(key(row.album)))" not in js:
+        fail("Semantic fallback must use the normalized no-repeat guard")
     if "await restoreSharedPick();" not in load_block:
         fail("Explicit shared-record links must still restore their requested album")
     if "let recommendationRequest=0" not in js or "if(request!==recommendationRequest)return;" not in js:

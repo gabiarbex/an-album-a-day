@@ -5,6 +5,7 @@ import {
   genreConflict,
   moodConflict,
   scoreCandidate,
+  explanation,
 } from '../api/_ranking-core.js';
 
 const baseBody = {
@@ -151,7 +152,7 @@ wins(
   {
     preferredTaste: { score: 0.8, confidence: 0.8 },
     rejectedTaste: { score: -0.8, confidence: 0.8 },
-    margin: 0.18,
+    margin: 0.10,
   },
 );
 
@@ -202,4 +203,44 @@ wins(
   assert.equal(moodConflict(guessed, ['energetic']), false);
 }
 
-console.log('recommender stress matrix passed (16 release gates)');
+// 17. An explicitly requested genre should beat a large neural advantage from the wrong genre.
+wins(
+  'requested genre beats neural advantage',
+  candidate({ genres: ['dream pop'] }),
+  candidate({ genres: ['metal'] }),
+  { ...baseBody, intent: { ...baseBody.intent, genres: ['dream pop'] } },
+  { preferredNeural: 0.45, rejectedNeural: 0.85, margin: 0.08 },
+);
+
+// 18. Reliable requested mood evidence should beat a large neural advantage from the wrong mood.
+wins(
+  'requested mood beats neural advantage',
+  candidate({ moods: ['melancholic'] }),
+  candidate({ moods: ['energetic'] }),
+  { ...baseBody, moods: ['melancholic'], intent: { ...baseBody.intent, moods: { melancholic: 1 } } },
+  { preferredNeural: 0.45, rejectedNeural: 0.85, margin: 0.02 },
+);
+
+// 19. Learned taste is a prior and must not overpower an explicit genre request.
+wins(
+  'taste prior cannot override requested genre',
+  candidate({ genres: ['jazz'] }),
+  candidate({ genres: ['metal'] }),
+  { ...baseBody, intent: { ...baseBody.intent, genres: ['jazz'] } },
+  {
+    preferredNeural: 0.50,
+    rejectedNeural: 0.62,
+    preferredTaste: { score: -0.2, confidence: 0.9 },
+    rejectedTaste: { score: 0.9, confidence: 0.9 },
+    margin: 0.02,
+  },
+);
+
+// 20. Explanations must not claim a requested mood without candidate evidence.
+{
+  const body = { ...baseBody, moods: ['melancholic'], intent: { ...baseBody.intent, moods: { melancholic: 1 } } };
+  const row = { candidate: candidate({ moods: ['energetic'] }), taste: { score: 0, confidence: 0 } };
+  assert.equal(explanation(row, body).includes('melancholic'), false);
+}
+
+console.log('recommender stress matrix passed (20 release gates)');

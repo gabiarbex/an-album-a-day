@@ -1091,3 +1091,92 @@ dialog input,dialog textarea{width:100%;padding:10px;border:var(--rule);border-r
   .legal-shell{padding-top:24px}
   .legal-shell section{padding-top:20px;padding-bottom:22px}
 }
+
+
+/* zine-049 — cleaner editorial pass */
+.header-doodle,
+.title-scribble,
+.showcase:before,
+.mood-block:after,
+.recent-shelf:before{
+  display:none;
+}
+
+main{
+  max-width:none;
+  padding:34px 0 58px;
+  grid-template-columns:minmax(0,1.08fr) minmax(420px,.82fr);
+  gap:clamp(28px,3vw,48px);
+  align-items:start;
+}
+.showcase{order:initial}
+.picker{
+  order:initial;
+  padding:22px 22px 24px;
+  box-shadow:5px 5px 0 var(--blue);
+}
+.clerk-intro h2{
+  max-width:none;
+  font-size:clamp(35px,3.35vw,52px);
+}
+.clerk-intro p{max-width:46ch}
+.feeling-field{
+  margin:17px 0 13px;
+  padding-bottom:18px;
+}
+#feelingInput{
+  height:78px;
+  min-height:78px;
+  max-height:78px;
+  box-shadow:3px 3px 0 var(--ink);
+}
+.fine-tune{margin-top:12px}
+.fine-tune:not([open])>summary{
+  color:var(--ink);
+  background:transparent;
+}
+.fine-tune:not([open])>summary small{
+  color:var(--ink);
+  background:transparent;
+  border:1px solid currentColor;
+}
+.fine-tune[open] .filter-body{
+  max-height:min(52vh,430px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+}
+.recommend{margin-top:14px}
+#status{margin-top:8px}
+.recent-shelf{
+  padding:24px 0 46px;
+  border-top:3px solid var(--ink);
+}
+.recent-shelf-head h2{
+  font-size:clamp(30px,3vw,46px);
+}
+.site-footer{padding-bottom:18px}
+
+@media(max-width:1100px){
+  main{
+    grid-template-columns:minmax(0,1fr) minmax(380px,.78fr);
+    gap:26px;
+  }
+  .picker{padding:20px}
+}
+
+@media(max-width:940px){
+  main{
+    grid-template-columns:1fr;
+    max-width:780px;
+    padding-top:30px;
+  }
+  .picker{order:-1}
+  .showcase{order:0}
+  .fine-tune[open] .filter-body{max-height:none}
+}
+
+@media(max-width:560px){
+  main{padding-top:26px;padding-bottom:44px}
+  .picker{padding:18px 14px}
+}
