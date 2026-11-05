@@ -90,6 +90,31 @@ def test_frontend_contract():
         fail("Feedback may retain only whether a free-text note was used")
     if "data-account-label>log in" not in html:
         fail("Account sign-in must be a discoverable release affordance")
+    auth_js=(ROOT/"auth-sync.js").read_text(encoding="utf-8")
+    auth_refs=set(re.findall(r"\\$\\('([^']+)'\\)",auth_js))
+    missing_auth=sorted(auth_refs-set(ids))
+    if missing_auth:
+        fail(f"Account/billing JS references missing DOM ids: {missing_auth}")
+    if "SUPPORTER_CHECKOUT='https://buy.stripe.com/" not in auth_js:
+        fail("Supporter checkout must be wired through the account layer")
+    if "client_reference_id" not in auth_js or "locked_prefilled_email" not in auth_js:
+        fail("Supporter checkout must reconcile Stripe to the logged-in account")
+    if "const SUPPORTER_TABLE='supporter_entitlements'" not in auth_js:
+        fail("Supporter entitlement table must be queried by the account layer")
+    if "if(!supporterLoaded)await refreshSupporterStatus({silent:true});" not in auth_js or "if(!isSupporter()){" not in auth_js:
+        fail("Cloud sync must be gated by server-backed Supporter status")
+    if "if(!session?.user||!isSupporter())return;" not in auth_js:
+        fail("Background cloud sync must stay off for free accounts")
+    if 'id="supporterSubscribe"' not in html or 'id="supporterFooter"' not in html:
+        fail("Supporter must be discoverable from both account UI and footer")
+    if 'href="https://buy.stripe.com/' in html:
+        fail("Guest-visible HTML must not expose a direct checkout link without account reconciliation")
+    privacy=(ROOT/"privacy.html").read_text(encoding="utf-8")
+    terms=(ROOT/"terms.html").read_text(encoding="utf-8")
+    if "Stripe" not in privacy or "$3/month Supporter" not in privacy:
+        fail("Privacy policy must disclose Stripe and Supporter billing")
+    if "US$3 per month" not in terms or "Stripe" not in terms:
+        fail("Terms must disclose recurring Supporter billing")
     if "if(!a||albumWasSeen(a)||logged.has(key(a)))return;" not in js:
         fail("Backend recall must not reintroduce seen or diary-saved albums")
     if ".filter(row=>!albumWasSeen(row.album)&&!logged.has(key(row.album)))" not in js:
