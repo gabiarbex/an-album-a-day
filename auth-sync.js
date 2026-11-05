@@ -3,6 +3,9 @@
 
 const CONFIG=window.ALBUM_AUTH_CONFIG||{};
 const TABLE='user_sync_state';
+const SUPPORTER_TABLE='supporter_entitlements';
+const SUPPORTER_CHECKOUT='https://buy.stripe.com/cNi14n8KIdC36CJ9fY93y00';
+const SUPPORTER_ACTIVE=new Set(['active','trialing']);
 const MIGRATION_PREFIX='albumaday.cloudMigrated.v1:';
 const LAST_SYNC_PREFIX='albumaday.cloudLastSync.v1:';
 const $=id=>document.getElementById(id);
@@ -13,6 +16,8 @@ let syncing=false;
 let syncTimer=null;
 let dirty=false;
 let initialized=false;
+let supporter=null;
+let supporterLoaded=false;
 
 function toast(message){
  if(typeof window.showToast==='function')window.showToast(message);
@@ -153,6 +158,98 @@ function setSyncStatus(textValue,stateName=''){
  const node=$('accountSyncStatus');
  if(node){node.textContent=textValue;node.dataset.state=stateName}
 }
+function isSupporter(){return SUPPORTER_ACTIVE.has(String(supporter?.status||''))}
+function supporterCheckoutUrl(){
+ if(!session?.user?.id||!session?.user?.email)return '';
+ const url=new URL(SUPPORTER_CHECKOUT);
+ url.searchParams.set('client_reference_id',session.user.id);
+ url.searchParams.set('locked_prefilled_email',session.user.email);
+ return url.toString();
+}
+function renderSupporter(){
+ const panel=$('supporterPanel');
+ const status=$('supporterStatus');
+ const copy=$('supporterCopy');
+ const badge=$('supporterBadge');
+ const subscribe=$('supporterSubscribe');
+ const refresh=$('supporterRefresh');
+ const syncButton=$('accountSyncNow');
+ const active=isSupporter();
+ if(panel){
+  panel.classList.toggle('is-active',active);
+  panel.classList.toggle('is-past-due',supporter?.status==='past_due');
+ }
+ if(status){
+  if(!supporterLoaded)status.textContent='checking status…';
+  else if(active)status.textContent='supporter active';
+  else if(supporter?.status==='past_due')status.textContent='payment needs attention';
+  else status.textContent='free account';
+ }
+ if(copy){
+  copy.textContent=active
+   ? 'cross-device diary, no-repeat history, streak and taste sync are unlocked.'
+   : supporter?.status==='past_due'
+     ? 'your supporter payment needs attention. local listening data is still safe on this browser.'
+     : 'the picker and local diary stay free. supporter unlocks cross-device history + taste sync and helps keep this project running.';
+ }
+ if(badge){badge.hidden=!active;badge.textContent='$3 / month'}
+ if(subscribe){
+  const checkout=supporterCheckoutUrl();
+  subscribe.hidden=active||!checkout;
+  subscribe.href=checkout||'#';
+ }
+ if(refresh)refresh.hidden=!session?.user;
+ if(syncButton){
+  syncButton.disabled=!active;
+  syncButton.title=active?'Sync your account now':'Supporter unlocks cross-device sync';
+ }
+}
+async function refreshSupporterStatus(options={}){
+ if(!client||!session?.user){
+  supporter=null;supporterLoaded=false;renderSupporter();return null;
+ }
+ try{
+  const {data,error}=await client
+   .from(SUPPORTER_TABLE)
+   .select('status,current_period_end,cancel_at_period_end,updated_at')
+   .eq('user_id',session.user.id)
+   .maybeSingle();
+  if(error)throw error;
+  supporter=data||null;
+  supporterLoaded=true;
+  renderSupporter();
+  renderAuth();
+  return supporter;
+ }catch(error){
+  console.warn('Supporter status check failed',error);
+  supporter=null;supporterLoaded=true;renderSupporter();renderAuth();
+  if(!options.silent)toast('Could not refresh Supporter status.');
+  return null;
+ }
+}
+function cleanSupporterReturnParam(){
+ const url=new URL(location.href);
+ if(url.searchParams.get('supporter')!=='thanks')return;
+ url.searchParams.delete('supporter');
+ history.replaceState(null,'',url.pathname+url.search+url.hash);
+}
+async function reconcileSupporterReturn(){
+ const returning=new URL(location.href).searchParams.get('supporter')==='thanks';
+ if(!returning||!session?.user)return;
+ toast('Payment received — confirming Supporter status…');
+ for(const delay of [0,900,2200]){
+  if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
+  await refreshSupporterStatus({silent:true});
+  if(isSupporter()){
+   toast('Supporter active. Cloud sync is unlocked.');
+   cleanSupporterReturnParam();
+   await syncNow({forceMerge:true,silent:true});
+   return;
+  }
+ }
+ toast('Stripe received the payment. Status can take a moment to appear.');
+ cleanSupporterReturnParam();
+}
 function renderAuth(){
  const signedIn=Boolean(session?.user);
  const toggle=$('accountToggle');
@@ -172,11 +269,22 @@ function renderAuth(){
  if(signedIn){
   const email=$('accountEmail');
   if(email)email.textContent=session.user.email||'signed in';
-  setSyncStatus(syncing?'syncing…':'synced','ok');
+  if(syncing)setSyncStatus('syncing…','busy');
+  else if(!supporterLoaded)setSyncStatus('checking supporter status…','busy');
+  else if(isSupporter())setSyncStatus('supporter · synced across devices','ok');
+  else if(supporter?.status==='past_due')setSyncStatus('supporter payment needs attention · local copy safe','error');
+  else setSyncStatus('free account · listening data stays on this browser','guest');
  }else setSyncStatus('guest mode · saved on this browser','guest');
+ renderSupporter();
 }
 async function syncNow(options={}){
  if(!client||!session?.user||syncing)return null;
+ if(!supporterLoaded)await refreshSupporterStatus({silent:true});
+ if(!isSupporter()){
+  renderAuth();
+  if(!options.silent)toast('Supporter unlocks cross-device sync. Your local diary is safe.');
+  return null;
+ }
  syncing=true;renderAuth();setSyncStatus('syncing…','busy');
  const userId=session.user.id;
  try{
@@ -217,7 +325,7 @@ async function syncNow(options={}){
 }
 function scheduleSync(){
  dirty=true;
- if(!session?.user)return;
+ if(!session?.user||!isSupporter())return;
  clearTimeout(syncTimer);
  syncTimer=setTimeout(()=>syncNow({silent:true}),900);
 }
@@ -269,7 +377,7 @@ async function signInGoogle(){
 async function signOut(){
  try{
   await client.auth.signOut();
-  session=null;renderAuth();closeDialog();
+  session=null;supporter=null;supporterLoaded=false;renderAuth();closeDialog();
   toast('Signed out. This browser keeps its local copy.');
  }catch(error){console.warn('Sign out failed',error)}
 }
@@ -284,6 +392,11 @@ function bind(){
  $('googleSignIn')?.addEventListener('click',signInGoogle);
  $('accountSyncNow')?.addEventListener('click',()=>syncNow({forceMerge:true}));
  $('accountSignOut')?.addEventListener('click',signOut);
+ $('supporterRefresh')?.addEventListener('click',async()=>{
+  await refreshSupporterStatus();
+  if(isSupporter())await syncNow({forceMerge:true,silent:true});
+ });
+ $('supporterFooter')?.addEventListener('click',openDialog);
  const google=$('googleSignIn');
  if(google)google.hidden=!CONFIG.googleEnabled;
  const emailForm=$('accountEmailForm');
@@ -311,13 +424,25 @@ async function init(){
   if(error)throw error;
   session=data?.session||null;
   renderAuth();
-  if(session?.user)setTimeout(()=>syncNow({forceMerge:!hasMigrated(),silent:true}),0);
+  if(session?.user)setTimeout(async()=>{
+   await refreshSupporterStatus({silent:true});
+   if(isSupporter())await syncNow({forceMerge:!hasMigrated(),silent:true});
+   await reconcileSupporterReturn();
+  },0);
 
   client.auth.onAuthStateChange((event,nextSession)=>{
+   const previousUser=session?.user?.id||null;
    session=nextSession||null;
+   if(previousUser!==session?.user?.id){
+    supporter=null;supporterLoaded=false;
+   }
    renderAuth();
    if(session?.user&&(event==='SIGNED_IN'||event==='INITIAL_SESSION'||event==='TOKEN_REFRESHED')){
-    setTimeout(()=>syncNow({forceMerge:!hasMigrated(),silent:true}),0);
+    setTimeout(async()=>{
+     await refreshSupporterStatus({silent:true});
+     if(isSupporter())await syncNow({forceMerge:!hasMigrated(),silent:true});
+     await reconcileSupporterReturn();
+    },0);
    }
   });
  }catch(error){
@@ -331,6 +456,8 @@ window.AlbumAuth={
  syncNow,
  clientId:accountClientId,
  isSignedIn:()=>Boolean(session?.user),
+ isSupporter,
+ refreshSupporterStatus,
  open:openDialog
 };
 
