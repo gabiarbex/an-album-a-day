@@ -79,8 +79,8 @@ def test_frontend_contract():
         fail("Free-text note and picker controls must be session-only, not persistent browser history")
     if "pulledRecordCount()" not in js or "statPulled" not in html or "pulledCount" not in html:
         fail("UI must distinguish pulled no-repeat history from saved diary history")
-    if "AI MATCH" not in html:
-        fail("Free-text semantic matching must be visible to users")
+    if "MEANING MATCH" not in html or "not just the exact words" not in html:
+        fail("Semantic matching must be explained without generic AI-product language")
     if "query:pickerSnapshot()" in js:
         fail("Feedback must not send the raw free-text picker snapshot")
     feedback_js=(ROOT/"api"/"feedback.js").read_text(encoding="utf-8")
@@ -126,6 +126,18 @@ def test_frontend_contract():
         fail(f"Supporter Studio JS references missing DOM ids: {missing_supporter}")
     if "supporter-core.js?v=" not in html or "supporter.js?v=" not in html:
         fail("Supporter Studio scripts must be loaded by the release page")
+    if 'id="appMain"' not in html or "document.body.classList.add('has-record')" not in js:
+        fail("Homepage must switch from picker-first to result-first after a recommendation")
+    if 'id="whySignals"' not in html or "signals.replaceChildren()" not in js:
+        fail("Recommendation rationale must render as scannable evidence signals")
+    if '> pulled<' in html or ' pulled</small>' in html:
+        fail("Listener-facing no-repeat terminology must use seen, not pulled")
+    if 'class="diary-extras"' not in html or 'id="supporterShelfTeaser"' not in html:
+        fail("Diary hierarchy must keep utilities secondary and Supporter value visible")
+    if 'id="studioFiveStarShelf"' not in html or 'id="studioTasteSentence"' not in html:
+        fail("Supporter profile must feel like a music identity page, not only analytics")
+    if 'id="storyWrapped"' not in html or "function storyWrapped()" not in supporter_js:
+        fail("Wrapped must support a shareable story-card export")
     if 'id="supporterStudioDialog"' not in html or 'data-studio-tab="wrapped"' not in html:
         fail("Supporter Studio profile/stats/Wrapped UI is missing")
     if 'id="supporterStudioOpen"' not in html or 'id="supporterStudioDrawer"' not in html:

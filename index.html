@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-053">
+  <link rel="stylesheet" href="style.css?v=zine-060">
 </head>
 <body>
   <header class="masthead">
@@ -58,7 +58,7 @@
           ◷ diary
           <span id="count">0</span><small> saved</small>
           <span class="history-sep">·</span>
-          <span id="pulledCount">0</span><small> pulled</small>
+          <span id="pulledCount">0</span><small> seen</small>
           <span class="history-sep">·</span>
           <span id="streak">0 day streak</span>
         </button>
@@ -66,7 +66,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="appMain" class="app-main">
     <section class="showcase" aria-label="Today's record">
       <div class="showcase-rubric">
         <span>today</span>
@@ -84,42 +84,31 @@
       </div>
 
       <div class="album-details" id="details">
-        <div class="eyebrow">nothing pulled yet</div>
+        <div class="eyebrow">today’s record</div>
         <h2>pull a record.</h2>
         <p>start with a note, or leave it completely blank.</p>
       </div>
 
-      <section id="tracklistPanel" class="tracklist-panel" hidden aria-live="polite">
-        <div class="tracklist-head">
-          <span>tracklist</span>
-          <span id="trackCountLabel">—</span>
-        </div>
-        <ol id="tracklist" class="tracklist"></ol>
-        <p id="tracklistStatus" class="tracklist-status">pulling the tracklist…</p>
-      </section>
-
-      <div class="actions">
-        <a id="spotify" class="primary disabled" aria-disabled="true" target="_blank" rel="noopener noreferrer">spotify ↗</a>
-        <button id="log" type="button" class="secondary" disabled>save</button>
-        <button id="sharePick" type="button" class="secondary" disabled>share</button>
-        <button id="reroll" type="button" class="secondary reroll" hidden>another</button>
+      <div class="why-panel" id="whyPanel" role="note" aria-label="Why this album matched" hidden>
+        <div class="why-heading">why this one</div>
+        <div id="whySignals" class="why-signals"></div>
+        <p id="whyText" class="why-copy"></p>
       </div>
 
-      <div id="feedbackBar" class="feedback-bar" hidden aria-label="Recommendation feedback">
-        <span>was it off?</span>
-        <button type="button" data-feedback="wrong_vibe">wrong vibe</button>
-        <button type="button" data-feedback="too_upbeat">too upbeat</button>
-        <button type="button" data-feedback="too_slow">too slow</button>
-        <button type="button" data-feedback="too_obvious">too obvious</button>
-        <button type="button" data-feedback="love_this">love this</button>
+      <div class="actions result-actions">
+        <a id="spotify" class="primary result-primary disabled" aria-disabled="true" target="_blank" rel="noopener noreferrer">listen on spotify ↗</a>
+        <button id="log" type="button" class="secondary save-action" disabled>save to diary</button>
+        <button id="reroll" type="button" class="secondary reroll" hidden>pick another</button>
+        <button id="sharePick" type="button" class="secondary quiet-action" disabled>share</button>
       </div>
 
-      <div class="why-panel" id="whyPanel" hidden>
-        <div>
-          <div class="why-heading">why it landed here</div>
-          <p id="whyText">the notes will go here.</p>
-        </div>
-      </div>
+      <details id="tracklistDetails" class="secondary-record-info">
+        <summary><span>tracklist</span><span id="trackCountLabel">—</span></summary>
+        <section id="tracklistPanel" class="tracklist-panel" hidden aria-live="polite">
+          <ol id="tracklist" class="tracklist"></ol>
+          <p id="tracklistStatus" class="tracklist-status">pulling the tracklist…</p>
+        </section>
+      </details>
 
       <details id="recordFile" class="record-file" hidden>
         <summary class="record-file-summary">
@@ -135,13 +124,22 @@
           <dl id="recordFacts" class="record-facts"></dl>
         </div>
       </details>
+
+      <div id="feedbackBar" class="feedback-bar" hidden aria-label="Recommendation feedback">
+        <span>tune the next pick</span>
+        <button type="button" data-feedback="wrong_vibe">wrong vibe</button>
+        <button type="button" data-feedback="too_upbeat">calmer</button>
+        <button type="button" data-feedback="too_slow">harder</button>
+        <button type="button" data-feedback="too_obvious">less obvious</button>
+        <button type="button" data-feedback="love_this">nailed it</button>
+      </div>
     </section>
 
     <section class="picker" aria-label="Choose a record">
       <div class="clerk-intro">
         <div class="eyebrow">today’s listen</div>
-        <h2>what are you after?</h2>
-        <p>write a note, or leave it blank.</p>
+        <h2>what do you want to hear?</h2>
+        <p>describe the feeling, scene, sound or kind of record you want. or leave it blank and let the shelf decide.</p>
         <div class="quick-actions">
           <button id="surpriseMe" type="button" class="quick-pick"><b>surprise me</b></button>
           <button id="resetPicker" type="button" class="quick-pick quiet" disabled><b>clear all</b></button>
@@ -149,9 +147,9 @@
       </div>
 
       <div class="feeling-field">
-        <label for="feelingInput" class="feeling-prompt">write it down</label>
+        <label for="feelingInput" class="feeling-prompt">describe it</label>
         <textarea id="feelingInput" maxlength="1200" rows="2" placeholder="2am bus home, restless, no obvious choices..."></textarea>
-        <p class="ai-match-note"><b>AI MATCH</b> your note is interpreted semantically, not just keyword-matched.</p>
+        <p class="ai-match-note"><b>MEANING MATCH</b> we match the idea behind your note, not just the exact words.</p>
         <div class="feeling-foot">
           <span id="feelingInsight" aria-live="polite"></span>
           <button id="clearFeeling" type="button" disabled>clear text</button>
@@ -194,7 +192,7 @@
       </details>
 
       <button id="recommend" type="button" class="recommend">
-        <span>pick an album</span>
+        <span>pick my album</span>
         <span>↗</span>
       </button>
 
@@ -224,32 +222,50 @@
       <button id="closeDrawer" type="button" aria-label="Close diary">✕</button>
     </div>
     <div class="diary-stats" aria-label="Listening diary statistics">
-      <div><b id="statListened">0</b><span>albums saved</span></div>
-      <div><b id="statPulled">0</b><span>records pulled</span></div>
-      <div><b id="statAverage">—</b><span>average rating</span></div>
+      <div><b id="statListened">0</b><span>saved</span></div>
+      <div><b id="statPulled">0</b><span>seen</span></div>
+      <div><b id="statAverage">—</b><span>avg rating</span></div>
       <div><b id="statGenre">—</b><span>top genre</span></div>
-      <div><b id="statTraining">0</b><span>rated records</span></div>
-      <div><b id="statLastfm">—</b><span>Last.fm artists</span></div>
     </div>
-    <section id="tastePrint" class="taste-print" hidden aria-label="Current taste profile">
-      <div class="taste-print-head"><span>taste print</span><small>local signals</small></div>
-      <div class="taste-print-row"><b>orbit</b><div id="tastePrintTags"></div></div>
-      <div class="taste-print-row"><b>neighbors</b><div id="tastePrintNeighbors"></div></div>
-    </section>
+    <div class="diary-hidden-stats" hidden>
+      <b id="statTraining">0</b>
+      <b id="statLastfm">—</b>
+    </div>
+    <div id="supporterShelfTeaser" class="supporter-shelf-teaser">
+      <div>
+        <small>SUPPORTER / $3 MONTH</small>
+        <strong>your listening year, mapped.</strong>
+        <span>profile · deeper stats · wrapped · cloud sync</span>
+      </div>
+      <div class="supporter-preview" aria-hidden="true">
+        <i></i><i></i><i></i><i></i>
+      </div>
+      <button id="supporterTeaserOpen" type="button">see supporter ↗</button>
+    </div>
+    <button id="supporterStudioDrawer" type="button" class="secondary supporter-studio-drawer" hidden>open supporter studio ↗</button>
+
     <div id="history"></div>
-    <p class="guest-history-note">Pulled records stay out of the recommendation pool on this browser for free. Supporter cloud sync carries your diary, no-repeat history and taste across devices.</p>
-    <div class="drawer-actions">
-      <button id="openAccountFromDrawer" type="button" class="secondary account-drawer-cta">account / supporter</button>
-      <button id="supporterStudioDrawer" type="button" class="secondary supporter-studio-drawer" hidden>supporter studio ↗</button>
-      <button id="trainFromDiary" type="button" class="secondary">train from diary ratings</button>
-      <button id="export" type="button" class="secondary">↓ Export diary JSON</button>
-      <button id="importDiary" type="button" class="secondary">↑ Import diary JSON</button>
-      <button id="importLastfm" type="button" class="secondary">Import Last.fm CSV</button>
-      <button id="deepenLastfm" type="button" class="secondary subtle" hidden title="Sends only a few top artist names; your raw Last.fm CSV stays on this device.">deepen Last.fm graph</button>
-      <button id="clearLastfm" type="button" class="secondary subtle" hidden>Clear Last.fm data</button>
-      <input id="importFile" type="file" accept="application/json,.json" hidden>
-      <input id="lastfmFile" type="file" accept=".csv,text/csv" hidden>
-    </div>
+    <p class="guest-history-note">Records you have already seen stay out of the recommendation pool on this browser. Supporter sync carries that history across devices.</p>
+
+    <details class="diary-extras">
+      <summary>taste + data tools</summary>
+      <section id="tastePrint" class="taste-print" hidden aria-label="Current taste profile">
+        <div class="taste-print-head"><span>taste print</span><small>local signals</small></div>
+        <div class="taste-print-row"><b>orbit</b><div id="tastePrintTags"></div></div>
+        <div class="taste-print-row"><b>neighbors</b><div id="tastePrintNeighbors"></div></div>
+      </section>
+      <div class="drawer-actions">
+        <button id="openAccountFromDrawer" type="button" class="secondary account-drawer-cta">account / billing</button>
+        <button id="trainFromDiary" type="button" class="secondary">train from diary ratings</button>
+        <button id="export" type="button" class="secondary">↓ export diary JSON</button>
+        <button id="importDiary" type="button" class="secondary">↑ import diary JSON</button>
+        <button id="importLastfm" type="button" class="secondary">import Last.fm CSV</button>
+        <button id="deepenLastfm" type="button" class="secondary subtle" hidden title="Sends only a few top artist names; your raw Last.fm CSV stays on this device.">deepen Last.fm graph</button>
+        <button id="clearLastfm" type="button" class="secondary subtle" hidden>clear Last.fm data</button>
+        <input id="importFile" type="file" accept="application/json,.json" hidden>
+        <input id="lastfmFile" type="file" accept=".csv,text/csv" hidden>
+      </div>
+    </details>
   </aside>
 
   <div id="overlay" class="overlay" hidden></div>
@@ -324,13 +340,13 @@
         <button id="closeSupporterStudio" type="button" aria-label="Close Supporter Studio">✕</button>
       </header>
 
-      <nav class="studio-tabs" aria-label="Supporter Studio sections">
-        <button type="button" data-studio-tab="profile" aria-selected="true">profile</button>
-        <button type="button" data-studio-tab="stats" aria-selected="false">stats</button>
-        <button type="button" data-studio-tab="wrapped" aria-selected="false">wrapped</button>
+      <nav class="studio-tabs" role="tablist" aria-label="Supporter Studio sections">
+        <button id="studioTabProfile" type="button" role="tab" aria-controls="studioPanelProfile" data-studio-tab="profile" aria-selected="true">profile</button>
+        <button id="studioTabStats" type="button" role="tab" aria-controls="studioPanelStats" data-studio-tab="stats" aria-selected="false" tabindex="-1">stats</button>
+        <button id="studioTabWrapped" type="button" role="tab" aria-controls="studioPanelWrapped" data-studio-tab="wrapped" aria-selected="false" tabindex="-1">wrapped</button>
       </nav>
 
-      <section class="studio-panel" data-studio-panel="profile">
+      <section id="studioPanelProfile" class="studio-panel" role="tabpanel" aria-labelledby="studioTabProfile" data-studio-panel="profile">
         <div class="profile-hero">
           <div id="studioAvatar" class="profile-avatar">AA</div>
           <div class="profile-identity">
@@ -341,10 +357,20 @@
           </div>
         </div>
 
+        <div class="studio-taste-statement">
+          <small>YOUR SHELF RIGHT NOW</small>
+          <p id="studioTasteSentence">save and rate a few records and this starts sounding like you.</p>
+        </div>
+
         <div class="studio-section">
           <div class="studio-section-head"><span>taste fingerprint</span><small>built from what you actually save + rate</small></div>
           <div id="studioTasteTags" class="studio-chips"></div>
         </div>
+
+        <section class="studio-section studio-five-star">
+          <div class="studio-section-head"><span>five-star shelf</span><small>your latest 5★ records</small></div>
+          <div id="studioFiveStarShelf" class="studio-record-shelf"></div>
+        </section>
 
         <div class="studio-two-col">
           <section class="studio-section">
@@ -363,10 +389,10 @@
         </section>
       </section>
 
-      <section class="studio-panel" data-studio-panel="stats" hidden>
+      <section id="studioPanelStats" class="studio-panel" role="tabpanel" aria-labelledby="studioTabStats" data-studio-panel="stats" hidden>
         <div class="studio-metrics">
           <div id="studioMetricSaved" class="studio-metric"><strong>0</strong><small>albums saved</small></div>
-          <div id="studioMetricPulled" class="studio-metric"><strong>0</strong><small>records pulled</small></div>
+          <div id="studioMetricPulled" class="studio-metric"><strong>0</strong><small>records seen</small></div>
           <div id="studioMetricArtists" class="studio-metric"><strong>0</strong><small>unique artists</small></div>
           <div id="studioMetricAverage" class="studio-metric"><strong>—</strong><small>average rating</small></div>
           <div id="studioMetricFive" class="studio-metric"><strong>0</strong><small>five-star records</small></div>
@@ -403,7 +429,7 @@
         </section>
       </section>
 
-      <section class="studio-panel" data-studio-panel="wrapped" hidden>
+      <section id="studioPanelWrapped" class="studio-panel" role="tabpanel" aria-labelledby="studioTabWrapped" data-studio-panel="wrapped" hidden>
         <div class="wrapped-head">
           <div>
             <span>ALBUM-A-DAY WRAPPED</span>
@@ -416,7 +442,10 @@
         <div id="wrappedGrid" class="wrapped-grid"></div>
         <div class="wrapped-share">
           <p id="wrappedSummary"></p>
-          <button id="shareWrapped" type="button">share wrapped ↗</button>
+          <div class="wrapped-share-actions">
+            <button id="storyWrapped" type="button">make story card ↓</button>
+            <button id="shareWrapped" type="button">share wrapped ↗</button>
+          </div>
         </div>
       </section>
     </div>
@@ -446,9 +475,9 @@
   <script src="auth-config.js?v=zine-050" defer></script>
   <script src="intent-core.js?v=zine-050"></script>
   <script src="semantic-core.js?v=zine-050"></script>
-  <script src="selector.js?v=zine-053" defer></script>
-  <script src="auth-sync.js?v=zine-053" defer></script>
-  <script src="supporter-core.js?v=zine-053"></script>
-  <script src="supporter.js?v=zine-053" defer></script>
+  <script src="selector.js?v=zine-060" defer></script>
+  <script src="auth-sync.js?v=zine-060" defer></script>
+  <script src="supporter-core.js?v=zine-060"></script>
+  <script src="supporter.js?v=zine-060" defer></script>
 </body>
 </html>
