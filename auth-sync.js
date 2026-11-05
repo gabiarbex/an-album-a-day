@@ -5,6 +5,7 @@ const CONFIG=window.ALBUM_AUTH_CONFIG||{};
 const TABLE='user_sync_state';
 const SUPPORTER_TABLE='supporter_entitlements';
 const SUPPORTER_CHECKOUT='https://buy.stripe.com/cNi14n8KIdC36CJ9fY93y00';
+const SUPPORTER_PORTAL='https://billing.stripe.com/p/login/cNi14n8KIdC36CJ9fY93y00';
 const SUPPORTER_ACTIVE=new Set(['active','trialing']);
 const MIGRATION_PREFIX='albumaday.cloudMigrated.v1:';
 const LAST_SYNC_PREFIX='albumaday.cloudLastSync.v1:';
@@ -166,12 +167,19 @@ function supporterCheckoutUrl(){
  url.searchParams.set('locked_prefilled_email',session.user.email);
  return url.toString();
 }
+function supporterPortalUrl(){
+ if(!session?.user?.email)return '';
+ const url=new URL(SUPPORTER_PORTAL);
+ url.searchParams.set('prefilled_email',session.user.email);
+ return url.toString();
+}
 function renderSupporter(){
  const panel=$('supporterPanel');
  const status=$('supporterStatus');
  const copy=$('supporterCopy');
  const badge=$('supporterBadge');
  const subscribe=$('supporterSubscribe');
+ const manage=$('supporterManage');
  const refresh=$('supporterRefresh');
  const syncButton=$('accountSyncNow');
  const active=isSupporter();
@@ -197,6 +205,11 @@ function renderSupporter(){
   const checkout=supporterCheckoutUrl();
   subscribe.hidden=active||!checkout;
   subscribe.href=checkout||'#';
+ }
+ if(manage){
+  const portal=supporterPortalUrl();
+  manage.hidden=!supporter||!portal;
+  manage.href=portal||'#';
  }
  if(refresh)refresh.hidden=!session?.user;
  if(syncButton){
