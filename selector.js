@@ -213,11 +213,12 @@ function renderPickerControls(){
  updatePickerStateUI();
 }
 function savePickerState(){
- try{localStorage.setItem(PICKER_STORAGE_KEY,JSON.stringify(pickerSnapshot()))}catch{}
+ try{sessionStorage.setItem(PICKER_STORAGE_KEY,JSON.stringify(pickerSnapshot()))}catch{}
 }
 function restorePickerState(){
+ try{localStorage.removeItem(PICKER_STORAGE_KEY)}catch{}
  try{
-  const saved=JSON.parse(localStorage.getItem(PICKER_STORAGE_KEY)||'null');
+  const saved=JSON.parse(sessionStorage.getItem(PICKER_STORAGE_KEY)||'null');
   if(!saved)return;
   state.moods=Array.isArray(saved.moods)?saved.moods:[];
   state.energy=saved.energy??null;
@@ -248,6 +249,7 @@ function resetPicker(){
   localStorage.removeItem(PICKER_STORAGE_KEY);
   localStorage.removeItem('albumaday.picker');
   localStorage.removeItem('albumaday.dailyPick');
+  sessionStorage.removeItem(PICKER_STORAGE_KEY);
  }catch{}
  const url=new URL(location.href);
  if(url.searchParams.has('a')){
@@ -317,11 +319,20 @@ function albumWasSeen(a){
  const k=key(a);
  return seenAlbumKeys.has(seenKey(a))||seenAlbums.has(hash32(k));
 }
+function pulledRecordCount(){
+ return Math.max(seenAlbumKeys.size,seenAlbums.size);
+}
+function renderPulledCounters(){
+ const pulled=pulledRecordCount();
+ if($('pulledCount'))$('pulledCount').textContent=String(pulled);
+ if($('statPulled'))$('statPulled').textContent=String(pulled);
+}
 function persistSeen(){
  try{
   localStorage.setItem('albumaday.seen',JSON.stringify([...seenAlbums]));
   localStorage.setItem(SEEN_KEYS_STORAGE_KEY,JSON.stringify([...seenAlbumKeys]));
  }catch(e){showToast('Could not save seen-history on this browser.');console.warn('Seen history storage unavailable',e)}
+ renderPulledCounters();
  queueCloudSync();
 }
 function markAlbumSeen(a){
@@ -467,6 +478,7 @@ function renderTastePrint(){
 }
 function renderHistory(){
  $('count').textContent=logs.length;
+ renderPulledCounters();
  renderTastePrint();
  renderStreak();
  if($('statListened'))$('statListened').textContent=logs.length;
@@ -2123,8 +2135,10 @@ function show(a,context={}){
  $('sharePick').disabled=false;
  $('recordLabel').style.background=labelColor(a);
  requestAnimationFrame(()=>requestAnimationFrame(()=>stage.classList.add('revealed')));
- const unseen=Math.max(0,(catalogTotal||albums.length)-seenAlbums.size).toLocaleString();
- $('status').textContent=context.mode==='bonus'?`${unseen} still unheard.`:context.mode==='shared'?'shared record.':`${unseen} still unheard.`;
+ const pulled=pulledRecordCount();
+ const unseen=Math.max(0,(catalogTotal||albums.length)-pulled).toLocaleString();
+ const poolStatus=pulled.toLocaleString()+' pulled · '+unseen+' still in the no-repeat pool.';
+ $('status').textContent=context.mode==='shared'?'shared record.':poolStatus;
  loadArtwork(a,cover);
  loadRecordFile(a).finally(()=>enhanceSelectedMetadata(a));
  const feedback=$('feedbackBar');
