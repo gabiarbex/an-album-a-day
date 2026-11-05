@@ -3,17 +3,17 @@
 
 const feelingLexicon={
  nostalgic:['nostalg','saudade','miss ','remember','memories','memory','childhood','past','used to','back then','homesick','lembranca','lembrar'],
- melancholic:['sad','cry','heartbreak','lonely','alone','grief','empty','devastat','blue','triste','chorar','solidao','luto','broken'],
- reflective:['think','thought','quiet','introspect','confus','uncertain','meaning','question','ponder','overthink','thinking','pensando','pensar'],
- dreamy:['dream','float','ethereal','cloud','surreal','distant','escape','space','sonho','sonhar','dreaming'],
- warm:['warm','safe','hug','home','soft','gentle','cozy','love','tender','carinho','abraco','amor','aconchego','quente','acolhedor','acolhedora','suave'],
- intense:['angry','rage','scream','furious','chaos','loud','explode','restless','raiva','gritar','intense'],
- energetic:['dance','party','run','drive fast','excited','alive','movement','move','dancar','festa','energia'],
- dark:['dark','night','midnight','shadow','goth','haunt','noite','escuro','sombrio'],
- hopeful:['hope','better','healing','beginning','tomorrow','future','optimis','esperanca','recomecar'],
- alienated:['stranger','disconnected','out of place','belong','unreal','estranha','deslocad'],
- cold:['winter','cold','rain','fog','frost','inverno','frio','chuva'],
- gritty:['raw','dirty','grunge','rough','punk','noise','sujo','bruto']
+ melancholic:['sad','cry','heartbreak','lonely','alone','grief','empty','devastat','blue','depress','miserable','sorrow','downbeat','somber','triste','chorar','solidao','luto','broken'],
+ reflective:['think','thought','quiet','introspect','introspective','contemplat','confus','uncertain','meaning','question','ponder','overthink','thinking','pensando','pensar'],
+ dreamy:['dream','float','floating','ethereal','hazy','airy','cloud','surreal','distant','escape','space','sonho','sonhar','dreaming'],
+ warm:['warm','safe','hug','home','soft','gentle','cozy','love','tender','intimate','comforting','comfort','affection','close','carinho','abraco','amor','aconchego','quente','acolhedor','acolhedora','suave'],
+ intense:['angry','rage','scream','furious','chaos','loud','explode','explosive','aggressive','hard-hitting','heavy','restless','raiva','gritar','intense'],
+ energetic:['dance','party','run','drive fast','excited','alive','movement','move','upbeat','lively','high energy','fast-paced','fast paced','driving','pumping','bouncy','euphoric','dancar','festa','energia','animad'],
+ dark:['dark','night','midnight','shadow','goth','haunt','ominous','eerie','bleak','noite','escuro','sombrio'],
+ hopeful:['hope','better','healing','beginning','tomorrow','future','optimis','uplifting','positive','bright','esperanca','recomecar'],
+ alienated:['stranger','disconnected','out of place','belong','unreal','isolated','dissociat','estranha','deslocad'],
+ cold:['winter','cold','rain','fog','frost','icy','inverno','frio','chuva'],
+ gritty:['raw','dirty','grunge','rough','punk','noise','abrasive','distort','sujo','bruto']
 };
 
 const genreLexicon=[
@@ -88,8 +88,15 @@ function interpretFeeling(text){
 
  const ranked=Object.entries(moods).sort((a,b)=>b[1]-a[1]);
  const avoided=Object.entries(avoidMoods).sort((a,b)=>b[1]-a[1]);
- const energy=/dance|party|run|scream|rage|festa|dancar|gritar|alive|full blast/.test(t)?8:
-              /quiet|slow|soft|gentle|sleep|calm|silencio|devagar/.test(t)?3:null;
+ const highEnergy=scanTerms(t,[
+  'dance','party','run','scream','rage','festa','dancar','gritar','alive','full blast',
+  'upbeat','lively','high energy','fast-paced','fast paced','driving','pumping','bouncy','euphoric','animad'
+ ]);
+ const lowEnergy=scanTerms(t,[
+  'quiet','slow','soft','gentle','sleep','calm','silencio','devagar','hushed','restrained','intimate','low energy'
+ ]);
+ const energy=highEnergy.positive>lowEnergy.positive?8:
+              lowEnergy.positive>highEnergy.positive?3:null;
  const exploration=/weird|strange|left turn|surprise|unexpected|obscure|unknown|new to me|experimental|esquisit|diferente|fora do obvio/.test(t)?1:0;
  const parts=[];
  if(ranked.length)parts.push(ranked.slice(0,2).map(([m])=>m).join(' + '));
