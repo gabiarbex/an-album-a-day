@@ -479,6 +479,7 @@ window.AlbumAuth={
  isSupporter,
  user:()=>session?.user||null,
  supporterStatus:()=>supporter?{...supporter}:null,
+ supporterReady:()=>supporterLoaded,
  refreshSupporterStatus,
  open:openDialog
 };
