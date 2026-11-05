@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Behavioral probe for the deployed Album-a-Day neural recommender."""
 import json
+import os
 import sys
 import time
 import urllib.error
 import urllib.request
 
+HEALTH_URL = "https://an-album-a-day.vercel.app/api/health"
 RETRIEVE_URL = "https://an-album-a-day.vercel.app/api/neural-retrieve"
 RECOMMEND_URL = "https://an-album-a-day.vercel.app/api/recommend"
 HEADERS = {
@@ -36,6 +38,45 @@ def post_json(url, payload, timeout=95):
     assert status == 200, (status, data)
     assert data.get("ok") is True, data
     return data, elapsed
+
+
+def get_json(url, timeout=30):
+    request = urllib.request.Request(url, headers={"User-Agent": HEADERS["User-Agent"]}, method="GET")
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            body = response.read().decode("utf-8")
+            status = response.status
+    except Exception as error:
+        raise AssertionError(f"GET failed for {url}: {error}") from error
+    data = json.loads(body)
+    assert status == 200, (status, data)
+    assert data.get("ok") is True, data
+    return data
+
+
+def wait_for_expected_deployment():
+    expected = os.environ.get("EXPECTED_COMMIT_SHA", "").strip()
+    if not expected:
+        return
+    deadline = time.monotonic() + 300
+    last_seen = None
+    while time.monotonic() < deadline:
+        try:
+            health = get_json(HEALTH_URL)
+            last_seen = str(health.get("commitSha") or "")
+            if last_seen == expected:
+                print(f"PASS deployment gate: {expected[:8]}")
+                return
+        except Exception as error:
+            last_seen = f"health error: {error}"
+        time.sleep(5)
+    raise AssertionError(
+        f"production did not reach expected commit {expected[:12]} within deployment gate; "
+        f"last seen: {last_seen}"
+    )
+
+
+wait_for_expected_deployment()
 
 
 def base_candidate(candidate_id, artist, title, **overrides):
