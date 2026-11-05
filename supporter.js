@@ -262,8 +262,11 @@ function render(){
 }
 function renderAccess(){
  const active=isSupporter();
+ const signedIn=Boolean(window.AlbumAuth?.isSignedIn?.());
+ const ready=Boolean(window.AlbumAuth?.supporterReady?.());
+ const resolving=signedIn&&!ready;
  for(const id of ['supporterStudioOpen','supporterStudioDrawer'])if($(id))$(id).hidden=!active;
- for(const id of ['supporterStudioTeaser','supporterShelfTeaser'])if($(id))$(id).hidden=active;
+ for(const id of ['supporterStudioTeaser','supporterShelfTeaser'])if($(id))$(id).hidden=active||resolving;
 }
 function open(){
  if(!isSupporter()){
