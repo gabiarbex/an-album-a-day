@@ -326,6 +326,7 @@ function renderPulledCounters(){
  const pulled=pulledRecordCount();
  if($('pulledCount'))$('pulledCount').textContent=String(pulled);
  if($('statPulled'))$('statPulled').textContent=String(pulled);
+ document.documentElement.style.setProperty('--seen-count',String(pulled));
 }
 function persistSeen(){
  try{
@@ -2108,6 +2109,10 @@ function handoffToResult(){
  }
 }
 function show(a,context={}){
+ document.body.classList.add('has-record');
+ $('appMain')?.classList.add('has-record');
+ const trackDetails=$('tracklistDetails');
+ if(trackDetails)trackDetails.open=false;
  const stage=$('stage');stage.classList.remove('revealed');stage.style.setProperty('--mount-color',labelColor(a));void stage.offsetWidth;
  const cover=$('cover');cover.style.display='block';cover.alt=`${a.title} by ${a.artist} album cover`;
  $('emptyCover').style.display='none';
@@ -2130,8 +2135,25 @@ function show(a,context={}){
  meta.textContent=[(a.moods||[]).join(' · '),a.length_min?`${Math.round(Number(a.length_min))} min`:null].filter(Boolean).join('  /  ');
  info.append(tag,title,artist,meta);
  const explanation=explainPick(a,context);
- const whyPanel=$('whyPanel');if(whyPanel)whyPanel.hidden=!explanation;
- const why=$('whyText');if(why)why.textContent=explanation;
+ const whyPanel=$('whyPanel');
+ const why=$('whyText');
+ const signals=$('whySignals');
+ if(whyPanel)whyPanel.hidden=!explanation;
+ if(why)why.textContent=explanation;
+ if(signals){
+  signals.replaceChildren();
+  const pieces=String(explanation||'')
+   .replace(/[.]$/,'')
+   .split(/\s*[·/]\s*/)
+   .map(value=>value.trim())
+   .filter(Boolean)
+   .slice(0,4);
+  for(const value of pieces){
+   const chip=document.createElement('span');
+   chip.textContent=value;
+   signals.append(chip);
+  }
+ }
  resetRecordFile(a);
  const link=$('spotify');link.href=spotifyUrl(a);link.classList.remove('disabled');link.setAttribute('aria-disabled','false');
  $('log').disabled=false;
@@ -2140,7 +2162,7 @@ function show(a,context={}){
  requestAnimationFrame(()=>requestAnimationFrame(()=>stage.classList.add('revealed')));
  const pulled=pulledRecordCount();
  const unseen=Math.max(0,(catalogTotal||albums.length)-pulled).toLocaleString();
- const poolStatus=pulled.toLocaleString()+' pulled · '+unseen+' still in the no-repeat pool.';
+ const poolStatus=pulled.toLocaleString()+' seen · '+unseen+' still in your no-repeat pool.';
  $('status').textContent=context.mode==='shared'?'shared record.':poolStatus;
  loadArtwork(a,cover);
  loadRecordFile(a).finally(()=>enhanceSelectedMetadata(a));
