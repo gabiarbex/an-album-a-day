@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "scripts/live_backend_probe.py"
+      - "scripts/retrieval_quality_probe.py"
       - ".github/workflows/live-backend-probe.yml"
 
 jobs:
@@ -14,5 +15,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Probe deployed 100k neural retrieval
+      - name: Probe deployed recommender behavior
         run: python scripts/live_backend_probe.py
+      - name: Audit live retrieval quality
+        run: python scripts/retrieval_quality_probe.py
