@@ -99,6 +99,10 @@ def test_frontend_contract():
         fail("Supporter checkout must be wired through the account layer")
     if "client_reference_id" not in auth_js or "locked_prefilled_email" not in auth_js:
         fail("Supporter checkout must reconcile Stripe to the logged-in account")
+    if "SUPPORTER_PORTAL='https://billing.stripe.com/p/login/" not in auth_js or "prefilled_email" not in auth_js:
+        fail("Active Supporters must have a Stripe-hosted self-service billing path")
+    if 'id="supporterManage"' not in html:
+        fail("Supporter account UI must expose billing management")
     if "const SUPPORTER_TABLE='supporter_entitlements'" not in auth_js:
         fail("Supporter entitlement table must be queried by the account layer")
     if "if(!supporterLoaded)await refreshSupporterStatus({silent:true});" not in auth_js or "if(!isSupporter()){" not in auth_js:
