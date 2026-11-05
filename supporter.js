@@ -245,8 +245,13 @@ function renderYearOptions(s){
  }
  if(!select.value)select.value=String(Core.availableYears(s)[0]);
 }
-function switchTab(name){
- document.querySelectorAll('[data-studio-tab]').forEach(button=>button.setAttribute('aria-selected',String(button.dataset.studioTab===name)));
+function switchTab(name,focus=false){
+ document.querySelectorAll('[data-studio-tab]').forEach(button=>{
+  const active=button.dataset.studioTab===name;
+  button.setAttribute('aria-selected',String(active));
+  button.tabIndex=active?0:-1;
+  if(active&&focus)button.focus();
+ });
  document.querySelectorAll('[data-studio-panel]').forEach(panel=>panel.hidden=panel.dataset.studioPanel!==name);
 }
 function render(){
@@ -357,7 +362,20 @@ function bind(){
  $('wrappedYear')?.addEventListener('change',()=>renderWrapped(state(),Number($('wrappedYear').value)));
  $('shareWrapped')?.addEventListener('click',shareWrapped);
  $('storyWrapped')?.addEventListener('click',storyWrapped);
- document.querySelectorAll('[data-studio-tab]').forEach(button=>button.addEventListener('click',()=>switchTab(button.dataset.studioTab)));
+ const tabs=[...document.querySelectorAll('[data-studio-tab]')];
+ tabs.forEach((button,index)=>{
+  button.addEventListener('click',()=>switchTab(button.dataset.studioTab));
+  button.addEventListener('keydown',event=>{
+   if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+   event.preventDefault();
+   let next=index;
+   if(event.key==='ArrowLeft')next=(index-1+tabs.length)%tabs.length;
+   if(event.key==='ArrowRight')next=(index+1)%tabs.length;
+   if(event.key==='Home')next=0;
+   if(event.key==='End')next=tabs.length-1;
+   switchTab(tabs[next].dataset.studioTab,true);
+  });
+ });
  window.addEventListener('albumaday:datachange',()=>{if($('supporterStudioDialog')?.open)render()});
  window.addEventListener('albumaday:supporterchange',()=>{renderAccess();if(!isSupporter()&&$('supporterStudioDialog')?.open)$('supporterStudioDialog').close()});
  window.addEventListener('pageshow',renderAccess);
