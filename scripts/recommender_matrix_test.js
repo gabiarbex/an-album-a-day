@@ -152,7 +152,7 @@ wins(
   {
     preferredTaste: { score: 0.8, confidence: 0.8 },
     rejectedTaste: { score: -0.8, confidence: 0.8 },
-    margin: 0.18,
+    margin: 0.10,
   },
 );
 
