@@ -90,6 +90,55 @@ function renderTasteTags(stats){
  if(!names.length){node.append(el('span','studio-chip muted','save + rate records to build this'));return}
  names.forEach(name=>node.append(el('span','studio-chip',name)));
 }
+
+function renderTasteSentence(stats){
+ const node=$('studioTasteSentence');if(!node)return;
+ const genre=stats.topGenres[0]?.name;
+ const mood=stats.topMoods[0]?.name;
+ const artist=stats.topArtists[0]?.name;
+ const energy=energyLabel(stats.averageEnergy);
+ if(!genre&&!mood&&!artist){
+  node.textContent='save and rate a few records and this starts sounding like you.';
+  return;
+ }
+ const pieces=[];
+ if(genre&&mood)pieces.push(`your shelf leans ${genre} / ${mood}`);
+ else if(genre)pieces.push(`your shelf leans ${genre}`);
+ else if(mood)pieces.push(`your shelf leans ${mood}`);
+ if(Number.isFinite(stats.averageEnergy))pieces.push(`${energy} energy overall`);
+ if(artist)pieces.push(`${artist} appears most often`);
+ node.textContent=pieces.join('. ')+'.';
+}
+
+function renderFiveStarShelf(diary){
+ const node=$('studioFiveStarShelf');if(!node)return;
+ clear(node);
+ const rows=[...(diary||[])]
+  .filter(entry=>Number(entry?.rating)>=5)
+  .reverse()
+  .slice(0,6);
+ if(!rows.length){
+  node.append(el('p','studio-empty','your 5★ records will live here.'));
+  return;
+ }
+ for(const entry of rows){
+  const card=el('article','studio-record-card');
+  const art=el('div','studio-record-art');
+  if(entry.cover_art){
+   const img=document.createElement('img');
+   img.src=entry.cover_art;img.alt='';img.loading='lazy';
+   img.onerror=()=>{img.remove();art.classList.add('fallback')};
+   art.append(img);
+  }else art.classList.add('fallback');
+  const copy=el('div','studio-record-copy');
+  copy.append(
+   el('strong','',entry.album||'Untitled'),
+   el('span','',entry.artist||'Unknown artist'),
+   el('small','','★★★★★')
+  );
+  card.append(art,copy);node.append(card);
+ }
+}
 function renderProfile(s){
  const stats=Core.buildStats(s);
  const user=currentUser();
@@ -99,6 +148,8 @@ function renderProfile(s){
  $('studioProfileEmail').textContent=email||'supporter account';
  $('studioProfileLine').textContent=`${stats.saved} saved · ${stats.uniqueArtists} artists · ${stats.fiveStar} five-star records`;
  renderTasteTags(stats);
+ renderTasteSentence(stats);
+ renderFiveStarShelf(s.diary);
  renderList('studioTopArtists',stats.topArtists.slice(0,6),'your artist orbit appears after you save records');
  renderList('studioFavoriteTracks',stats.favoriteTracks.slice(0,6),'favorite tracks you log will collect here');
 
@@ -134,7 +185,7 @@ function renderStats(s){
  const year=new Date().getFullYear();
  const current=Core.buildStats(s,year);
  metric('studioMetricSaved',number(all.saved),'albums saved');
- metric('studioMetricPulled',number(all.pulled),'records pulled');
+ metric('studioMetricPulled',number(all.pulled),'records seen');
  metric('studioMetricArtists',number(all.uniqueArtists),'unique artists');
  metric('studioMetricAverage',rating(all.averageRating),'average rating');
  metric('studioMetricFive',number(all.fiveStar),'five-star records');
@@ -207,8 +258,7 @@ function render(){
 function renderAccess(){
  const active=isSupporter();
  for(const id of ['supporterStudioOpen','supporterStudioDrawer'])if($(id))$(id).hidden=!active;
- const teaser=$('supporterStudioTeaser');
- if(teaser)teaser.hidden=active;
+ for(const id of ['supporterStudioTeaser','supporterShelfTeaser'])if($(id))$(id).hidden=active;
 }
 function open(){
  if(!isSupporter()){
@@ -232,12 +282,81 @@ async function shareWrapped(){
   if(error?.name!=='AbortError')window.showToast?.('Could not share Wrapped.');
  }
 }
+
+function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=4){
+ const words=String(text||'').split(/\s+/);
+ const lines=[];let line='';
+ for(const word of words){
+  const test=line?line+' '+word:word;
+  if(ctx.measureText(test).width>maxWidth&&line){
+   lines.push(line);line=word;
+   if(lines.length>=maxLines-1)break;
+  }else line=test;
+ }
+ if(line&&lines.length<maxLines)lines.push(line);
+ lines.forEach((value,index)=>ctx.fillText(value,x,y+index*lineHeight));
+ return y+lines.length*lineHeight;
+}
+async function storyWrapped(){
+ const year=Number($('wrappedYear')?.value)||new Date().getFullYear();
+ const stats=Core.buildStats(state(),year);
+ const canvas=document.createElement('canvas');
+ canvas.width=1080;canvas.height=1920;
+ const ctx=canvas.getContext('2d');
+ if(!ctx)return;
+
+ ctx.fillStyle='#eee7da';ctx.fillRect(0,0,1080,1920);
+ ctx.fillStyle='#101010';ctx.fillRect(72,70,936,18);
+ ctx.font='700 30px Courier New, monospace';ctx.fillText('AN ALBUM A DAY / '+year,72,142);
+ ctx.fillStyle='#3156ed';ctx.fillRect(72,190,936,360);
+ ctx.fillStyle='#ffffff';ctx.font='900 112px Arial Black, Arial, sans-serif';
+ wrapCanvasText(ctx,'MY YEAR IN RECORDS',108,315,850,105,3);
+
+ const items=[
+  ['ALBUMS SAVED',String(stats.saved)],
+  ['ARTIST OF THE YEAR',stats.topArtists[0]?.name||'STILL COLLECTING'],
+  ['RECORD OF THE YEAR',stats.topRated?stats.topRated.artist+' — '+stats.topRated.album:'STILL COLLECTING'],
+  ['GENRE ORBIT',stats.topGenres[0]?.name||'STILL COLLECTING'],
+  ['AVERAGE RATING',stats.averageRating!==null?stats.averageRating.toFixed(1)+'★':'—']
+ ];
+ let y=650;
+ items.forEach((item,index)=>{
+  const bg=['#d8ff4a','#f3b8c8','#f7df62','#ffffff','#d8ff4a'][index];
+  ctx.fillStyle='#101010';ctx.fillRect(72,y,936,4);
+  ctx.font='700 24px Courier New, monospace';ctx.fillText(item[0],72,y+52);
+  ctx.fillStyle=bg;ctx.fillRect(72,y+78,936,178);
+  ctx.fillStyle='#101010';ctx.font='900 54px Arial Black, Arial, sans-serif';
+  wrapCanvasText(ctx,String(item[1]).toUpperCase(),102,y+148,870,56,2);
+  y+=275;
+ });
+ ctx.fillStyle='#101010';ctx.font='700 24px Courier New, monospace';
+ ctx.fillText('ONE RECORD. NO REPEATS. FRONT TO BACK.',72,1855);
+
+ const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+ if(!blob)return;
+ const file=new File([blob],`album-a-day-wrapped-${year}.png`,{type:'image/png'});
+ try{
+  if(navigator.canShare?.({files:[file]})&&navigator.share){
+   await navigator.share({title:`My ${year} Album-a-Day Wrapped`,files:[file]});
+   return;
+  }
+ }catch(error){
+  if(error?.name==='AbortError')return;
+ }
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;a.download=file.name;document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ window.showToast?.('Story card saved.');
+}
 function bind(){
  $('supporterStudioOpen')?.addEventListener('click',open);
  $('supporterStudioDrawer')?.addEventListener('click',open);
+ $('supporterTeaserOpen')?.addEventListener('click',()=>window.AlbumAuth?.open?.());
  $('closeSupporterStudio')?.addEventListener('click',()=>$('supporterStudioDialog')?.close());
  $('wrappedYear')?.addEventListener('change',()=>renderWrapped(state(),Number($('wrappedYear').value)));
  $('shareWrapped')?.addEventListener('click',shareWrapped);
+ $('storyWrapped')?.addEventListener('click',storyWrapped);
  document.querySelectorAll('[data-studio-tab]').forEach(button=>button.addEventListener('click',()=>switchTab(button.dataset.studioTab)));
  window.addEventListener('albumaday:datachange',()=>{if($('supporterStudioDialog')?.open)render()});
  window.addEventListener('albumaday:supporterchange',()=>{renderAccess();if(!isSupporter()&&$('supporterStudioDialog')?.open)$('supporterStudioDialog').close()});
