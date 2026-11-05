@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-052">
+  <link rel="stylesheet" href="style.css?v=zine-053">
 </head>
 <body>
   <header class="masthead">
@@ -240,6 +240,7 @@
     <p class="guest-history-note">Pulled records stay out of the recommendation pool on this browser for free. Supporter cloud sync carries your diary, no-repeat history and taste across devices.</p>
     <div class="drawer-actions">
       <button id="openAccountFromDrawer" type="button" class="secondary account-drawer-cta">account / supporter</button>
+      <button id="supporterStudioDrawer" type="button" class="secondary supporter-studio-drawer" hidden>supporter studio ↗</button>
       <button id="trainFromDiary" type="button" class="secondary">train from diary ratings</button>
       <button id="export" type="button" class="secondary">↓ Export diary JSON</button>
       <button id="importDiary" type="button" class="secondary">↑ Import diary JSON</button>
@@ -295,9 +296,11 @@
           <span id="supporterBadge" class="supporter-badge" hidden>$3 / month</span>
         </div>
         <p id="supporterCopy">the picker and local diary stay free. supporter unlocks cross-device history + taste sync and helps keep this project running.</p>
+        <p id="supporterStudioTeaser" class="supporter-studio-teaser">plus: private listening profile, deeper stats and your yearly Album-a-Day Wrapped.</p>
         <div class="supporter-actions">
           <a id="supporterSubscribe" class="supporter-subscribe" target="_blank" rel="noopener noreferrer">become a supporter · $3/month ↗</a>
           <a id="supporterManage" class="supporter-manage" target="_blank" rel="noopener noreferrer" hidden>manage billing ↗</a>
+          <button id="supporterStudioOpen" type="button" class="supporter-studio-open" hidden>open supporter studio ↗</button>
           <button id="supporterRefresh" type="button" class="subtle">check status</button>
         </div>
       </section>
@@ -309,6 +312,114 @@
     </div>
 
     <div id="accountSyncStatus" class="account-sync-status" data-state="guest">guest mode · saved on this browser</div>
+  </dialog>
+
+  <dialog id="supporterStudioDialog" class="supporter-studio-dialog">
+    <div class="studio-shell">
+      <header class="studio-head">
+        <div>
+          <small>SUPPORTER STUDIO / PRIVATE</small>
+          <h2>your record shelf, quantified.</h2>
+        </div>
+        <button id="closeSupporterStudio" type="button" aria-label="Close Supporter Studio">✕</button>
+      </header>
+
+      <nav class="studio-tabs" aria-label="Supporter Studio sections">
+        <button type="button" data-studio-tab="profile" aria-selected="true">profile</button>
+        <button type="button" data-studio-tab="stats" aria-selected="false">stats</button>
+        <button type="button" data-studio-tab="wrapped" aria-selected="false">wrapped</button>
+      </nav>
+
+      <section class="studio-panel" data-studio-panel="profile">
+        <div class="profile-hero">
+          <div id="studioAvatar" class="profile-avatar">AA</div>
+          <div class="profile-identity">
+            <span>album-a-day supporter</span>
+            <h3 id="studioProfileName">listener</h3>
+            <p id="studioProfileEmail">supporter account</p>
+            <small id="studioProfileLine">0 saved · 0 artists · 0 five-star records</small>
+          </div>
+        </div>
+
+        <div class="studio-section">
+          <div class="studio-section-head"><span>taste fingerprint</span><small>built from what you actually save + rate</small></div>
+          <div id="studioTasteTags" class="studio-chips"></div>
+        </div>
+
+        <div class="studio-two-col">
+          <section class="studio-section">
+            <div class="studio-section-head"><span>artist orbit</span><small>most saved</small></div>
+            <div id="studioTopArtists" class="studio-rank-list"></div>
+          </section>
+          <section class="studio-section">
+            <div class="studio-section-head"><span>favorite tracks</span><small>most logged</small></div>
+            <div id="studioFavoriteTracks" class="studio-rank-list"></div>
+          </section>
+        </div>
+
+        <section class="studio-section">
+          <div class="studio-section-head"><span>Last.fm layer</span><small>optional</small></div>
+          <div id="studioLastfm" class="studio-lastfm"></div>
+        </section>
+      </section>
+
+      <section class="studio-panel" data-studio-panel="stats" hidden>
+        <div class="studio-metrics">
+          <div id="studioMetricSaved" class="studio-metric"><strong>0</strong><small>albums saved</small></div>
+          <div id="studioMetricPulled" class="studio-metric"><strong>0</strong><small>records pulled</small></div>
+          <div id="studioMetricArtists" class="studio-metric"><strong>0</strong><small>unique artists</small></div>
+          <div id="studioMetricAverage" class="studio-metric"><strong>—</strong><small>average rating</small></div>
+          <div id="studioMetricFive" class="studio-metric"><strong>0</strong><small>five-star records</small></div>
+          <div id="studioMetricDays" class="studio-metric"><strong>0</strong><small>days picked</small></div>
+          <div id="studioMetricStreak" class="studio-metric"><strong>0</strong><small>current streak</small></div>
+          <div id="studioMetricLongest" class="studio-metric"><strong>0</strong><small>longest streak</small></div>
+          <div id="studioMetricTime" class="studio-metric"><strong>—</strong><small>known listening time</small></div>
+          <div id="studioMetricEnergy" class="studio-metric"><strong>—</strong><small>energy profile</small></div>
+        </div>
+
+        <section class="studio-section">
+          <div class="studio-section-head"><span><b id="studioActivityYear">2026</b> activity</span><small>saved albums by month</small></div>
+          <div id="studioMonths" class="studio-months"></div>
+        </section>
+
+        <div class="studio-three-col">
+          <section class="studio-section">
+            <div class="studio-section-head"><span>top artists</span><small>all time</small></div>
+            <div id="studioStatsArtists" class="studio-rank-list"></div>
+          </section>
+          <section class="studio-section">
+            <div class="studio-section-head"><span>top genres</span><small>all time</small></div>
+            <div id="studioStatsGenres" class="studio-rank-list"></div>
+          </section>
+          <section class="studio-section">
+            <div class="studio-section-head"><span>mood map</span><small>saved record signals</small></div>
+            <div id="studioStatsMoods" class="studio-rank-list"></div>
+          </section>
+        </div>
+
+        <section class="studio-section">
+          <div class="studio-section-head"><span>rating curve</span><small>1★ → 5★</small></div>
+          <div id="studioRatings" class="rating-dist"></div>
+        </section>
+      </section>
+
+      <section class="studio-panel" data-studio-panel="wrapped" hidden>
+        <div class="wrapped-head">
+          <div>
+            <span>ALBUM-A-DAY WRAPPED</span>
+            <h3>your year in records.</h3>
+          </div>
+          <label>year
+            <select id="wrappedYear"></select>
+          </label>
+        </div>
+        <div id="wrappedGrid" class="wrapped-grid"></div>
+        <div class="wrapped-share">
+          <p id="wrappedSummary"></p>
+          <button id="shareWrapped" type="button">share wrapped ↗</button>
+        </div>
+      </section>
+    </div>
   </dialog>
 
   <dialog id="logDialog">
@@ -335,7 +446,9 @@
   <script src="auth-config.js?v=zine-050" defer></script>
   <script src="intent-core.js?v=zine-050"></script>
   <script src="semantic-core.js?v=zine-050"></script>
-  <script src="selector.js?v=zine-050" defer></script>
-  <script src="auth-sync.js?v=zine-052" defer></script>
+  <script src="selector.js?v=zine-053" defer></script>
+  <script src="auth-sync.js?v=zine-053" defer></script>
+  <script src="supporter-core.js?v=zine-053"></script>
+  <script src="supporter.js?v=zine-053" defer></script>
 </body>
 </html>
