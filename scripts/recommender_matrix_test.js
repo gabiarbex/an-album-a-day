@@ -243,4 +243,17 @@ wins(
   assert.equal(explanation(row, body).includes('melancholic'), false);
 }
 
-console.log('recommender stress matrix passed (20 release gates)');
+// 21. No time selection must not create a hidden preference for short albums.
+{
+  const short = score(candidate({ duration: 22 }), 0.55, baseBody);
+  const long = score(candidate({ duration: 110 }), 0.55, baseBody);
+  assert.ok(Math.abs(short - long) < 1e-9, `no-time request should ignore duration; got ${short} vs ${long}`);
+}
+
+// 22. A missing time/duration must never produce a fake "0 min" explanation.
+{
+  const row = { candidate: candidate({ duration: null }), taste: { score: 0, confidence: 0 } };
+  assert.equal(explanation(row, baseBody).includes('0 min'), false);
+}
+
+console.log('recommender stress matrix passed (22 release gates)');
