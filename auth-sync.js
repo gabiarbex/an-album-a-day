@@ -160,6 +160,12 @@ function setSyncStatus(textValue,stateName=''){
  if(node){node.textContent=textValue;node.dataset.state=stateName}
 }
 function isSupporter(){return SUPPORTER_ACTIVE.has(String(supporter?.status||''))}
+function notifySupporter(){
+ window.dispatchEvent(new CustomEvent('albumaday:supporterchange',{detail:{
+  active:isSupporter(),
+  status:String(supporter?.status||'free')
+ }}));
+}
 function supporterCheckoutUrl(){
  if(!session?.user?.id||!session?.user?.email)return '';
  const url=new URL(SUPPORTER_CHECKOUT);
@@ -219,7 +225,7 @@ function renderSupporter(){
 }
 async function refreshSupporterStatus(options={}){
  if(!client||!session?.user){
-  supporter=null;supporterLoaded=false;renderSupporter();return null;
+  supporter=null;supporterLoaded=false;renderSupporter();notifySupporter();return null;
  }
  try{
   const {data,error}=await client
@@ -232,10 +238,11 @@ async function refreshSupporterStatus(options={}){
   supporterLoaded=true;
   renderSupporter();
   renderAuth();
+  notifySupporter();
   return supporter;
  }catch(error){
   console.warn('Supporter status check failed',error);
-  supporter=null;supporterLoaded=true;renderSupporter();renderAuth();
+  supporter=null;supporterLoaded=true;renderSupporter();renderAuth();notifySupporter();
   if(!options.silent)toast('Could not refresh Supporter status.');
   return null;
  }
@@ -390,7 +397,7 @@ async function signInGoogle(){
 async function signOut(){
  try{
   await client.auth.signOut();
-  session=null;supporter=null;supporterLoaded=false;renderAuth();closeDialog();
+  session=null;supporter=null;supporterLoaded=false;renderAuth();notifySupporter();closeDialog();
   toast('Signed out. This browser keeps its local copy.');
  }catch(error){console.warn('Sign out failed',error)}
 }
@@ -470,6 +477,8 @@ window.AlbumAuth={
  clientId:accountClientId,
  isSignedIn:()=>Boolean(session?.user),
  isSupporter,
+ user:()=>session?.user||null,
+ supporterStatus:()=>supporter?{...supporter}:null,
  refreshSupporterStatus,
  open:openDialog
 };
