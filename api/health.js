@@ -71,6 +71,7 @@ export default {
       model: EMBEDDING_MODEL,
       dimensions: EMBEDDING_DIMENSIONS,
       profileVersion: PROFILE_VERSION,
+      commitSha: process.env.VERCEL_GIT_COMMIT_SHA || null,
       staticVectorIndex,
       neuralRetrievalIndex,
       fallbackVectorIndex: blobState,
