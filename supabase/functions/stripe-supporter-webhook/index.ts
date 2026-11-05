@@ -170,9 +170,10 @@ Deno.serve(async (req: Request) => {
 
       const subscriptionId = safeString(object?.subscription);
       const customerId = safeString(object?.customer);
+      const checkoutPaid = object?.payment_status === "paid" || object?.payment_status === "no_payment_required";
       const { error } = await admin.from("supporter_entitlements").upsert({
         user_id: user.id,
-        status: "active",
+        status: checkoutPaid ? "active" : "pending",
         stripe_customer_id: customerId,
         stripe_subscription_id: subscriptionId,
         stripe_price_id: SUPPORTER_PRICE_ID,
@@ -183,7 +184,7 @@ Deno.serve(async (req: Request) => {
         updated_at: new Date().toISOString(),
       }, { onConflict: "user_id" });
       if (error) throw error;
-      return json({ ok: true, entitlement: "active" });
+      return json({ ok: true, entitlement: checkoutPaid ? "active" : "pending" });
     }
 
     if (type === "customer.subscription.updated" || type === "customer.subscription.deleted") {
