@@ -1103,6 +1103,7 @@ dialog input,dialog textarea{width:100%;padding:10px;border:var(--rule);border-r
 }
 
 main{
+  max-width:none;
   padding:34px 0 58px;
   grid-template-columns:minmax(0,1.08fr) minmax(420px,.82fr);
   gap:clamp(28px,3vw,48px);
