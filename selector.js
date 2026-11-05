@@ -254,7 +254,7 @@ function resetPicker(){
   url.searchParams.delete('a');
   history.replaceState({},'',url.pathname+url.search+url.hash);
  }
- const fine=$('fineTune');if(fine)fine.open=true;
+ const fine=$('fineTune');if(fine)fine.open=false;
  const insight=$('feelingInsight');if(insight)insight.textContent='';
  const status=$('status');if(status)status.textContent='ready for a new pick.';
  updatePickerStateUI();
