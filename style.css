@@ -1180,3 +1180,33 @@ main{
   main{padding-top:26px;padding-bottom:44px}
   .picker{padding:18px 14px}
 }
+
+
+/* zine-050 — release-state clarity */
+.history-toggle small{
+  font:700 7px/1 "Courier New",monospace;
+  text-transform:uppercase;
+  opacity:.72;
+}
+.ai-match-note{
+  margin:8px 0 0;
+  color:#6f675d;
+  font:700 8px/1.35 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.ai-match-note b{
+  display:inline-block;
+  margin-right:5px;
+  padding:2px 4px;
+  border:1px solid var(--ink);
+  background:var(--acid);
+  color:var(--ink);
+}
+.guest-history-note{
+  margin:16px 0 0;
+  padding:10px 11px;
+  border:1px dashed var(--ink);
+  background:#fffaf0;
+  font:700 9px/1.45 "Courier New",monospace;
+}
+.account-drawer-cta{background:var(--yellow)!important;color:var(--ink)!important}
