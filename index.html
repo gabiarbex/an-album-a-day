@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-049">
+  <link rel="stylesheet" href="style.css?v=zine-050">
 </head>
 <body>
   <header class="masthead">
@@ -52,12 +52,14 @@
       </div>
       <div class="masthead-actions">
         <button id="accountToggle" type="button" class="account-toggle" hidden aria-controls="accountDialog">
-          ☁ <span data-account-label>save history</span>
+          ☁ <span data-account-label>log in</span>
         </button>
         <button id="historyToggle" type="button" class="history-toggle" aria-controls="drawer" aria-expanded="false">
-          ◷ listening diary
-          <span id="count">0</span>
-          <span class="history-sep">/</span>
+          ◷ diary
+          <span id="count">0</span><small> saved</small>
+          <span class="history-sep">·</span>
+          <span id="pulledCount">0</span><small> pulled</small>
+          <span class="history-sep">·</span>
           <span id="streak">0 day streak</span>
         </button>
       </div>
@@ -149,6 +151,7 @@
       <div class="feeling-field">
         <label for="feelingInput" class="feeling-prompt">write it down</label>
         <textarea id="feelingInput" maxlength="1200" rows="2" placeholder="2am bus home, restless, no obvious choices..."></textarea>
+        <p class="ai-match-note"><b>AI MATCH</b> your note is interpreted semantically, not just keyword-matched.</p>
         <div class="feeling-foot">
           <span id="feelingInsight" aria-live="polite"></span>
           <button id="clearFeeling" type="button" disabled>clear text</button>
@@ -222,6 +225,7 @@
     </div>
     <div class="diary-stats" aria-label="Listening diary statistics">
       <div><b id="statListened">0</b><span>albums saved</span></div>
+      <div><b id="statPulled">0</b><span>records pulled</span></div>
       <div><b id="statAverage">—</b><span>average rating</span></div>
       <div><b id="statGenre">—</b><span>top genre</span></div>
       <div><b id="statTraining">0</b><span>rated records</span></div>
@@ -233,7 +237,9 @@
       <div class="taste-print-row"><b>neighbors</b><div id="tastePrintNeighbors"></div></div>
     </section>
     <div id="history"></div>
+    <p class="guest-history-note">Pulled records stay out of the recommendation pool on this browser. Log in to carry that no-repeat history across devices.</p>
     <div class="drawer-actions">
+      <button id="openAccountFromDrawer" type="button" class="secondary account-drawer-cta">log in / sync history</button>
       <button id="trainFromDiary" type="button" class="secondary">train from diary ratings</button>
       <button id="export" type="button" class="secondary">↓ Export diary JSON</button>
       <button id="importDiary" type="button" class="secondary">↑ Import diary JSON</button>
@@ -251,13 +257,13 @@
   <dialog id="accountDialog" class="account-dialog">
     <div class="dialog-head">
       <div>
-        <small class="account-kicker">optional cloud copy</small>
-        <h2>keep your diary.</h2>
+        <small class="account-kicker">account + cloud sync</small>
+        <h2>keep your history.</h2>
       </div>
       <button type="button" id="closeAccountDialog" aria-label="Close account dialog">✕</button>
     </div>
 
-    <p class="account-intro">sync your diary, no-repeat history, streak and taste profile across devices. guest mode still works exactly as before.</p>
+    <p class="account-intro">log in to sync your saved diary, pulled-record no-repeat history, streak and taste profile across devices. you can still use the picker without an account.</p>
 
     <div id="accountGuest">
       <button id="googleSignIn" type="button" class="account-provider" hidden>continue with google</button>
@@ -270,7 +276,7 @@
         </div>
       </form>
       <p id="accountEmailSent" class="account-sent" hidden></p>
-      <p class="account-privacy">no password. your raw Last.fm CSV stays on this device. creating an account merges your existing guest diary instead of replacing it.</p>
+      <p class="account-privacy">Google sign-in merges this browser’s existing diary and no-repeat history into your account instead of replacing it. your raw Last.fm CSV stays on this device.</p>
     </div>
 
     <div id="accountMember" hidden>
@@ -309,10 +315,10 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <script src="auth-config.js?v=zine-049" defer></script>
-  <script src="intent-core.js?v=zine-049"></script>
-  <script src="semantic-core.js?v=zine-049"></script>
-  <script src="selector.js?v=zine-049" defer></script>
-  <script src="auth-sync.js?v=zine-049" defer></script>
+  <script src="auth-config.js?v=zine-050" defer></script>
+  <script src="intent-core.js?v=zine-050"></script>
+  <script src="semantic-core.js?v=zine-050"></script>
+  <script src="selector.js?v=zine-050" defer></script>
+  <script src="auth-sync.js?v=zine-050" defer></script>
 </body>
 </html>
