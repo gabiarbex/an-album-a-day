@@ -1,5 +1,6 @@
-const assert=require('node:assert/strict');
-const Core=require('../supporter-core.js');
+import assert from 'node:assert/strict';
+await import('../supporter-core.js');
+const Core=globalThis.AlbumSupporterCore;
 
 const state={
   diary:[
