@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-050">
+  <link rel="stylesheet" href="style.css?v=zine-051">
 </head>
 <body>
   <header class="masthead">
@@ -214,7 +214,7 @@
 
   <footer class="site-footer">
     <span>an album a day</span>
-    <span class="footer-legal"><a href="privacy.html">privacy</a> · <a href="terms.html">terms</a></span>
+    <span class="footer-legal"><button id="supporterFooter" type="button" class="footer-support">support · $3/mo</button> · <a href="privacy.html">privacy</a> · <a href="terms.html">terms</a></span>
     <span>2026</span>
   </footer>
 
@@ -237,9 +237,9 @@
       <div class="taste-print-row"><b>neighbors</b><div id="tastePrintNeighbors"></div></div>
     </section>
     <div id="history"></div>
-    <p class="guest-history-note">Pulled records stay out of the recommendation pool on this browser. Log in to carry that no-repeat history across devices.</p>
+    <p class="guest-history-note">Pulled records stay out of the recommendation pool on this browser for free. Supporter cloud sync carries your diary, no-repeat history and taste across devices.</p>
     <div class="drawer-actions">
-      <button id="openAccountFromDrawer" type="button" class="secondary account-drawer-cta">log in / sync history</button>
+      <button id="openAccountFromDrawer" type="button" class="secondary account-drawer-cta">account / supporter</button>
       <button id="trainFromDiary" type="button" class="secondary">train from diary ratings</button>
       <button id="export" type="button" class="secondary">↓ Export diary JSON</button>
       <button id="importDiary" type="button" class="secondary">↑ Import diary JSON</button>
@@ -263,7 +263,7 @@
       <button type="button" id="closeAccountDialog" aria-label="Close account dialog">✕</button>
     </div>
 
-    <p class="account-intro">log in to sync your saved diary, pulled-record no-repeat history, streak and taste profile across devices. you can still use the picker without an account.</p>
+    <p class="account-intro">the picker and local listening diary are free. log in for an account; supporter is $3/month and unlocks cross-device diary, no-repeat history, streak and taste sync.</p>
 
     <div id="accountGuest">
       <button id="googleSignIn" type="button" class="account-provider" hidden>continue with google</button>
@@ -283,8 +283,24 @@
       <div class="account-ticket">
         <small>signed in as</small>
         <strong id="accountEmail"></strong>
-        <span>your local copy still works offline.</span>
+        <span>your local copy always stays available on this browser.</span>
       </div>
+
+      <section id="supporterPanel" class="supporter-panel" aria-live="polite">
+        <div class="supporter-panel-head">
+          <div>
+            <small>supporter pass</small>
+            <strong id="supporterStatus">checking status…</strong>
+          </div>
+          <span id="supporterBadge" class="supporter-badge" hidden>$3 / month</span>
+        </div>
+        <p id="supporterCopy">the picker and local diary stay free. supporter unlocks cross-device history + taste sync and helps keep this project running.</p>
+        <div class="supporter-actions">
+          <a id="supporterSubscribe" class="supporter-subscribe" target="_blank" rel="noopener noreferrer">become a supporter · $3/month ↗</a>
+          <button id="supporterRefresh" type="button" class="subtle">check status</button>
+        </div>
+      </section>
+
       <div class="account-member-actions">
         <button id="accountSyncNow" type="button">sync now</button>
         <button id="accountSignOut" type="button" class="subtle">sign out</button>
@@ -319,6 +335,6 @@
   <script src="intent-core.js?v=zine-050"></script>
   <script src="semantic-core.js?v=zine-050"></script>
   <script src="selector.js?v=zine-050" defer></script>
-  <script src="auth-sync.js?v=zine-050" defer></script>
+  <script src="auth-sync.js?v=zine-051" defer></script>
 </body>
 </html>
