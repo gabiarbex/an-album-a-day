@@ -5,6 +5,12 @@ on:
   push:
     branches: [main]
     paths:
+      - "api/**"
+      - "selector.js"
+      - "intent-core.js"
+      - "semantic-core.js"
+      - "data/neural-retrieval/**"
+      - "data/vectors/**"
       - "scripts/live_backend_probe.py"
       - "scripts/retrieval_quality_probe.py"
       - ".github/workflows/live-backend-probe.yml"
@@ -12,10 +18,12 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Probe deployed recommender behavior
+        env:
+          EXPECTED_COMMIT_SHA: ${{ github.sha }}
         run: python scripts/live_backend_probe.py
       - name: Audit live retrieval quality
         run: python scripts/retrieval_quality_probe.py
