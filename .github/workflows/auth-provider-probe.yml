@@ -2,6 +2,12 @@ name: Google auth provider probe
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "auth-config.js"
+      - "auth-sync.js"
+      - "scripts/auth_provider_probe.py"
+      - ".github/workflows/auth-provider-probe.yml"
   push:
     branches: [main]
     paths:

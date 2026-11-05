@@ -162,11 +162,13 @@ function renderAuth(){
   toggle.hidden=!CONFIG.enabled;
   toggle.classList.toggle('signed-in',signedIn);
   toggle.querySelector('[data-account-label]')?.replaceChildren(document.createTextNode(
-   signedIn?'synced':'save history'
+   signedIn?'account':'log in'
   ));
  }
  if(guest)guest.hidden=signedIn;
  if(member)member.hidden=!signedIn;
+ const drawerCta=$('openAccountFromDrawer');
+ if(drawerCta)drawerCta.hidden=!CONFIG.enabled||signedIn;
  if(signedIn){
   const email=$('accountEmail');
   if(email)email.textContent=session.user.email||'signed in';
@@ -273,6 +275,7 @@ async function signOut(){
 }
 function bind(){
  $('accountToggle')?.addEventListener('click',openDialog);
+ $('openAccountFromDrawer')?.addEventListener('click',openDialog);
  $('closeAccountDialog')?.addEventListener('click',closeDialog);
  $('accountDialog')?.addEventListener('click',event=>{
   if(event.target===$('accountDialog'))closeDialog();

@@ -75,6 +75,14 @@ def test_frontend_contract():
         fail("Fresh visits must not auto-render the previous album")
     if "albumaday.seenKeys.v1" not in js or "albumWasSeen(" not in js:
         fail("Seen-album history must persist across visits")
+    if "sessionStorage.setItem(PICKER_STORAGE_KEY" not in js or "sessionStorage.getItem(PICKER_STORAGE_KEY" not in js:
+        fail("Free-text note and picker controls must be session-only, not persistent browser history")
+    if "pulledRecordCount()" not in js or "statPulled" not in html or "pulledCount" not in html:
+        fail("UI must distinguish pulled no-repeat history from saved diary history")
+    if "AI MATCH" not in html:
+        fail("Free-text semantic matching must be visible to users")
+    if "data-account-label>log in" not in html:
+        fail("Account sign-in must be a discoverable release affordance")
     if "if(!a||albumWasSeen(a)||logged.has(key(a)))return;" not in js:
         fail("Backend recall must not reintroduce seen or diary-saved albums")
     if ".filter(row=>!albumWasSeen(row.album)&&!logged.has(key(row.album)))" not in js:
