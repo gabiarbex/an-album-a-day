@@ -1276,6 +1276,7 @@ main{
   align-items:stretch;
 }
 .supporter-subscribe,
+.supporter-manage,
 .supporter-actions button{
   display:flex;
   align-items:center;
@@ -1294,6 +1295,12 @@ main{
   box-shadow:3px 3px 0 var(--blue);
 }
 .supporter-subscribe:hover{background:var(--blue)}
+.supporter-manage{
+  background:var(--acid);
+  color:var(--ink);
+  box-shadow:3px 3px 0 var(--ink);
+}
+.supporter-manage:hover{background:var(--yellow)}
 .supporter-actions button{
   background:var(--paper);
   color:var(--ink);
