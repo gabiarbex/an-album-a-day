@@ -119,6 +119,25 @@ def test_frontend_contract():
         fail("Privacy policy must disclose Stripe and Supporter billing")
     if "US$3 per month" not in terms or "Stripe" not in terms:
         fail("Terms must disclose recurring Supporter billing")
+    supporter_js=(ROOT/"supporter.js").read_text(encoding="utf-8")
+    supporter_refs=set(re.findall(r"\\$\\('([^']+)'\\)",supporter_js))
+    missing_supporter=sorted(supporter_refs-set(ids))
+    if missing_supporter:
+        fail(f"Supporter Studio JS references missing DOM ids: {missing_supporter}")
+    if "supporter-core.js?v=" not in html or "supporter.js?v=" not in html:
+        fail("Supporter Studio scripts must be loaded by the release page")
+    if 'id="supporterStudioDialog"' not in html or 'data-studio-tab="wrapped"' not in html:
+        fail("Supporter Studio profile/stats/Wrapped UI is missing")
+    if 'id="supporterStudioOpen"' not in html or 'id="supporterStudioDrawer"' not in html:
+        fail("Supporter Studio must be discoverable from account and diary surfaces")
+    if "window.AlbumAuth?.isSupporter?.()" not in supporter_js:
+        fail("Supporter Studio must verify active entitlement before opening")
+    if "window.AlbumAuth?.user?.()" not in supporter_js:
+        fail("Supporter profile must use the authenticated account identity")
+    if "release_year:" not in js or "duration_min:" not in js:
+        fail("New diary saves must capture release year and runtime for richer analytics")
+    if "albumaday:datachange" not in js or "albumaday:supporterchange" not in auth_js:
+        fail("Supporter Studio must react to diary/cloud/entitlement changes")
     webhook=(ROOT/"supabase"/"functions"/"stripe-supporter-webhook"/"index.ts").read_text(encoding="utf-8")
     if 'object?.payment_status === "paid"' not in webhook or 'status: checkoutPaid ? "active" : "pending"' not in webhook:
         fail("Supporter entitlement must not activate before Checkout payment settles")
@@ -168,6 +187,9 @@ def test_frontend_contract():
     subprocess.run(["node",str(ROOT/"scripts/recommender_matrix_test.js")],check=True)
     subprocess.run(["node","--check",str(ROOT/"auth-sync.js")],check=True)
     subprocess.run(["node","--check",str(ROOT/"auth-config.js")],check=True)
+    subprocess.run(["node","--check",str(ROOT/"supporter-core.js")],check=True)
+    subprocess.run(["node","--check",str(ROOT/"supporter.js")],check=True)
+    subprocess.run(["node",str(ROOT/"scripts/supporter_stats_test.js")],check=True)
     for api_file in [
         "api/recommend.js",
         "api/feedback.js",
