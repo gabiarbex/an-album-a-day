@@ -81,6 +81,13 @@ def test_frontend_contract():
         fail("UI must distinguish pulled no-repeat history from saved diary history")
     if "AI MATCH" not in html:
         fail("Free-text semantic matching must be visible to users")
+    if "query:pickerSnapshot()" in js:
+        fail("Feedback must not send the raw free-text picker snapshot")
+    feedback_js=(ROOT/"api"/"feedback.js").read_text(encoding="utf-8")
+    if "note: cleanText(body.query?.note" in feedback_js:
+        fail("Backend feedback must never persist raw free-text notes")
+    if "note_used: Boolean(body.query?.note_used)" not in feedback_js:
+        fail("Feedback may retain only whether a free-text note was used")
     if "data-account-label>log in" not in html:
         fail("Account sign-in must be a discoverable release affordance")
     if "if(!a||albumWasSeen(a)||logged.has(key(a)))return;" not in js:

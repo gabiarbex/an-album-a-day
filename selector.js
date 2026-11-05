@@ -2167,7 +2167,13 @@ function feedbackPayload(event,ratingValue=null){
   client_id:clientFeedbackId(),
   album:backendCandidate(pick,interpretFeeling($('feelingInput')?.value||''),0),
   rating:ratingValue,
-  query:pickerSnapshot(),
+  query:{
+   moods:[...state.moods],
+   energy:state.energy,
+   comfort:state.comfort,
+   time:state.time,
+   note_used:Boolean($('feelingInput')?.value.trim())
+  },
   ranking:{
    engine:pick._backendRank?.engine||ENGINE_VERSION,
    score:pick._backendRank?.score??null,
