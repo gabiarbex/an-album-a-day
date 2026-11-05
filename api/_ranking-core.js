@@ -168,8 +168,8 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
   if (genreConflict(candidate, avoidGenres)) score -= 0.62;
   if (moodConflict(candidate, avoidMoods)) score -= 0.48;
 
-  const maxRuntime = Number(body.time);
-  const duration = Number(candidate.duration);
+  const maxRuntime = body.time == null ? NaN : Number(body.time);
+  const duration = candidate.duration == null ? NaN : Number(candidate.duration);
   if (Number.isFinite(maxRuntime) && Number.isFinite(duration)) {
     if (duration > maxRuntime) {
       score -= Math.min(0.48, 0.11 + (duration - maxRuntime) / 62);
@@ -213,9 +213,9 @@ export function explanation(row, body) {
   if (body.comfort === 'comfort' && familiarity >= 0.25) bits.push('known artist');
   if (body.comfort === 'exploration' && familiarity < 0.25 && adjacency < 0.35) bits.push('new artist');
 
-  const maxRuntime = Number(body.time);
-  const duration = Number(candidate.duration);
-  if (Number.isFinite(maxRuntime) && Number.isFinite(duration) && duration <= maxRuntime + 3) {
+  const maxRuntime = body.time == null ? NaN : Number(body.time);
+  const duration = candidate.duration == null ? NaN : Number(candidate.duration);
+  if (Number.isFinite(maxRuntime) && Number.isFinite(duration) && duration > 0 && duration <= maxRuntime + 3) {
     bits.push(`${Math.round(duration)} min`);
   }
 
