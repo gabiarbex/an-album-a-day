@@ -405,6 +405,7 @@ function invalidateTasteCaches(){diaryArtistCache=null;diaryTasteCache=null;tast
 function persist(){
  localStorage.setItem('albumaday.logs',JSON.stringify(logs));
  invalidateTasteCaches();renderHistory();renderRecentPulls();queueCloudSync();
+ window.dispatchEvent(new CustomEvent('albumaday:datachange',{detail:{source:'diary'}}));
 }
 
 function readPickDays(){try{return JSON.parse(localStorage.getItem('albumaday.pickDays')||'[]')}catch{return []}}
@@ -416,6 +417,7 @@ function markTodayPicked(){
   localStorage.setItem('albumaday.pickDays',JSON.stringify(trimmed));
  }catch(e){console.warn('Could not save daily streak',e)}
  renderStreak();queueCloudSync();
+ window.dispatchEvent(new CustomEvent('albumaday:datachange',{detail:{source:'pick-day'}}));
 }
 function renderStreak(){
  const node=$('streak');if(!node)return;
@@ -794,6 +796,7 @@ function applyCloudSyncState(next={}){
   lastfmNeighborMap=buildLastfmNeighborMap(lastfmTaste);
   invalidateTasteCaches();
   renderHistory();renderRecentPulls();renderStreak();
+  window.dispatchEvent(new CustomEvent('albumaday:datachange',{detail:{source:'cloud'}}));
  }catch(error){console.warn('Could not apply cloud state',error)}
 }
 window.AlbumPickerSync={
@@ -2348,11 +2351,15 @@ $('logForm').onsubmit=e=>{
  const staticEnergy=translatedEnergyGuess
   ? null
   : ((pick.features?.energy!=null?Number(pick.features.energy)*10:null)??pick.energy_level??null);
+ const runtime=Number(pick.features?.duration_min??pick.length_min);
+ const releaseYear=Number(pick.year??pick.release_year);
  const newEntry={
   date:getDate(),artist:pick.artist,album:pick.title,rating,
   favorite_track:$('track').value.trim(),notes:$('notes').value.trim(),
   cover_art:pick.metadata?.cover_art||(/^https?:/.test($('cover')?.src||'')?$('cover').src:''),
   genre:live.genre||(Array.isArray(pick.genres)?(typeof pick.genres[0]==='string'?pick.genres[0]:pick.genres[0]?.name):'')||'',
+  release_year:Number.isFinite(releaseYear)&&releaseYear>0?releaseYear:null,
+  duration_min:Number.isFinite(runtime)&&runtime>0?runtime:null,
   signal_snapshot:{
    genre:live.genre||'',
    moods:pick._acoustic?.moods||live.signals?.moods||staticFeatureMoods||staticMoods,
