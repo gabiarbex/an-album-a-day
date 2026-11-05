@@ -201,7 +201,7 @@ function renderSupporter(){
  }
  if(copy){
   copy.textContent=active
-   ? 'cloud sync is on. your private listening profile, deeper stats and yearly Wrapped are unlocked too.'
+   ? 'cloud sync is on. your private listening profile, deeper stats, story-card Wrapped and seen-record history are unlocked too.'
    : supporter?.status==='past_due'
      ? 'your supporter payment needs attention. local listening data is still safe on this browser.'
      : 'the picker and local diary stay free. supporter adds cross-device sync, a private listening profile, deeper stats and yearly Wrapped.';
