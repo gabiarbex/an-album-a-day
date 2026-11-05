@@ -26,4 +26,23 @@ assert(x.avoidMoods.melancholic>0,'Portuguese sem tristeza should avoid melancho
 x=interpretFeeling('quero algo fora do óbvio e diferente');
 assert(x.exploration===1,'Portuguese exploration cues should work');
 
+x=interpretFeeling('quiet, intimate, melancholy, a little homesick, not upbeat');
+assert(x.moods.melancholic>0,'melancholy should be recognized');
+assert(x.moods.nostalgic>0,'homesick should be nostalgic');
+assert(x.moods.warm>0,'intimate should become warm');
+assert(x.avoidMoods.energetic>0,'not upbeat must become an energetic avoid cue');
+assert(x.energy===3,'quiet/intimate should imply low energy without negation leakage');
+
+x=interpretFeeling('upbeat, lively, something for dancing');
+assert(x.moods.energetic>0,'upbeat/lively should be energetic');
+assert(x.energy===8,'upbeat/lively should imply high energy');
+
+x=interpretFeeling('not high energy, something soft and restrained');
+assert(x.avoidMoods.energetic>0,'not high energy must become an energetic avoid cue');
+assert(x.energy===3,'soft/restrained should imply low energy');
+
+x=interpretFeeling('não quero nada animado, algo calmo');
+assert(x.avoidMoods.energetic>0,'Portuguese negated lively cue should avoid energetic');
+assert(x.energy===3,'Portuguese calm request should imply low energy');
+
 console.log('Intent parser regression tests passed.');
