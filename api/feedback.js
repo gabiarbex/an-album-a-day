@@ -69,7 +69,7 @@ function sanitize(body) {
     },
     rating: Number.isFinite(Number(body.rating)) ? Math.max(0, Math.min(5, Number(body.rating))) : null,
     query: {
-      note: cleanText(body.query?.note, 1000),
+      note_used: Boolean(body.query?.note_used),
       moods: Array.isArray(body.query?.moods) ? body.query.moods.slice(0, 30).map(x => cleanText(x, 60)) : [],
       energy: body.query?.energy ?? null,
       comfort: cleanText(body.query?.comfort, 40),
