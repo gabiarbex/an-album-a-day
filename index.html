@@ -89,7 +89,7 @@
         <p>start with a note, or leave it completely blank.</p>
       </div>
 
-      <div class="why-panel" id="whyPanel" hidden>
+      <div class="why-panel" id="whyPanel" role="note" aria-label="Why this album matched" hidden>
         <div class="why-heading">why this one</div>
         <div id="whySignals" class="why-signals"></div>
         <p id="whyText" class="why-copy"></p>
@@ -340,13 +340,13 @@
         <button id="closeSupporterStudio" type="button" aria-label="Close Supporter Studio">✕</button>
       </header>
 
-      <nav class="studio-tabs" aria-label="Supporter Studio sections">
-        <button type="button" data-studio-tab="profile" aria-selected="true">profile</button>
-        <button type="button" data-studio-tab="stats" aria-selected="false">stats</button>
-        <button type="button" data-studio-tab="wrapped" aria-selected="false">wrapped</button>
+      <nav class="studio-tabs" role="tablist" aria-label="Supporter Studio sections">
+        <button id="studioTabProfile" type="button" role="tab" aria-controls="studioPanelProfile" data-studio-tab="profile" aria-selected="true">profile</button>
+        <button id="studioTabStats" type="button" role="tab" aria-controls="studioPanelStats" data-studio-tab="stats" aria-selected="false" tabindex="-1">stats</button>
+        <button id="studioTabWrapped" type="button" role="tab" aria-controls="studioPanelWrapped" data-studio-tab="wrapped" aria-selected="false" tabindex="-1">wrapped</button>
       </nav>
 
-      <section class="studio-panel" data-studio-panel="profile">
+      <section id="studioPanelProfile" class="studio-panel" role="tabpanel" aria-labelledby="studioTabProfile" data-studio-panel="profile">
         <div class="profile-hero">
           <div id="studioAvatar" class="profile-avatar">AA</div>
           <div class="profile-identity">
@@ -389,7 +389,7 @@
         </section>
       </section>
 
-      <section class="studio-panel" data-studio-panel="stats" hidden>
+      <section id="studioPanelStats" class="studio-panel" role="tabpanel" aria-labelledby="studioTabStats" data-studio-panel="stats" hidden>
         <div class="studio-metrics">
           <div id="studioMetricSaved" class="studio-metric"><strong>0</strong><small>albums saved</small></div>
           <div id="studioMetricPulled" class="studio-metric"><strong>0</strong><small>records seen</small></div>
@@ -429,7 +429,7 @@
         </section>
       </section>
 
-      <section class="studio-panel" data-studio-panel="wrapped" hidden>
+      <section id="studioPanelWrapped" class="studio-panel" role="tabpanel" aria-labelledby="studioTabWrapped" data-studio-panel="wrapped" hidden>
         <div class="wrapped-head">
           <div>
             <span>ALBUM-A-DAY WRAPPED</span>
