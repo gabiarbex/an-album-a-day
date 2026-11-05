@@ -119,6 +119,9 @@ def test_frontend_contract():
         fail("Privacy policy must disclose Stripe and Supporter billing")
     if "US$3 per month" not in terms or "Stripe" not in terms:
         fail("Terms must disclose recurring Supporter billing")
+    webhook=(ROOT/"supabase"/"functions"/"stripe-supporter-webhook"/"index.ts").read_text(encoding="utf-8")
+    if 'object?.payment_status === "paid"' not in webhook or 'status: checkoutPaid ? "active" : "pending"' not in webhook:
+        fail("Supporter entitlement must not activate before Checkout payment settles")
     if "if(!a||albumWasSeen(a)||logged.has(key(a)))return;" not in js:
         fail("Backend recall must not reintroduce seen or diary-saved albums")
     if ".filter(row=>!albumWasSeen(row.album)&&!logged.has(key(row.album)))" not in js:
