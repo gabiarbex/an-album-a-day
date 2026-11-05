@@ -201,10 +201,10 @@ function renderSupporter(){
  }
  if(copy){
   copy.textContent=active
-   ? 'cross-device diary, no-repeat history, streak and taste sync are unlocked.'
+   ? 'cloud sync is on. your private listening profile, deeper stats and yearly Wrapped are unlocked too.'
    : supporter?.status==='past_due'
      ? 'your supporter payment needs attention. local listening data is still safe on this browser.'
-     : 'the picker and local diary stay free. supporter unlocks cross-device history + taste sync and helps keep this project running.';
+     : 'the picker and local diary stay free. supporter adds cross-device sync, a private listening profile, deeper stats and yearly Wrapped.';
  }
  if(badge){badge.hidden=!active;badge.textContent='$3 / month'}
  if(subscribe){
