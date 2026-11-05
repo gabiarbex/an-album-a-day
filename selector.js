@@ -969,11 +969,12 @@ async function rankWithBackend(pool,seed,daily){
  const intent=correctedIntent(interpretFeeling(note));
  const comfort=recommendationComfort();
  const effectiveEnergy=recommendationEnergy(intent);
+ const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
  const rows=new Map();
  let retrievalQueryVector=null;
  const sourceCounts={neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
  const add=(a,semanticScore=0,source='controls')=>{
-  if(!a||albumWasSeen(a))return;
+  if(!a||albumWasSeen(a)||logged.has(key(a)))return;
   const id=lookupId(a);
   const current=rows.get(id);
   if(!current){
@@ -1501,7 +1502,7 @@ async function rankWithSemantic(seed,daily){
  const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
  const intent=correctedIntent(interpretFeeling(note));
  let ranked=resolved
-  .filter(row=>!seenAlbums.has(hash32(key(row.album)))&&!logged.has(key(row.album)))
+  .filter(row=>!albumWasSeen(row.album)&&!logged.has(key(row.album)))
   .map(row=>{
    const semantic=Math.max(0,Math.min(1,(Number(row.semanticScore)+1)/2));
    const controls=score(row.album,intent);
