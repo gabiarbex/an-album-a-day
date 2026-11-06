@@ -79,24 +79,27 @@ function topRated(diary){
    return clean(b.date).localeCompare(clean(a.date));
   })[0]||null;
 }
+function entryDay(entry){return entry?.completed_date||entry?.date||null}
 function stateSlice(state,year=null){
  const diary=Array.isArray(state?.diary)?state.diary.filter(Boolean):[];
  const pickDays=Array.isArray(state?.pickDays)?state.pickDays:[];
  if(!year)return {diary,pickDays};
  return {
-  diary:diary.filter(entry=>yearOf(entry?.date)===Number(year)),
+  diary:diary.filter(entry=>yearOf(entryDay(entry))===Number(year)),
   pickDays:pickDays.filter(day=>yearOf(day)===Number(year))
  };
 }
 function buildStats(state={},year=null,now=new Date()){
  const sliced=stateSlice(state,year);
  const diary=sliced.diary;
+ const listened=diary.filter(entry=>entry?.completed!==false);
+ const savedLater=diary.filter(entry=>entry?.completed===false);
  const pickDays=sliced.pickDays;
  const artistCounts=new Map(),genreCounts=new Map(),moodCounts=new Map(),trackCounts=new Map(),monthCounts=new Map();
  const ratings=[0,0,0,0,0,0];
  let ratingSum=0,rated=0,energySum=0,energyCount=0,minutes=0,minutesKnown=0;
 
- for(const entry of diary){
+ for(const entry of listened){
   increment(artistCounts,entry.artist);
   increment(genreCounts,entry.genre);
   const rating=Number(entry.rating);
@@ -114,7 +117,7 @@ function buildStats(state={},year=null,now=new Date()){
   if(month)increment(monthCounts,String(month),1);
  }
 
- const uniqueArtists=new Set(diary.map(entry=>normalizeArtist(entry.artist)).filter(Boolean)).size;
+ const uniqueArtists=new Set(listened.map(entry=>normalizeArtist(entry.artist)).filter(Boolean)).size;
  const lastfm=state?.lastfmProfile&&typeof state.lastfmProfile==='object'?state.lastfmProfile:null;
  const pulled=Array.isArray(state?.seenKeys)?state.seenKeys.length:0;
  const allDays=Array.isArray(state?.pickDays)?state.pickDays:[];
@@ -122,6 +125,8 @@ function buildStats(state={},year=null,now=new Date()){
  return {
   year:year?Number(year):null,
   saved:diary.length,
+  listened:listened.length,
+  savedLater:savedLater.length,
   pulled,
   uniqueArtists,
   rated,
@@ -134,13 +139,13 @@ function buildStats(state={},year=null,now=new Date()){
   favoriteTracks:ranked(trackCounts,8),
   averageEnergy:energyCount?energySum/energyCount:null,
   listeningMinutes:minutesKnown?Math.round(minutes):null,
-  durationCoverage:diary.length?minutesKnown/diary.length:0,
+  durationCoverage:listened.length?minutesKnown/listened.length:0,
   daysPicked:pickDays.length,
   currentStreak:year?null:currentStreak(allDays,now),
   longestStreak:longestStreak(year?pickDays:allDays),
   monthCounts:Object.fromEntries(monthCounts),
   biggestMonth:ranked(monthCounts,1)[0]||null,
-  topRated:topRated(diary),
+  topRated:topRated(listened),
   lastfmScrobbles:Number(lastfm?.total_scrobbles)||0,
   lastfmArtists:Number(lastfm?.unique_artists)||0,
   lastfmNeighbors:Array.isArray(lastfm?.neighbors)?lastfm.neighbors.slice(0,8):[]
@@ -164,7 +169,7 @@ function hoursLabel(minutes){
 }
 function wrappedSummary(stats){
  const year=stats.year||new Date().getFullYear();
- const parts=[`my ${year} in records: ${stats.saved} album${stats.saved===1?'':'s'} saved`];
+ const parts=[`my ${year} in records: ${stats.listened} album${stats.listened===1?'':'s'} finished`];
  if(stats.topArtists[0])parts.push(`top artist: ${stats.topArtists[0].name}`);
  if(stats.topGenres[0])parts.push(`top genre: ${stats.topGenres[0].name}`);
  if(stats.averageRating!==null)parts.push(`avg rating: ${stats.averageRating.toFixed(1)}★`);
