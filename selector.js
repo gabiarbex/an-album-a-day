@@ -519,7 +519,7 @@ function reopenRecentPick(row){
  pick=full||{...row,metadata:{...(row.metadata||{})}};
  show(pick,{mode:'history',rankingMode:'history',userTriggered:true});
  $('reroll').hidden=false;
- drawer(false);
+ if($('drawer')?.classList.contains('open'))drawer(false);
 }
 function renderRecentSeen(){
  const section=$('recentSeenSection'),list=$('recentSeenList');
@@ -628,8 +628,10 @@ function renderHistory(){
  renderStreak();
  renderRecentSeen();
  const searchWrap=$('diarySearchWrap'),search=$('diarySearch'),clearSearch=$('clearDiarySearch'),searchCount=$('diarySearchCount');
- const query=String(search?.value||'').trim().toLowerCase();
- if(searchWrap)searchWrap.hidden=logs.length<6;
+ const searchableDiary=logs.length>=6;
+ const query=searchableDiary?String(search?.value||'').trim().toLowerCase():'';
+ if(searchWrap)searchWrap.hidden=!searchableDiary;
+ if(!searchableDiary&&search)search.value='';
  if(clearSearch)clearSearch.hidden=!query;
  if($('statListened'))$('statListened').textContent=logs.length;
  const rated=logs.filter(x=>Number(x.rating)>0);
@@ -2581,7 +2583,7 @@ function reopenDiaryEntry(entry){
  pick=diaryAlbum(entry);
  show(pick,{mode:'diary',rankingMode:'diary',userTriggered:true});
  $('reroll').hidden=false;
- drawer(false);
+ if($('drawer')?.classList.contains('open'))drawer(false);
 }
 function editDiaryEntry(index){
  const entry=logs[index];if(!entry)return;
