@@ -2599,3 +2599,42 @@ summary{cursor:pointer}
     transition-duration:.001ms!important;
   }
 }
+
+
+/* zine-061b — native-feeling destructive + empty states */
+.history-entry-actions button.is-armed{
+  color:var(--red);
+  font-weight:900;
+  text-decoration-thickness:2px;
+}
+.wrapped-empty{
+  grid-column:1/-1;
+  min-height:420px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:28px;
+  border:3px solid var(--ink);
+  background:
+    linear-gradient(130deg,transparent 0 58%,#00000009 58.2% 58.5%,transparent 58.7%),
+    var(--paper-2);
+}
+.wrapped-empty small{
+  margin-bottom:auto;
+  font:900 9px/1 "Courier New",monospace;
+  letter-spacing:.12em;
+}
+.wrapped-empty strong{
+  max-width:9ch;
+  font:900 clamp(58px,8vw,112px)/.84 Impact,"Arial Black",sans-serif;
+  text-transform:uppercase;
+}
+.wrapped-empty p{
+  max-width:48ch;
+  margin:18px 0 0;
+  font:13px/1.5 Georgia,serif;
+}
+.wrapped-share-actions button:disabled{
+  opacity:.35;
+  cursor:not-allowed;
+}
