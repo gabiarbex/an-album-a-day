@@ -2629,10 +2629,16 @@ function completeCurrentPick(options={}){
 function setQuickRating(value){
  if(!pick)return;
  let index=currentDiaryIndex();
+ const before=index>=0?logs[index]:null;
+ const wasListened=isEntryListened(before);
  if(index<0){completeCurrentPick();index=currentDiaryIndex()}
  if(index<0)return;
- logs[index]={...logs[index],rating:Number(value)||0,completed:true,completed_date:logs[index].completed_date||getDate(),completed_at:logs[index].completed_at||new Date().toISOString()};
- persist();markTodayComplete();recordFeedback('rating',value).catch(()=>{});
+ logs[index]={...logs[index],rating:Number(value)||0,completed:true,
+  completed_date:logs[index].completed_date||logs[index].date||getDate(),
+  completed_at:logs[index].completed_at||new Date().toISOString()};
+ persist();
+ if(before&&!wasListened)markTodayComplete();
+ recordFeedback('rating',value).catch(()=>{});
  window.AlbumAnalytics?.track('rating_submitted',{rating:Number(value)||0});
  renderListenCheckin();showToast(value+'★ saved.');
 }
@@ -2889,7 +2895,7 @@ $('logForm').onsubmit=e=>{
  if(editingLogIndex!==null){
   const current=logs[editingLogIndex];if(!current)return;
   logs[editingLogIndex]={...current,rating,favorite_track:$('track').value.trim(),notes:$('notes').value.trim(),
-   completed:true,completed_date:current.completed_date||getDate(),completed_at:current.completed_at||new Date().toISOString()};
+   completed:true,completed_date:current.completed_date||current.date||getDate(),completed_at:current.completed_at||new Date().toISOString()};
   const ratingMatchesPick=Boolean(pick&&sameDiaryAlbum(current,pick));
   editingLogIndex=null;
   persist();
@@ -2906,7 +2912,7 @@ $('logForm').onsubmit=e=>{
   const existingIndex=logs.findIndex(entry=>sameDiaryAlbum(entry,pick));
   if(existingIndex>=0){
    logs[existingIndex]={...logs[existingIndex],rating:newEntry.rating,favorite_track:newEntry.favorite_track,notes:newEntry.notes,
-    completed:true,completed_date:logs[existingIndex].completed_date||getDate(),completed_at:logs[existingIndex].completed_at||new Date().toISOString()};
+    completed:true,completed_date:logs[existingIndex].completed_date||logs[existingIndex].date||getDate(),completed_at:logs[existingIndex].completed_at||new Date().toISOString()};
    editingLogIndex=null;
    persist();
    if(rating&&!['diary','history','shared'].includes(currentShowMode))markTodayComplete();
