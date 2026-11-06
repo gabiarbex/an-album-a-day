@@ -586,7 +586,9 @@ function renderRecentPulls(){
   const title=document.createElement('strong');title.textContent=entry.album||'Untitled';
   const artist=document.createElement('span');artist.textContent=entry.artist||'Unknown artist';
   const rating=document.createElement('em');rating.textContent=entry.rating?('★'.repeat(entry.rating)+'☆'.repeat(5-entry.rating)):'unrated';
-  copy.append(date,title,artist,rating);card.append(art,copy);area.append(card);
+  const open=document.createElement('button');open.type='button';open.className='recent-card-open';open.textContent='open ↗';
+  open.onclick=()=>reopenDiaryEntry(entry);
+  copy.append(date,title,artist,rating,open);card.append(art,copy);area.append(card);
  }
 }
 function renderTastePrint(){
@@ -625,6 +627,10 @@ function renderHistory(){
  renderTastePrint();
  renderStreak();
  renderRecentSeen();
+ const searchWrap=$('diarySearchWrap'),search=$('diarySearch'),clearSearch=$('clearDiarySearch'),searchCount=$('diarySearchCount');
+ const query=String(search?.value||'').trim().toLowerCase();
+ if(searchWrap)searchWrap.hidden=logs.length<6;
+ if(clearSearch)clearSearch.hidden=!query;
  if($('statListened'))$('statListened').textContent=logs.length;
  const rated=logs.filter(x=>Number(x.rating)>0);
  if($('statAverage'))$('statAverage').textContent=rated.length?(rated.reduce((n,x)=>n+Number(x.rating),0)/rated.length).toFixed(1)+'★':'—';
@@ -642,11 +648,27 @@ function renderHistory(){
  if($('clearLastfm'))$('clearLastfm').hidden=!lastfmTaste;
  const area=$('history');area.replaceChildren();
  if(!logs.length){
+  if(searchCount)searchCount.textContent='';
   const empty=document.createElement('div');empty.className='history-empty';
   empty.innerHTML='<b>nothing saved yet.</b><span>save an album after you listen.</span>';
   area.append(empty);return;
  }
- for(const row of logs.map((entry,index)=>({entry,index})).reverse()){
+ const searchable=value=>String(value||'').toLowerCase();
+ const rows=logs.map((entry,index)=>({entry,index})).filter(({entry})=>{
+  if(!query)return true;
+  return [
+   entry.artist,entry.album,entry.favorite_track,entry.notes,entry.genre
+  ].some(value=>searchable(value).includes(query));
+ });
+ if(searchCount)searchCount.textContent=query
+  ? rows.length+' match'+(rows.length===1?'':'es')
+  : logs.length+' saved';
+ if(!rows.length){
+  const empty=document.createElement('div');empty.className='history-empty';
+  empty.innerHTML='<b>no matches.</b><span>try a different artist, album, track or note.</span>';
+  area.append(empty);return;
+ }
+ for(const row of rows.reverse()){
   const {entry,index}=row;
   const item=document.createElement('article');item.className='history-item';
   if(entry.cover_art){
@@ -661,9 +683,10 @@ function renderHistory(){
   copy.append(date,name,sub);
   if(entry.notes){const p=document.createElement('p');p.textContent=entry.notes;copy.append(p)}
   const actions=document.createElement('div');actions.className='history-entry-actions';
+  const open=document.createElement('button');open.type='button';open.textContent='open';open.onclick=()=>reopenDiaryEntry(entry);
   const edit=document.createElement('button');edit.type='button';edit.textContent='edit';edit.onclick=()=>editDiaryEntry(index);
   const remove=document.createElement('button');remove.type='button';remove.textContent='remove';remove.onclick=()=>armDiaryRemove(remove,index);
-  actions.append(edit,remove);copy.append(actions);
+  actions.append(open,edit,remove);copy.append(actions);
   item.append(copy);area.append(item);
  }
 }
@@ -672,6 +695,11 @@ renderRecentPulls();
 renderRecentSeen();
 renderResumeLastPick();
 renderMoodMore();
+$('diarySearch')?.addEventListener('input',renderHistory);
+$('clearDiarySearch')?.addEventListener('click',()=>{
+ const input=$('diarySearch');if(!input)return;
+ input.value='';renderHistory();input.focus();
+});
 
 function albumHasGenre(a){
  return Array.isArray(a.genres)&&a.genres.some(g=>Boolean(typeof g==='string'?g:g?.name));
@@ -2314,6 +2342,7 @@ function show(a,context={}){
   stored:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD',
   surprise:'TODAY\'S RECORD',
   history:'RECENT PICK',
+  diary:'DIARY RECORD',
   draw:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD'
  };
  tag.textContent=context.mode==='shared'?modeLabels.shared:(modeLabels[context.rankingMode]||(context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD'));
@@ -2322,7 +2351,7 @@ function show(a,context={}){
  const meta=document.createElement('p');
  meta.textContent=[(a.moods||[]).join(' · '),a.length_min?`${Math.round(Number(a.length_min))} min`:null].filter(Boolean).join('  /  ');
  info.append(tag,title,artist,meta);
- const explanation=explainPick(a,context);
+ const explanation=['shared','history','diary'].includes(context.mode)?'':explainPick(a,context);
  const whyPanel=$('whyPanel');
  const why=$('whyText');
  const signals=$('whySignals');
@@ -2355,12 +2384,14 @@ function show(a,context={}){
   ?'shared record.'
   :context.mode==='history'
    ?'reopened from recent picks · still excluded from repeats.'
-   :poolStatus;
+   :context.mode==='diary'
+    ?'reopened from your saved diary.'
+    :poolStatus;
  loadArtwork(a,cover);
  loadRecordFile(a).finally(()=>enhanceSelectedMetadata(a));
  const feedback=$('feedbackBar');
  if(feedback){
-  feedback.hidden=context.mode==='shared'||context.mode==='history';
+  feedback.hidden=['shared','history','diary'].includes(context.mode);
   feedback.querySelectorAll('button').forEach(button=>button.classList.remove('is-sent'));
  }
  renderResultBrief();
@@ -2528,6 +2559,29 @@ function armDiaryRemove(button,index){
   button.textContent='remove';
  };
  setTimeout(reset,2600);
+}
+function diaryAlbum(entry){
+ const full=albums.find(album=>sameDiaryAlbum(entry,album));
+ if(full)return full;
+ const snapshotMoods=entry?.signal_snapshot?.moods&&typeof entry.signal_snapshot.moods==='object'
+  ? Object.entries(entry.signal_snapshot.moods).sort((a,b)=>Number(b[1])-Number(a[1])).slice(0,4).map(([name])=>name)
+  : [];
+ return {
+  artist:entry.artist,
+  title:entry.album,
+  year:entry.release_year||null,
+  length_min:entry.duration_min||null,
+  genres:entry.genre?[entry.genre]:[],
+  moods:snapshotMoods,
+  metadata:{cover_art:entry.cover_art||'',sources:null}
+ };
+}
+function reopenDiaryEntry(entry){
+ if(!entry)return;
+ pick=diaryAlbum(entry);
+ show(pick,{mode:'diary',rankingMode:'diary',userTriggered:true});
+ $('reroll').hidden=false;
+ drawer(false);
 }
 function editDiaryEntry(index){
  const entry=logs[index];if(!entry)return;
