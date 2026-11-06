@@ -170,7 +170,7 @@ def test_frontend_contract():
         fail("Long mood controls must use progressive disclosure")
     if "diaryHasAlbum(pick)" not in js or "saved for later ✓ · add note" not in js or "listened ✓ · rate / note" not in js:
         fail("Diary action must distinguish saved-later from listened records")
-    if "const newEntry=buildDiaryEntryFromPick(0,'','',false);" not in js or "editDiaryEntry(existingIndex)" not in js:
+    if "function buildDiaryEntryFromPick(ratingValue=0,favoriteTrack='',noteText='',completed=false)" not in js or "const newEntry=buildDiaryEntryFromPick();" not in js or "editDiaryEntry(existingIndex)" not in js:
         fail("Primary save must bookmark in one click without falsely marking the album listened")
     if "Saved for later. Finish it when you’re ready." not in js:
         fail("Quick-save feedback must explain the saved-later state")
