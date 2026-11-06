@@ -134,6 +134,12 @@ def test_frontend_contract():
         fail("Listener-facing no-repeat terminology must use seen, not pulled")
     if 'class="diary-extras"' not in html or 'id="supporterShelfTeaser"' not in html:
         fail("Diary hierarchy must keep utilities secondary and Supporter value visible")
+    if html.find('id="history"') > html.find('id="supporterShelfTeaser"'):
+        fail("Diary entries must appear before the Supporter upsell")
+    if "min-height:44px!important" not in css or "env(safe-area-inset-bottom)" not in css:
+        fail("Mobile controls must preserve comfortable tap targets and safe-area spacing")
+    if ".drawer-head{" not in css or "position:sticky" not in css:
+        fail("Long diary drawers must keep their close/header controls reachable")
     if 'id="studioFiveStarShelf"' not in html or 'id="studioTasteSentence"' not in html:
         fail("Supporter profile must feel like a music identity page, not only analytics")
     if 'id="storyWrapped"' not in html or "function storyWrapped()" not in supporter_js:
