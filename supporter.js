@@ -15,7 +15,7 @@ function state(){
  return {
   diary:readJSON('albumaday.logs',[]),
   seenKeys:readJSON('albumaday.seenKeys.v1',[]),
-  pickDays:readJSON('albumaday.pickDays',[]),
+  pickDays:readJSON('albumaday.completedDays.v1',[]),
   lastfmProfile:readJSON('albumaday.lastfmTaste',null)
  };
 }
