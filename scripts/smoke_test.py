@@ -174,6 +174,16 @@ def test_frontend_contract():
         fail("Semantic-match helper should stay out of the way until a note exists")
     if "syncButton.hidden=!active" not in auth_js:
         fail("Free accounts must not show a dead manual-sync control")
+    if 'id="diarySearch"' not in html or "searchableDiary=logs.length>=6" not in js:
+        fail("Larger saved diaries must be searchable without cluttering small diaries")
+    if "function reopenDiaryEntry(entry)" not in js or "mode:'diary'" not in js:
+        fail("Saved diary entries must be reopenable as records")
+    if "recent-card-open" not in js or "open.textContent='open ↗'" not in js:
+        fail("Recent saved-listen cards must be actionable")
+    if "['shared','history','diary'].includes(context.mode)?'':explainPick" not in js:
+        fail("Reopened/shared records must not show fabricated recommendation rationale")
+    if "Free sign-in does not upload your local diary" not in html or "account + supporter" not in html:
+        fail("Account UI must clearly distinguish free sign-in from paid cloud sync")
     if 'class="listener-flow"' not in html:
         fail("First-time listeners need a lightweight describe → pick → save explanation")
     if 'id="supporterStudioDialog"' not in html or 'data-studio-tab="wrapped"' not in html:
