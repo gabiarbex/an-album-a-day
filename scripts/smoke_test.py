@@ -208,6 +208,11 @@ def test_frontend_contract():
         fail("Daily recommendations must have a post-listen completion and rating loop")
     if "COMPLETED_DAYS_KEY='albumaday.completedDays.v1'" not in js or "markTodayComplete()" not in js:
         fail("Daily streaks must be driven by completed listening days")
+    pulled_counter=js[js.find("function renderPulledCounters"):js.find("function renderTastePrint")]
+    if "statPulled" in pulled_counter:
+        fail("Global seen-counter rendering must not overwrite the saved-later diary metric")
+    if "daily_date:currentShowMode==='daily'?getDate():null" not in js or "entry.daily_date===today" not in js:
+        fail("Bonus completions must not replace the true daily record in the return-user state")
     choose_daily=js[js.find("async function chooseDaily"):js.find("async function chooseAnother")]
     if "markTodayPicked" in js or "markTodayComplete()" in choose_daily:
         fail("Generating a recommendation must never complete the daily streak")
