@@ -672,7 +672,7 @@ function renderRecentPulls(){
  area.replaceChildren();
  const recent=logs.filter(isEntryListened).slice().sort((a,b)=>completedEntryDate(a).localeCompare(completedEntryDate(b))).reverse().slice(0,6);
  if(!recent.length){
-  const p=document.createElement('p');p.className='recent-empty';p.textContent='Nothing saved yet. Albums you save will show up here.';area.append(p);return;
+  const p=document.createElement('p');p.className='recent-empty';p.textContent='No finished albums yet. Complete a record and it will show up here.';area.append(p);return;
  }
  for(const entry of recent){
   const card=document.createElement('article');card.className='recent-card';
@@ -2466,6 +2466,7 @@ function show(a,context={}){
  const ordinal=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/86400000);
  const stamp=$('recordStamp');
  if(stamp)stamp.textContent=context.mode==='bonus'?'BONUS / NO REPEAT':context.mode==='diary'?'DIARY / '+(currentDiaryEntry()?.completed_date||currentDiaryEntry()?.date||'SAVED'):context.mode==='history'?'RECENT / REOPENED':'DAY '+String(ordinal).padStart(3,'0')+' / '+new Date().getFullYear();
+ if($('todayRubric'))$('todayRubric').textContent=context.mode==='bonus'?'bonus record':context.mode==='diary'?'from your diary':context.mode==='history'?'recent pick':'today’s record';
  const cover=$('cover');cover.style.display='block';cover.alt=`${a.title} by ${a.artist} album cover`;
  $('emptyCover').style.display='none';
  cover.src=artPlaceholder(a);
@@ -2603,6 +2604,7 @@ function renderListenCheckin(){
 function completeCurrentPick(options={}){
  if(!pick)return;
  let index=currentDiaryIndex();
+ const existed=index>=0;
  if(index<0){
   const entry=buildDiaryEntryFromPick(0,'','',true);
   if(!entry)return;
@@ -2611,8 +2613,10 @@ function completeCurrentPick(options={}){
   logs[index]={...logs[index],completed:true,date:getDate(),completed_date:getDate(),completed_at:new Date().toISOString()};
  }
  persist();markTodayComplete();
- recordFeedback(options.dislike?'wrong_vibe':'save').catch(()=>{});
- window.AlbumAnalytics?.track('listening_completed',{disliked:Boolean(options.dislike),saved_before:index>=0});
+ if(options.dislike)recordFeedback('wrong_vibe').catch(()=>{});
+ window.AlbumAnalytics?.track('listening_completed',{disliked:Boolean(options.dislike),saved_before:existed});
+ if($('todayRubric'))$('todayRubric').textContent='finished today';
+ if($('recordStamp'))$('recordStamp').textContent='FINISHED ✓ / '+getDate();
  if(options.dislike){
   nextPickCorrection=correctionForFeedback('wrong_vibe',pick);
   showToast('Counted as listened. We’ll steer away from this vibe.');
@@ -2887,12 +2891,12 @@ $('logForm').onsubmit=e=>{
   editingLogIndex=null;
   persist();
   if(rating&&ratingMatchesPick)recordFeedback('rating',rating).catch(()=>{});
-  if(rating)markTodayComplete();
+  if(rating&&ratingMatchesPick&&!['diary','history','shared'].includes(currentShowMode))markTodayComplete();
   if(rating)window.AlbumAnalytics?.track('rating_submitted',{rating});
   $('logDialog').close();showToast('Diary entry updated.');renderListenCheckin();return;
  }
  if(!pick)return;
- const newEntry=buildDiaryEntryFromPick(rating,$('track').value,$('notes').value);
+ const newEntry=buildDiaryEntryFromPick(rating,$('track').value,$('notes').value,Boolean(rating));
  if(!newEntry)return;
  unmarkDiaryDeleted(newEntry);
  if(diaryHasAlbum(pick)){
@@ -2902,6 +2906,8 @@ $('logForm').onsubmit=e=>{
     completed:true,completed_date:logs[existingIndex].completed_date||getDate(),completed_at:logs[existingIndex].completed_at||new Date().toISOString()};
    editingLogIndex=null;
    persist();
+   if(rating&&!['diary','history','shared'].includes(currentShowMode))markTodayComplete();
+   if(rating)window.AlbumAnalytics?.track('rating_submitted',{rating});
    $('logDialog').close();
    showToast('Diary entry updated.');
   }
