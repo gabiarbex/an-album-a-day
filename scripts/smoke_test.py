@@ -84,6 +84,9 @@ def test_frontend_contract():
     if "query:pickerSnapshot()" in js:
         fail("Feedback must not send the raw free-text picker snapshot")
     feedback_js=(ROOT/"api"/"feedback.js").read_text(encoding="utf-8")
+    taste_store_js=(ROOT/"api"/"_taste-store.js").read_text(encoding="utf-8")
+    supporter_core=(ROOT/"supporter-core.js").read_text(encoding="utf-8")
+    analytics_js=(ROOT/"analytics.js").read_text(encoding="utf-8")
     if "note: cleanText(body.query?.note" in feedback_js:
         fail("Backend feedback must never persist raw free-text notes")
     if "note_used: Boolean(body.query?.note_used)" not in feedback_js:
@@ -119,6 +122,19 @@ def test_frontend_contract():
         fail("Privacy policy must disclose Stripe and Supporter billing")
     if "US$3 per month" not in terms or "Stripe" not in terms:
         fail("Terms must disclose recurring Supporter billing")
+    if "product analytics" not in privacy.lower() or "Do Not Track" not in privacy or "Global Privacy Control" not in privacy:
+        fail("Privacy policy must disclose first-party funnel analytics and browser privacy controls")
+    if "navigator.doNotTrack==='1'" not in analytics_js or "navigator.globalPrivacyControl===true" not in analytics_js:
+        fail("Product analytics must honor DNT and Global Privacy Control")
+    if "Authorization" in analytics_js or "'apikey':target.key" not in analytics_js:
+        fail("Supabase publishable analytics key must be sent only through the apikey header")
+    forbidden_analytics=("feelingInput","diary notes","account_id","user_id","accountEmail")
+    leaked=[term for term in forbidden_analytics if term in analytics_js]
+    if leaked:
+        fail(f"Product analytics must not collect private content/account identifiers: {leaked}")
+    analytics_migration=(ROOT/"supabase"/"migrations"/"003_product_events.sql").read_text(encoding="utf-8")
+    if "enable row level security" not in analytics_migration.lower() or "grant insert" not in analytics_migration.lower() or "grant select" in analytics_migration.lower():
+        fail("Product analytics table must remain insert-only behind RLS")
     supporter_js=(ROOT/"supporter.js").read_text(encoding="utf-8")
     supporter_refs=set(re.findall(r"\\$\\('([^']+)'\\)",supporter_js))
     missing_supporter=sorted(supporter_refs-set(ids))
@@ -152,18 +168,18 @@ def test_frontend_contract():
         fail("Catalog readiness must control recommendation availability")
     if 'id="moodToggleMore"' not in html or "classList.toggle('is-expanded')" not in js:
         fail("Long mood controls must use progressive disclosure")
-    if "diaryHasAlbum(pick)" not in js or "button.textContent=saved?'saved ✓ · rate / note':'save to diary'" not in js:
-        fail("Saved albums must show truthful state while keeping rating/edit access")
-    if "const newEntry=buildDiaryEntryFromPick();" not in js or "editDiaryEntry(existingIndex)" not in js:
-        fail("Primary diary save must be one-click, with follow-up rating/edit on the same control")
-    if "Saved. Tap again to rate or add a note." not in js:
-        fail("Quick-save feedback must explain how to add optional diary detail")
-    if "document.body.classList.toggle('has-diary',logs.length>0)" not in js or "body:not(.has-diary) .recent-shelf" not in css:
-        fail("Empty first-time users must not see a useless recent-listens shelf")
+    if "diaryHasAlbum(pick)" not in js or "saved for later ✓ · add note" not in js or "listened ✓ · rate / note" not in js:
+        fail("Diary action must distinguish saved-later from listened records")
+    if "const newEntry=buildDiaryEntryFromPick(0,'','',false);" not in js or "editDiaryEntry(existingIndex)" not in js:
+        fail("Primary save must bookmark in one click without falsely marking the album listened")
+    if "Saved for later. Finish it when you’re ready." not in js:
+        fail("Quick-save feedback must explain the saved-later state")
+    if "document.body.classList.toggle('has-diary',listenedRows.length>0)" not in js or "body:not(.has-diary) .recent-shelf" not in css:
+        fail("Recent listens must stay hidden until the user actually finishes an album")
     if "confirm(" in js:
         fail("Diary deletion must not use a browser-native confirm dialog")
-    if "wrapped-empty" not in supporter_js or "story.disabled=!stats.saved" not in supporter_js:
-        fail("Empty Wrapped must have a purpose-built state and disable sharing")
+    if "wrapped-empty" not in supporter_js or "story.disabled=!stats.listened" not in supporter_js:
+        fail("Empty Wrapped must be based on completed listens, not bookmarks")
     if 'id="resultBrief"' not in html or "function renderResultBrief()" not in js or "editing-brief" not in css:
         fail("Post-pick controls must collapse into a compact editable brief")
     if 'id="resumeLastPick"' not in html or 'id="recentSeenList"' not in html:
@@ -188,6 +204,27 @@ def test_frontend_contract():
         fail("Reopened/shared records must not show fabricated recommendation rationale")
     if "Free sign-in does not upload your local diary" not in html or "account + supporter" not in html:
         fail("Account UI must clearly distinguish free sign-in from paid cloud sync")
+    if 'id="listenCheckin"' not in html or "function completeCurrentPick(options={})" not in js or "function setQuickRating(value)" not in js:
+        fail("Daily recommendations must have a post-listen completion and rating loop")
+    if "COMPLETED_DAYS_KEY='albumaday.completedDays.v1'" not in js or "markTodayComplete()" not in js:
+        fail("Daily streaks must be driven by completed listening days")
+    choose_daily=js[js.find("async function chooseDaily"):js.find("async function chooseAnother")]
+    if "markTodayPicked" in js or "markTodayComplete()" in choose_daily:
+        fail("Generating a recommendation must never complete the daily streak")
+    if 'id="dailyHome"' not in html or "function renderDailyHome()" not in js:
+        fail("Returning users need a dedicated today/continue state")
+    if 'data-diary-view="grid"' not in html or 'data-diary-filter="later"' not in html or "history history-'+diaryView" not in js:
+        fail("Diary must support cover-grid browsing and listened/saved-later filters")
+    if "entry.completed!==false" not in supporter_core or "savedLater" not in supporter_core:
+        fail("Supporter stats and Wrapped must separate listened records from saved-later bookmarks")
+    if "albumaday.completedDays.v1" not in supporter_js or "albumaday.completedDays.v1" not in auth_js:
+        fail("Supporter/cloud streak state must read completed-listening days")
+    if 'data-learn="more_like_this"' not in html or 'data-learn="less_artist"' not in html or "artistSuppressions" not in js:
+        fail("Post-listen recommender learning controls are missing")
+    if "'less_artist'" not in feedback_js or "event === 'less_artist'" not in taste_store_js:
+        fail("Explicit less-artist feedback must be accepted and learned server-side")
+    if 'id="recordStamp"' not in html or "BONUS / NO REPEAT" not in js:
+        fail("Album reveal must distinguish the daily record from bonus/reopened records")
     if 'class="listener-flow"' not in html:
         fail("First-time listeners need a lightweight describe → pick → save explanation")
     if 'id="supporterStudioDialog"' not in html or 'data-studio-tab="wrapped"' not in html:
@@ -249,6 +286,7 @@ def test_frontend_contract():
     subprocess.run(["node",str(ROOT/"scripts/tracklist_test.js")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/ranking_test.js")],check=True)
     subprocess.run(["node",str(ROOT/"scripts/recommender_matrix_test.js")],check=True)
+    subprocess.run(["node","--check",str(ROOT/"analytics.js")],check=True)
     subprocess.run(["node","--check",str(ROOT/"auth-sync.js")],check=True)
     subprocess.run(["node","--check",str(ROOT/"auth-config.js")],check=True)
     subprocess.run(["node","--check",str(ROOT/"supporter-core.js")],check=True)
