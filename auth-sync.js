@@ -113,7 +113,7 @@ function readLocal(){
    deletedDiaryKeys:JSON.parse(localStorage.getItem('albumaday.diaryDeleted.v1')||'[]'),
    seenKeys:JSON.parse(localStorage.getItem('albumaday.seenKeys.v1')||'[]'),
    recentArtists:JSON.parse(localStorage.getItem('albumaday.recentRecommendedArtists.v1')||'[]'),
-   pickDays:JSON.parse(localStorage.getItem('albumaday.pickDays')||'[]'),
+   pickDays:JSON.parse(localStorage.getItem('albumaday.completedDays.v1')||'[]'),
    lastfmProfile:JSON.parse(localStorage.getItem('albumaday.lastfmTaste')||'null')
   };
  }catch{return {diary:[],deletedDiaryKeys:[],seenKeys:[],recentArtists:[],pickDays:[],lastfmProfile:null}}
@@ -126,7 +126,7 @@ function applyLocal(state){
   localStorage.setItem('albumaday.diaryDeleted.v1',JSON.stringify(state.deletedDiaryKeys||[]));
   localStorage.setItem('albumaday.seenKeys.v1',JSON.stringify(state.seenKeys||[]));
   localStorage.setItem('albumaday.recentRecommendedArtists.v1',JSON.stringify(state.recentArtists||[]));
-  localStorage.setItem('albumaday.pickDays',JSON.stringify(state.pickDays||[]));
+  localStorage.setItem('albumaday.completedDays.v1',JSON.stringify(state.pickDays||[]));
   if(state.lastfmProfile)localStorage.setItem('albumaday.lastfmTaste',JSON.stringify(state.lastfmProfile));
   else localStorage.removeItem('albumaday.lastfmTaste');
  }catch{}
