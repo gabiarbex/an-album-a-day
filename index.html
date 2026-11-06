@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-060">
+  <link rel="stylesheet" href="style.css?v=zine-061">
 </head>
 <body>
   <header class="masthead">
@@ -55,12 +55,11 @@
           ☁ <span data-account-label>log in</span>
         </button>
         <button id="historyToggle" type="button" class="history-toggle" aria-controls="drawer" aria-expanded="false">
-          ◷ diary
-          <span id="count">0</span><small> saved</small>
-          <span class="history-sep">·</span>
-          <span id="pulledCount">0</span><small> seen</small>
-          <span class="history-sep">·</span>
-          <span id="streak">0 day streak</span>
+          <span>◷ diary</span>
+          <b id="count">0</b>
+          <span class="header-history-meta">
+            <span id="pulledCount">0</span> seen · <span id="streak">0 day streak</span>
+          </span>
         </button>
       </div>
     </div>
@@ -97,7 +96,7 @@
 
       <div class="actions result-actions">
         <a id="spotify" class="primary result-primary disabled" aria-disabled="true" target="_blank" rel="noopener noreferrer">listen on spotify ↗</a>
-        <button id="log" type="button" class="secondary save-action" disabled>save to diary</button>
+        <button id="log" type="button" class="secondary save-action" disabled>rate + save</button>
         <button id="reroll" type="button" class="secondary reroll" hidden>pick another</button>
         <button id="sharePick" type="button" class="secondary quiet-action" disabled>share</button>
       </div>
@@ -140,6 +139,11 @@
         <div class="eyebrow">today’s listen</div>
         <h2>what do you want to hear?</h2>
         <p>describe the feeling, scene, sound or kind of record you want. or leave it blank and let the shelf decide.</p>
+        <div class="listener-flow" aria-label="How it works">
+          <span><b>1</b> describe</span>
+          <span><b>2</b> get one record</span>
+          <span><b>3</b> listen + save</span>
+        </div>
         <div class="quick-actions">
           <button id="surpriseMe" type="button" class="quick-pick"><b>surprise me</b></button>
           <button id="resetPicker" type="button" class="quick-pick quiet" disabled><b>clear all</b></button>
@@ -168,7 +172,8 @@
           <div class="tuning-block mood-block">
             <div class="eyebrow">mood</div>
             <h3>choose any</h3>
-            <div id="moods" class="chips"></div>
+            <div id="moods" class="chips mood-chips"></div>
+            <button id="moodToggleMore" type="button" class="mood-more" aria-expanded="false">show more moods +</button>
           </div>
 
           <div class="tuning-block energy-block">
@@ -196,6 +201,10 @@
         <span>↗</span>
       </button>
 
+      <div id="pickProgress" class="pick-progress" role="status" aria-live="polite" hidden>
+        <i aria-hidden="true"></i>
+        <span id="pickProgressText">digging through the shelf…</span>
+      </div>
       <p id="status" role="status">loading albums…</p>
     </section>
   </main>
@@ -458,6 +467,7 @@
         <button type="button" id="closeDialog" aria-label="Close">✕</button>
       </div>
       <p id="logAlbum"></p>
+      <p class="log-helper">rating is optional. save as much or as little as you want to remember.</p>
       <fieldset class="rating-fieldset">
         <legend>Your rating</legend>
         <div id="stars" class="stars" role="radiogroup" aria-label="Album rating"></div>
@@ -467,7 +477,7 @@
       <datalist id="trackOptions"></datalist>
       <label for="notes">Your thoughts</label>
       <textarea id="notes" rows="4" placeholder="Anything you want to remember?"></textarea>
-      <button class="recommend" type="submit">save</button>
+      <button class="recommend log-save" type="submit">save to diary</button>
     </form>
   </dialog>
 
@@ -475,9 +485,9 @@
   <script src="auth-config.js?v=zine-050" defer></script>
   <script src="intent-core.js?v=zine-050"></script>
   <script src="semantic-core.js?v=zine-050"></script>
-  <script src="selector.js?v=zine-060" defer></script>
-  <script src="auth-sync.js?v=zine-060" defer></script>
-  <script src="supporter-core.js?v=zine-060"></script>
-  <script src="supporter.js?v=zine-060" defer></script>
+  <script src="selector.js?v=zine-061" defer></script>
+  <script src="auth-sync.js?v=zine-061" defer></script>
+  <script src="supporter-core.js?v=zine-061"></script>
+  <script src="supporter.js?v=zine-061" defer></script>
 </body>
 </html>
