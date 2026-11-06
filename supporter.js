@@ -211,6 +211,21 @@ function renderWrapped(s,year){
  const stats=Core.buildStats(s,year);
  const grid=$('wrappedGrid');if(!grid)return;
  clear(grid);
+ const share=$('shareWrapped'),story=$('storyWrapped');
+ if(share)share.disabled=!stats.saved;
+ if(story)story.disabled=!stats.saved;
+ if(!stats.saved){
+  const empty=el('div','wrapped-empty');
+  empty.append(
+   el('small','','ALBUM-A-DAY WRAPPED / '+year),
+   el('strong','','nothing to wrap yet.'),
+   el('p','','save your first record of the year and this page starts building itself.')
+  );
+  grid.append(empty);
+  const summary=$('wrappedSummary');
+  if(summary)summary.textContent='your '+year+' Wrapped is waiting for its first saved record.';
+  return;
+ }
  const topArtist=stats.topArtists[0]?.name||'still collecting';
  const topGenre=stats.topGenres[0]?.name||'still collecting';
  const topMood=stats.topMoods[0]?.name||'still collecting';
