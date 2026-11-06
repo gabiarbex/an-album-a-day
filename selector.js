@@ -564,7 +564,9 @@ function renderRecentSeen(){
   const copy=document.createElement('div');copy.className='recent-seen-copy';
   const title=document.createElement('strong');title.textContent=row.title;
   const artist=document.createElement('span');artist.textContent=row.artist+(row.year?' · '+row.year:'');
-  const meta=document.createElement('small');meta.textContent=(row.date||'')+(diaryHasAlbum(row)?' · saved ✓':' · seen');
+  const existing=logs.find(entry=>sameDiaryAlbum(entry,row));
+  const stateLabel=existing?(isEntryListened(existing)?'listened ✓':'saved later'):'seen';
+  const meta=document.createElement('small');meta.textContent=(row.date||'')+' · '+stateLabel;
   copy.append(title,artist,meta);
   const reopen=document.createElement('button');reopen.type='button';reopen.textContent='reopen';reopen.onclick=()=>reopenRecentPick(row);
   item.append(art,copy,reopen);list.append(item);
@@ -668,9 +670,10 @@ function renderDailyHome(){
 }
 function renderRecentPulls(){
  const area=$('recentPulls');if(!area)return;
- document.body.classList.toggle('has-diary',logs.length>0);
+ const listenedRows=logs.filter(isEntryListened);
+ document.body.classList.toggle('has-diary',listenedRows.length>0);
  area.replaceChildren();
- const recent=logs.filter(isEntryListened).slice().sort((a,b)=>completedEntryDate(a).localeCompare(completedEntryDate(b))).reverse().slice(0,6);
+ const recent=listenedRows.slice().sort((a,b)=>completedEntryDate(a).localeCompare(completedEntryDate(b))).reverse().slice(0,6);
  if(!recent.length){
   const p=document.createElement('p');p.className='recent-empty';p.textContent='No finished albums yet. Complete a record and it will show up here.';area.append(p);return;
  }
