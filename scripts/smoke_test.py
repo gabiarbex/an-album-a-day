@@ -146,7 +146,7 @@ def test_frontend_contract():
         fail("Wrapped must support a shareable story-card export")
     if 'id="pickProgress"' not in html or "function setPickProgress(busy)" not in js:
         fail("Recommendation waits must have visible progress feedback")
-    if '<button id="recommend" type="button" class="recommend" disabled>' not in html or '<button id="surpriseMe" type="button" class="quick-pick" disabled>' not in html:
+    if not re.search(r'<button[^>]+id="recommend"[^>]+disabled',html) or not re.search(r'<button[^>]+id="surpriseMe"[^>]+disabled',html):
         fail("Pick controls must start disabled until the catalog is ready")
     if "setCatalogReady(true);" not in load_block or "busy||!catalogReady" not in js:
         fail("Catalog readiness must control recommendation availability")
@@ -160,6 +160,20 @@ def test_frontend_contract():
         fail("Diary deletion must not use a browser-native confirm dialog")
     if "wrapped-empty" not in supporter_js or "story.disabled=!stats.saved" not in supporter_js:
         fail("Empty Wrapped must have a purpose-built state and disable sharing")
+    if 'id="resultBrief"' not in html or "function renderResultBrief()" not in js or "editing-brief" not in css:
+        fail("Post-pick controls must collapse into a compact editable brief")
+    if 'id="resumeLastPick"' not in html or 'id="recentSeenList"' not in html:
+        fail("Seen recommendations must remain recoverable after refresh")
+    if "RECENT_PICKS_STORAGE_KEY='albumaday.recentPicks.v1'" not in js or "rememberRecentPick(a);" not in js:
+        fail("Recommendation memory must persist lightweight recent album snapshots")
+    if "metadata:{" not in js or "note:" in js[js.find("function recentPickSnapshot"):js.find("function persistRecentPicks")]:
+        fail("Recent-pick memory must not persist the user's free-text note")
+    if "context.mode==='history'" not in js or "reopened from recent picks" not in js:
+        fail("Reopening a recent pick must be distinct from generating a new recommendation")
+    if 'id="meaningMatchNote" class="ai-match-note" hidden' not in html or "meaning.hidden=!hasText" not in js:
+        fail("Semantic-match helper should stay out of the way until a note exists")
+    if "syncButton.hidden=!active" not in auth_js:
+        fail("Free accounts must not show a dead manual-sync control")
     if 'class="listener-flow"' not in html:
         fail("First-time listeners need a lightweight describe → pick → save explanation")
     if 'id="supporterStudioDialog"' not in html or 'data-studio-tab="wrapped"' not in html:

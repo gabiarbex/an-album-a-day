@@ -219,8 +219,9 @@ function renderSupporter(){
  }
  if(refresh)refresh.hidden=!session?.user;
  if(syncButton){
+  syncButton.hidden=!active;
   syncButton.disabled=!active;
-  syncButton.title=active?'Sync your account now':'Supporter unlocks cross-device sync';
+  syncButton.title=active?'Sync your account now':'';
  }
 }
 async function refreshSupporterStatus(options={}){

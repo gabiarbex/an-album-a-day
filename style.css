@@ -2797,3 +2797,221 @@ button:active:not(:disabled),
 @media(max-width:560px){
   body:before{opacity:.08}
 }
+
+
+/* zine-063 — continuity + post-pick focus */
+
+/* Before a pick: a quiet escape hatch back to the most recent recommendation. */
+.resume-last-pick{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  max-width:900px;
+  margin:18px 0 0;
+  padding:11px 13px;
+  border:1px solid var(--ink);
+  border-left:5px solid var(--blue);
+  background:#ffffff92;
+}
+.resume-last-pick small,
+.result-brief small{
+  display:block;
+  margin-bottom:3px;
+  color:var(--grey);
+  font:900 8px/1 "Courier New",monospace;
+  letter-spacing:.1em;
+}
+.resume-last-pick strong{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font:700 13px/1.25 Georgia,serif;
+}
+.resume-last-pick button,
+.result-brief button{
+  min-height:36px;
+  padding:7px 9px;
+  border:1px solid var(--ink);
+  background:transparent;
+  font:900 8px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.resume-last-pick button:hover,
+.result-brief button:hover{
+  background:var(--ink);
+  color:#fff;
+}
+
+/* After a pick: the input form becomes a brief, not a competing second page. */
+body.has-record .picker:before{content:"YOUR BRIEF"}
+body.has-record .clerk-intro{display:none}
+body.has-record .result-brief{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  padding:13px 0 14px;
+  border-bottom:1px solid var(--ink);
+}
+.result-brief strong,
+.result-brief span{display:block}
+.result-brief strong{
+  max-width:34ch;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font:700 15px/1.3 Georgia,serif;
+}
+.result-brief span{
+  margin-top:4px;
+  color:var(--grey);
+  font:800 8px/1.35 "Courier New",monospace;
+  text-transform:uppercase;
+}
+body.has-record:not(.editing-brief) .feeling-field,
+body.has-record:not(.editing-brief) .fine-tune,
+body.has-record:not(.editing-brief) .recommend{
+  display:none;
+}
+body.has-record:not(.editing-brief) .picker{
+  padding-top:9px;
+  padding-bottom:12px;
+}
+body.has-record.editing-brief .result-brief{
+  border-bottom:3px solid var(--blue);
+}
+body.has-record.editing-brief .feeling-field{
+  margin-top:16px;
+}
+body.has-record .resume-last-pick{display:none!important}
+
+/* Recent picks: no-repeat should not mean unrecoverable. */
+.recent-seen-section{
+  margin-top:26px;
+  padding-top:16px;
+  border-top:3px solid var(--ink);
+}
+.recent-seen-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:16px;
+  align-items:end;
+  margin-bottom:10px;
+}
+.recent-seen-head>div>span{
+  display:block;
+  margin-bottom:4px;
+  color:var(--blue);
+  font:900 8px/1 "Courier New",monospace;
+  letter-spacing:.12em;
+}
+.recent-seen-head h3{
+  margin:0;
+  font:900 28px/.94 Impact,"Arial Black",sans-serif;
+  text-transform:uppercase;
+}
+.recent-seen-head small{
+  display:block;
+  max-width:46ch;
+  margin-top:7px;
+  color:var(--grey);
+  font:11px/1.4 Georgia,serif;
+}
+.recent-seen-head>b{
+  display:grid;
+  place-items:center;
+  min-width:34px;
+  min-height:34px;
+  padding:4px 7px;
+  border:1px solid var(--ink);
+  background:var(--paper-2);
+  font:900 9px/1 "Courier New",monospace;
+}
+.recent-seen-list{
+  display:grid;
+  gap:0;
+  border-top:1px solid var(--ink);
+}
+.recent-seen-item{
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr) auto;
+  gap:11px;
+  align-items:center;
+  min-height:70px;
+  padding:8px 0;
+  border-bottom:1px solid #aaa297;
+}
+.recent-seen-art{
+  width:54px;
+  aspect-ratio:1;
+  object-fit:cover;
+  border:1px solid var(--ink);
+  background:#d9d1c4;
+}
+.recent-seen-copy{min-width:0}
+.recent-seen-copy strong,
+.recent-seen-copy span,
+.recent-seen-copy small{display:block}
+.recent-seen-copy strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font:700 13px/1.2 Georgia,serif;
+}
+.recent-seen-copy span{
+  margin-top:3px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font:800 8px/1.2 "Courier New",monospace;
+}
+.recent-seen-copy small{
+  margin-top:5px;
+  color:var(--grey);
+  font:800 7px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.recent-seen-item>button{
+  min-height:34px;
+  padding:7px 8px;
+  border:1px solid var(--ink);
+  background:transparent;
+  font:900 8px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.recent-seen-item>button:hover{
+  background:var(--ink);
+  color:#fff;
+}
+
+/* The semantic note only appears when there is actually a note to explain. */
+.ai-match-note[hidden]{display:none!important}
+
+@media(max-width:700px){
+  .resume-last-pick{
+    grid-template-columns:1fr;
+  }
+  .resume-last-pick button{
+    justify-self:start;
+    min-height:44px;
+  }
+  body.has-record .result-brief{
+    grid-template-columns:1fr auto;
+  }
+  .result-brief strong{
+    max-width:70vw;
+  }
+  .result-brief button{
+    min-width:58px;
+    min-height:44px;
+  }
+  .recent-seen-item{
+    grid-template-columns:48px minmax(0,1fr) auto;
+  }
+  .recent-seen-art{width:48px}
+  .recent-seen-item>button{
+    min-height:44px;
+  }
+}

@@ -177,6 +177,7 @@ for(const [id,values] of groups){
 
 const PICKER_STORAGE_KEY='albumaday.picker.v2';
 const SEEN_KEYS_STORAGE_KEY='albumaday.seenKeys.v1';
+const RECENT_PICKS_STORAGE_KEY='albumaday.recentPicks.v1';
 let recommendationRequest=0;
 
 function pickerSnapshot(){
@@ -201,6 +202,9 @@ function updatePickerStateUI(){
  if(reset)reset.disabled=!(count||hasText);
  const clearText=$('clearFeeling');
  if(clearText)clearText.disabled=!hasText;
+ const meaning=$('meaningMatchNote');
+ if(meaning)meaning.hidden=!hasText;
+ if(pick)renderResultBrief();
 }
 function renderMoodMore(){
  const box=$('moods'),button=$('moodToggleMore');
@@ -323,9 +327,50 @@ function readRecentRecommendedArtists(){
   return Array.isArray(raw)?raw.map(normalizeArtistName).filter(Boolean).slice(-18):[];
  }catch{return []}
 }
+function readRecentPicks(){
+ try{
+  const raw=JSON.parse(localStorage.getItem(RECENT_PICKS_STORAGE_KEY)||'[]');
+  return Array.isArray(raw)?raw.filter(row=>row&&row.artist&&row.title).slice(-50):[];
+ }catch{return []}
+}
+function recentPickSnapshot(a){
+ const source=a?.metadata?.sources;
+ return {
+  seen_key:seenKey(a),
+  artist:String(a?.artist||'').trim(),
+  title:String(a?.title||'').trim(),
+  year:a?.year||a?.release_year||null,
+  id:a?.id||null,
+  lookup_id:a?.lookup_id||lookupId(a),
+  genres:(a?.genres||[]).map(g=>typeof g==='string'?g:g?.name).filter(Boolean).slice(0,6),
+  moods:(a?.moods||[]).map(String).filter(Boolean).slice(0,6),
+  length_min:Number.isFinite(Number(a?.length_min))?Number(a.length_min):null,
+  metadata:{
+   cover_art:String(a?.metadata?.cover_art||''),
+   musicbrainz_id:String(a?.metadata?.musicbrainz_id||''),
+   sources:Array.isArray(source)?source.slice(0,5):(source||null)
+  },
+  picked_at:Date.now(),
+  date:getDate()
+ };
+}
+function persistRecentPicks(){
+ try{localStorage.setItem(RECENT_PICKS_STORAGE_KEY,JSON.stringify(recentPicks.slice(-50)))}catch{}
+}
+function rememberRecentPick(a){
+ if(!a?.artist||!a?.title)return;
+ const snap=recentPickSnapshot(a);
+ recentPicks=recentPicks.filter(row=>row.seen_key!==snap.seen_key);
+ recentPicks.push(snap);
+ recentPicks=recentPicks.slice(-50);
+ persistRecentPicks();
+ renderRecentSeen();
+ renderResumeLastPick();
+}
 let seenAlbums=readSeen();
 let seenAlbumKeys=readSeenKeys();
 let recentRecommendedArtists=[];
+let recentPicks=readRecentPicks();
 function albumWasSeen(a){
  const k=key(a);
  return seenAlbumKeys.has(seenKey(a))||seenAlbums.has(hash32(k));
@@ -352,6 +397,7 @@ function markAlbumSeen(a){
  seenAlbums.add(hash32(key(a)));
  seenAlbumKeys.add(seenKey(a));
  rememberRecommendedArtist(a.artist);
+ rememberRecentPick(a);
  persistSeen();
 }
 const DIARY_DELETED_KEY='albumaday.diaryDeleted.v1';
@@ -429,6 +475,72 @@ function renderSaveAction(){
  button.disabled=saved;
  button.textContent=saved?'saved ✓':'rate + save';
  button.classList.toggle('is-saved',saved);
+}
+function briefParts(){
+ const note=$('feelingInput')?.value.trim()||'';
+ const meta=[];
+ if(state.moods.length)meta.push(state.moods.slice(0,3).join(' + ')+(state.moods.length>3?' +'+(state.moods.length-3):''));
+ if(state.energy!==null)meta.push(({2:'low energy',5:'medium energy',9:'high energy'})[state.energy]||'energy '+state.energy);
+ if(state.comfort)meta.push(state.comfort==='exploration'?'something new':'familiar');
+ if(state.time!==null)meta.push('≤ '+state.time+' min');
+ return {
+  title:note?(note.length>82?note.slice(0,79).trim()+'…':note):(meta[0]||'open shelf'),
+  meta:meta.join(' · ')||(note?'note only':'no filters')
+ };
+}
+function setBriefEditing(editing){
+ const active=Boolean(editing);
+ document.body.classList.toggle('editing-brief',active);
+ const button=$('editBrief');
+ if(button){
+  button.setAttribute('aria-expanded',String(active));
+  button.textContent=active?'done':'change';
+ }
+ if(active)requestAnimationFrame(()=>$('feelingInput')?.focus({preventScroll:true}));
+}
+function renderResultBrief(){
+ const box=$('resultBrief');if(!box)return;
+ box.hidden=!pick;
+ if(!pick)return;
+ const parts=briefParts();
+ if($('resultBriefTitle'))$('resultBriefTitle').textContent=parts.title;
+ if($('resultBriefMeta'))$('resultBriefMeta').textContent=parts.meta;
+}
+function renderResumeLastPick(){
+ const box=$('resumeLastPick');if(!box)return;
+ const row=recentPicks[recentPicks.length-1];
+ box.hidden=!row;
+ if(!row)return;
+ if($('resumeLastPickName'))$('resumeLastPickName').textContent=row.artist+' — '+row.title;
+}
+function reopenRecentPick(row){
+ if(!row)return;
+ const full=albums.find(album=>seenKey(album)===row.seen_key);
+ pick=full||{...row,metadata:{...(row.metadata||{})}};
+ show(pick,{mode:'history',rankingMode:'history',userTriggered:true});
+ $('reroll').hidden=false;
+ drawer(false);
+}
+function renderRecentSeen(){
+ const section=$('recentSeenSection'),list=$('recentSeenList');
+ if(!section||!list)return;
+ const rows=[...recentPicks].reverse().slice(0,12);
+ section.hidden=!rows.length;
+ list.replaceChildren();
+ if($('recentSeenCount'))$('recentSeenCount').textContent=rows.length<recentPicks.length?rows.length+' / '+recentPicks.length:String(rows.length);
+ for(const row of rows){
+  const item=document.createElement('article');item.className='recent-seen-item';
+  const art=document.createElement('img');art.className='recent-seen-art';art.alt='';
+  art.loading='lazy';art.src=row.metadata?.cover_art||artPlaceholder(row);
+  art.onerror=()=>{art.onerror=null;art.src=artPlaceholder(row)};
+  const copy=document.createElement('div');copy.className='recent-seen-copy';
+  const title=document.createElement('strong');title.textContent=row.title;
+  const artist=document.createElement('span');artist.textContent=row.artist+(row.year?' · '+row.year:'');
+  const meta=document.createElement('small');meta.textContent=(row.date||'')+(diaryHasAlbum(row)?' · saved ✓':' · seen');
+  copy.append(title,artist,meta);
+  const reopen=document.createElement('button');reopen.type='button';reopen.textContent='reopen';reopen.onclick=()=>reopenRecentPick(row);
+  item.append(art,copy,reopen);list.append(item);
+ }
 }
 function persist(){
  localStorage.setItem('albumaday.logs',JSON.stringify(logs));
@@ -512,6 +624,7 @@ function renderHistory(){
  renderPulledCounters();
  renderTastePrint();
  renderStreak();
+ renderRecentSeen();
  if($('statListened'))$('statListened').textContent=logs.length;
  const rated=logs.filter(x=>Number(x.rating)>0);
  if($('statAverage'))$('statAverage').textContent=rated.length?(rated.reduce((n,x)=>n+Number(x.rating),0)/rated.length).toFixed(1)+'★':'—';
@@ -556,6 +669,8 @@ function renderHistory(){
 }
 renderHistory();
 renderRecentPulls();
+renderRecentSeen();
+renderResumeLastPick();
 renderMoodMore();
 
 function albumHasGenre(a){
@@ -842,6 +957,8 @@ load();
 window.addEventListener('pageshow',()=>{
  renderHistory();
  renderRecentPulls();
+ renderRecentSeen();
+ renderResumeLastPick();
 });
 
 function score(a,intent){
@@ -1328,6 +1445,11 @@ $('moodToggleMore')?.addEventListener('click',()=>{
  const box=$('moods');if(!box)return;
  box.classList.toggle('is-expanded');
  renderMoodMore();
+});
+$('editBrief')?.addEventListener('click',()=>setBriefEditing(!document.body.classList.contains('editing-brief')));
+$('resumeLastPickButton')?.addEventListener('click',()=>{
+ const row=recentPicks[recentPicks.length-1];
+ if(row)reopenRecentPick(row);
 });
 
 
@@ -2174,6 +2296,7 @@ function handoffToResult(){
 }
 function show(a,context={}){
  document.body.classList.add('has-record');
+ document.body.classList.remove('editing-brief');
  $('appMain')?.classList.add('has-record');
  const trackDetails=$('tracklistDetails');
  if(trackDetails)trackDetails.open=false;
@@ -2190,6 +2313,7 @@ function show(a,context={}){
   live:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD',
   stored:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD',
   surprise:'TODAY\'S RECORD',
+  history:'RECENT PICK',
   draw:context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD'
  };
  tag.textContent=context.mode==='shared'?modeLabels.shared:(modeLabels[context.rankingMode]||(context.mode==='bonus'?'ANOTHER RECORD':'TODAY\'S RECORD'));
@@ -2227,14 +2351,21 @@ function show(a,context={}){
  const pulled=pulledRecordCount();
  const unseen=Math.max(0,(catalogTotal||albums.length)-pulled).toLocaleString();
  const poolStatus=pulled.toLocaleString()+' seen · '+unseen+' still in your no-repeat pool.';
- $('status').textContent=context.mode==='shared'?'shared record.':poolStatus;
+ $('status').textContent=context.mode==='shared'
+  ?'shared record.'
+  :context.mode==='history'
+   ?'reopened from recent picks · still excluded from repeats.'
+   :poolStatus;
  loadArtwork(a,cover);
  loadRecordFile(a).finally(()=>enhanceSelectedMetadata(a));
  const feedback=$('feedbackBar');
  if(feedback){
-  feedback.hidden=context.mode==='shared';
+  feedback.hidden=context.mode==='shared'||context.mode==='history';
   feedback.querySelectorAll('button').forEach(button=>button.classList.remove('is-sent'));
  }
+ renderResultBrief();
+ renderResumeLastPick();
+ setBriefEditing(false);
  if(context.userTriggered)handoffToResult();
 }
 function labelColor(a){
