@@ -354,6 +354,7 @@ function accountClientId(){
  return session?.user?.id?'account:'+session.user.id:null;
 }
 function openDialog(){
+ window.AlbumAnalytics?.track('account_opened',{signed_in:Boolean(session?.user)});
  const dialog=$('accountDialog');
  if(dialog&&!dialog.open)dialog.showModal();
 }
@@ -386,6 +387,7 @@ async function signInEmail(event){
  }
 }
 async function signInGoogle(){
+ window.AlbumAnalytics?.track('sign_in_started',{provider:'google'});
  try{
   const redirectTo=CONFIG.redirectTo||location.origin+location.pathname;
   const {error}=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo}});
@@ -413,6 +415,7 @@ function bind(){
  $('googleSignIn')?.addEventListener('click',signInGoogle);
  $('accountSyncNow')?.addEventListener('click',()=>syncNow({forceMerge:true}));
  $('accountSignOut')?.addEventListener('click',signOut);
+ $('supporterSubscribe')?.addEventListener('click',()=>window.AlbumAnalytics?.track('supporter_checkout_opened',{}));
  $('supporterRefresh')?.addEventListener('click',async()=>{
   await refreshSupporterStatus();
   if(isSupporter())await syncNow({forceMerge:true,silent:true});
@@ -459,6 +462,7 @@ async function init(){
    }
    renderAuth();
    if(session?.user&&(event==='SIGNED_IN'||event==='INITIAL_SESSION'||event==='TOKEN_REFRESHED')){
+    if(event==='SIGNED_IN')window.AlbumAnalytics?.track('sign_in_completed',{provider:'google'});
     setTimeout(async()=>{
      await refreshSupporterStatus({silent:true});
      if(isSupporter())await syncNow({forceMerge:!hasMigrated(),silent:true});
