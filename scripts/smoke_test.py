@@ -138,6 +138,24 @@ def test_frontend_contract():
         fail("Supporter profile must feel like a music identity page, not only analytics")
     if 'id="storyWrapped"' not in html or "function storyWrapped()" not in supporter_js:
         fail("Wrapped must support a shareable story-card export")
+    if 'id="pickProgress"' not in html or "function setPickProgress(busy)" not in js:
+        fail("Recommendation waits must have visible progress feedback")
+    if '<button id="recommend" type="button" class="recommend" disabled>' not in html or '<button id="surpriseMe" type="button" class="quick-pick" disabled>' not in html:
+        fail("Pick controls must start disabled until the catalog is ready")
+    if "setCatalogReady(true);" not in load_block or "busy||!catalogReady" not in js:
+        fail("Catalog readiness must control recommendation availability")
+    if 'id="moodToggleMore"' not in html or "classList.toggle('is-expanded')" not in js:
+        fail("Long mood controls must use progressive disclosure")
+    if "diaryHasAlbum(pick)" not in js or "button.textContent=saved?'saved ✓':'rate + save'" not in js:
+        fail("Saved albums must show truthful state and reject duplicate diary saves")
+    if "document.body.classList.toggle('has-diary',logs.length>0)" not in js or "body:not(.has-diary) .recent-shelf" not in css:
+        fail("Empty first-time users must not see a useless recent-listens shelf")
+    if "confirm(" in js:
+        fail("Diary deletion must not use a browser-native confirm dialog")
+    if "wrapped-empty" not in supporter_js or "story.disabled=!stats.saved" not in supporter_js:
+        fail("Empty Wrapped must have a purpose-built state and disable sharing")
+    if 'class="listener-flow"' not in html:
+        fail("First-time listeners need a lightweight describe → pick → save explanation")
     if 'id="supporterStudioDialog"' not in html or 'data-studio-tab="wrapped"' not in html:
         fail("Supporter Studio profile/stats/Wrapped UI is missing")
     if 'id="supporterStudioOpen"' not in html or 'id="supporterStudioDrawer"' not in html:
