@@ -113,7 +113,7 @@ function buildStats(state={},year=null,now=new Date()){
   const duration=positiveNumber(entry.duration_min);
   if(duration){minutes+=duration;minutesKnown+=1}
   increment(trackCounts,entry.favorite_track);
-  const month=monthOf(entry.date);
+  const month=monthOf(entryDay(entry));
   if(month)increment(monthCounts,String(month),1);
  }
 
@@ -154,7 +154,8 @@ function buildStats(state={},year=null,now=new Date()){
 function availableYears(state={},now=new Date()){
  const years=new Set([now.getFullYear()]);
  for(const entry of state.diary||[]){
-  const y=yearOf(entry?.date);if(y)years.add(y);
+  if(entry?.completed===false)continue;
+  const y=yearOf(entryDay(entry));if(y)years.add(y);
  }
  for(const day of state.pickDays||[]){
   const y=yearOf(day);if(y)years.add(y);
