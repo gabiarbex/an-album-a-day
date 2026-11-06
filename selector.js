@@ -2668,8 +2668,11 @@ $('logForm').onsubmit=e=>{
  if(editingLogIndex!==null){
   const current=logs[editingLogIndex];if(!current)return;
   logs[editingLogIndex]={...current,rating,favorite_track:$('track').value.trim(),notes:$('notes').value.trim()};
+  const ratingMatchesPick=Boolean(pick&&sameDiaryAlbum(current,pick));
   editingLogIndex=null;
-  persist();$('logDialog').close();showToast('Diary entry updated.');return;
+  persist();
+  if(rating&&ratingMatchesPick)recordFeedback('rating',rating).catch(()=>{});
+  $('logDialog').close();showToast('Diary entry updated.');return;
  }
  if(!pick)return;
  const newEntry=buildDiaryEntryFromPick(rating,$('track').value,$('notes').value);
