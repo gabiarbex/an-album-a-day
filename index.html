@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-065">
+  <link rel="stylesheet" href="style.css?v=zine-070">
 </head>
 <body>
   <header class="masthead">
@@ -68,11 +68,12 @@
   <main id="appMain" class="app-main">
     <section class="showcase" aria-label="Today's record">
       <div class="showcase-rubric">
-        <span>today</span>
+        <span id="todayRubric">today</span>
         <span id="todayDate"></span>
       </div>
 
       <div class="record-stage" id="stage">
+        <div id="recordStamp" class="record-stamp" aria-hidden="true">TODAY / 001</div>
         <div class="record" id="record"><div class="record-label" id="recordLabel"></div></div>
         <div class="sleeve" id="sleeve">
           <img id="cover" width="720" height="720" alt="Selected album cover" decoding="async" loading="eager" fetchpriority="high">
@@ -96,10 +97,36 @@
 
       <div class="actions result-actions">
         <a id="spotify" class="primary result-primary disabled" aria-disabled="true" target="_blank" rel="noopener noreferrer">listen on spotify ↗</a>
-        <button id="log" type="button" class="secondary save-action" disabled>save to diary</button>
+        <button id="log" type="button" class="secondary save-action" disabled>save for later</button>
         <button id="reroll" type="button" class="secondary reroll" hidden>another with this brief</button>
         <button id="sharePick" type="button" class="secondary quiet-action" disabled>share</button>
       </div>
+
+      <section id="listenCheckin" class="listen-checkin" hidden aria-live="polite">
+        <div class="listen-checkin-head">
+          <div>
+            <small>AFTER YOU LISTEN</small>
+            <strong id="listenCheckinTitle">come back when the record ends.</strong>
+          </div>
+          <span id="listenCheckinState">not finished yet</span>
+        </div>
+        <div id="listenCheckinPrimary" class="listen-checkin-primary">
+          <button id="markFinished" type="button">finished it ✓</button>
+          <button id="notForMe" type="button" class="quiet">not for me</button>
+        </div>
+        <div id="listenCheckinDone" class="listen-checkin-done" hidden>
+          <div>
+            <span>quick rating</span>
+            <div id="quickRating" class="quick-rating" role="radiogroup" aria-label="Quick album rating"></div>
+          </div>
+          <div class="learning-actions" aria-label="Teach the recommender">
+            <button type="button" data-learn="more_like_this">more like this</button>
+            <button type="button" data-learn="less_like_this">less like this</button>
+            <button type="button" data-learn="more_adventurous">more adventurous</button>
+            <button type="button" data-learn="less_artist">less of this artist</button>
+          </div>
+        </div>
+      </section>
 
       <details id="tracklistDetails" class="secondary-record-info">
         <summary><span>tracklist</span><span id="trackCountLabel">—</span></summary>
@@ -149,6 +176,18 @@
           <button id="resetPicker" type="button" class="quick-pick quiet" disabled><b>clear all</b></button>
         </div>
       </div>
+
+      <section id="dailyHome" class="daily-home" hidden aria-live="polite">
+        <div class="daily-home-copy">
+          <small id="dailyHomeKicker">WELCOME BACK</small>
+          <strong id="dailyHomeTitle">today’s record is waiting.</strong>
+          <span id="dailyHomeMeta"></span>
+        </div>
+        <div class="daily-home-actions">
+          <button id="dailyHomePrimary" type="button">continue ↗</button>
+          <button id="dailyHomeSecondary" type="button" class="quiet" hidden>another for fun</button>
+        </div>
+      </section>
 
       <div id="resultBrief" class="result-brief" hidden>
         <div>
@@ -248,8 +287,8 @@
       <button id="closeDrawer" type="button" aria-label="Close diary">✕</button>
     </div>
     <div class="diary-stats" aria-label="Listening diary statistics">
-      <div><b id="statListened">0</b><span>saved</span></div>
-      <div><b id="statPulled">0</b><span>seen</span></div>
+      <div><b id="statListened">0</b><span>listened</span></div>
+      <div><b id="statPulled">0</b><span>saved later</span></div>
       <div><b id="statAverage">—</b><span>avg rating</span></div>
       <div><b id="statGenre">—</b><span>top genre</span></div>
     </div>
@@ -258,8 +297,20 @@
       <b id="statLastfm">—</b>
     </div>
 
+    <div class="diary-toolbar" aria-label="Diary view controls">
+      <div id="diaryFilters" class="diary-filters" role="group" aria-label="Filter diary">
+        <button type="button" data-diary-filter="all" aria-pressed="true">all</button>
+        <button type="button" data-diary-filter="listened" aria-pressed="false">listened</button>
+        <button type="button" data-diary-filter="later" aria-pressed="false">saved later</button>
+      </div>
+      <div id="diaryViews" class="diary-views" role="group" aria-label="Diary view">
+        <button type="button" data-diary-view="list" aria-pressed="true">list</button>
+        <button type="button" data-diary-view="grid" aria-pressed="false">covers</button>
+      </div>
+    </div>
+
     <div id="diarySearchWrap" class="diary-search" hidden>
-      <label for="diarySearch">find in saved diary</label>
+      <label for="diarySearch">find in diary</label>
       <div>
         <input id="diarySearch" type="search" autocomplete="off" placeholder="artist, album, track, note…">
         <button id="clearDiarySearch" type="button" hidden>clear</button>
@@ -288,9 +339,11 @@
         <span>profile · deeper stats · wrapped · cloud sync</span>
       </div>
       <div class="supporter-preview" aria-hidden="true">
-        <i></i><i></i><i></i><i></i>
+        <div><small>YOUR ORBIT</small><b id="supporterPreviewGenre">building</b></div>
+        <div><small>THIS YEAR</small><b id="supporterPreviewYear">0 listens</b></div>
+        <div class="supporter-preview-lock">FULL PROFILE + WRAPPED</div>
       </div>
-      <button id="supporterTeaserOpen" type="button">see supporter ↗</button>
+      <button id="supporterTeaserOpen" type="button">unlock the full profile ↗</button>
     </div>
     <button id="supporterStudioDrawer" type="button" class="secondary supporter-studio-drawer" hidden>open supporter studio ↗</button>
 
@@ -440,8 +493,8 @@
 
       <section id="studioPanelStats" class="studio-panel" role="tabpanel" aria-labelledby="studioTabStats" data-studio-panel="stats" hidden>
         <div class="studio-metrics">
-          <div id="studioMetricSaved" class="studio-metric"><strong>0</strong><small>albums saved</small></div>
-          <div id="studioMetricPulled" class="studio-metric"><strong>0</strong><small>records seen</small></div>
+          <div id="studioMetricSaved" class="studio-metric"><strong>0</strong><small>albums listened</small></div>
+          <div id="studioMetricPulled" class="studio-metric"><strong>0</strong><small>saved for later</small></div>
           <div id="studioMetricArtists" class="studio-metric"><strong>0</strong><small>unique artists</small></div>
           <div id="studioMetricAverage" class="studio-metric"><strong>—</strong><small>average rating</small></div>
           <div id="studioMetricFive" class="studio-metric"><strong>0</strong><small>five-star records</small></div>
@@ -503,7 +556,7 @@
   <dialog id="logDialog">
     <form id="logForm">
       <div class="dialog-head">
-        <h2>save this record</h2>
+        <h2>your diary note</h2>
         <button type="button" id="closeDialog" aria-label="Close">✕</button>
       </div>
       <p id="logAlbum"></p>
@@ -517,17 +570,18 @@
       <datalist id="trackOptions"></datalist>
       <label for="notes">Your thoughts</label>
       <textarea id="notes" rows="4" placeholder="Anything you want to remember?"></textarea>
-      <button class="recommend log-save" type="submit">save to diary</button>
+      <button class="recommend log-save" type="submit">save changes</button>
     </form>
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <script src="auth-config.js?v=zine-050" defer></script>
+  <script src="auth-config.js?v=zine-070" defer></script>
+  <script src="analytics.js?v=zine-070" defer></script>
   <script src="intent-core.js?v=zine-050"></script>
   <script src="semantic-core.js?v=zine-050"></script>
-  <script src="selector.js?v=zine-065" defer></script>
-  <script src="auth-sync.js?v=zine-065" defer></script>
-  <script src="supporter-core.js?v=zine-065"></script>
-  <script src="supporter.js?v=zine-065" defer></script>
+  <script src="selector.js?v=zine-070" defer></script>
+  <script src="auth-sync.js?v=zine-070" defer></script>
+  <script src="supporter-core.js?v=zine-070"></script>
+  <script src="supporter.js?v=zine-070" defer></script>
 </body>
 </html>

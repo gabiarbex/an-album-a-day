@@ -39,7 +39,7 @@ function cleanArray(values, limit = 20) {
 function sanitize(body) {
   const allowedEvents = new Set([
     'reroll','save','rating','spotify_open',
-    'wrong_vibe','too_upbeat','too_slow','too_obvious','love_this'
+    'wrong_vibe','too_upbeat','too_slow','too_obvious','love_this','less_artist'
   ]);
   const event = cleanText(body.event, 40);
   if (!allowedEvents.has(event)) throw new Error('Unsupported feedback event.');
