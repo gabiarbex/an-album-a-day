@@ -146,7 +146,7 @@ def test_frontend_contract():
         fail("Wrapped must support a shareable story-card export")
     if 'id="pickProgress"' not in html or "function setPickProgress(busy)" not in js:
         fail("Recommendation waits must have visible progress feedback")
-    if '<button id="recommend" type="button" class="recommend" disabled>' not in html or '<button id="surpriseMe" type="button" class="quick-pick" disabled>' not in html:
+    if not re.search(r'<button[^>]+id="recommend"[^>]+disabled',html) or not re.search(r'<button[^>]+id="surpriseMe"[^>]+disabled',html):
         fail("Pick controls must start disabled until the catalog is ready")
     if "setCatalogReady(true);" not in load_block or "busy||!catalogReady" not in js:
         fail("Catalog readiness must control recommendation availability")
