@@ -2,6 +2,7 @@
 
 let albums=[],logs=[],pick=null,rating=0,editingLogIndex=null,catalogManifest=null,catalogTotal=0;
 let rankingFeaturesAvailable=false;
+let catalogReady=false;
 let featureCoverage={genre:0,mood:0,energy:0,duration:0};
 const liveMetadataRankingAvailable=true;
 const ENGINE_VERSION='hybrid-backend-v1';
@@ -622,9 +623,7 @@ function refreshFeatureCoverage(){
 }
 function libraryStatus(){
  const total=(catalogTotal||albums.length).toLocaleString();
- if(rankingFeaturesAvailable)return `${total} albums loaded.`;
- if(liveMetadataRankingAvailable)return `${total} albums loaded.`;
- return `${total} albums loaded.`;
+ return `${total} albums on the shelf · no repeats.`;
 }
 
 function mergeAlbumRecord(existing,incoming){
@@ -763,6 +762,7 @@ async function load(){
    else setTimeout(warmMore,2200);
    if(!albums.length)throw Error('Catalog manifest exists but no albums loaded');
    refreshFeatureCoverage();
+   setCatalogReady(true);
    $('status').textContent=libraryStatus();
    await restoreSharedPick();
    return;
@@ -775,11 +775,13 @@ async function load(){
   albums=tagCatalogItems((Array.isArray(json)?json:json.albums||[]),'albums.json',1000,0).filter(a=>a.title&&a.artist);
   catalogTotal=albums.length;
   refreshFeatureCoverage();
-  $('status').textContent=libraryStatus();
   if(!albums.length)throw Error('No albums found');
+  setCatalogReady(true);
+  $('status').textContent=libraryStatus();
   await restoreSharedPick();
  }catch(e){
-  $('status').textContent='Could not load the music library.';
+  setCatalogReady(false);
+  $('status').textContent='Could not load the music library. Reload to try again.';
   console.error(e);
  }
 }
@@ -1298,11 +1300,19 @@ function setPickProgress(busy){
   copy.textContent=messages[index];
  },1150);
 }
+function setCatalogReady(ready){
+ catalogReady=Boolean(ready);
+ document.body.classList.toggle('catalog-ready',catalogReady);
+ const recommend=$('recommend'),surprise=$('surpriseMe');
+ if(recommend)recommend.disabled=!catalogReady;
+ if(surprise)surprise.disabled=!catalogReady;
+}
 function setPickBusy(busy){
  document.body.classList.toggle('is-picking',busy);
- for(const id of ['recommend','surpriseMe','reroll']){
-  const node=$(id);if(node)node.disabled=busy;
+ for(const id of ['recommend','surpriseMe']){
+  const node=$(id);if(node)node.disabled=busy||!catalogReady;
  }
+ if($('reroll'))$('reroll').disabled=busy;
  $('feedbackBar')?.querySelectorAll('button').forEach(button=>{button.disabled=busy});
  if($('recommend')){
   $('recommend').classList.toggle('is-loading',busy);
