@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="One record every day.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=zine-063">
+  <link rel="stylesheet" href="style.css?v=zine-064">
 </head>
 <body>
   <header class="masthead">
@@ -257,6 +257,16 @@
       <b id="statTraining">0</b>
       <b id="statLastfm">—</b>
     </div>
+
+    <div id="diarySearchWrap" class="diary-search" hidden>
+      <label for="diarySearch">find in saved diary</label>
+      <div>
+        <input id="diarySearch" type="search" autocomplete="off" placeholder="artist, album, track, note…">
+        <button id="clearDiarySearch" type="button" hidden>clear</button>
+      </div>
+      <small id="diarySearchCount"></small>
+    </div>
+
     <div id="history"></div>
 
     <section id="recentSeenSection" class="recent-seen-section" hidden aria-labelledby="recentSeenHeading">
@@ -313,13 +323,13 @@
   <dialog id="accountDialog" class="account-dialog">
     <div class="dialog-head">
       <div>
-        <small class="account-kicker">account + cloud sync</small>
-        <h2>keep your history.</h2>
+        <small class="account-kicker">account + supporter</small>
+        <h2>your shelf, your account.</h2>
       </div>
       <button type="button" id="closeAccountDialog" aria-label="Close account dialog">✕</button>
     </div>
 
-    <p class="account-intro">the picker and local listening diary are free. supporter is $3/month for cross-device sync, a private listening profile, deeper stats and your yearly Album-a-Day Wrapped.</p>
+    <p class="account-intro">signing in is free. your picker and local diary stay on this browser; Supporter is $3/month and adds cross-device sync, a private listening profile, deeper stats and yearly Album-a-Day Wrapped.</p>
 
     <div id="accountGuest">
       <button id="googleSignIn" type="button" class="account-provider" hidden>continue with google</button>
@@ -332,7 +342,7 @@
         </div>
       </form>
       <p id="accountEmailSent" class="account-sent" hidden></p>
-      <p class="account-privacy">Google sign-in merges this browser’s existing diary and no-repeat history into your account instead of replacing it. your raw Last.fm CSV stays on this device.</p>
+      <p class="account-privacy">Free sign-in does not upload your local diary. If you later activate Supporter, this browser’s existing diary and seen history merge into cloud sync instead of being replaced. your raw Last.fm CSV stays on this device.</p>
     </div>
 
     <div id="accountMember" hidden>
@@ -515,9 +525,9 @@
   <script src="auth-config.js?v=zine-050" defer></script>
   <script src="intent-core.js?v=zine-050"></script>
   <script src="semantic-core.js?v=zine-050"></script>
-  <script src="selector.js?v=zine-063" defer></script>
-  <script src="auth-sync.js?v=zine-063" defer></script>
-  <script src="supporter-core.js?v=zine-063"></script>
-  <script src="supporter.js?v=zine-063" defer></script>
+  <script src="selector.js?v=zine-064" defer></script>
+  <script src="auth-sync.js?v=zine-064" defer></script>
+  <script src="supporter-core.js?v=zine-064"></script>
+  <script src="supporter.js?v=zine-064" defer></script>
 </body>
 </html>
