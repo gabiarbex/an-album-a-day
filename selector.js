@@ -469,11 +469,12 @@ function diaryHasAlbum(album){return Boolean(album&&logs.some(entry=>sameDiaryAl
 function renderSaveAction(){
  const button=$('log');if(!button)return;
  if(!pick){
-  button.disabled=true;button.textContent='rate + save';button.classList.remove('is-saved');return;
+  button.disabled=true;button.textContent='save to diary';button.classList.remove('is-saved');return;
  }
  const saved=diaryHasAlbum(pick);
- button.disabled=saved;
- button.textContent=saved?'saved ✓':'rate + save';
+ button.disabled=false;
+ button.textContent=saved?'saved ✓ · rate / note':'save to diary';
+ button.setAttribute('aria-label',saved?'Saved to diary. Add rating or notes':'Save this record to your diary');
  button.classList.toggle('is-saved',saved);
 }
 function briefParts(){
@@ -2585,6 +2586,38 @@ function reopenDiaryEntry(entry){
  $('reroll').hidden=false;
  if($('drawer')?.classList.contains('open'))drawer(false);
 }
+function buildDiaryEntryFromPick(ratingValue=0,favoriteTrack='',noteText=''){
+ if(!pick)return null;
+ const live=pick._live||{};
+ const translatedMoodGuess=String(pick.provenance?.moods?.source||'')==='musicbrainz-tag-translation';
+ const translatedEnergyGuess=String(pick.provenance?.energy?.source||'')==='musicbrainz-tag-translation';
+ const staticMoods=translatedMoodGuess
+  ? {}
+  : (Array.isArray(pick.moods)?Object.fromEntries(pick.moods.map(m=>[m,1])):{});
+ const staticFeatureMoods=translatedMoodGuess?null:pick.features?.moods;
+ const staticEnergy=translatedEnergyGuess
+  ? null
+  : ((pick.features?.energy!=null?Number(pick.features.energy)*10:null)??pick.energy_level??null);
+ const runtime=Number(pick.features?.duration_min??pick.length_min);
+ const releaseYear=Number(pick.year??pick.release_year);
+ return {
+  date:getDate(),artist:pick.artist,album:pick.title,rating:Number(ratingValue)||0,
+  favorite_track:String(favoriteTrack||'').trim(),notes:String(noteText||'').trim(),
+  cover_art:pick.metadata?.cover_art||(/^https?:/.test($('cover')?.src||'')?$('cover').src:''),
+  genre:live.genre||(Array.isArray(pick.genres)?(typeof pick.genres[0]==='string'?pick.genres[0]:pick.genres[0]?.name):'')||'',
+  release_year:Number.isFinite(releaseYear)&&releaseYear>0?releaseYear:null,
+  duration_min:Number.isFinite(runtime)&&runtime>0?runtime:null,
+  signal_snapshot:{
+   genre:live.genre||'',
+   moods:pick._acoustic?.moods||live.signals?.moods||staticFeatureMoods||staticMoods,
+   energy:pick._acoustic?.energy??live.signals?.energy??staticEnergy,
+   bpm:Number.isFinite(pick._acoustic?.bpm)?Number(pick._acoustic.bpm):null,
+   acoustic:Number.isFinite(pick._acoustic?.acoustic)?Number(pick._acoustic.acoustic):null,
+   instrumental:Number.isFinite(pick._acoustic?.instrumental)?Number(pick._acoustic.instrumental):null,
+   source:pick._acoustic?'acousticbrainz-selected-sample':(live.signals?'live-genre-prior':'catalog')
+  }
+ };
+}
 function editDiaryEntry(index){
  const entry=logs[index];if(!entry)return;
  editingLogIndex=index;
@@ -2595,15 +2628,23 @@ function editDiaryEntry(index){
  $('logAlbum').textContent=`${entry.artist} — ${entry.album}`;
  stars();
  $('logDialog').showModal();
+ requestAnimationFrame(()=>$('stars')?.querySelector('button')?.focus());
 }
 $('log').onclick=()=>{
  if(!pick)return;
- editingLogIndex=null;
- rating=0;$('track').value='';$('notes').value='';
- $('track').placeholder=activeTracklist.length?'Choose from the tracklist or type your own':'Favorite track';
- $('logAlbum').textContent=`${pick.artist} — ${pick.title}`;
- stars();$('logDialog').showModal();
- requestAnimationFrame(()=>$('stars')?.querySelector('button')?.focus());
+ const existingIndex=logs.findIndex(entry=>sameDiaryAlbum(entry,pick));
+ if(existingIndex>=0){
+  editDiaryEntry(existingIndex);
+  return;
+ }
+ const newEntry=buildDiaryEntryFromPick();
+ if(!newEntry)return;
+ unmarkDiaryDeleted(newEntry);
+ logs.push(newEntry);
+ persist();
+ recordFeedback('save',null).catch(()=>{});
+ $('status').textContent='saved to your diary.';
+ showToast('Saved. Tap again to rate or add a note.');
 };
 $('closeDialog').onclick=()=>{editingLogIndex=null;$('logDialog').close()};
 function stars(){
@@ -2627,44 +2668,25 @@ $('logForm').onsubmit=e=>{
  if(editingLogIndex!==null){
   const current=logs[editingLogIndex];if(!current)return;
   logs[editingLogIndex]={...current,rating,favorite_track:$('track').value.trim(),notes:$('notes').value.trim()};
+  const ratingMatchesPick=Boolean(pick&&sameDiaryAlbum(current,pick));
   editingLogIndex=null;
-  persist();$('logDialog').close();showToast('Diary entry updated.');return;
+  persist();
+  if(rating&&ratingMatchesPick)recordFeedback('rating',rating).catch(()=>{});
+  $('logDialog').close();showToast('Diary entry updated.');return;
  }
  if(!pick)return;
- const live=pick._live||{};
- const translatedMoodGuess=String(pick.provenance?.moods?.source||'')==='musicbrainz-tag-translation';
- const translatedEnergyGuess=String(pick.provenance?.energy?.source||'')==='musicbrainz-tag-translation';
- const staticMoods=translatedMoodGuess
-  ? {}
-  : (Array.isArray(pick.moods)?Object.fromEntries(pick.moods.map(m=>[m,1])):{});
- const staticFeatureMoods=translatedMoodGuess?null:pick.features?.moods;
- const staticEnergy=translatedEnergyGuess
-  ? null
-  : ((pick.features?.energy!=null?Number(pick.features.energy)*10:null)??pick.energy_level??null);
- const runtime=Number(pick.features?.duration_min??pick.length_min);
- const releaseYear=Number(pick.year??pick.release_year);
- const newEntry={
-  date:getDate(),artist:pick.artist,album:pick.title,rating,
-  favorite_track:$('track').value.trim(),notes:$('notes').value.trim(),
-  cover_art:pick.metadata?.cover_art||(/^https?:/.test($('cover')?.src||'')?$('cover').src:''),
-  genre:live.genre||(Array.isArray(pick.genres)?(typeof pick.genres[0]==='string'?pick.genres[0]:pick.genres[0]?.name):'')||'',
-  release_year:Number.isFinite(releaseYear)&&releaseYear>0?releaseYear:null,
-  duration_min:Number.isFinite(runtime)&&runtime>0?runtime:null,
-  signal_snapshot:{
-   genre:live.genre||'',
-   moods:pick._acoustic?.moods||live.signals?.moods||staticFeatureMoods||staticMoods,
-   energy:pick._acoustic?.energy??live.signals?.energy??staticEnergy,
-   bpm:Number.isFinite(pick._acoustic?.bpm)?Number(pick._acoustic.bpm):null,
-   acoustic:Number.isFinite(pick._acoustic?.acoustic)?Number(pick._acoustic.acoustic):null,
-   instrumental:Number.isFinite(pick._acoustic?.instrumental)?Number(pick._acoustic.instrumental):null,
-   source:pick._acoustic?'acousticbrainz-selected-sample':(live.signals?'live-genre-prior':'catalog')
-  }
- };
+ const newEntry=buildDiaryEntryFromPick(rating,$('track').value,$('notes').value);
+ if(!newEntry)return;
  unmarkDiaryDeleted(newEntry);
  if(diaryHasAlbum(pick)){
-  $('logDialog').close();
-  renderSaveAction();
-  showToast('Already in your diary.');
+  const existingIndex=logs.findIndex(entry=>sameDiaryAlbum(entry,pick));
+  if(existingIndex>=0){
+   logs[existingIndex]={...logs[existingIndex],rating:newEntry.rating,favorite_track:newEntry.favorite_track,notes:newEntry.notes};
+   editingLogIndex=null;
+   persist();
+   $('logDialog').close();
+   showToast('Diary entry updated.');
+  }
   return;
  }
  logs.push(newEntry);

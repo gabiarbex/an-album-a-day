@@ -152,8 +152,12 @@ def test_frontend_contract():
         fail("Catalog readiness must control recommendation availability")
     if 'id="moodToggleMore"' not in html or "classList.toggle('is-expanded')" not in js:
         fail("Long mood controls must use progressive disclosure")
-    if "diaryHasAlbum(pick)" not in js or "button.textContent=saved?'saved ✓':'rate + save'" not in js:
-        fail("Saved albums must show truthful state and reject duplicate diary saves")
+    if "diaryHasAlbum(pick)" not in js or "button.textContent=saved?'saved ✓ · rate / note':'save to diary'" not in js:
+        fail("Saved albums must show truthful state while keeping rating/edit access")
+    if "const newEntry=buildDiaryEntryFromPick();" not in js or "editDiaryEntry(existingIndex)" not in js:
+        fail("Primary diary save must be one-click, with follow-up rating/edit on the same control")
+    if "Saved. Tap again to rate or add a note." not in js:
+        fail("Quick-save feedback must explain how to add optional diary detail")
     if "document.body.classList.toggle('has-diary',logs.length>0)" not in js or "body:not(.has-diary) .recent-shelf" not in css:
         fail("Empty first-time users must not see a useless recent-listens shelf")
     if "confirm(" in js:
