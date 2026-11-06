@@ -54,8 +54,11 @@ function endpoint(){
   key:config.publishableKey
  };
 }
+function trackingDisabled(){
+ return navigator.doNotTrack==='1'||navigator.globalPrivacyControl===true;
+}
 function track(event,properties={}){
- if(!EVENTS.has(String(event)))return Promise.resolve(false);
+ if(trackingDisabled()||!EVENTS.has(String(event)))return Promise.resolve(false);
  const target=endpoint();if(!target)return Promise.resolve(false);
  const payload={
   event_name:String(event),
@@ -77,6 +80,7 @@ function track(event,properties={}){
  }).then(response=>response.ok).catch(()=>false);
 }
 function boot(){
+ if(trackingDisabled())return;
  const today=day();
  const previous=safeStorage(localStorage,LAST_VISIT_KEY);
  track('page_view',{returning:Boolean(previous)});
