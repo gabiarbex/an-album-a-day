@@ -549,7 +549,7 @@ function renderHistory(){
   if(entry.notes){const p=document.createElement('p');p.textContent=entry.notes;copy.append(p)}
   const actions=document.createElement('div');actions.className='history-entry-actions';
   const edit=document.createElement('button');edit.type='button';edit.textContent='edit';edit.onclick=()=>editDiaryEntry(index);
-  const remove=document.createElement('button');remove.type='button';remove.textContent='remove';remove.onclick=()=>removeDiaryEntry(index);
+  const remove=document.createElement('button');remove.type='button';remove.textContent='remove';remove.onclick=()=>armDiaryRemove(remove,index);
   actions.append(edit,remove);copy.append(actions);
   item.append(copy);area.append(item);
  }
@@ -2378,9 +2378,25 @@ document.addEventListener('keydown',e=>{
 
 function removeDiaryEntry(index){
  const entry=logs[index];if(!entry)return;
- if(!confirm(`Remove "${entry.album}" by ${entry.artist} from your diary?`))return;
  markDiaryDeleted(entry);
- logs.splice(index,1);persist();showToast('Diary entry removed.');
+ logs.splice(index,1);persist();showToast('Removed from diary.');
+}
+function armDiaryRemove(button,index){
+ if(!button)return;
+ if(button.dataset.armed==='true'){
+  removeDiaryEntry(index);
+  return;
+ }
+ button.dataset.armed='true';
+ button.classList.add('is-armed');
+ button.textContent='remove?';
+ const reset=()=>{
+  if(!button.isConnected)return;
+  button.dataset.armed='false';
+  button.classList.remove('is-armed');
+  button.textContent='remove';
+ };
+ setTimeout(reset,2600);
 }
 function editDiaryEntry(index){
  const entry=logs[index];if(!entry)return;
@@ -2400,6 +2416,7 @@ $('log').onclick=()=>{
  $('track').placeholder=activeTracklist.length?'Choose from the tracklist or type your own':'Favorite track';
  $('logAlbum').textContent=`${pick.artist} — ${pick.title}`;
  stars();$('logDialog').showModal();
+ requestAnimationFrame(()=>$('stars')?.querySelector('button')?.focus());
 };
 $('closeDialog').onclick=()=>{editingLogIndex=null;$('logDialog').close()};
 function stars(){
