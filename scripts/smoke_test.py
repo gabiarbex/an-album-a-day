@@ -215,7 +215,7 @@ def test_frontend_contract():
         fail("Returning users need a dedicated today/continue state")
     if 'data-diary-view="grid"' not in html or 'data-diary-filter="later"' not in html or "history history-'+diaryView" not in js:
         fail("Diary must support cover-grid browsing and listened/saved-later filters")
-    if "entry.completed!==false" not in supporter_core or "savedLater" not in supporter_core:
+    if "completed!==false" not in supporter_core or "completed===false" not in supporter_core or "savedLater" not in supporter_core:
         fail("Supporter stats and Wrapped must separate listened records from saved-later bookmarks")
     if "albumaday.completedDays.v1" not in supporter_js or "albumaday.completedDays.v1" not in auth_js:
         fail("Supporter/cloud streak state must read completed-listening days")
