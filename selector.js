@@ -496,11 +496,14 @@ function diaryHasAlbum(album){return Boolean(album&&logs.some(entry=>sameDiaryAl
 function renderSaveAction(){
  const button=$('log');if(!button)return;
  if(!pick){
-  button.disabled=true;button.textContent='save to diary';button.classList.remove('is-saved');return;
+  button.disabled=true;button.textContent='save for later';button.classList.remove('is-saved');return;
  }
- const saved=diaryHasAlbum(pick);
+ const entry=logs.find(row=>sameDiaryAlbum(row,pick));
+ const saved=Boolean(entry);
  button.disabled=false;
- button.textContent=saved?'saved ✓ · rate / note':'save to diary';
+ button.textContent=saved
+  ? (isEntryListened(entry)?'listened ✓ · rate / note':'saved for later ✓ · add note')
+  : 'save for later';
  button.setAttribute('aria-label',saved?'Open this diary entry':'Save this record for later');
  button.classList.toggle('is-saved',saved);
 }
