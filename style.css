@@ -2347,3 +2347,255 @@ body.has-record .fine-tune[open] .filter-body{max-height:320px}
   }
   .wrapped-share{grid-template-columns:1fr}
 }
+
+
+/* zine-061 — usability polish */
+
+/* Header: one clear diary affordance instead of a telemetry strip. */
+.masthead-actions{
+  align-items:center;
+  gap:9px;
+}
+.history-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:38px;
+  padding:8px 11px;
+}
+.history-toggle>b{
+  display:grid;
+  place-items:center;
+  min-width:22px;
+  height:22px;
+  padding:0 5px;
+  border:1px solid currentColor;
+  border-radius:999px;
+  background:var(--ink);
+  color:#fff;
+  font:900 8px/1 "Courier New",monospace;
+}
+.header-history-meta{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+
+/* Explain the product once, without a tutorial modal. */
+.listener-flow{
+  grid-column:1;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 14px;
+  margin-top:17px;
+  color:var(--grey);
+  font:800 8px/1.2 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.listener-flow span{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.listener-flow b{
+  display:grid;
+  place-items:center;
+  width:18px;
+  height:18px;
+  border:1px solid var(--ink);
+  border-radius:50%;
+  color:var(--ink);
+  font-size:7px;
+}
+
+/* Fine-tuning is progressive disclosure, not a mood dictionary dump. */
+.mood-chips:not(.is-expanded) .chip:nth-child(n+13):not(.selected){
+  display:none;
+}
+.mood-more{
+  margin-top:10px;
+  padding:4px 0;
+  border:0;
+  border-bottom:1px solid currentColor;
+  background:transparent;
+  color:var(--grey);
+  font:800 8px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.mood-more:hover{color:var(--ink)}
+
+/* Recommendation loading should feel intentional, not frozen. */
+.pick-progress{
+  display:grid;
+  grid-template-columns:52px 1fr;
+  gap:10px;
+  align-items:center;
+  min-height:30px;
+  margin-top:10px;
+  font:800 8px/1.25 "Courier New",monospace;
+  text-transform:uppercase;
+  color:var(--grey);
+}
+.pick-progress[hidden]{display:none}
+.pick-progress i{
+  position:relative;
+  height:5px;
+  overflow:hidden;
+  background:#d2cbc0;
+}
+.pick-progress i:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  width:45%;
+  background:var(--blue);
+  animation:shelf-search .9s ease-in-out infinite alternate;
+}
+@keyframes shelf-search{
+  from{transform:translateX(-20%)}
+  to{transform:translateX(160%)}
+}
+body.is-picking .recommend{
+  cursor:wait;
+  box-shadow:2px 2px 0 var(--ink);
+}
+body.is-picking.has-record .record-stage:after{
+  content:"finding another record…";
+  position:absolute;
+  z-index:8;
+  inset:13px;
+  display:grid;
+  place-items:center;
+  background:#eee7dae8;
+  backdrop-filter:blur(2px);
+  border:2px solid var(--ink);
+  color:var(--ink);
+  font:900 10px/1 "Courier New",monospace;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+/* The album reveal should feel like a payoff. */
+@keyframes record-arrives{
+  0%{opacity:.15;transform:translateY(12px) rotate(-1.2deg) scale(.985)}
+  100%{opacity:1;transform:translateY(0) rotate(-.45deg) scale(1)}
+}
+@keyframes result-copy-arrives{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:none}
+}
+.record-stage.revealed{
+  animation:record-arrives .34s cubic-bezier(.2,.75,.2,1) both;
+}
+body.has-record .album-details,
+body.has-record .why-panel,
+body.has-record .result-actions{
+  animation:result-copy-arrives .32s ease-out both;
+}
+body.has-record .why-panel{animation-delay:.05s}
+body.has-record .result-actions{animation-delay:.09s}
+
+/* Saved means saved. Don't keep asking the user to do it again. */
+.save-action.is-saved,
+.save-action.is-saved:disabled{
+  opacity:1;
+  background:var(--acid)!important;
+  color:var(--ink)!important;
+  border-color:var(--ink)!important;
+  box-shadow:none!important;
+}
+
+/* A completely new user does not need an empty diary section below the picker. */
+body:not(.has-diary) .recent-shelf{
+  display:none;
+}
+
+/* Saving should feel low-pressure. */
+.log-helper{
+  margin:8px 0 16px;
+  max-width:44ch;
+  color:var(--grey);
+  font:italic 11px/1.45 Georgia,serif;
+}
+.log-save{margin-top:18px}
+
+/* Crisp keyboard treatment across the custom interface. */
+:where(button,a,input,textarea,select,summary):focus-visible{
+  outline:3px solid var(--blue);
+  outline-offset:3px;
+}
+summary{cursor:pointer}
+
+/* Mobile: important actions stay near the thumb, secondary ones stay secondary. */
+@media(max-width:700px){
+  .masthead-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+  }
+  .history-toggle,
+  .account-toggle{min-height:42px}
+  .listener-flow{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:6px;
+  }
+  .listener-flow span{
+    display:grid;
+    gap:5px;
+    justify-items:start;
+    line-height:1.25;
+  }
+  body:not(.has-record) .recommend{
+    position:sticky;
+    bottom:10px;
+    z-index:20;
+    margin-top:18px;
+    box-shadow:0 -8px 20px var(--paper),4px 4px 0 var(--ink);
+  }
+  body.has-record .result-actions{
+    position:sticky;
+    bottom:8px;
+    z-index:18;
+    margin-inline:-5px;
+    padding:7px;
+    border:2px solid var(--ink);
+    background:#f3eee4f2;
+    backdrop-filter:blur(7px);
+    box-shadow:0 -5px 18px #0002;
+  }
+  body.has-record .result-primary,
+  body.has-record .save-action{
+    min-height:46px;
+  }
+  .mood-more{
+    min-height:36px;
+    padding:8px 0;
+  }
+  .pick-progress{
+    grid-template-columns:38px 1fr;
+    margin-bottom:6px;
+  }
+  .drawer{
+    width:100vw;
+    max-width:none;
+  }
+}
+
+/* Respect users who ask the OS for less animation. */
+@media(prefers-reduced-motion:reduce){
+  *,
+  *:before,
+  *:after{
+    scroll-behavior:auto!important;
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+}
