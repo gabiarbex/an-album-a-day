@@ -3125,3 +3125,13 @@ body.has-record .resume-last-pick{display:none!important}
     padding-top:8px;
   }
 }
+
+
+/* zine-065 — saving should be effortless */
+.save-action.is-saved{
+  cursor:pointer;
+  box-shadow:inset 0 0 0 1px var(--ink)!important;
+}
+.save-action.is-saved:hover{
+  background:var(--yellow)!important;
+}
