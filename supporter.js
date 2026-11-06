@@ -146,7 +146,7 @@ function renderProfile(s){
  $('studioAvatar').textContent=initials(email);
  $('studioProfileName').textContent=identityName(email);
  $('studioProfileEmail').textContent=email||'supporter account';
- $('studioProfileLine').textContent=`${stats.saved} saved · ${stats.uniqueArtists} artists · ${stats.fiveStar} five-star records`;
+ $('studioProfileLine').textContent=`${stats.listened} listened · ${stats.savedLater} saved later · ${stats.uniqueArtists} artists`;
  renderTasteTags(stats);
  renderTasteSentence(stats);
  renderFiveStarShelf(s.diary);
@@ -184,8 +184,8 @@ function renderStats(s){
  const all=Core.buildStats(s);
  const year=new Date().getFullYear();
  const current=Core.buildStats(s,year);
- metric('studioMetricSaved',number(all.saved),'albums saved');
- metric('studioMetricPulled',number(all.pulled),'records seen');
+ metric('studioMetricSaved',number(all.listened),'albums listened');
+ metric('studioMetricPulled',number(all.savedLater),'saved for later');
  metric('studioMetricArtists',number(all.uniqueArtists),'unique artists');
  metric('studioMetricAverage',rating(all.averageRating),'average rating');
  metric('studioMetricFive',number(all.fiveStar),'five-star records');
@@ -212,9 +212,9 @@ function renderWrapped(s,year){
  const grid=$('wrappedGrid');if(!grid)return;
  clear(grid);
  const share=$('shareWrapped'),story=$('storyWrapped');
- if(share)share.disabled=!stats.saved;
- if(story)story.disabled=!stats.saved;
- if(!stats.saved){
+ if(share)share.disabled=!stats.listened;
+ if(story)story.disabled=!stats.listened;
+ if(!stats.listened){
   const empty=el('div','wrapped-empty');
   empty.append(
    el('small','','ALBUM-A-DAY WRAPPED / '+year),
@@ -234,7 +234,7 @@ function renderWrapped(s,year){
  const month=stats.biggestMonth?MONTHS[Number(stats.biggestMonth.name)]||stats.biggestMonth.name:'still collecting';
 
  grid.append(
-  wrappedCard('records saved',stats.saved,'front to back'),
+  wrappedCard('records finished',stats.listened,'front to back'),
   wrappedCard('days you showed up',stats.daysPicked,'album days'),
   wrappedCard('artist of the year',topArtist,stats.topArtists[0]?Math.round(stats.topArtists[0].count)+' saved record'+(stats.topArtists[0].count===1?'':'s'):''),
   wrappedCard('genre orbit',topGenre,'your most-saved lane'),
@@ -336,7 +336,7 @@ async function storyWrapped(){
  wrapCanvasText(ctx,'MY YEAR IN RECORDS',108,315,850,105,3);
 
  const items=[
-  ['ALBUMS SAVED',String(stats.saved)],
+  ['ALBUMS FINISHED',String(stats.listened)],
   ['ARTIST OF THE YEAR',stats.topArtists[0]?.name||'STILL COLLECTING'],
   ['RECORD OF THE YEAR',stats.topRated?stats.topRated.artist+' — '+stats.topRated.album:'STILL COLLECTING'],
   ['GENRE ORBIT',stats.topGenres[0]?.name||'STILL COLLECTING'],
