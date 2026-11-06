@@ -408,7 +408,6 @@ function pulledRecordCount(){
 function renderPulledCounters(){
  const pulled=pulledRecordCount();
  if($('pulledCount'))$('pulledCount').textContent=String(pulled);
- if($('statPulled'))$('statPulled').textContent=String(pulled);
  document.documentElement.style.setProperty('--seen-count',String(pulled));
 }
 function persistSeen(){
@@ -629,7 +628,11 @@ function renderStreak(){
  node.textContent=`${streak} day${streak===1?'':'s'} streak`;
 }
 function todaysRecentPick(){return [...recentPicks].reverse().find(row=>String(row.date||'')===getDate())||null}
-function todaysListenedEntry(){return [...logs].reverse().find(entry=>isEntryListened(entry)&&completedEntryDate(entry)===getDate())||null}
+function todaysListenedEntry(){
+ const today=getDate();
+ const rows=[...logs].reverse().filter(entry=>isEntryListened(entry)&&completedEntryDate(entry)===today);
+ return rows.find(entry=>entry.daily_date===today)||rows[0]||null;
+}
 function todayRecordSnapshot(){
  const entry=todaysListenedEntry();
  if(entry)return diaryAlbum(entry);
@@ -2616,7 +2619,9 @@ function completeCurrentPick(options={}){
   if(!entry)return;
   logs.push(entry);index=logs.length-1;
  }else{
-  logs[index]={...logs[index],completed:true,date:getDate(),completed_date:getDate(),completed_at:new Date().toISOString()};
+  logs[index]={...logs[index],completed:true,date:getDate(),completed_date:getDate(),completed_at:new Date().toISOString(),
+   pick_mode:logs[index].pick_mode||(['daily','bonus'].includes(currentShowMode)?currentShowMode:null),
+   daily_date:logs[index].daily_date||(currentShowMode==='daily'?getDate():null)};
  }
  persist();markTodayComplete();
  if(options.dislike)recordFeedback('wrong_vibe').catch(()=>{});
@@ -2831,6 +2836,8 @@ function buildDiaryEntryFromPick(ratingValue=0,favoriteTrack='',noteText='',comp
  return {
   date:getDate(),artist:pick.artist,album:pick.title,rating:Number(ratingValue)||0,
   completed:Boolean(completed),completed_date:completed?getDate():null,completed_at:completed?new Date().toISOString():null,
+  pick_mode:['daily','bonus'].includes(currentShowMode)?currentShowMode:null,
+  daily_date:currentShowMode==='daily'?getDate():null,
   favorite_track:String(favoriteTrack||'').trim(),notes:String(noteText||'').trim(),
   cover_art:pick.metadata?.cover_art||(/^https?:/.test($('cover')?.src||'')?$('cover').src:''),
   genre:live.genre||(Array.isArray(pick.genres)?(typeof pick.genres[0]==='string'?pick.genres[0]:pick.genres[0]?.name):'')||'',
