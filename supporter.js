@@ -375,14 +375,20 @@ async function storyWrapped(){
 function bind(){
  $('supporterStudioOpen')?.addEventListener('click',open);
  $('supporterStudioDrawer')?.addEventListener('click',open);
- $('supporterTeaserOpen')?.addEventListener('click',()=>window.AlbumAuth?.open?.());
+ $('supporterTeaserOpen')?.addEventListener('click',()=>{
+  window.AlbumAnalytics?.track('supporter_teaser_opened',{surface:'diary'});
+  window.AlbumAuth?.open?.();
+ });
  $('closeSupporterStudio')?.addEventListener('click',()=>$('supporterStudioDialog')?.close());
  $('wrappedYear')?.addEventListener('change',()=>renderWrapped(state(),Number($('wrappedYear').value)));
  $('shareWrapped')?.addEventListener('click',shareWrapped);
  $('storyWrapped')?.addEventListener('click',storyWrapped);
  const tabs=[...document.querySelectorAll('[data-studio-tab]')];
  tabs.forEach((button,index)=>{
-  button.addEventListener('click',()=>switchTab(button.dataset.studioTab));
+  button.addEventListener('click',()=>{
+   switchTab(button.dataset.studioTab);
+   if(button.dataset.studioTab==='wrapped')window.AlbumAnalytics?.track('wrapped_opened',{year:Number($('wrappedYear')?.value)||new Date().getFullYear()});
+  });
   button.addEventListener('keydown',event=>{
    if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
    event.preventDefault();
