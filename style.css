@@ -3135,3 +3135,349 @@ body.has-record .resume-last-pick{display:none!important}
 .save-action.is-saved:hover{
   background:var(--yellow)!important;
 }
+
+
+/* zine-070 — daily habit + listening loop */
+
+/* Returning users don't need onboarding every day. */
+body.returning-user:not(.has-record) .listener-flow{display:none}
+
+/* Today's state gets one editorial card, not another dashboard. */
+.daily-home{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:18px;
+  align-items:end;
+  max-width:900px;
+  margin:22px 0 8px;
+  padding:17px 18px;
+  border:2px solid var(--ink);
+  border-left:7px solid var(--blue);
+  background:#fff;
+  box-shadow:5px 5px 0 var(--yellow);
+}
+.daily-home[hidden]{display:none}
+.daily-home-copy small{
+  display:block;
+  margin-bottom:7px;
+  color:var(--blue);
+  font:900 8px/1 "Courier New",monospace;
+  letter-spacing:.12em;
+}
+.daily-home-copy strong{
+  display:block;
+  max-width:24ch;
+  font:900 clamp(25px,3vw,38px)/.96 Impact,"Arial Black",sans-serif;
+  text-transform:uppercase;
+  text-wrap:balance;
+}
+.daily-home-copy span{
+  display:block;
+  margin-top:9px;
+  color:var(--grey);
+  font:800 9px/1.4 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.daily-home-actions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px;
+}
+.daily-home-actions button{
+  min-height:42px;
+  padding:9px 11px;
+  border:2px solid var(--ink);
+  background:var(--ink);
+  color:#fff;
+  font:900 8px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.daily-home-actions button.quiet{
+  background:transparent;
+  color:var(--ink);
+  border-width:1px;
+}
+body.today-complete .daily-home{
+  border-left-color:var(--acid);
+  box-shadow:5px 5px 0 var(--acid);
+}
+body:not(.has-record) .daily-home:not([hidden]) ~ .feeling-field,
+body:not(.has-record) .daily-home:not([hidden]) ~ .fine-tune,
+body:not(.has-record) .daily-home:not([hidden]) ~ .recommend,
+body:not(.has-record) .daily-home:not([hidden]) ~ .pick-progress,
+body:not(.has-record) .daily-home:not([hidden]) ~ #status,
+body:not(.has-record) .daily-home:not([hidden]) ~ .resume-last-pick{
+  display:none!important;
+}
+
+/* The reveal gets one memorable stamp and a little physical motion. */
+.record-stamp{
+  position:absolute;
+  z-index:9;
+  top:14px;
+  left:14px;
+  padding:6px 8px 5px;
+  border:2px solid var(--ink);
+  background:var(--yellow);
+  box-shadow:2px 2px 0 var(--ink);
+  font:900 8px/1 "Courier New",monospace;
+  letter-spacing:.08em;
+  transform:rotate(-1.5deg);
+}
+.record-stage.revealed .sleeve{
+  animation:sleeve-settle .42s cubic-bezier(.2,.8,.2,1) both;
+}
+.record-stage.revealed .record{
+  animation:vinyl-peek .55s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes sleeve-settle{
+  from{transform:translateY(11px) rotate(-.8deg);filter:contrast(.96)}
+  to{transform:translateY(0) rotate(0);filter:none}
+}
+@keyframes vinyl-peek{
+  from{transform:translateX(-2%) rotate(-12deg)}
+  to{transform:translateX(8%) rotate(8deg)}
+}
+
+/* After listening: completion and taste-learning are a single calm loop. */
+.listen-checkin{
+  max-width:720px;
+  margin-top:18px;
+  padding:15px 0 2px;
+  border-top:3px solid var(--ink);
+}
+.listen-checkin[hidden]{display:none}
+.listen-checkin-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:14px;
+  align-items:start;
+}
+.listen-checkin-head small{
+  display:block;
+  margin-bottom:5px;
+  color:var(--blue);
+  font:900 8px/1 "Courier New",monospace;
+  letter-spacing:.12em;
+}
+.listen-checkin-head strong{
+  display:block;
+  max-width:30ch;
+  font:700 17px/1.25 Georgia,serif;
+}
+.listen-checkin-head>span{
+  padding:5px 7px;
+  border:1px solid var(--ink);
+  background:var(--paper-2);
+  font:800 7px/1 "Courier New",monospace;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.listen-checkin-primary{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:13px;
+}
+.listen-checkin-primary button{
+  min-height:40px;
+  padding:8px 11px;
+  border:2px solid var(--ink);
+  background:var(--acid);
+  color:var(--ink);
+  font:900 8px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.listen-checkin-primary button.quiet{
+  background:transparent;
+  border-width:1px;
+}
+.listen-checkin-done{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:22px;
+  align-items:start;
+  margin-top:14px;
+}
+.listen-checkin-done>div>span{
+  display:block;
+  margin-bottom:7px;
+  color:var(--grey);
+  font:800 7px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.quick-rating{
+  display:flex;
+  gap:2px;
+}
+.quick-rating button{
+  padding:0 2px;
+  border:0;
+  background:transparent;
+  color:#b7afa3;
+  font-size:27px;
+  line-height:1;
+}
+.quick-rating button.active{color:var(--yellow);text-shadow:1px 1px 0 var(--ink)}
+.learning-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+.learning-actions button{
+  min-height:32px;
+  padding:6px 8px;
+  border:1px solid var(--ink);
+  background:transparent;
+  color:var(--ink);
+  font:800 7px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.learning-actions button:hover{background:var(--ink);color:#fff}
+
+/* Diary filters + cover shelf. */
+.diary-toolbar{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  margin:4px 0 13px;
+  padding:8px 0;
+  border-top:1px solid var(--ink);
+  border-bottom:1px solid var(--ink);
+}
+.diary-filters,
+.diary-views{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+.diary-toolbar button{
+  min-height:32px;
+  padding:6px 8px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--grey);
+  font:900 7px/1 "Courier New",monospace;
+  text-transform:uppercase;
+}
+.diary-toolbar button[aria-pressed="true"]{
+  border-color:var(--ink);
+  background:var(--ink);
+  color:#fff;
+}
+.history-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px;
+}
+.history-grid .history-item{
+  display:block;
+  min-width:0;
+  padding:0 0 12px;
+  border:1px solid var(--ink);
+  background:#fff;
+}
+.history-grid .history-cover{
+  display:block;
+  width:100%;
+  aspect-ratio:1;
+  object-fit:cover;
+  border:0;
+  border-bottom:1px solid var(--ink);
+}
+.history-cover-fallback{
+  background:
+    linear-gradient(135deg,transparent 0 54%,var(--pink) 54% 69%,transparent 69%),
+    var(--paper-2);
+}
+.history-grid .history-copy{padding:10px}
+.history-grid .history-copy>small{font-size:7px}
+.history-grid .history-copy>strong{
+  display:block;
+  margin-top:4px;
+  font-size:12px;
+  line-height:1.2;
+}
+.history-grid .history-copy>p{
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  font-size:10px;
+}
+.history-grid .history-entry-actions{
+  margin-top:9px;
+}
+.history-grid .history-rating{
+  margin-top:5px;
+  font-size:7px;
+}
+
+/* Supporter teaser now previews the user's actual shelf, without exposing premium details. */
+.supporter-preview{
+  position:relative;
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:5px!important;
+  filter:none!important;
+}
+.supporter-preview>div:not(.supporter-preview-lock){
+  padding:7px 8px;
+  border:1px solid var(--ink);
+  background:#fff;
+}
+.supporter-preview small,
+.supporter-preview b{
+  display:block;
+}
+.supporter-preview small{
+  margin-bottom:4px;
+  color:var(--grey);
+  font:800 6px/1 "Courier New",monospace;
+}
+.supporter-preview b{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font:900 10px/1 Impact,"Arial Black",sans-serif;
+  text-transform:uppercase;
+}
+.supporter-preview-lock{
+  display:grid;
+  place-items:center;
+  min-height:42px;
+  padding:6px;
+  border:1px dashed var(--ink);
+  background:#ffffffb5;
+  backdrop-filter:blur(2px);
+  font:900 6px/1.2 "Courier New",monospace;
+  text-align:center;
+  letter-spacing:.08em;
+}
+
+/* "seen" stays useful, but it no longer pretends to be a diary achievement. */
+.recent-seen-head>span,
+.recent-seen-copy small{
+  color:var(--grey);
+}
+
+/* Mobile density */
+@media(max-width:700px){
+  .daily-home{grid-template-columns:1fr}
+  .daily-home-actions{justify-content:flex-start}
+  .daily-home-actions button{min-height:44px}
+  .record-stamp{top:10px;left:10px;font-size:7px}
+  .listen-checkin-done{grid-template-columns:1fr}
+  .learning-actions button{min-height:40px}
+  .diary-toolbar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .diary-toolbar button{min-height:38px}
+  .history-grid{gap:9px}
+  .history-grid .history-copy{padding:8px}
+  .supporter-preview{grid-template-columns:1fr 1fr!important}
+  .supporter-preview-lock{grid-column:1/-1}
+}
