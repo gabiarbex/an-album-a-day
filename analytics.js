@@ -72,7 +72,6 @@ function track(event,properties={}){
   keepalive:true,
   headers:{
    'apikey':target.key,
-   'Authorization':'Bearer '+target.key,
    'Content-Type':'application/json',
    'Prefer':'return=minimal'
   },
