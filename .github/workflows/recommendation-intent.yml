@@ -7,6 +7,8 @@ on:
       - 'selector.js'
       - 'tests/retrieval-intent.test.cjs'
       - 'tests/intent-100.test.cjs'
+      - 'retrieval-fusion.js'
+      - 'tests/retrieval-fusion.test.cjs'
       - 'tests/ranking-contract.test.mjs'
       - 'benchmarks/intent-100.json'
       - 'api/_ranking-core.js'
@@ -17,6 +19,8 @@ on:
       - 'selector.js'
       - 'tests/retrieval-intent.test.cjs'
       - 'tests/intent-100.test.cjs'
+      - 'retrieval-fusion.js'
+      - 'tests/retrieval-fusion.test.cjs'
       - 'tests/ranking-contract.test.mjs'
       - 'benchmarks/intent-100.json'
       - 'api/_ranking-core.js'
@@ -35,8 +39,10 @@ jobs:
         run: |
           node --check intent-core.js
           node --check selector.js
+          node --check retrieval-fusion.js
       - name: Check exclusions and multilingual requests
         run: |
           node tests/retrieval-intent.test.cjs
           node tests/intent-100.test.cjs
           node tests/ranking-contract.test.mjs
+          node tests/retrieval-fusion.test.cjs
