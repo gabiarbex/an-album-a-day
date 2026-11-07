@@ -52,7 +52,7 @@ assert.equal(diverse.length,3);
 const untagged={...solo,moods:[],tags:[],moodSource:'unknown'};
 const why=explanation({candidate:untagged,taste:{}},
  {...neutral,intent:{moods:{dreamy:1},genres:[],avoidGenres:[],avoidMoods:{}}});
-assert.match(why,/mood tags not verified/);
+assert.match(why,/no verified mood tags/);
 assert.doesNotMatch(why,/overall match/i);
 
 
