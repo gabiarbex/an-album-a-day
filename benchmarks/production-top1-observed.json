@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-11-07T14:39:51.075Z",
+  "captured_at": "2026-11-07T14:50:22.542Z",
   "site": "https://gabiarbex.github.io/an-album-a-day/",
   "note": "Observed top-1 outputs only; no relevance judgments or NDCG are inferred.",
   "results": [
@@ -12,13 +12,156 @@
       "avoidGenres": [],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "In a Silent Way",
-      "detail": "TODAY'S RECORD\nIn a Silent Way\n\nMiles Davis · 1969\n\nREFLECTIVE",
+      "title": "Blues 'N Ballads",
+      "detail": "TODAY'S RECORD\nBlues 'N Ballads\n\nThe Jazz Networks · 1994",
       "reason": "jazz.",
       "signals": "JAZZ",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
-      "catalog": {},
+      "catalog": {
+        "albumId": "ce78bac5b8a16463",
+        "catalogGenres": "blues | jazz | smooth jazz | swing",
+        "catalogTags": "blues | fusion | jazz | smooth jazz | swing",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v4",
+        "diagnostics": {
+          "neural": 0.636998,
+          "local": 1,
+          "lexical": 0.869984,
+          "candidates": 96,
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 11,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "ce78bac5b8a16463",
+            "artist": "The Jazz Networks",
+            "title": "Blues 'N Ballads",
+            "genres": [
+              "blues",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "tags": [
+              "blues",
+              "fusion",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "moods": [],
+            "score": 0.894505
+          },
+          {
+            "rank": 2,
+            "id": "4351136e3b14d8de",
+            "artist": "McKinley Dixon",
+            "title": "Beloved! Paradise! Jazz!?",
+            "genres": [
+              "hip hop",
+              "acid jazz",
+              "boom bap",
+              "conscious hip hop",
+              "jazz rap",
+              "neo soul"
+            ],
+            "tags": [
+              "hip hop",
+              "acid jazz",
+              "boom bap",
+              "conscious hip hop",
+              "english",
+              "jazz rap",
+              "neo soul",
+              "ph_3_stars",
+              "rap"
+            ],
+            "moods": [],
+            "score": 0.887751
+          },
+          {
+            "rank": 3,
+            "id": "13fef24e073a5c99",
+            "artist": "Hot Jazz Band",
+            "title": "Celebration With Louis Armstrong",
+            "genres": [
+              "dixieland",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "tags": [
+              "dixieland",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "moods": [],
+            "score": 0.889032
+          },
+          {
+            "rank": 4,
+            "id": "5e175e24de9c2182",
+            "artist": "Miles Davis",
+            "title": "Get Up With It",
+            "genres": [
+              "jazz",
+              "jazz fusion",
+              "avant-garde jazz",
+              "jazz rock",
+              "ambient",
+              "jazz-funk"
+            ],
+            "tags": [
+              "jazz",
+              "jazz fusion",
+              "avant-garde jazz",
+              "jazz rock",
+              "ambient",
+              "jazz-funk"
+            ],
+            "moods": [],
+            "score": 0.886693
+          },
+          {
+            "rank": 5,
+            "id": "25692d2fbbfeb807",
+            "artist": "Perpetual Groove",
+            "title": "All This Everything",
+            "genres": [
+              "jazz rock",
+              "pop",
+              "post-rock",
+              "psychedelic rock",
+              "rock",
+              "soft rock"
+            ],
+            "tags": [
+              "jazz rock",
+              "pop",
+              "post-rock",
+              "psychedelic rock",
+              "rock",
+              "soft rock"
+            ],
+            "moods": [],
+            "score": 0.880712
+          }
+        ]
+      },
       "ok": true
     },
     {
@@ -30,19 +173,158 @@
       "avoidGenres": [],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "Jazz for Lovers, Volume 2",
-      "detail": "TODAY'S RECORD\nJazz for Lovers, Volume 2\n\nVarious Artists · 2010",
+      "title": "Shine",
+      "detail": "TODAY'S RECORD\nShine\n\nClara Hill · 2020",
       "reason": "bossa nova.",
       "signals": "BOSSA NOVA",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "00df71f9d479c7df",
-        "catalogGenres": "bossa nova | cool jazz | easy listening | jazz | smooth jazz | swing",
-        "catalogTags": "bop | bossa nova | bossanova | cool jazz | easy listening | jazz | post bop | smooth jazz | soul-jazz | swing",
+        "albumId": "4dc14d80dcbfa930",
+        "catalogGenres": "bossa nova | electronic | folk | indie pop | jazz | pop",
+        "catalogTags": "bossa nova | electronic | folk | indie pop | jazz | pop | psychedelic | smooth jazz | soul",
         "catalogMoods": "",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v4",
+        "diagnostics": {
+          "neural": 0.653996,
+          "local": 1,
+          "lexical": 0.8691415,
+          "candidates": 96,
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 18,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "4dc14d80dcbfa930",
+            "artist": "Clara Hill",
+            "title": "Shine",
+            "genres": [
+              "bossa nova",
+              "electronic",
+              "folk",
+              "indie pop",
+              "jazz",
+              "pop"
+            ],
+            "tags": [
+              "bossa nova",
+              "electronic",
+              "folk",
+              "indie pop",
+              "jazz",
+              "pop",
+              "psychedelic",
+              "smooth jazz",
+              "soul"
+            ],
+            "moods": [],
+            "score": 0.908138
+          },
+          {
+            "rank": 2,
+            "id": "44ae9ec3c36a31a0",
+            "artist": "Stan Getz",
+            "title": "Big Band Bossa Nova",
+            "genres": [
+              "bossa nova",
+              "jazz",
+              "latin",
+              "cool jazz",
+              "instrumental jazz",
+              "latin jazz"
+            ],
+            "tags": [
+              "bossa nova",
+              "jazz",
+              "latin",
+              "cool jazz",
+              "instrumental jazz",
+              "latin jazz",
+              "post-bop"
+            ],
+            "moods": [],
+            "score": 0.905369
+          },
+          {
+            "rank": 3,
+            "id": "3146c82d767f4af4",
+            "artist": "Sarah Vaughan",
+            "title": "The Definitive Collection",
+            "genres": [
+              "bossa nova",
+              "easy listening",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "tags": [
+              "bossa nova",
+              "easy listening",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "moods": [],
+            "score": 0.908109
+          },
+          {
+            "rank": 4,
+            "id": "f32bd22508946547",
+            "artist": "ClascyJitto",
+            "title": "KIPIDON MUSIC SAMPLER",
+            "genres": [
+              "bossa nova",
+              "breakbeat",
+              "electronic",
+              "experimental",
+              "jazz"
+            ],
+            "tags": [
+              "bossa nova",
+              "breakbeat",
+              "electronic",
+              "experimental",
+              "jazz"
+            ],
+            "moods": [],
+            "score": 0.893257
+          },
+          {
+            "rank": 5,
+            "id": "b69529a40bf92387",
+            "artist": "Bossa Nostra",
+            "title": "Solaria",
+            "genres": [
+              "ambient",
+              "bossa nova",
+              "jazz",
+              "latin",
+              "soul jazz"
+            ],
+            "tags": [
+              "ambient",
+              "bossa nova",
+              "jazz",
+              "latin",
+              "soul jazz"
+            ],
+            "moods": [],
+            "score": 0.89724
+          }
+        ]
+      },
       "ok": true
     },
     {
@@ -56,19 +338,153 @@
       ],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "The Real… Jazz: The Ultimate Jazz Collection",
-      "detail": "TODAY'S RECORD\nThe Real… Jazz: The Ultimate Jazz Collection\n\nVarious Artists · 2014",
+      "title": "Blues 'N Ballads",
+      "detail": "TODAY'S RECORD\nBlues 'N Ballads\n\nThe Jazz Networks · 1994",
       "reason": "jazz.",
       "signals": "JAZZ",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "5fe7ad01dff18b33",
-        "catalogGenres": "big band | cool jazz | dixieland | easy listening | jazz | pop",
-        "catalogTags": "big band | cool jazz | dixieland | easy listening | jazz | pop | swing",
+        "albumId": "ce78bac5b8a16463",
+        "catalogGenres": "blues | jazz | smooth jazz | swing",
+        "catalogTags": "blues | fusion | jazz | smooth jazz | swing",
         "catalogMoods": "",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v4",
+        "diagnostics": {
+          "neural": 0.64151,
+          "local": 1,
+          "lexical": 0.86259,
+          "candidates": 96,
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 10,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 1
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "ce78bac5b8a16463",
+            "artist": "The Jazz Networks",
+            "title": "Blues 'N Ballads",
+            "genres": [
+              "blues",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "tags": [
+              "blues",
+              "fusion",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "moods": [],
+            "score": 0.895164
+          },
+          {
+            "rank": 2,
+            "id": "4351136e3b14d8de",
+            "artist": "McKinley Dixon",
+            "title": "Beloved! Paradise! Jazz!?",
+            "genres": [
+              "hip hop",
+              "acid jazz",
+              "boom bap",
+              "conscious hip hop",
+              "jazz rap",
+              "neo soul"
+            ],
+            "tags": [
+              "hip hop",
+              "acid jazz",
+              "boom bap",
+              "conscious hip hop",
+              "english",
+              "jazz rap",
+              "neo soul",
+              "ph_3_stars",
+              "rap"
+            ],
+            "moods": [],
+            "score": 0.884232
+          },
+          {
+            "rank": 3,
+            "id": "5e175e24de9c2182",
+            "artist": "Miles Davis",
+            "title": "Get Up With It",
+            "genres": [
+              "jazz",
+              "jazz fusion",
+              "avant-garde jazz",
+              "jazz rock",
+              "ambient",
+              "jazz-funk"
+            ],
+            "tags": [
+              "jazz",
+              "jazz fusion",
+              "avant-garde jazz",
+              "jazz rock",
+              "ambient",
+              "jazz-funk"
+            ],
+            "moods": [],
+            "score": 0.886232
+          },
+          {
+            "rank": 4,
+            "id": "e17f7d428c731baf",
+            "artist": "Chicago",
+            "title": "Best",
+            "genres": [
+              "jazz",
+              "jazz rock",
+              "rock",
+              "soft rock"
+            ],
+            "tags": [
+              "jazz",
+              "jazz rock",
+              "rock",
+              "rock/pop",
+              "soft rock"
+            ],
+            "moods": [],
+            "score": 0.891856
+          },
+          {
+            "rank": 5,
+            "id": "ece108c99ae4409a",
+            "artist": "Somewhere off Jazz Street",
+            "title": "A Quiet Light",
+            "genres": [
+              "dark jazz",
+              "electronic",
+              "instrumental",
+              "jazz"
+            ],
+            "tags": [
+              "dark jazz",
+              "electronic",
+              "instrumental",
+              "jazz"
+            ],
+            "moods": [],
+            "score": 0.882362
+          }
+        ]
+      },
       "ok": true
     },
     {
@@ -80,19 +496,161 @@
         "dreamy"
       ],
       "avoidMoods": [],
-      "title": "One of 18 Angels",
-      "detail": "TODAY'S RECORD\nOne of 18 Angels\n\nDiary of Dreams · 2000",
-      "reason": "overall match.",
-      "signals": "OVERALL MATCH",
+      "title": "Teen Dream",
+      "detail": "TODAY'S RECORD\nTeen Dream\n\nBeach House · 2010\n\nDREAMY · ENERGETIC",
+      "reason": "sonic similarity · mood tags not verified.",
+      "signals": "SONIC SIMILARITY\nMOOD TAGS NOT VERIFIED",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "f0e1c3c279cb9bd5",
-        "catalogGenres": "dark wave | electronic | gothic | synth-pop",
-        "catalogTags": "dark wave | darkwave | electronic | gothic | synth-pop",
-        "catalogMoods": "",
+        "albumId": "58a090ef6a9c29fb",
+        "catalogGenres": "dream pop | indie pop | electronic | indie rock | neo-psychedelia | pop",
+        "catalogTags": "dream pop | indie pop | electronic | indie rock | neo-psychedelia | pop | rock | vyrzukhisuc-album",
+        "catalogMoods": "dreamy | energetic",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v4",
+        "diagnostics": {
+          "neural": 0.566063,
+          "local": 0.5,
+          "lexical": 0.828071,
+          "candidates": 96,
+          "vectorCacheHits": 95,
+          "liveEmbeddings": 1,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 6,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "58a090ef6a9c29fb",
+            "artist": "Beach House",
+            "title": "Teen Dream",
+            "genres": [
+              "dream pop",
+              "indie pop",
+              "electronic",
+              "indie rock",
+              "neo-psychedelia",
+              "pop"
+            ],
+            "tags": [
+              "dream pop",
+              "indie pop",
+              "electronic",
+              "indie rock",
+              "neo-psychedelia",
+              "pop",
+              "rock",
+              "vyrzukhisuc-album"
+            ],
+            "moods": [],
+            "score": 0.599366
+          },
+          {
+            "rank": 2,
+            "id": "02bfdc8113161fe3",
+            "artist": "Tangerine Dream",
+            "title": "In Search of Hades: The Virgin Recordings 1973–1979",
+            "genres": [
+              "ambient",
+              "berlin school",
+              "electronic",
+              "experimental",
+              "modern classical"
+            ],
+            "tags": [
+              "ambient",
+              "berlin school",
+              "electronic",
+              "experimental",
+              "modern classical"
+            ],
+            "moods": [],
+            "score": 0.594985
+          },
+          {
+            "rank": 3,
+            "id": "156190dcbd3e7d3d",
+            "artist": "Corey J. Beats",
+            "title": "Only in My Dreams",
+            "genres": [
+              "boom bap",
+              "chillwave",
+              "downtempo",
+              "hip hop",
+              "instrumental",
+              "instrumental hip hop"
+            ],
+            "tags": [
+              "boom bap",
+              "chillwave",
+              "downtempo",
+              "hip hop",
+              "instrumental",
+              "instrumental hip hop",
+              "lo-fi",
+              "lo-fi hip hop"
+            ],
+            "moods": [],
+            "score": 0.592183
+          },
+          {
+            "rank": 4,
+            "id": "8ab222f1facc7415",
+            "artist": "Robyn Hitchcock",
+            "title": "I Often Dream Of Trains",
+            "genres": [
+              "psychedelic folk",
+              "alternative rock",
+              "experimental",
+              "folk rock",
+              "indie rock",
+              "psychedelic pop"
+            ],
+            "tags": [
+              "psychedelic folk",
+              "alternative rock",
+              "a cappella",
+              "experimental",
+              "folk rock",
+              "indie rock",
+              "psychedelic pop",
+              "rock",
+              "singer-songwriter"
+            ],
+            "moods": [],
+            "score": 0.590731
+          },
+          {
+            "rank": 5,
+            "id": "f3b25849601c083c",
+            "artist": "The Infinite Trip",
+            "title": "We Are Like Dream Children",
+            "genres": [
+              "freakbeat",
+              "garage rock",
+              "psychedelic rock",
+              "rock"
+            ],
+            "tags": [
+              "freakbeat",
+              "garage rock",
+              "psychedelic rock",
+              "rock"
+            ],
+            "moods": [],
+            "score": 0.592517
+          }
+        ]
+      },
       "ok": true
     },
     {
@@ -106,19 +664,167 @@
       "avoidMoods": [
         "warm"
       ],
-      "title": "Reset",
-      "detail": "TODAY'S RECORD\nReset\n\nPanda Bear & Sonic Boom · 2022",
-      "reason": "overall match.",
-      "signals": "OVERALL MATCH",
+      "title": "Hidros 3",
+      "detail": "TODAY'S RECORD\nHidros 3\n\nMats Gustafsson / Sonic Youth With Friends · 2004\n\nGRITTY",
+      "reason": "sonic similarity · mood tags not verified.",
+      "signals": "SONIC SIMILARITY\nMOOD TAGS NOT VERIFIED",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "3edd0d99a38d6a8b",
-        "catalogGenres": "neo-psychedelia | ambient pop | electronic | experimental | indie pop | indie rock",
-        "catalogTags": "neo-psychedelia | ambient pop | electronic | english | experimental | indie pop | indie rock | indietronica | ph_2_stars | plattentests.de",
-        "catalogMoods": "",
+        "albumId": "4455c1f61e1fc452",
+        "catalogGenres": "noise rock | avant-garde | eai | electronic | experimental | experimental rock",
+        "catalogTags": "noise rock | avant-garde | eai | electronic | experimental | experimental rock | free improvisation | indie rock | jazz and blues | noise",
+        "catalogMoods": "gritty",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v4",
+        "diagnostics": {
+          "neural": 0.554985,
+          "local": 0.5,
+          "lexical": 0.850616,
+          "candidates": 96,
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 6,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "4455c1f61e1fc452",
+            "artist": "Mats Gustafsson / Sonic Youth With Friends",
+            "title": "Hidros 3",
+            "genres": [
+              "noise rock",
+              "avant-garde",
+              "eai",
+              "electronic",
+              "experimental",
+              "experimental rock"
+            ],
+            "tags": [
+              "noise rock",
+              "avant-garde",
+              "eai",
+              "electronic",
+              "experimental",
+              "experimental rock",
+              "free improvisation",
+              "indie rock",
+              "jazz and blues",
+              "noise"
+            ],
+            "moods": [],
+            "score": 0.602071
+          },
+          {
+            "rank": 2,
+            "id": "b24b2a97edcecf43",
+            "artist": "Doldrums",
+            "title": "The Air Conditioned Nightmare",
+            "genres": [
+              "deep house",
+              "electro",
+              "electronic",
+              "electropop",
+              "indie rock",
+              "indietronica"
+            ],
+            "tags": [
+              "deep house",
+              "electro",
+              "electronic",
+              "electropop",
+              "indie rock",
+              "indietronica",
+              "leftfield",
+              "neo-psychedelia",
+              "rock",
+              "synth punk"
+            ],
+            "moods": [],
+            "score": 0.590066
+          },
+          {
+            "rank": 3,
+            "id": "332cf7d324c6b597",
+            "artist": "Rick Miller",
+            "title": "Dark Dreams",
+            "genres": [
+              "progressive",
+              "progressive rock",
+              "psychedelic",
+              "rock",
+              "symphonic rock"
+            ],
+            "tags": [
+              "progressive",
+              "progressive rock",
+              "psychedelic",
+              "rock",
+              "symphonic rock"
+            ],
+            "moods": [],
+            "score": 0.588464
+          },
+          {
+            "rank": 4,
+            "id": "573e128f5b4be670",
+            "artist": "Julee Cruise",
+            "title": "Floating Into the Night",
+            "genres": [
+              "dream pop",
+              "ethereal wave",
+              "ambient pop",
+              "dark jazz",
+              "jazz pop",
+              "lounge"
+            ],
+            "tags": [
+              "dream pop",
+              "ethereal wave",
+              "ambient pop",
+              "dark jazz",
+              "jazz pop",
+              "lounge",
+              "sophisti-pop"
+            ],
+            "moods": [],
+            "score": 0.583805
+          },
+          {
+            "rank": 5,
+            "id": "d6fc226f6b1b608a",
+            "artist": "Modulator ESP",
+            "title": "Samhain Sonics 2020",
+            "genres": [
+              "ambient",
+              "berlin school",
+              "dark ambient",
+              "drone",
+              "experimental",
+              "noise"
+            ],
+            "tags": [
+              "ambient",
+              "berlin school",
+              "dark ambient",
+              "drone",
+              "experimental",
+              "noise"
+            ],
+            "moods": [],
+            "score": 0.592599
+          }
+        ]
+      },
       "ok": true
     },
     {
@@ -132,19 +838,158 @@
       ],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "Mojo Club Presents: Dancefloor Jazz, Volume 5: Sunshine of Your Love",
-      "detail": "TODAY'S RECORD\nMojo Club Presents: Dancefloor Jazz, Volume 5: Sunshine of Your Love\n\nVarious Artists · 1996",
+      "title": "Lúpiter",
+      "detail": "TODAY'S RECORD\nLúpiter\n\nJazz the Roots · 2017",
       "reason": "jazz.",
       "signals": "JAZZ",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "b019ecd5917a70c9",
-        "catalogGenres": "bossa nova | jazz | downtempo | easy listening | electronic | free jazz",
-        "catalogTags": "bossa nova | jazz | downtempo | easy listening | electronic | free jazz | future jazz | jazz-funk | jazzdance | latin jazz",
+        "albumId": "0eb6d76f6340c0d6",
+        "catalogGenres": "contemporary jazz | dancehall | dub | experimental | funk | hip hop",
+        "catalogTags": "contemporary jazz | dancehall | dub | experimental | funk | hip hop | jazz | ragga | reggae | rock",
         "catalogMoods": "",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v4",
+        "diagnostics": {
+          "neural": 0.532011,
+          "local": 1,
+          "lexical": 0.8382185,
+          "candidates": 96,
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 6,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 4
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "0eb6d76f6340c0d6",
+            "artist": "Jazz the Roots",
+            "title": "Lúpiter",
+            "genres": [
+              "contemporary jazz",
+              "dancehall",
+              "dub",
+              "experimental",
+              "funk",
+              "hip hop"
+            ],
+            "tags": [
+              "contemporary jazz",
+              "dancehall",
+              "dub",
+              "experimental",
+              "funk",
+              "hip hop",
+              "jazz",
+              "ragga",
+              "reggae",
+              "rock"
+            ],
+            "moods": [],
+            "score": 0.881274
+          },
+          {
+            "rank": 2,
+            "id": "d3e8ea9b5657409d",
+            "artist": "Camino 84",
+            "title": "Don't read this. You will be kissed...",
+            "genres": [
+              "bossa nova",
+              "disco",
+              "funk",
+              "indie pop",
+              "jazz-funk",
+              "pop"
+            ],
+            "tags": [
+              "bossa nova",
+              "disco",
+              "funk",
+              "indie",
+              "indie pop",
+              "jazz-funk",
+              "pop",
+              "power pop"
+            ],
+            "moods": [],
+            "score": 0.864995
+          },
+          {
+            "rank": 3,
+            "id": "505de2a3a10d9f1c",
+            "artist": "Sun Ra and His Astro Infinity Arkestra",
+            "title": "Continuation",
+            "genres": [
+              "avant-garde jazz",
+              "big band",
+              "free jazz",
+              "jazz"
+            ],
+            "tags": [
+              "avant-garde jazz",
+              "big band",
+              "free jazz",
+              "jazz"
+            ],
+            "moods": [],
+            "score": 0.870654
+          },
+          {
+            "rank": 4,
+            "id": "89321fd496337540",
+            "artist": "Paloma San Basilio",
+            "title": "Invierno Sur",
+            "genres": [
+              "jazz",
+              "musical",
+              "pop",
+              "smooth jazz"
+            ],
+            "tags": [
+              "jazz",
+              "musical",
+              "pop",
+              "smooth jazz"
+            ],
+            "moods": [],
+            "score": 0.880022
+          },
+          {
+            "rank": 5,
+            "id": "1c29b77563210f93",
+            "artist": "Mesmonium",
+            "title": "Warp Whistle, Volume 2 (Super Mario)",
+            "genres": [
+              "acid jazz",
+              "hip hop",
+              "jazz",
+              "jazz fusion",
+              "liquid funk",
+              "smooth jazz"
+            ],
+            "tags": [
+              "acid jazz",
+              "hip hop",
+              "jazz",
+              "jazz fusion",
+              "liquid funk",
+              "smooth jazz"
+            ],
+            "moods": [],
+            "score": 0.879335
+          }
+        ]
+      },
       "ok": true
     },
     {
@@ -158,19 +1003,129 @@
       ],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "Studio One Soul",
-      "detail": "TODAY'S RECORD\nStudio One Soul\n\nVarious Artists · 2001",
+      "title": "Full of Fire",
+      "detail": "TODAY'S RECORD\nFull of Fire\n\nAl Green · 1976\n\nWARM",
       "reason": "soul.",
       "signals": "SOUL",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "0d0d51077c42159b",
-        "catalogGenres": "reggae | funk | rocksteady | roots reggae | soul",
-        "catalogTags": "reggae | funk | funk soul | rocksteady | roots reggae | soul",
-        "catalogMoods": "",
+        "albumId": "92851ca6eb3f818f",
+        "catalogGenres": "soul | r&b | smooth soul",
+        "catalogTags": "soul | memphis soul | pop-soul | r&b | smooth soul",
+        "catalogMoods": "warm",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v4",
+        "diagnostics": {
+          "neural": 0.522305,
+          "local": 1,
+          "lexical": 0.9976417799452761,
+          "candidates": 96,
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 17,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 2
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "92851ca6eb3f818f",
+            "artist": "Al Green",
+            "title": "Full of Fire",
+            "genres": [
+              "soul",
+              "r&b",
+              "smooth soul"
+            ],
+            "tags": [
+              "soul",
+              "memphis soul",
+              "pop-soul",
+              "r&b",
+              "smooth soul"
+            ],
+            "moods": [],
+            "score": 0.870934
+          },
+          {
+            "rank": 2,
+            "id": "90cb636b5f67aa11",
+            "artist": "Jackie Wilson",
+            "title": "The Jackie Wilson Story",
+            "genres": [
+              "chicago soul",
+              "soul",
+              "r&b"
+            ],
+            "tags": [
+              "chicago soul",
+              "soul",
+              "early r&b",
+              "pop-soul",
+              "r&b",
+              "uptown soul"
+            ],
+            "moods": [],
+            "score": 0.867222
+          },
+          {
+            "rank": 3,
+            "id": "a0ad6a6defd29c57",
+            "artist": "The Delfonics",
+            "title": "The Delfonics",
+            "genres": [
+              "philly soul",
+              "pop soul",
+              "smooth soul",
+              "soul"
+            ],
+            "tags": [
+              "philly soul",
+              "pop soul",
+              "smooth soul",
+              "soul"
+            ],
+            "moods": [],
+            "score": 0.861797
+          },
+          {
+            "rank": 4,
+            "id": "bc5821940306d79e",
+            "artist": "Michael Kiwanuka",
+            "title": "Home Again",
+            "genres": [
+              "soul"
+            ],
+            "tags": [
+              "soul"
+            ],
+            "moods": [],
+            "score": 0.853956
+          },
+          {
+            "rank": 5,
+            "id": "62f93f2092105f5d",
+            "artist": "Stevie Wonder",
+            "title": "Best Ballads",
+            "genres": [
+              "soul"
+            ],
+            "tags": [
+              "soul"
+            ],
+            "moods": [],
+            "score": 0.857069
+          }
+        ]
+      },
       "ok": true
     },
     {
@@ -186,19 +1141,149 @@
         "dreamy"
       ],
       "avoidMoods": [],
-      "title": "The Real… Jazz: The Ultimate Jazz Collection",
-      "detail": "TODAY'S RECORD\nThe Real… Jazz: The Ultimate Jazz Collection\n\nVarious Artists · 2014",
+      "title": "10 CD Collection, 21 Original Albums: Milestones Of A Jazz Legend",
+      "detail": "TODAY'S RECORD\n10 CD Collection, 21 Original Albums: Milestones Of A Jazz Legend\n\nMiles Davis · 2016",
       "reason": "jazz.",
       "signals": "JAZZ",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "5fe7ad01dff18b33",
-        "catalogGenres": "big band | cool jazz | dixieland | easy listening | jazz | pop",
-        "catalogTags": "big band | cool jazz | dixieland | easy listening | jazz | pop | swing",
+        "albumId": "0879bf0e605096c5",
+        "catalogGenres": "big band | cool jazz | hard bop | jazz | post-bop | bebop",
+        "catalogTags": "big band | cool jazz | hard bop | jazz | post-bop | bebop | modal jazz",
         "catalogMoods": "",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v4",
+        "diagnostics": {
+          "neural": 0.594996,
+          "local": 1,
+          "lexical": 0.878844,
+          "candidates": 96,
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 8,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 4
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "0879bf0e605096c5",
+            "artist": "Miles Davis",
+            "title": "10 CD Collection, 21 Original Albums: Milestones Of A Jazz Legend",
+            "genres": [
+              "big band",
+              "cool jazz",
+              "hard bop",
+              "jazz",
+              "post-bop",
+              "bebop"
+            ],
+            "tags": [
+              "big band",
+              "cool jazz",
+              "hard bop",
+              "jazz",
+              "post-bop",
+              "bebop",
+              "modal jazz"
+            ],
+            "moods": [],
+            "score": 0.890559
+          },
+          {
+            "rank": 2,
+            "id": "573e128f5b4be670",
+            "artist": "Julee Cruise",
+            "title": "Floating Into the Night",
+            "genres": [
+              "dream pop",
+              "ethereal wave",
+              "ambient pop",
+              "dark jazz",
+              "jazz pop",
+              "lounge"
+            ],
+            "tags": [
+              "dream pop",
+              "ethereal wave",
+              "ambient pop",
+              "dark jazz",
+              "jazz pop",
+              "lounge",
+              "sophisti-pop"
+            ],
+            "moods": [],
+            "score": 0.874845
+          },
+          {
+            "rank": 3,
+            "id": "ce78bac5b8a16463",
+            "artist": "The Jazz Networks",
+            "title": "Blues 'N Ballads",
+            "genres": [
+              "blues",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "tags": [
+              "blues",
+              "fusion",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "moods": [],
+            "score": 0.889853
+          },
+          {
+            "rank": 4,
+            "id": "6199eb0dec7ddfa9",
+            "artist": "Santana & McLaughlin",
+            "title": "Invitation to Illumination: Live at Montreux 2011",
+            "genres": [
+              "jazz",
+              "jazz rock",
+              "rock"
+            ],
+            "tags": [
+              "jazz",
+              "jazz rock",
+              "rock"
+            ],
+            "moods": [],
+            "score": 0.876906
+          },
+          {
+            "rank": 5,
+            "id": "13fef24e073a5c99",
+            "artist": "Hot Jazz Band",
+            "title": "Celebration With Louis Armstrong",
+            "genres": [
+              "dixieland",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "tags": [
+              "dixieland",
+              "jazz",
+              "smooth jazz",
+              "swing"
+            ],
+            "moods": [],
+            "score": 0.882409
+          }
+        ]
+      },
       "ok": true
     }
   ]
