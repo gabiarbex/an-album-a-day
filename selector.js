@@ -1431,6 +1431,7 @@ async function rankWithBackend(pool,seed,daily){
     seed,
     client_id:clientFeedbackId(),
     note,
+    retrievalNote,
     moods:[...state.moods],
     energy:effectiveEnergy,
     comfort,
