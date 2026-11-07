@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {scoreCandidate,genreConflict,moodConflict,isCompilation,diverseTopK,explanation} from '../api/_ranking-core.js';
+import {scoreCandidate,genreConflict,moodConflict,isCompilation,diverseTopK,explanation,styleMatches,requestedGenreFit} from '../api/_ranking-core.js';
 
 // Controlled fixtures isolate the reranker; these are not claims about real albums.
 const base={
@@ -68,5 +68,21 @@ const dreamyRequest={...neutral,intent:{moods:{dreamy:1},genres:[],avoidGenres:[
 assert.ok(scoreCandidate(dreamStyle,0.5,dreamyRequest)>scoreCandidate(grittyStyle,0.5,dreamyRequest),
  'Well-supported dreamy styles should outrank confidently unrelated tags');
 assert.match(explanation({candidate:dreamStyle,taste:{}},dreamyRequest),/not independently verified/);
+
+
+// Strong style evidence must be precise: pop is not sufficient for dream pop.
+const genericPop={...base,genres:['pop'],tags:['pop']};
+const dreamPop={...base,genres:['dream pop'],tags:['dream pop']};
+const dreamRequest={...body,intent:{genres:['dream pop'],avoidGenres:[],moods:{},avoidMoods:{}}};
+assert.equal(requestedGenreFit(genericPop,dreamRequest).match,false);
+assert.equal(requestedGenreFit(dreamPop,dreamRequest).match,true);
+assert.equal(styleMatches('jazz fusion','jazz'),true);
+assert.equal(styleMatches('rocksteady','rock'),false);
+assert.equal(styleMatches('alternative rock','rock'),true);
+assert.equal(styleMatches('indie pop','dream pop'),false);
+assert.equal(genreConflict({...base,genres:['rocksteady'],tags:[]},['rock']),false);
+assert.equal(genreConflict({...base,genres:['post-rock'],tags:[]},['rock']),true);
+assert.ok(scoreCandidate(dreamPop,0.6,dreamRequest)>scoreCandidate(genericPop,0.6,dreamRequest),
+ 'Requested subgenre should outweigh generic parent genre');
 
 console.log('Ranking safety contracts passed.');
