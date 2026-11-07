@@ -309,6 +309,7 @@ async function syncNow(options={}){
  }
  syncing=true;renderAuth();setSyncStatus('syncing…','busy');
  const userId=session.user.id;
+ let retryForConcurrentEdit=false;
  try{
   const revisionAtStart=localRevision;
   const local=readLocal();
@@ -326,6 +327,7 @@ async function syncNow(options={}){
   // Never apply an older snapshot over those new browser changes.
   if(localRevision!==revisionAtStart){
    dirty=true;
+   retryForConcurrentEdit=true;
    setSyncStatus('new changes detected · syncing again','busy');
    return null;
   }
@@ -333,6 +335,7 @@ async function syncNow(options={}){
   if(writeError)throw writeError;
   if(localRevision!==revisionAtStart){
    dirty=true;
+   retryForConcurrentEdit=true;
    setSyncStatus('new changes detected · syncing again','busy');
    return null;
   }
@@ -349,7 +352,7 @@ async function syncNow(options={}){
   return null;
  }finally{
   syncing=false;renderAuth();
-  if(dirty&&session?.user?.id===userId&&isSupporter()){
+  if(retryForConcurrentEdit&&session?.user?.id===userId&&isSupporter()){
    clearTimeout(syncTimer);
    syncTimer=setTimeout(()=>syncNow({silent:true}),900);
   }
