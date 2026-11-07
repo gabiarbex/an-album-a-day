@@ -28,7 +28,7 @@ export function isCompilation(candidate) {
   const artist = String(candidate?.artist || '').trim().toLowerCase();
   const title = String(candidate?.title || '').trim().toLowerCase();
   return /^(?:various(?: artists)?|v\/?a|v\.a\.)$/.test(artist) ||
-    /\b(?:greatest hits|the best of|ultimate collection|compilation|anthology)\b/.test(title);
+    /\b(?:greatest hits|the best of|ultimate collection|compilation|anthology|box set|boxed set|original albums|complete recordings|cd collection|sampler)\b/.test(title);
 }
 
 function compilationPenalty(candidate, body) {
@@ -38,8 +38,9 @@ function compilationPenalty(candidate, body) {
   const artist = String(candidate?.artist || '').trim().toLowerCase();
   const title = String(candidate?.title || '').trim().toLowerCase();
   const multiArtist = /^(?:various(?: artists)?|v\/?a|v\.a\.)$/.test(artist);
-  const compilationTitle = /\b(?:greatest hits|the best of|ultimate collection|compilation|anthology)\b/.test(title);
-  return (multiArtist ? 0.23 : 0) + (compilationTitle ? 0.09 : 0);
+  const compilationTitle = /\b(?:greatest hits|the best of|ultimate collection|compilation|anthology|box set|boxed set|original albums|complete recordings|cd collection|sampler)\b/.test(title);
+  const boxSet = /\b(?:box(?:ed)? set|original albums|complete recordings|cd collection)\b/.test(title);
+  return (multiArtist ? 0.23 : 0) + (compilationTitle ? (boxSet ? 0.24 : 0.15) : 0);
 }
 
 export function genreConflict(candidate, avoided) {
@@ -104,12 +105,24 @@ export function requestedMoodFit(candidate, body) {
     reliableMoods.some(value => value.includes(needle) || needle.includes(value)) ||
     tags.some(value => value === needle || value.startsWith(needle + ' ') || value.endsWith(' ' + needle))
   );
+  // High-precision style hints support retrieval, but are not confirmed moods.
+  const styleHints = {
+    dreamy:['dream pop','ethereal wave','shoegaze','ambient pop','chillwave','hypnagogic pop'],
+    reflective:['minimal ambient','ambient jazz','slowcore'],
+    energetic:['dance-punk','dance pop','hard dance','high energy'],
+    dark:['dark ambient','darkwave','gothic rock']
+  };
+  const genres=cleanArray(candidate.genres,20).map(value=>String(value).toLowerCase());
+  const suggestive=wanted.filter(needle=>
+    (styleHints[needle]||[]).some(hint=>genres.some(genre=>genre.includes(hint)))
+  );
 
   return {
     requested: true,
     known: reliableMoods.length > 0,
     match: matched.length > 0,
     matched,
+    suggestive
   };
 }
 
@@ -173,7 +186,8 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
   else if (genreFit.known) score -= 0.18;
 
   if (moodFit.match) score += 0.13;
-  else if (moodFit.known) score -= 0.10;
+  else if (moodFit.suggestive?.length) score += 0.08;
+  else if (moodFit.known) score -= 0.20;
 
   const energyDistance = reliableEnergyDistance(candidate, body);
   if (energyDistance !== null && energyDistance <= 1.5) score += 0.07;
@@ -266,6 +280,7 @@ export function explanation(row, body) {
 
   const unique = [...new Set(bits.filter(Boolean))].slice(0, 3);
   if (unique.length) return unique.join(' · ');
+  if (moodFit.suggestive?.length) return 'style suggests the mood · not independently verified';
   if (moodFit.requested) return 'sonic similarity · mood tags not verified';
   return 'catalog similarity · no confirmed style tags';
 }
