@@ -5,6 +5,12 @@ on:
   push:
     paths:
       - 'scripts/capture-production-baseline.mjs'
+      - 'scripts/analyze-production-baseline.mjs'
+      - 'api/recommend.js'
+      - 'api/_ranking-core.js'
+      - 'api/_embedding.js'
+      - 'selector.js'
+      - 'index.html'
       - '.github/workflows/capture-recommendation-baseline.yml'
 
 permissions:
@@ -27,6 +33,13 @@ jobs:
         run: node scripts/capture-production-baseline.mjs
         env:
           BASELINE_URL: https://gabiarbex.github.io/an-album-a-day/
+      - name: Report observable genre, compilation and explanation metrics
+        if: always()
+        run: |
+          if [ -f baseline-results/production-top1.json ]; then
+            node scripts/analyze-production-baseline.mjs baseline-results/production-top1.json > baseline-results/metadata-report.json
+            cat baseline-results/metadata-report.json
+          fi
       - name: Publish public baseline observations
         if: always()
         run: |
