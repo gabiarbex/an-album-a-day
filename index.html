@@ -30,10 +30,11 @@
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css?v=zine-070">
+  <link rel="stylesheet" href="editorial.css?v=print-001">
 </head>
 <body>
   <header class="masthead">
-    <div class="masthead-kicker">ONE RECORD A DAY <span>100,000 RECORDS</span></div>
+    <div class="masthead-kicker">THE INDEPENDENT LISTENING JOURNAL <span>100,000 ALBUMS / ONE A DAY</span></div>
     <div class="masthead-row">
       <div class="title-lockup">
         <h1 class="site-title" aria-label="An Album a Day">
@@ -41,7 +42,7 @@
           <span class="title-album">album</span>
           <span class="title-day">a day</span>
         </h1>
-        <p>one record. no repeats. play it front to back.</p>
+        <p>Music worth making time for. One album, every day.</p>
         <span class="title-scribble" aria-hidden="true">↘ no skips / no repeats</span>
         <svg class="header-doodle" viewBox="0 0 180 90" aria-hidden="true" focusable="false">
           <path d="M8 57 C34 18, 64 77, 98 35 S151 26, 170 9" />
@@ -78,15 +79,15 @@
         <div class="sleeve" id="sleeve">
           <img id="cover" width="720" height="720" alt="Selected album cover" decoding="async" loading="eager" fetchpriority="high">
           <div id="emptyCover" class="empty-cover">
-            <strong>no record yet</strong>
+            <strong>your next record goes here.</strong>
           </div>
         </div>
       </div>
 
       <div class="album-details" id="details">
         <div class="eyebrow">today’s record</div>
-        <h2>pull a record.</h2>
-        <p>start with a note, or leave it completely blank.</p>
+        <h2>Nothing on the turntable yet.</h2>
+        <p>Tell us what you want to hear, or take a chance.</p>
       </div>
 
       <div class="why-panel" id="whyPanel" role="note" aria-label="Why this album matched" hidden>
@@ -164,8 +165,8 @@
     <section class="picker" aria-label="Choose a record">
       <div class="clerk-intro">
         <div class="eyebrow">today’s listen</div>
-        <h2>what do you want to hear?</h2>
-        <p>describe the feeling, scene, sound or kind of record you want. or leave it blank and let the shelf decide.</p>
+        <h2>What are you in the mood for?</h2>
+        <p>A genre, a feeling, a situation. Write it however you would say it to a friend.</p>
         <div class="listener-flow" aria-label="How it works">
           <span><b>1</b> describe</span>
           <span><b>2</b> get one record</span>
@@ -207,9 +208,9 @@
       </div>
 
       <div class="feeling-field">
-        <label for="feelingInput" class="feeling-prompt">describe it</label>
-        <textarea id="feelingInput" maxlength="1200" rows="2" placeholder="2am bus home, restless, no obvious choices..."></textarea>
-        <p id="meaningMatchNote" class="ai-match-note" hidden><b>MEANING MATCH</b> we match the idea behind your note, not just the exact words.</p>
+        <label for="feelingInput" class="feeling-prompt">A note to the record shop</label>
+        <textarea id="feelingInput" maxlength="1200" rows="2" placeholder="something for the long way home. no sad songs."></textarea>
+        <p id="meaningMatchNote" class="ai-match-note" hidden><b>SEARCH NOTE</b> we read your description alongside catalog tags. results aren’t always exact.</p>
         <div class="feeling-foot">
           <span id="feelingInsight" aria-live="polite"></span>
           <button id="clearFeeling" type="button" disabled>clear text</button>
@@ -218,7 +219,7 @@
 
       <details class="fine-tune" id="fineTune">
         <summary>
-          <span>fine-tune</span>
+          <span>browse the filters</span>
           <small id="filterSummary">none selected</small>
         </summary>
 
@@ -253,13 +254,13 @@
       </details>
 
       <button id="recommend" type="button" class="recommend" disabled>
-        <span>pick my album</span>
+        <span>find a record</span>
         <span>↗</span>
       </button>
 
       <div id="pickProgress" class="pick-progress" role="status" aria-live="polite" hidden>
         <i aria-hidden="true"></i>
-        <span id="pickProgressText">digging through the shelf…</span>
+        <span id="pickProgressText">looking through the records…</span>
       </div>
       <p id="status" role="status">loading albums…</p>
     </section>
