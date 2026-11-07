@@ -61,6 +61,11 @@ def load_pairs(file):
                 "moods":list(alt.get("moods") or []),
                 "original_score":alt.get("score"),
                 "neural_score":alt.get("neural"),
+                "profile_quality":alt.get("profileQuality"),
+                "mood_source":normalize(alt.get("moodSource")),
+                "energy_source":normalize(alt.get("energySource")),
+                "energy_confidence":alt.get("energyConfidence"),
+                "energy":alt.get("energy"),
                 "passage":format_candidate(alt),
             })
     return pairs
