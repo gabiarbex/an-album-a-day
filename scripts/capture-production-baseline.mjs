@@ -10,7 +10,7 @@ if(prompts.length!==sampleIds.size)throw new Error('Baseline prompt fixture mism
 const browser = await chromium.launch({headless:true});
 const results=[];
 try {
- for (const {id,prompt,wantGenres,avoidGenres,wantMoods,avoidMoods} of prompts) {
+ for (const {id,prompt,category,language,wantGenres,avoidGenres,wantMoods,avoidMoods} of prompts) {
   const context=await browser.newContext({viewport:{width:1280,height:900}});
   const page=await context.newPage();
   let error='';
@@ -65,10 +65,10 @@ try {
     catalog:({...document.querySelector('#details')?.dataset}),
     page:location.href
    }));
-   results.push({id,prompt,wantGenres,avoidGenres,wantMoods,avoidMoods,...result,backend,ok:true});
+   results.push({id,prompt,category,language,wantGenres,avoidGenres,wantMoods,avoidMoods,...result,backend,ok:true});
   }catch(e){
    error=String(e?.message||e).slice(0,450);
-   results.push({id,prompt,wantGenres,avoidGenres,wantMoods,avoidMoods,ok:false,error,status:await page.locator('#status').textContent().catch(()=>null)});
+   results.push({id,prompt,category,language,wantGenres,avoidGenres,wantMoods,avoidMoods,ok:false,error,status:await page.locator('#status').textContent().catch(()=>null)});
   }finally{await context.close()}
   console.log(JSON.stringify(results.at(-1)));
  }
