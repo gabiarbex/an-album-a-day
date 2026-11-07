@@ -226,8 +226,9 @@ def test_frontend_contract():
         fail("Supporter/cloud streak state must read completed-listening days")
     if 'data-learn="more_like_this"' not in html or 'data-learn="less_artist"' not in html or "artistSuppressions" not in js:
         fail("Post-listen recommender learning controls are missing")
-    if "'less_artist'" not in feedback_js or "event === 'less_artist'" not in taste_store_js:
-        fail("Explicit less-artist feedback must be accepted and learned server-side")
+    taste_policy_js=(ROOT/"api"/"_taste-policy.js").read_text(encoding="utf-8")
+    if "'less_artist'" not in feedback_js or "if(signal==='less_artist')" not in js or "event==='less_like_this'" not in taste_policy_js:
+        fail("Artist-variety feedback must remain local; explicit dislikes must be learned separately")
     if 'id="recordStamp"' not in html or "BONUS / NO REPEAT" not in js:
         fail("Album reveal must distinguish the daily record from bonus/reopened records")
     if 'class="listener-flow"' not in html:
