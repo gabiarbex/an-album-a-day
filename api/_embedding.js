@@ -111,11 +111,11 @@ export function albumProfile(album) {
 }
 
 export function queryProfile(body) {
-  const note = String(body.note || '').trim().replace(/\s+/g, ' ').slice(0, 1000);
+  const note = String(body.retrievalNote ?? body.note ?? '').trim().replace(/\s+/g, ' ').slice(0, 1000);
   const moods = cleanArray(body.moods, 24);
-  const avoidMoods = cleanArray(body.intent?.avoidMoods ? Object.keys(body.intent.avoidMoods) : [], 16);
+
   const genres = cleanArray(body.intent?.genres, 12);
-  const avoidGenres = cleanArray(body.intent?.avoidGenres, 12);
+
   const energy = body.energy == null ? '' : energyLabel(body.energy);
   const familiarity = body.comfort === 'comfort'
     ? 'prefer familiar artists or sounds'
@@ -128,13 +128,13 @@ export function queryProfile(body) {
     'Recommend one album for this listener.',
     note ? `listener description: ${note}` : '',
     moods.length ? `desired emotional qualities: ${moods.join(', ')}` : '',
-    avoidMoods.length ? `avoid these emotional qualities: ${avoidMoods.join(', ')}` : '',
+
     genres.length ? `requested genres or styles: ${genres.join(', ')}` : '',
-    avoidGenres.length ? `avoid these genres or styles: ${avoidGenres.join(', ')}` : '',
+
     energy,
     familiarity,
     runtime,
-    'Match the emotional and sonic character first. Do not reward literal word overlap when the musical vibe is wrong.',
+    'Find music consistent with these positive sonic characteristics.',
   ].filter(Boolean).join(' ').slice(0, 1800);
 }
 
