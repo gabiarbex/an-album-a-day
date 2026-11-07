@@ -1,6 +1,6 @@
 {
   "site": "https://gabiarbex.github.io/an-album-a-day/",
-  "checked_at": "2026-11-07T17:43:05.835Z",
+  "checked_at": "2026-11-07T18:02:48.290Z",
   "viewport": {
     "width": 390,
     "height": 844
@@ -19,7 +19,7 @@
   },
   "noRepeat": {
     "firstId": "573e128f5b4be670",
-    "secondId": "20f532d3423e58d0",
+    "secondId": "4479610118929bfb",
     "seenBeforeReload": 2,
     "seenAfterReload": 2,
     "persisted": true

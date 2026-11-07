@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-11-07T17:43:05.442Z",
+  "captured_at": "2026-11-07T18:02:47.865Z",
   "site": "https://gabiarbex.github.io/an-album-a-day/",
   "seed_policy": "stable per prompt albumaday-benchmark-fixed-v1 ID",
   "note": "Observed top-one and up-to-five backend alternatives; no listening relevance judgments are inferred.",
@@ -614,7 +614,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 1,
+          "consideredCompilations": 2,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -1692,16 +1692,16 @@
           "/an-album-a-day/selector.js?v=goal-003"
         ]
       },
-      "title": "Winds of Change",
-      "detail": "TODAY'S RECORD\nWinds of Change\n\nESOTERICISM · 2023",
-      "reason": "chillout suggests calm music, but the mood is not independently verified.",
-      "signals": "BARBER BEATS\nCHILLOUT\nDOWNTEMPO",
+      "title": "Lifeforms",
+      "detail": "TODAY'S RECORD\nLifeforms\n\nThe Future Sound Of London · 1994\n\nDREAMY · ENERGETIC · REFLECTIVE",
+      "reason": "ambient suggests calm music, but the mood is not independently verified.",
+      "signals": "AMBIENT\nELECTRONIC\nLEFTFIELD",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "48fdf2c342d7d038",
-        "catalogGenres": "barber beats | chillout | downtempo | experimental | instrumental | lounge",
-        "catalogTags": "barber beats | chillout | downtempo | experimental | instrumental | lounge | plunderphonics | post-vaporwave | post-wave | vaporwave",
-        "catalogMoods": "",
+        "albumId": "c668bc053cc658dc",
+        "catalogGenres": "ambient | electronic | leftfield | experimental | idm | ambient techno",
+        "catalogTags": "ambient | electronic | leftfield | experimental | idm | ambient techno | downtempo | aquatic | atmospheric | chillout",
+        "catalogMoods": "dreamy | energetic | reflective",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
@@ -1709,7 +1709,7 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v5-rrf",
         "diagnostics": {
-          "neural": 0.49602,
+          "neural": 0.495758,
           "local": 0.5,
           "lexical": 0.5,
           "candidates": 96,
@@ -1720,41 +1720,13 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 6,
+          "consideredCompilations": 5,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "48fdf2c342d7d038",
-            "artist": "ESOTERICISM",
-            "title": "Winds of Change",
-            "genres": [
-              "barber beats",
-              "chillout",
-              "downtempo",
-              "experimental",
-              "instrumental",
-              "lounge"
-            ],
-            "tags": [
-              "barber beats",
-              "chillout",
-              "downtempo",
-              "experimental",
-              "instrumental",
-              "lounge",
-              "plunderphonics",
-              "post-vaporwave",
-              "post-wave",
-              "vaporwave"
-            ],
-            "moods": [],
-            "score": 0.754442
-          },
-          {
-            "rank": 2,
             "id": "c668bc053cc658dc",
             "artist": "The Future Sound Of London",
             "title": "Lifeforms",
@@ -1780,6 +1752,32 @@
             ],
             "moods": [],
             "score": 0.754381
+          },
+          {
+            "rank": 2,
+            "id": "f62b138f3a954113",
+            "artist": "Washed Out",
+            "title": "Within and Without",
+            "genres": [
+              "chillwave",
+              "chillout",
+              "lounge",
+              "psychedelic"
+            ],
+            "tags": [
+              "chillwave",
+              "atmospheric",
+              "bittersweet",
+              "bright",
+              "chillout",
+              "compassionate",
+              "ethereal",
+              "hazy",
+              "hypnotic",
+              "longing"
+            ],
+            "moods": [],
+            "score": 0.741642
           },
           {
             "rank": 3,
@@ -1811,52 +1809,54 @@
           },
           {
             "rank": 4,
-            "id": "140c15059a30ccf4",
-            "artist": "Ghost Harmonics",
-            "title": "Constellations",
+            "id": "569759f53a7edc1d",
+            "artist": "Blank Embrace",
+            "title": "Horrible",
             "genres": [
               "ambient",
-              "chillout",
               "dark ambient",
+              "downtempo",
               "drone",
+              "electronic",
               "new age"
             ],
             "tags": [
               "ambient",
-              "chillout",
               "dark ambient",
+              "downtempo",
               "drone",
+              "electronic",
               "new age"
             ],
             "moods": [],
-            "score": 0.748127
+            "score": 0.741917
           },
           {
             "rank": 5,
-            "id": "4790422162fd87a4",
-            "artist": "Alice Thompson",
-            "title": "Enchanted Piano",
+            "id": "624249098c83cad4",
+            "artist": "Supply Fi",
+            "title": "Unruly Predation",
             "genres": [
-              "ambient",
-              "avant-garde",
               "chillout",
-              "classical",
-              "contemporary classical",
-              "electronic"
-            ],
-            "tags": [
-              "ambient",
-              "avant-garde",
-              "chillout",
-              "classical",
-              "contemporary classical",
               "electronic",
-              "instrumental",
-              "modern classical",
+              "idm",
+              "ambient",
+              "downtempo",
               "new age"
             ],
+            "tags": [
+              "chillout",
+              "electronic",
+              "idm",
+              "ambient",
+              "beats",
+              "downtempo",
+              "new age",
+              "nu jazz",
+              "nu-jazz"
+            ],
             "moods": [],
-            "score": 0.742539
+            "score": 0.73813
           }
         ]
       },
