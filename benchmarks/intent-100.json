@@ -1,0 +1,1386 @@
+{
+  "version": 1,
+  "description": "100 reproducible intent parsing cases. These are NOT human relevance judgements.",
+  "cases": [
+    {
+      "id": "G01",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want jazz music today",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G02",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want ambient music today",
+      "wantGenres": [
+        "ambient"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G03",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want techno music today",
+      "wantGenres": [
+        "techno"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G04",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want shoegaze music today",
+      "wantGenres": [
+        "shoegaze"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G05",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want bossa nova music today",
+      "wantGenres": [
+        "bossa nova"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G06",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want samba music today",
+      "wantGenres": [
+        "samba"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G07",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want metal music today",
+      "wantGenres": [
+        "metal"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G08",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want folk music today",
+      "wantGenres": [
+        "folk"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G09",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want house music today",
+      "wantGenres": [
+        "house"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G10",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want punk music today",
+      "wantGenres": [
+        "punk"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G11",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want soul music today",
+      "wantGenres": [
+        "soul"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G12",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want reggae music today",
+      "wantGenres": [
+        "reggae"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G13",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want classical music today",
+      "wantGenres": [
+        "classical"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G14",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want rap music today",
+      "wantGenres": [
+        "rap"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G15",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want mpb music today",
+      "wantGenres": [
+        "mpb"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G16",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want indie music today",
+      "wantGenres": [
+        "indie"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G17",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want pop music today",
+      "wantGenres": [
+        "pop"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G18",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want rock music today",
+      "wantGenres": [
+        "rock"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G19",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want country music today",
+      "wantGenres": [
+        "country"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G20",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want dream pop music today",
+      "wantGenres": [
+        "dream pop"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X01",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me jazz, not metal",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X02",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me ambient, not folk",
+      "wantGenres": [
+        "ambient"
+      ],
+      "avoidGenres": [
+        "folk"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X03",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me techno, not house",
+      "wantGenres": [
+        "techno"
+      ],
+      "avoidGenres": [
+        "house"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X04",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me shoegaze, not punk",
+      "wantGenres": [
+        "shoegaze"
+      ],
+      "avoidGenres": [
+        "punk"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X05",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me bossa nova, not soul",
+      "wantGenres": [
+        "bossa nova"
+      ],
+      "avoidGenres": [
+        "soul"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X06",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me samba, not reggae",
+      "wantGenres": [
+        "samba"
+      ],
+      "avoidGenres": [
+        "reggae"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X07",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me metal, not classical",
+      "wantGenres": [
+        "metal"
+      ],
+      "avoidGenres": [
+        "classical"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X08",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me folk, not rap",
+      "wantGenres": [
+        "folk"
+      ],
+      "avoidGenres": [
+        "rap"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X09",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me house, not mpb",
+      "wantGenres": [
+        "house"
+      ],
+      "avoidGenres": [
+        "mpb"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X10",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me punk, not indie",
+      "wantGenres": [
+        "punk"
+      ],
+      "avoidGenres": [
+        "indie"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X11",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me soul, not pop",
+      "wantGenres": [
+        "soul"
+      ],
+      "avoidGenres": [
+        "pop"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X12",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me reggae, not rock",
+      "wantGenres": [
+        "reggae"
+      ],
+      "avoidGenres": [
+        "rock"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X13",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me classical, not country",
+      "wantGenres": [
+        "classical"
+      ],
+      "avoidGenres": [
+        "country"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X14",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me rap, not dream pop",
+      "wantGenres": [
+        "rap"
+      ],
+      "avoidGenres": [
+        "dream pop"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X15",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me mpb, not jazz",
+      "wantGenres": [
+        "mpb"
+      ],
+      "avoidGenres": [
+        "jazz"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X16",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me indie, not ambient",
+      "wantGenres": [
+        "indie"
+      ],
+      "avoidGenres": [
+        "ambient"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X17",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me pop, not techno",
+      "wantGenres": [
+        "pop"
+      ],
+      "avoidGenres": [
+        "techno"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X18",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me rock, not shoegaze",
+      "wantGenres": [
+        "rock"
+      ],
+      "avoidGenres": [
+        "shoegaze"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X19",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me country, not bossa nova",
+      "wantGenres": [
+        "country"
+      ],
+      "avoidGenres": [
+        "bossa nova"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X20",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me dream pop, not samba",
+      "wantGenres": [
+        "dream pop"
+      ],
+      "avoidGenres": [
+        "samba"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "M01",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel dreamy; find me a record that sounds dreamy",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "dreamy"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "M02",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel melancholic; find me a record that sounds melancholic",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "melancholic"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "M03",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel nostalgic; find me a record that sounds nostalgic",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "nostalgic"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "M04",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel reflective; find me a record that sounds reflective",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "reflective"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "M05",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel warm; find me a record that sounds warm",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "warm"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "M06",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel intense; find me a record that sounds intense",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "intense"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "M07",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel energetic; find me a record that sounds energetic",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "energetic"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "M08",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel dark; find me a record that sounds dark",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "dark"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "M09",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel hopeful; find me a record that sounds hopeful",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "hopeful"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "M10",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel cold; find me a record that sounds cold",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "cold"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "N01",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something dreamy, but not warm",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "dreamy"
+      ],
+      "avoidMoods": [
+        "warm"
+      ]
+    },
+    {
+      "id": "N02",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something melancholic, but not intense",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "melancholic"
+      ],
+      "avoidMoods": [
+        "intense"
+      ]
+    },
+    {
+      "id": "N03",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something nostalgic, but not energetic",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "nostalgic"
+      ],
+      "avoidMoods": [
+        "energetic"
+      ]
+    },
+    {
+      "id": "N04",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something reflective, but not dark",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "reflective"
+      ],
+      "avoidMoods": [
+        "dark"
+      ]
+    },
+    {
+      "id": "N05",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something warm, but not hopeful",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "warm"
+      ],
+      "avoidMoods": [
+        "hopeful"
+      ]
+    },
+    {
+      "id": "N06",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something intense, but not cold",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "intense"
+      ],
+      "avoidMoods": [
+        "cold"
+      ]
+    },
+    {
+      "id": "N07",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something energetic, but not dreamy",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "energetic"
+      ],
+      "avoidMoods": [
+        "dreamy"
+      ]
+    },
+    {
+      "id": "N08",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something dark, but not melancholic",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "dark"
+      ],
+      "avoidMoods": [
+        "melancholic"
+      ]
+    },
+    {
+      "id": "N09",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something hopeful, but not nostalgic",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "hopeful"
+      ],
+      "avoidMoods": [
+        "nostalgic"
+      ]
+    },
+    {
+      "id": "N10",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something cold, but not reflective",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "cold"
+      ],
+      "avoidMoods": [
+        "reflective"
+      ]
+    },
+    {
+      "id": "P01",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir jazz, sem soul",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [
+        "soul"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "P02",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir ambient, sem reggae",
+      "wantGenres": [
+        "ambient"
+      ],
+      "avoidGenres": [
+        "reggae"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "P03",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir techno, sem classical",
+      "wantGenres": [
+        "techno"
+      ],
+      "avoidGenres": [
+        "classical"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "P04",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir shoegaze, sem rap",
+      "wantGenres": [
+        "shoegaze"
+      ],
+      "avoidGenres": [
+        "rap"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "P05",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir bossa nova, sem mpb",
+      "wantGenres": [
+        "bossa nova"
+      ],
+      "avoidGenres": [
+        "mpb"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "P06",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir samba, sem indie",
+      "wantGenres": [
+        "samba"
+      ],
+      "avoidGenres": [
+        "indie"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "P07",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir metal, sem pop",
+      "wantGenres": [
+        "metal"
+      ],
+      "avoidGenres": [
+        "pop"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "P08",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir folk, sem rock",
+      "wantGenres": [
+        "folk"
+      ],
+      "avoidGenres": [
+        "rock"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "P09",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir house, sem country",
+      "wantGenres": [
+        "house"
+      ],
+      "avoidGenres": [
+        "country"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "P10",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir punk, sem dream pop",
+      "wantGenres": [
+        "punk"
+      ],
+      "avoidGenres": [
+        "dream pop"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q01",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero jazz, quero soul",
+      "wantGenres": [
+        "soul"
+      ],
+      "avoidGenres": [
+        "jazz"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q02",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero ambient, quero reggae",
+      "wantGenres": [
+        "reggae"
+      ],
+      "avoidGenres": [
+        "ambient"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q03",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero techno, quero classical",
+      "wantGenres": [
+        "classical"
+      ],
+      "avoidGenres": [
+        "techno"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q04",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero shoegaze, quero rap",
+      "wantGenres": [
+        "rap"
+      ],
+      "avoidGenres": [
+        "shoegaze"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q05",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero bossa nova, quero mpb",
+      "wantGenres": [
+        "mpb"
+      ],
+      "avoidGenres": [
+        "bossa nova"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q06",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero samba, quero indie",
+      "wantGenres": [
+        "indie"
+      ],
+      "avoidGenres": [
+        "samba"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q07",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero metal, quero pop",
+      "wantGenres": [
+        "pop"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q08",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero folk, quero rock",
+      "wantGenres": [
+        "rock"
+      ],
+      "avoidGenres": [
+        "folk"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q09",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero house, quero country",
+      "wantGenres": [
+        "country"
+      ],
+      "avoidGenres": [
+        "house"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q10",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero punk, quero dream pop",
+      "wantGenres": [
+        "dream pop"
+      ],
+      "avoidGenres": [
+        "punk"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "C01",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling dreamy and I want jazz, but no soul",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [
+        "soul"
+      ],
+      "wantMoods": [
+        "dreamy"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "C02",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling melancholic and I want ambient, but no reggae",
+      "wantGenres": [
+        "ambient"
+      ],
+      "avoidGenres": [
+        "reggae"
+      ],
+      "wantMoods": [
+        "melancholic"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "C03",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling nostalgic and I want techno, but no classical",
+      "wantGenres": [
+        "techno"
+      ],
+      "avoidGenres": [
+        "classical"
+      ],
+      "wantMoods": [
+        "nostalgic"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "C04",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling reflective and I want shoegaze, but no rap",
+      "wantGenres": [
+        "shoegaze"
+      ],
+      "avoidGenres": [
+        "rap"
+      ],
+      "wantMoods": [
+        "reflective"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "C05",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling warm and I want bossa nova, but no mpb",
+      "wantGenres": [
+        "bossa nova"
+      ],
+      "avoidGenres": [
+        "mpb"
+      ],
+      "wantMoods": [
+        "warm"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "C06",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling intense and I want samba, but no indie",
+      "wantGenres": [
+        "samba"
+      ],
+      "avoidGenres": [
+        "indie"
+      ],
+      "wantMoods": [
+        "intense"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "C07",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling energetic and I want metal, but no pop",
+      "wantGenres": [
+        "metal"
+      ],
+      "avoidGenres": [
+        "pop"
+      ],
+      "wantMoods": [
+        "energetic"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "C08",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling dark and I want folk, but no rock",
+      "wantGenres": [
+        "folk"
+      ],
+      "avoidGenres": [
+        "rock"
+      ],
+      "wantMoods": [
+        "dark"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "C09",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling hopeful and I want house, but no country",
+      "wantGenres": [
+        "house"
+      ],
+      "avoidGenres": [
+        "country"
+      ],
+      "wantMoods": [
+        "hopeful"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "C10",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling cold and I want punk, but no dream pop",
+      "wantGenres": [
+        "punk"
+      ],
+      "avoidGenres": [
+        "dream pop"
+      ],
+      "wantMoods": [
+        "cold"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "D01",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "Play soul with a dreamy feeling; avoid jazz",
+      "wantGenres": [
+        "soul"
+      ],
+      "avoidGenres": [
+        "jazz"
+      ],
+      "wantMoods": [
+        "dreamy"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "D02",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "Play reggae with a melancholic feeling; avoid ambient",
+      "wantGenres": [
+        "reggae"
+      ],
+      "avoidGenres": [
+        "ambient"
+      ],
+      "wantMoods": [
+        "melancholic"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "D03",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "Play classical with a nostalgic feeling; avoid techno",
+      "wantGenres": [
+        "classical"
+      ],
+      "avoidGenres": [
+        "techno"
+      ],
+      "wantMoods": [
+        "nostalgic"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "D04",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "Play rap with a reflective feeling; avoid shoegaze",
+      "wantGenres": [
+        "rap"
+      ],
+      "avoidGenres": [
+        "shoegaze"
+      ],
+      "wantMoods": [
+        "reflective"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "D05",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "Play mpb with a warm feeling; avoid bossa nova",
+      "wantGenres": [
+        "mpb"
+      ],
+      "avoidGenres": [
+        "bossa nova"
+      ],
+      "wantMoods": [
+        "warm"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "D06",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "Play indie with a intense feeling; avoid samba",
+      "wantGenres": [
+        "indie"
+      ],
+      "avoidGenres": [
+        "samba"
+      ],
+      "wantMoods": [
+        "intense"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "D07",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "Play pop with a energetic feeling; avoid metal",
+      "wantGenres": [
+        "pop"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [
+        "energetic"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "D08",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "Play rock with a dark feeling; avoid folk",
+      "wantGenres": [
+        "rock"
+      ],
+      "avoidGenres": [
+        "folk"
+      ],
+      "wantMoods": [
+        "dark"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "D09",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "Play country with a hopeful feeling; avoid house",
+      "wantGenres": [
+        "country"
+      ],
+      "avoidGenres": [
+        "house"
+      ],
+      "wantMoods": [
+        "hopeful"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "D10",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "Play dream pop with a cold feeling; avoid punk",
+      "wantGenres": [
+        "dream pop"
+      ],
+      "avoidGenres": [
+        "punk"
+      ],
+      "wantMoods": [
+        "cold"
+      ],
+      "avoidMoods": []
+    }
+  ]
+}
