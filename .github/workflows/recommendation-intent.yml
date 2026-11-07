@@ -8,6 +8,7 @@ on:
       - 'tests/retrieval-intent.test.cjs'
       - 'tests/intent-100.test.cjs'
       - 'retrieval-fusion.js'
+      - 'scripts/experiment-cross-encoder.py'
       - 'tests/retrieval-fusion.test.cjs'
       - 'tests/ranking-contract.test.mjs'
       - 'benchmarks/intent-100.json'
@@ -20,6 +21,7 @@ on:
       - 'tests/retrieval-intent.test.cjs'
       - 'tests/intent-100.test.cjs'
       - 'retrieval-fusion.js'
+      - 'scripts/experiment-cross-encoder.py'
       - 'tests/retrieval-fusion.test.cjs'
       - 'tests/ranking-contract.test.mjs'
       - 'benchmarks/intent-100.json'
@@ -40,6 +42,10 @@ jobs:
           node --check intent-core.js
           node --check selector.js
           node --check retrieval-fusion.js
+      - name: Validate shadow ML experiment without model downloads
+        run: |
+          python3 -m py_compile scripts/experiment-cross-encoder.py
+          python3 scripts/experiment-cross-encoder.py --observations benchmarks/production-top1-observed.json
       - name: Check exclusions and multilingual requests
         run: |
           node tests/retrieval-intent.test.cjs
