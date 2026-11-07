@@ -11,6 +11,9 @@ on:
       - 'scripts/experiment-cross-encoder.py'
       - 'tests/retrieval-fusion.test.cjs'
       - 'tests/listening-goal.test.cjs'
+      - 'api/_taste-policy.js'
+      - 'api/_taste-store.js'
+      - 'tests/taste-policy.test.mjs'
       - 'benchmarks/emotional-goals.json'
       - 'tests/ranking-contract.test.mjs'
       - 'benchmarks/intent-100.json'
@@ -26,6 +29,9 @@ on:
       - 'scripts/experiment-cross-encoder.py'
       - 'tests/retrieval-fusion.test.cjs'
       - 'tests/listening-goal.test.cjs'
+      - 'api/_taste-policy.js'
+      - 'api/_taste-store.js'
+      - 'tests/taste-policy.test.mjs'
       - 'benchmarks/emotional-goals.json'
       - 'tests/ranking-contract.test.mjs'
       - 'benchmarks/intent-100.json'
@@ -57,3 +63,4 @@ jobs:
           node tests/ranking-contract.test.mjs
           node tests/retrieval-fusion.test.cjs
           node tests/listening-goal.test.cjs
+          node tests/taste-policy.test.mjs
