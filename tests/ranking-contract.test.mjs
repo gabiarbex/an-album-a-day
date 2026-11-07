@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {scoreCandidate,genreConflict,moodConflict,isCompilation,diverseTopK,explanation,styleMatches,requestedGenreFit} from '../api/_ranking-core.js';
+import {scoreCandidate,genreConflict,moodConflict,isCompilation,diverseTopK,explanation,styleMatches,requestedGenreFit,energyPenalty} from '../api/_ranking-core.js';
 
 // Controlled fixtures isolate the reranker; these are not claims about real albums.
 const base={
@@ -84,5 +84,17 @@ assert.equal(genreConflict({...base,genres:['rocksteady'],tags:[]},['rock']),fal
 assert.equal(genreConflict({...base,genres:['post-rock'],tags:[]},['rock']),true);
 assert.ok(scoreCandidate(dreamPop,0.6,dreamRequest)>scoreCandidate(genericPop,0.6,dreamRequest),
  'Requested subgenre should outweigh generic parent genre');
+
+
+// Weakly inferred energy must not masquerade as verified acoustic analysis.
+const lowEnergyBrief={...neutral,energy:2};
+const weakHigh={...base,energy:9,energySource:'weak-catalog-guess',energyConfidence:.15};
+const weakLow={...weakHigh,energy:2};
+assert.equal(energyPenalty(weakHigh,lowEnergyBrief),0);
+assert.equal(scoreCandidate(weakHigh,0.5,lowEnergyBrief),scoreCandidate(weakLow,0.5,lowEnergyBrief),
+ 'Unverified energy must have no effect on ranking');
+const measuredHigh={...weakHigh,energySource:'audio',energyConfidence:1};
+assert.ok(energyPenalty(measuredHigh,lowEnergyBrief)>0);
+assert.ok(scoreCandidate(measuredHigh,0.5,lowEnergyBrief)<scoreCandidate(weakHigh,0.5,lowEnergyBrief));
 
 console.log('Ranking safety contracts passed.');
