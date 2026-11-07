@@ -27,18 +27,18 @@ function energyLabel(value) {
 export function isCompilation(candidate) {
   const artist = String(candidate?.artist || '').trim().toLowerCase();
   const title = String(candidate?.title || '').trim().toLowerCase();
-  return /^(?:various(?: artists)?|v\\/?a|v\\.a\\.)$/.test(artist) ||
-    /\\b(?:greatest hits|the best of|ultimate collection|compilation|anthology)\\b/.test(title);
+  return /^(?:various(?: artists)?|v\/?a|v\.a\.)$/.test(artist) ||
+    /\b(?:greatest hits|the best of|ultimate collection|compilation|anthology)\b/.test(title);
 }
 
 function compilationPenalty(candidate, body) {
   const request = String(body?.note || '').toLowerCase();
   // Anthologies and label samplers remain available when explicitly requested.
-  if (/\\b(?:compilation|anthology|greatest hits|best of|various artists|sampler|mixtape|soundtrack|coletanea|compilacao)\\b/.test(request.normalize('NFD').replace(/[\\u0300-\\u036f]/g,''))) return 0;
+  if (/\b(?:compilation|anthology|greatest hits|best of|various artists|sampler|mixtape|soundtrack|coletanea|compilacao)\b/.test(request.normalize('NFD').replace(/[\u0300-\u036f]/g,''))) return 0;
   const artist = String(candidate?.artist || '').trim().toLowerCase();
   const title = String(candidate?.title || '').trim().toLowerCase();
-  const multiArtist = /^(?:various(?: artists)?|v\\/?a|v\\.a\\.)$/.test(artist);
-  const compilationTitle = /\\b(?:greatest hits|the best of|ultimate collection|compilation|anthology)\\b/.test(title);
+  const multiArtist = /^(?:various(?: artists)?|v\/?a|v\.a\.)$/.test(artist);
+  const compilationTitle = /\b(?:greatest hits|the best of|ultimate collection|compilation|anthology)\b/.test(title);
   return (multiArtist ? 0.23 : 0) + (compilationTitle ? 0.09 : 0);
 }
 
