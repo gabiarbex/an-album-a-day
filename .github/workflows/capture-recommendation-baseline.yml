@@ -20,6 +20,11 @@ on:
 permissions:
   contents: write
 
+# Rapid pushes previously caused concurrent JSON commits and rebase conflicts.
+concurrency:
+  group: album-production-baseline
+  cancel-in-progress: true
+
 jobs:
   capture:
     runs-on: ubuntu-latest
@@ -70,11 +75,15 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "Newer commits exist; skip publishing this stale observation."
+            exit 0
+          fi
           git add benchmarks/production-top1-observed.json
           if [ -f benchmarks/mobile-smoke-latest.json ]; then git add benchmarks/mobile-smoke-latest.json; fi
           if ! git diff --cached --quiet; then
             git commit -m "Record actual production top-one benchmark observations"
-            git pull --rebase origin main
             git push origin HEAD:main
           fi
       - name: Keep results, including failures
