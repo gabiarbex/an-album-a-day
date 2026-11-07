@@ -32,8 +32,9 @@ function correctedIntent(base){
  return intent;
 }
 function recommendationEnergy(intent){
- let value=state.energy!==null?Number(state.energy):Number(intent?.energy);
- if(!Number.isFinite(value))value=null;
+ const raw=state.energy!==null?state.energy:intent?.energy;
+ let value=raw===null||raw===undefined||raw===''?null:Number(raw);
+ if(value!==null&&!Number.isFinite(value))value=null;
  const delta=Number(nextPickCorrection?.energyDelta)||0;
  if(delta){
   if(value===null)value=5;
