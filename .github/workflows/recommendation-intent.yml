@@ -16,6 +16,10 @@ on:
       - 'intent-core.js'
       - 'selector.js'
       - 'tests/retrieval-intent.test.cjs'
+      - 'tests/intent-100.test.cjs'
+      - 'tests/ranking-contract.test.mjs'
+      - 'benchmarks/intent-100.json'
+      - 'api/_ranking-core.js'
       - '.github/workflows/recommendation-intent.yml'
   workflow_dispatch:
 
