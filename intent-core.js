@@ -6,6 +6,7 @@ const feelingLexicon={
  melancholic:['melanchol','sad','cry','heartbreak','lonely','alone','grief','empty','devastat','blue','depress','miserable','sorrow','downbeat','somber','triste','chorar','solidao','luto','broken'],
  reflective:['reflective','reflection','think','thought','quiet','introspect','introspective','contemplat','confus','uncertain','meaning','question','ponder','overthink','thinking','pensando','pensar'],
  dreamy:['dream','float','floating','ethereal','hazy','airy','cloud','surreal','distant','escape','space','sonho','sonhar','dreaming'],
+ calm:['calm','peaceful','soothing','serene','tranquil','relax','hushed','sosseg','calmo','calma','tranquilo','tranquila','paz'],
  warm:['warm','safe','hug','home','soft','gentle','cozy','love','tender','intimate','comforting','comfort','affection','close','carinho','abraco','amor','aconchego','quente','acolhedor','acolhedora','suave'],
  intense:['angry','rage','scream','furious','chaos','loud','explode','explosive','aggressive','hard-hitting','heavy','restless','raiva','gritar','intense'],
  energetic:['energetic','dance','party','run','drive fast','excited','alive','movement','move','upbeat','lively','high energy','fast-paced','fast paced','driving','pumping','bouncy','euphoric','dancar','festa','energia','animad'],
@@ -55,14 +56,53 @@ function scanTerms(text,terms){
  return {positive,negative};
 }
 
+// Split a listener's present emotion from a *different* explicitly requested
+// musical outcome. "I feel sad but want uplifting music" is not a request for
+// a sad album. With no contrasting requested mood, preserve the older
+// empathetic matching behavior ("I feel dreamy and want jazz").
+function desiredListeningGoal(value){
+ const t=normalizeText(value);
+ const state=/\b(?:i(?:'m| am)|i feel|feeling|me sinto|estou|to me sentindo)\b/.exec(t);
+ if(!state)return null;
+ const cues=[
+  /\b(?:but|however|mas|porem)\s+(?:(?:i|eu)\s+)?(?:want|need|would like|prefer|quero|preciso|queria|prefiro)\b/g,
+  /\b(?:and|e)\s+(?:(?:i|eu)\s+)?(?:want|need|would like|prefer|quero|preciso|queria|prefiro)\b/g,
+  /\b(?:give me|play me|play|find me|looking for|me de|coloca|bota|poe)\b/g
+ ];
+ const found=[];
+ for(const re of cues){
+  for(const match of t.matchAll(re)){
+   if(match.index>state.index+state[0].length)found.push(match.index);
+  }
+ }
+ if(!found.length)return null;
+ const start=Math.min(...found);
+ const target=t.slice(start);
+ const earlier=t.slice(0,start);
+ const stateMoods={},desiredMoods={};
+ for(const [m,terms] of Object.entries(feelingLexicon)){
+  if(scanTerms(earlier,terms).positive)stateMoods[m]=1;
+  if(scanTerms(target,terms).positive)desiredMoods[m]=1;
+ }
+ if(!Object.keys(desiredMoods).some(m=>!stateMoods[m]))return null;
+ return {start,stateMoods,desiredMoods};
+}
+
 function interpretFeeling(text){
  const t=normalizeText(text);
+ const goal=desiredListeningGoal(t);
  const moods={},avoidMoods={};
 
  for(const [m,terms] of Object.entries(feelingLexicon)){
   const hits=scanTerms(t,terms);
   if(hits.positive)moods[m]=Math.min(hits.positive,3);
   if(hits.negative)avoidMoods[m]=Math.min(hits.negative,3);
+ }
+
+ // Don't confuse the feeling someone is in with a different sound they
+ // explicitly requested to help move through that feeling.
+ if(goal){
+  for(const mood of Object.keys(moods))if(!goal.desiredMoods[mood])delete moods[mood];
  }
 
  // Relationship longing is usually warmer/more intimate than generic "sad".
@@ -88,11 +128,12 @@ function interpretFeeling(text){
 
  const ranked=Object.entries(moods).sort((a,b)=>b[1]-a[1]);
  const avoided=Object.entries(avoidMoods).sort((a,b)=>b[1]-a[1]);
- const highEnergy=scanTerms(t,[
+ const goalText=goal?t.slice(goal.start):t;
+ const highEnergy=scanTerms(goalText,[
   'dance','party','run','scream','rage','festa','dancar','gritar','alive','full blast',
   'upbeat','lively','high energy','fast-paced','fast paced','driving','pumping','bouncy','euphoric','animad'
  ]);
- const lowEnergy=scanTerms(t,[
+ const lowEnergy=scanTerms(goalText,[
   'quiet','slow','soft','gentle','sleep','calm','silencio','devagar','hushed','restrained','intimate','low energy'
  ]);
  const energy=highEnergy.positive>lowEnergy.positive?8:
@@ -104,14 +145,16 @@ function interpretFeeling(text){
  if(avoided.length)parts.push('not '+avoided.slice(0,2).map(([m])=>m).join(' / '));
  if(avoidGenres.length)parts.push('not '+avoidGenres.slice(0,2).join(' / '));
 
- return {moods,avoidMoods,genres,avoidGenres,energy,exploration,summary:parts.join(' · ')};
+ return {moods,avoidMoods,genres,avoidGenres,energy,exploration,listenerState:goal?.stateMoods||{},desiredMoods:goal?.desiredMoods||{},goalShift:Boolean(goal),summary:parts.join(' · ')};
 }
 
 // Retrieval models match words rather than logic: "not metal" can otherwise
 // retrieve metal more strongly. Keep the raw note for intent/reranking, but
 // remove explicit exclusion spans before embedding or lexical retrieval.
 function retrievalText(value){
- const text=normalizeText(value).replace(/\s+/g,' ').trim();
+ const raw=normalizeText(value).replace(/\s+/g,' ').trim();
+ const goal=desiredListeningGoal(raw);
+ const text=goal?raw.slice(goal.start):raw;
  if(!text)return '';
  const clauses=text.split(/([,;.!?]|\bbut\b|\bhowever\b|\bmas\b|\bporem\b)/i);
  const kept=[];
@@ -127,5 +170,5 @@ function retrievalText(value){
  return kept.join(' ').replace(/\s+/g,' ').trim();
 }
 
-root.AlbumIntent={interpretFeeling,retrievalText,termIsNegated,normalizeText,genreLexicon,feelingLexicon};
+root.AlbumIntent={interpretFeeling,desiredListeningGoal,retrievalText,termIsNegated,normalizeText,genreLexicon,feelingLexicon};
 })(globalThis);
