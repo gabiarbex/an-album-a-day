@@ -1,0 +1,205 @@
+{
+  "captured_at": "2026-11-07T14:39:51.075Z",
+  "site": "https://gabiarbex.github.io/an-album-a-day/",
+  "note": "Observed top-1 outputs only; no relevance judgments or NDCG are inferred.",
+  "results": [
+    {
+      "id": "G01",
+      "prompt": "I want jazz music today",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "title": "In a Silent Way",
+      "detail": "TODAY'S RECORD\nIn a Silent Way\n\nMiles Davis · 1969\n\nREFLECTIVE",
+      "reason": "jazz.",
+      "signals": "JAZZ",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {},
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "G05",
+      "prompt": "I want bossa nova music today",
+      "wantGenres": [
+        "bossa nova"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "title": "Jazz for Lovers, Volume 2",
+      "detail": "TODAY'S RECORD\nJazz for Lovers, Volume 2\n\nVarious Artists · 2010",
+      "reason": "bossa nova.",
+      "signals": "BOSSA NOVA",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "00df71f9d479c7df",
+        "catalogGenres": "bossa nova | cool jazz | easy listening | jazz | smooth jazz | swing",
+        "catalogTags": "bop | bossa nova | bossanova | cool jazz | easy listening | jazz | post bop | smooth jazz | soul-jazz | swing",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "X01",
+      "prompt": "Give me jazz, not metal",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "title": "The Real… Jazz: The Ultimate Jazz Collection",
+      "detail": "TODAY'S RECORD\nThe Real… Jazz: The Ultimate Jazz Collection\n\nVarious Artists · 2014",
+      "reason": "jazz.",
+      "signals": "JAZZ",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "5fe7ad01dff18b33",
+        "catalogGenres": "big band | cool jazz | dixieland | easy listening | jazz | pop",
+        "catalogTags": "big band | cool jazz | dixieland | easy listening | jazz | pop | swing",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "M01",
+      "prompt": "I feel dreamy; find me a record that sounds dreamy",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "dreamy"
+      ],
+      "avoidMoods": [],
+      "title": "One of 18 Angels",
+      "detail": "TODAY'S RECORD\nOne of 18 Angels\n\nDiary of Dreams · 2000",
+      "reason": "overall match.",
+      "signals": "OVERALL MATCH",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "f0e1c3c279cb9bd5",
+        "catalogGenres": "dark wave | electronic | gothic | synth-pop",
+        "catalogTags": "dark wave | darkwave | electronic | gothic | synth-pop",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "N01",
+      "prompt": "I want something dreamy, but not warm",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "dreamy"
+      ],
+      "avoidMoods": [
+        "warm"
+      ],
+      "title": "Reset",
+      "detail": "TODAY'S RECORD\nReset\n\nPanda Bear & Sonic Boom · 2022",
+      "reason": "overall match.",
+      "signals": "OVERALL MATCH",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "3edd0d99a38d6a8b",
+        "catalogGenres": "neo-psychedelia | ambient pop | electronic | experimental | indie pop | indie rock",
+        "catalogTags": "neo-psychedelia | ambient pop | electronic | english | experimental | indie pop | indie rock | indietronica | ph_2_stars | plattentests.de",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "P01",
+      "prompt": "quero ouvir jazz, sem soul",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [
+        "soul"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "title": "Mojo Club Presents: Dancefloor Jazz, Volume 5: Sunshine of Your Love",
+      "detail": "TODAY'S RECORD\nMojo Club Presents: Dancefloor Jazz, Volume 5: Sunshine of Your Love\n\nVarious Artists · 1996",
+      "reason": "jazz.",
+      "signals": "JAZZ",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "b019ecd5917a70c9",
+        "catalogGenres": "bossa nova | jazz | downtempo | easy listening | electronic | free jazz",
+        "catalogTags": "bossa nova | jazz | downtempo | easy listening | electronic | free jazz | future jazz | jazz-funk | jazzdance | latin jazz",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "Q01",
+      "prompt": "nao quero jazz, quero soul",
+      "wantGenres": [
+        "soul"
+      ],
+      "avoidGenres": [
+        "jazz"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "title": "Studio One Soul",
+      "detail": "TODAY'S RECORD\nStudio One Soul\n\nVarious Artists · 2001",
+      "reason": "soul.",
+      "signals": "SOUL",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "0d0d51077c42159b",
+        "catalogGenres": "reggae | funk | rocksteady | roots reggae | soul",
+        "catalogTags": "reggae | funk | funk soul | rocksteady | roots reggae | soul",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "C01",
+      "prompt": "I'm feeling dreamy and I want jazz, but no soul",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [
+        "soul"
+      ],
+      "wantMoods": [
+        "dreamy"
+      ],
+      "avoidMoods": [],
+      "title": "The Real… Jazz: The Ultimate Jazz Collection",
+      "detail": "TODAY'S RECORD\nThe Real… Jazz: The Ultimate Jazz Collection\n\nVarious Artists · 2014",
+      "reason": "jazz.",
+      "signals": "JAZZ",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "5fe7ad01dff18b33",
+        "catalogGenres": "big band | cool jazz | dixieland | easy listening | jazz | pop",
+        "catalogTags": "big band | cool jazz | dixieland | easy listening | jazz | pop | swing",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    }
+  ]
+}
