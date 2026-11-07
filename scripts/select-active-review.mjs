@@ -32,7 +32,7 @@ export function selectReviewQueue(observed,teacher,{limit=20}={}){
   const language=String(query.language||pairs[0].language||'unknown').toLowerCase();
   const category=String(query.category||pairs[0].category||'other');
   const emotional=/emotion|mood|narrative/.test(category);
-  const priority=(disagreement?2:0)+uncertainty+(emotional?.2:0);
+  const priority=(disagreement?2:0)+uncertainty+(emotional?0.2:0);
   scored.push({query,language,category,disagreement,uncertainty,priority});
  }
  if(!scored.length)throw Error('No real teacher–baseline comparisons found');
