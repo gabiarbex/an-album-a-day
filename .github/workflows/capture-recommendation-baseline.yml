@@ -6,6 +6,9 @@ on:
     paths:
       - 'scripts/capture-production-baseline.mjs'
       - 'scripts/analyze-production-baseline.mjs'
+      - 'scripts/smoke-mobile.mjs'
+      - 'editorial.css'
+      - 'style.css'
       - 'api/recommend.js'
       - 'api/_ranking-core.js'
       - 'api/_embedding.js'
@@ -31,6 +34,11 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Capture eight live production recommendations
         run: node scripts/capture-production-baseline.mjs
+        env:
+          BASELINE_URL: https://gabiarbex.github.io/an-album-a-day/
+      - name: Check phone-size layout, picker and save controls
+        if: always()
+        run: node scripts/smoke-mobile.mjs
         env:
           BASELINE_URL: https://gabiarbex.github.io/an-album-a-day/
       - name: Report observable genre, compilation and explanation metrics
