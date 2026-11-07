@@ -1454,6 +1454,7 @@ async function rankWithBackend(pool,seed,daily){
      ...logs.slice(-8).map(x=>normalizeArtistName(x.artist))
     ]).slice(-16),
     queryVector:retrievalQueryVector,
+    retrievalSelection:globalThis.AlbumFusion?.select?'weighted-rrf-v1':'source-quota-v0',
     retrieval:{
      neural:sourceCounts.neural,
      semantic:sourceCounts.semantic,
