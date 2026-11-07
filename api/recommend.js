@@ -127,7 +127,7 @@ export default {
 
       return json({
         ok: true,
-        engine: 'hybrid-neural-reranker-v4',
+        engine: body.retrievalSelection==='weighted-rrf-v1' ? 'hybrid-neural-reranker-v5-rrf' : 'hybrid-neural-reranker-v4',
         model: EMBEDDING_MODEL,
         dimensions: EMBEDDING_DIMENSIONS,
         albumId: chosen.candidate.id,
@@ -137,6 +137,7 @@ export default {
           local: clamp(chosen.candidate.localScore ?? 0.5),
           lexical: clamp(((Number(chosen.candidate.semanticScore) || 0) + 1) / 2),
           candidates: candidates.length,
+          retrievalSelection:body.retrievalSelection==='weighted-rrf-v1'?'weighted-rrf-v1':'source-quota-v0',
           vectorCacheHits: cacheHits,
           liveEmbeddings: missing.length,
           queryVectorSource,
