@@ -1145,11 +1145,11 @@ function score(a,intent){
  const albumGenres=[...(a.genres||[]),...(a.tags||[])].map(x=>String(typeof x==='string'?x:x?.name||'').toLowerCase());
  for(const g of intent.genres||[]){
   const ww=1.8*confidence('genres',.65);
-  weighted+=ww*(albumGenres.some(x=>x.includes(g)||g.includes(x))?1:.15);totalWeight+=ww;
+  weighted+=ww*(albumGenres.some(x=>globalThis.AlbumIntent?.styleMatches?.(x,g)===true)?1:.15);totalWeight+=ww;
  }
  for(const g of intent.avoidGenres||[]){
   const ww=2*confidence('genres',.65);
-  weighted+=ww*(albumGenres.some(x=>x.includes(g)||g.includes(x))?0:1);totalWeight+=ww;
+  weighted+=ww*(albumGenres.some(x=>globalThis.AlbumIntent?.styleMatches?.(x,g)===true)?0:1);totalWeight+=ww;
  }
 
  const translatedEnergyGuess=String(a.provenance?.energy?.source||'')==='musicbrainz-tag-translation';
