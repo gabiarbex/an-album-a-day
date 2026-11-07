@@ -2,20 +2,14 @@ import { chromium } from 'playwright';
 import fs from 'node:fs/promises';
 
 const SITE = process.env.BASELINE_URL || 'https://gabiarbex.github.io/an-album-a-day/';
-const prompts = [
-  ['G01','I want jazz music today'],
-  ['G05','I want bossa nova music today'],
-  ['X01','Give me jazz, not house'],
-  ['M01','I feel dreamy; find me a record that sounds dreamy'],
-  ['N01','I want something dreamy, but not energetic'],
-  ['P01','quero ouvir jazz, sem soul'],
-  ['Q01','nao quero jazz, quero soul'],
-  ['C01',"I'm feeling dreamy and I want jazz, but no soul"]
-];
+const fixture=JSON.parse(await fs.readFile('benchmarks/intent-100.json','utf8'));
+const sampleIds=new Set(['G01','G05','X01','M01','N01','P01','Q01','C01']);
+const prompts=fixture.cases.filter(row=>sampleIds.has(row.id));
+if(prompts.length!==sampleIds.size)throw new Error('Baseline prompt fixture mismatch');
 const browser = await chromium.launch({headless:true});
 const results=[];
 try {
- for (const [id,prompt] of prompts) {
+ for (const {id,prompt,wantGenres,avoidGenres,wantMoods,avoidMoods} of prompts) {
   const context=await browser.newContext({viewport:{width:1280,height:900}});
   const page=await context.newPage();
   let error='';
@@ -33,12 +27,13 @@ try {
     reason:document.querySelector('#whyText')?.textContent?.trim()||'',
     signals:document.querySelector('#whySignals')?.innerText?.trim()||'',
     status:document.querySelector('#status')?.textContent?.trim()||'',
+    catalog:({...document.querySelector('#details')?.dataset}),
     page:location.href
    }));
-   results.push({id,prompt,...result,ok:true});
+   results.push({id,prompt,wantGenres,avoidGenres,wantMoods,avoidMoods,...result,ok:true});
   }catch(e){
    error=String(e?.message||e).slice(0,450);
-   results.push({id,prompt,ok:false,error,status:await page.locator('#status').textContent().catch(()=>null)});
+   results.push({id,prompt,wantGenres,avoidGenres,wantMoods,avoidMoods,ok:false,error,status:await page.locator('#status').textContent().catch(()=>null)});
   }finally{await context.close()}
   console.log(JSON.stringify(results.at(-1)));
  }
