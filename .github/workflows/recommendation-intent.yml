@@ -6,6 +6,10 @@ on:
       - 'intent-core.js'
       - 'selector.js'
       - 'tests/retrieval-intent.test.cjs'
+      - 'tests/intent-100.test.cjs'
+      - 'tests/ranking-contract.test.mjs'
+      - 'benchmarks/intent-100.json'
+      - 'api/_ranking-core.js'
       - '.github/workflows/recommendation-intent.yml'
   pull_request:
     paths:
@@ -28,4 +32,7 @@ jobs:
           node --check intent-core.js
           node --check selector.js
       - name: Check exclusions and multilingual requests
-        run: node tests/retrieval-intent.test.cjs
+        run: |
+          node tests/retrieval-intent.test.cjs
+          node tests/intent-100.test.cjs
+          node tests/ranking-contract.test.mjs
