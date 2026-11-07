@@ -1,0 +1,55 @@
+name: Offline extended teacher-student stress pilot
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/student-stress-pilot.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  stress-capture-and-distill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned Playwright and quantized offline teacher runtime
+        run: |
+          npm install --no-save --no-package-lock playwright@1.58.2 @huggingface/transformers@3.8.1
+          npx playwright install --with-deps chromium
+      - name: Capture 48 realistic EN/PT requests against production
+        run: |
+          mkdir -p offline-artifacts
+          node scripts/capture-production-baseline.mjs
+        env:
+          BENCHMARK_CASES_FILE: benchmarks/ml-stress-prompts.json
+          BENCHMARK_OUTPUT: offline-artifacts/stress-observed.json
+      - name: Require at least 40 successful real candidate groups
+        run: |
+          node --input-type=module -e "import fs from 'node:fs'; const b=JSON.parse(fs.readFileSync('offline-artifacts/stress-observed.json')); const ok=b.results.filter(r=>r.ok && r.backend?.alternatives?.length>=2); console.log('Usable live queries: '+ok.length+'/'+b.results.length); if(ok.length<40)process.exit(1)"
+      - name: Export and score real public album pairs
+        run: |
+          python3 scripts/experiment-cross-encoder.py --observations offline-artifacts/stress-observed.json --pairs-output offline-artifacts/stress-pairs.json
+          node scripts/score-teacher-onnx.mjs --pairs offline-artifacts/stress-pairs.json --score --batch-size 8 --output offline-artifacts/stress-teacher-scored.json
+      - name: Distill teacher with held-out query validation
+        run: |
+          node scripts/train-student.mjs --teacher offline-artifacts/stress-teacher-scored.json --output offline-artifacts/stress-student.json
+      - name: Preserve offline data without publishing model weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: albumaday-stress-teacher-student
+          path: offline-artifacts/
+          retention-days: 30
+          if-no-files-found: warn
