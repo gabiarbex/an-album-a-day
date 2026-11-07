@@ -32,6 +32,21 @@ Student trained on 11 groups; 3 held-out groups:
 
 **Outcome:** Pilot pipeline operational, *student rejected*. This is agreement with teacher rankings, **not musical relevance**. Three held-out prompts provide essentially no confidence about accuracy; no human grades yet.
 
+## Extended stress trial (48 synthetic prompts, completed)
+
+- Public browser recommendations: **48/48** completed.
+- Real teacher-scored candidates: **240**; teacher disagreed with V5's first pick in **33/48**.
+- Student training used **36** distinct listening requests; validation held out **12** (6 English and 6 Portuguese).
+- Held-out student top-one agreement with teacher: **5/12 (41.7%)**, versus **3/12 (25.0%)** for the V5 first choice.
+- Held-out pairwise teacher agreement: **66/120 (55.0%)**.
+- Important subgroup regression: student top-one teacher agreement was **4/6 English** but only **1/6 Portuguese**. This is **not** a multilingual release-quality result.
+- Teacher can itself choose debatable albums: one English darkwave request ranked a non-darkwave artist above a darkwave record; a Portuguese jazz exclusion request favored a weakly supported genre match. Human musical listening must adjudicate these.
+- **Decision: reject the student for production.** Teacher agreement is not a direct proxy for musical quality.
+
+The stress run artifacts are available from the GitHub Actions workflow named `Offline extended teacher-student stress pilot`. A separate active-learning helper (`scripts/select-active-review.mjs`) prioritizes **teacher/V5 disagreements and uncertainty**, alternating English/Portuguese requests, for efficient human judgment. `benchmarks/review.html` can load a downloaded active-review JSON entirely inside the browser; no ratings are silently uploaded.
+
+A subsequent capture update preserves the candidate's *actual neural similarity* and metadata-quality/provenance fields. The first two runs did not preserve these features, limiting what the student could learn. New experiments must record the exact capture version and never compare model changes across different candidate pools as if this were a controlled A/B test.
+
 ## Reproduce locally (no model download for checks)
 
 ```bash
