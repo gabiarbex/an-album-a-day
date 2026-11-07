@@ -315,3 +315,84 @@ main, .app-main { gap:clamp(25px,3.3vw,55px); }
   .record-stage.revealed .record { animation:none!important; }
   .record-stage, .sleeve { transition:none!important; }
 }
+
+/* State-specific rules live after the original state machine. */
+body:not(.has-record) .picker {
+  max-width:940px;
+  border-bottom:1px solid var(--ink);
+}
+body:not(.has-record) .clerk-intro h2 {
+  max-width:17ch;
+  margin-top:14px;
+  font:700 clamp(43px,5.7vw,75px)/1.03 Georgia,"Times New Roman",serif;
+  letter-spacing:-.055em;
+  text-transform:none;
+}
+body:not(.has-record) .clerk-intro p {
+  max-width:44ch;
+  font:400 16px/1.55 Georgia,serif;
+  color:var(--grey);
+}
+body:not(.has-record) #feelingInput {
+  min-height:132px;
+  height:132px;
+  max-height:320px;
+  padding:16px 18px;
+  border:1px solid #1b1a177d;
+  background:#fffdfa;
+  box-shadow:none;
+  font:400 17px/1.5 Georgia,serif;
+}
+body:not(.has-record) .recommend {
+  min-height:59px;
+  margin-top:22px;
+  font:700 16px/1 Georgia,serif;
+}
+body.has-record .picker {
+  border:1px solid var(--ink);
+  border-top:4px solid var(--ink);
+  padding:18px 20px;
+  box-shadow:none;
+}
+body.has-record .clerk-intro h2 {
+  font:700 clamp(30px,3vw,43px)/1.05 Georgia,serif;
+}
+body.has-record .clerk-intro p {
+  font:400 13px/1.5 Georgia,serif;
+}
+body.has-record .album-details h2 {
+  max-width:18ch;
+  font:700 clamp(39px,4.6vw,64px)/1.05 Georgia,serif;
+  letter-spacing:-.05em;
+  text-transform:none;
+}
+body.has-record #feelingInput {
+  height:108px;
+  min-height:108px;
+  max-height:320px;
+}
+body.has-record:not(.editing-brief) .picker {
+  padding:9px 20px 15px;
+}
+body.has-record .result-brief {
+  border-bottom:1px solid #1b1a1770;
+}
+body.has-record.editing-brief .result-brief {
+  border-bottom:2px solid var(--red);
+}
+@media (max-width:700px) {
+  body:not(.has-record) .clerk-intro h2 {
+    font-size:clamp(39px,10vw,58px);
+    line-height:1.06;
+  }
+  body:not(.has-record) .clerk-intro p { font-size:14px; }
+  body:not(.has-record) #feelingInput {
+    min-height:122px;
+    height:122px;
+    font-size:16px;
+  }
+  body.has-record .album-details h2 {
+    font-size:clamp(37px,10vw,50px);
+  }
+  body.has-record .picker { padding:18px 15px; }
+}
