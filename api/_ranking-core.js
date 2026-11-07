@@ -70,11 +70,17 @@ export function moodConflict(candidate, avoided) {
   return albumMoods.some(value => [...avoid].some(needle => value.includes(needle)));
 }
 
+function trustedEnergy(candidate) {
+ const source=String(candidate?.energySource||'').toLowerCase();
+ const confidence=Number(candidate?.energyConfidence)||0;
+ if(source==='audio'||source==='live')return true;
+ if(source==='musicbrainz-tag-translation')return false;
+ return Boolean(source)&&confidence>=0.65;
+}
+
 export function energyPenalty(candidate, body) {
   if (body.energy == null || candidate.energy == null) return 0;
-  const translatedGuess = String(candidate.energySource || '') === 'musicbrainz-tag-translation';
-  const confidence = Number(candidate.energyConfidence) || 0;
-  if (translatedGuess && confidence < 0.6) return 0;
+  if(!trustedEnergy(candidate))return 0;
   const distance = Math.abs(Number(body.energy) - Number(candidate.energy));
   if (!Number.isFinite(distance) || distance <= 1.5) return 0;
   return Math.min(0.32, (distance - 1.5) * 0.055);
@@ -138,9 +144,7 @@ export function requestedMoodFit(candidate, body) {
 
 function reliableEnergyDistance(candidate, body) {
   if (body?.energy == null || candidate?.energy == null) return null;
-  const translatedGuess = String(candidate.energySource || '') === 'musicbrainz-tag-translation';
-  const confidence = Number(candidate.energyConfidence) || 0;
-  if (translatedGuess && confidence < 0.6) return null;
+  if(!trustedEnergy(candidate))return null;
   const distance = Math.abs(Number(body.energy) - Number(candidate.energy));
   return Number.isFinite(distance) ? distance : null;
 }
