@@ -3,6 +3,7 @@ import { getVercelOidcToken } from '@vercel/oidc';
 import { createHash } from 'node:crypto';
 import { albumProfile, cosine, embedTexts, normalizedVector } from './_embedding.js';
 import { loadVectorChunk } from './_vector-store.js';
+import { tasteWeights } from './_taste-policy.js';
 
 const STORE_ID = process.env.ALBUM_FEEDBACK_STORE_ID || 'store_faCPNPhG4INYfqDO';
 const PROFILE_VERSION = 1;
@@ -82,22 +83,6 @@ function updateCentroid(bucket, vector, weight) {
     count: (Number(bucket?.count) || 0) + 1,
     vector: Array.from(next, value => Number(Number(value).toFixed(6))),
   };
-}
-
-function tasteWeights(event, rating) {
-  if (event === 'love_this') return { positive: 1.75, negative: 0 };
-  if (event === 'save') return { positive: 0.4, negative: 0 };
-  if (event === 'spotify_open') return { positive: 0.16, negative: 0 };
-  if (event === 'wrong_vibe') return { positive: 0, negative: 1.15 };
-  if (event === 'less_artist') return { positive: 0, negative: 0.8 };
-  if (event === 'rating') {
-    const r = Number(rating);
-    if (r >= 4.5) return { positive: 2.0, negative: 0 };
-    if (r >= 3.5) return { positive: 1.1, negative: 0 };
-    if (r <= 1.5) return { positive: 0, negative: 2.0 };
-    if (r <= 2.5) return { positive: 0, negative: 1.0 };
-  }
-  return { positive: 0, negative: 0 };
 }
 
 async function albumVector(album, origin) {
