@@ -20,6 +20,8 @@ header>p{max-width:65ch;font:17px/1.5 Georgia,serif;margin:0 0 28px}
 .toolbar button{background:var(--ink);color:#fff;border:0;padding:0 21px}
 .toolbar button:hover{background:var(--accent)}
 .toolbar small{color:#5a5047}
+.toolbar input[type=file]{max-width:235px;font-size:12px}
+.toolbar label{font:700 11px/1.2 'Courier New',monospace;text-transform:uppercase}
 main{padding-bottom:45px}
 .prompt{display:grid;grid-template-columns:minmax(170px,1fr) minmax(0,2.6fr);gap:28px;padding:28px 0 40px;border-bottom:2px solid var(--ink)}
 .prompt h2{font:700 clamp(24px,3vw,39px)/1.1 Georgia,serif;letter-spacing:-.04em;margin:13px 0}
@@ -55,6 +57,8 @@ footer{padding:20px 24px 38px;border-top:1px solid var(--ink);color:#5d5449;font
   <p>Here's what the recommender really picked. Listen to the music, then judge whether the album fits the request. Your ratings stay on this device until you export them.</p>
   <div class="toolbar">
     <span id="status" aria-live="polite">Loading actual recommendations…</span>
+    <label for="loadSnapshot">Open research snapshot</label>
+    <input id="loadSnapshot" type="file" accept=".json,application/json" aria-label="Open a downloaded benchmark or active-review JSON locally">
     <button id="export" type="button" disabled>Export judgments .csv</button>
     <small id="captured"></small>
   </div>
@@ -73,6 +77,7 @@ const root=document.querySelector('#prompts');
 const count=document.querySelector('#status');
 const exportButton=document.querySelector('#export');
 const captured=document.querySelector('#captured');
+const loadSnapshot=document.querySelector('#loadSnapshot');
 const stored=(()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}})();
 let items=[];
 function node(type,cls,text){
@@ -165,30 +170,44 @@ function exportCsv(){
  link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 exportButton.addEventListener('click',exportCsv);
+function renderDataset(data){
+ const rows=(data?.results||[]).filter(row=>row.ok&&row.backend?.alternatives?.length);
+ if(!rows.length)throw Error('No real candidate albums found in this JSON.');
+ root.replaceChildren();items=[];
+ const date=data.captured_at?new Date(data.captured_at).toLocaleString():'unknown date';
+ captured.textContent='Snapshot: '+date+' / '+rows.length+' listening requests';
+ for(const query of rows){
+  const block=node('section','prompt');
+  const intro=node('div');
+  intro.append(node('div','prompt-id',query.id+' / '+(query.language||'listening request')));
+  intro.append(node('h2','',query.prompt));
+  intro.append(node('p','instruction','Listen to the album against this request, not your usual taste.'));
+  const candidates=node('div','candidates');
+  for(const candidate of query.backend.alternatives)if(candidate.artist&&candidate.title){
+   candidates.append(renderAlbum(query,candidate));
+  }
+  block.append(intro,candidates);root.append(block);
+ }
+ updateProgress();
+}
+loadSnapshot.addEventListener('change',async()=>{
+ const file=loadSnapshot.files?.[0];
+ if(!file)return;
+ try{
+  if(file.size>12_000_000)throw Error('Choose a research JSON under 12 MB.');
+  renderDataset(JSON.parse(await file.text()));
+ }catch(error){
+  count.textContent='Could not read snapshot: '+String(error.message||error);
+ }
+});
 async function start(){
  try{
   const response=await fetch('./production-top1-observed.json',{cache:'no-store'});
   if(!response.ok)throw Error('HTTP '+response.status);
-  const data=await response.json();
-  const rows=(data.results||[]).filter(row=>row.ok&&row.backend?.alternatives?.length);
-  if(!rows.length)throw Error('No captured top-ranked albums available.');
-  captured.textContent='Snapshot: '+new Date(data.captured_at).toLocaleString();
-  for(const query of rows){
-   const block=node('section','prompt');
-   const intro=node('div');
-   intro.append(node('div','prompt-id',query.id+' / '+(query.language||'listening request')));
-   intro.append(node('h2','',query.prompt));
-   intro.append(node('p','instruction','Rate the music against this exact request, not against your usual taste.'));
-   const candidates=node('div','candidates');
-   for(const candidate of query.backend.alternatives)if(candidate.artist&&candidate.title){
-    candidates.append(renderAlbum(query,candidate));
-   }
-   block.append(intro,candidates);root.append(block);
-  }
-  updateProgress();
+  renderDataset(await response.json());
  }catch(error){
   count.textContent='No data available';
-  root.append(node('p','note','Could not load live candidate observations: '+String(error.message||error)));
+  root.append(node('p','note','Could not load the default observations. You can also open a downloaded research snapshot: '+String(error.message||error)));
  }
 }
 start();
