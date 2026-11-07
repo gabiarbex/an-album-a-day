@@ -55,4 +55,18 @@ const why=explanation({candidate:untagged,taste:{}},
 assert.match(why,/mood tags not verified/);
 assert.doesNotMatch(why,/overall match/i);
 
+
+// Multi-disc collections must not masquerade as ordinary album releases.
+const box={...solo,title:'10 CD Collection, 21 Original Albums: Milestones'};
+assert.equal(isCompilation(box),true);
+assert.ok(scoreCandidate(solo,0.7,compilationBody)>scoreCandidate(box,0.7,compilationBody)+0.2);
+
+// Genre clues can weakly support a mood without inventing verified mood tags.
+const dreamStyle={...untagged,genres:['dream pop','ethereal wave']};
+const grittyStyle={...untagged,genres:['noise rock'],moods:['gritty'],moodSource:'editorial'};
+const dreamyRequest={...neutral,intent:{moods:{dreamy:1},genres:[],avoidGenres:[],avoidMoods:{}}};
+assert.ok(scoreCandidate(dreamStyle,0.5,dreamyRequest)>scoreCandidate(grittyStyle,0.5,dreamyRequest),
+ 'Well-supported dreamy styles should outrank confidently unrelated tags');
+assert.match(explanation({candidate:dreamStyle,taste:{}},dreamyRequest),/not independently verified/);
+
 console.log('Ranking safety contracts passed.');
