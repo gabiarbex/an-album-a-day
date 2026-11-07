@@ -16,6 +16,7 @@ let session=null;
 let syncing=false;
 let syncTimer=null;
 let dirty=false;
+let localRevision=0;
 let initialized=false;
 let supporter=null;
 let supporterLoaded=false;
@@ -309,6 +310,7 @@ async function syncNow(options={}){
  syncing=true;renderAuth();setSyncStatus('syncing…','busy');
  const userId=session.user.id;
  try{
+  const revisionAtStart=localRevision;
   const local=readLocal();
   const {data,error}=await client
    .from(TABLE)
@@ -317,18 +319,23 @@ async function syncNow(options={}){
    .maybeSingle();
   if(error)throw error;
 
-  let merged;
-  if(!data){
-   merged=local;
-  }else if(!hasMigrated()||dirty||options.forceMerge){
-   merged=mergeState(rowToState(data),local);
-  }else{
-   merged=rowToState(data);
+  // Always merge. Replacing the browser with a remote snapshot on a returning
+  // session could silently erase offline diary edits and recently seen records.
+  const merged=mergeState(data?rowToState(data):null,local);
+  // A user may save a record while the remote request is in flight.
+  // Never apply an older snapshot over those new browser changes.
+  if(localRevision!==revisionAtStart){
+   dirty=true;
+   setSyncStatus('new changes detected · syncing again','busy');
+   return null;
   }
-
   const {error:writeError}=await client.from(TABLE).upsert(stateToRow(merged,userId),{onConflict:'user_id'});
   if(writeError)throw writeError;
-
+  if(localRevision!==revisionAtStart){
+   dirty=true;
+   setSyncStatus('new changes detected · syncing again','busy');
+   return null;
+  }
   applyLocal(merged);
   setMigrated();
   dirty=false;
@@ -342,10 +349,15 @@ async function syncNow(options={}){
   return null;
  }finally{
   syncing=false;renderAuth();
+  if(dirty&&session?.user?.id===userId&&isSupporter()){
+   clearTimeout(syncTimer);
+   syncTimer=setTimeout(()=>syncNow({silent:true}),900);
+  }
  }
 }
 function scheduleSync(){
  dirty=true;
+ localRevision++;
  if(!session?.user||!isSupporter())return;
  clearTimeout(syncTimer);
  syncTimer=setTimeout(()=>syncNow({silent:true}),900);
