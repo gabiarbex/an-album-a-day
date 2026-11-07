@@ -206,6 +206,32 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
   return score;
 }
 
+// Lightweight maximal marginal relevance (MMR) for a short recommendation shelf.
+// The top-ranked album stays first; later slots trade some score for discovery.
+// pairSimilarity returns cosine similarity when stored neural vectors are available.
+export function diverseTopK(ranked, limit=5, pairSimilarity=()=>0) {
+  if (!Array.isArray(ranked) || !ranked.length || limit<1) return [];
+  const remaining=ranked.slice(0,Math.min(48,ranked.length));
+  const chosen=[remaining.shift()];
+  while(chosen.length<limit&&remaining.length){
+    let bestIndex=0,bestValue=-Infinity;
+    for(let i=0;i<remaining.length;i++){
+      const candidate=remaining[i];
+      const artist=String(candidate.candidate?.artist||'').toLowerCase().trim();
+      let similarity=0,repeatArtist=false;
+      for(const previous of chosen){
+        if(artist&&artist===String(previous.candidate?.artist||'').toLowerCase().trim())repeatArtist=true;
+        const pair=Number(pairSimilarity(candidate,previous));
+        if(Number.isFinite(pair))similarity=Math.max(similarity,Math.max(0,Math.min(1,pair)));
+      }
+      const value=Number(candidate.score||0)-0.12*similarity-(repeatArtist?0.22:0);
+      if(value>bestValue){bestValue=value;bestIndex=i}
+    }
+    chosen.push(remaining.splice(bestIndex,1)[0]);
+  }
+  return chosen;
+}
+
 export function explanation(row, body) {
   const candidate = row?.candidate || {};
   const bits = [];
