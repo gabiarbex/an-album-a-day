@@ -47,11 +47,11 @@ function compilationPenalty(candidate, body) {
 // insufficient. Conversely, excluding "rock" must not exclude "rocksteady".
 // Word boundaries permit real subgenres (e.g. "jazz fusion" for "jazz").
 export function styleMatches(label, requested) {
- const value=String(label||'').toLowerCase().trim();
- const query=String(requested||'').toLowerCase().trim();
- if(!value||!query)return false;
- const escaped=query.replace(/[.*+?^$()|[\]{}\\]/g,'\\export function genreConflict(candidate, avoided) {');
- return new RegExp('(^|[^a-z0-9])'+escaped+'(?=$|[^a-z0-9])').test(value);
+ const normalized=value=>String(value||'').normalize('NFD')
+  .replace(/[\u0300-\u036f]/g,'').toLowerCase()
+  .replace(/[^a-z0-9]+/g,' ').trim();
+ const haystack=normalized(label),needle=normalized(requested);
+ return Boolean(haystack&&needle&&(' '+haystack+' ').includes(' '+needle+' '));
 }
 
 export function genreConflict(candidate, avoided) {
