@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {scoreCandidate,genreConflict,moodConflict} from '../api/_ranking-core.js';
+import {scoreCandidate,genreConflict,moodConflict,isCompilation,diverseTopK,explanation} from '../api/_ranking-core.js';
 
 // Controlled fixtures isolate the reranker; these are not claims about real albums.
 const base={
@@ -25,4 +25,34 @@ const neutral={...body,intent:{genres:[],avoidGenres:[],moods:{},avoidMoods:{}},
 assert.ok(Number.isFinite(scoreCandidate(base,0.5,neutral)));
 assert.equal(genreConflict({...base,genres:[],tags:[]},['metal']),false,
  'Missing metadata must not be treated as proof of conflict');
+
+// Compilation-heavy catalogs must not crowd out comparable artist albums.
+const solo={...base,artist:'Miles Davis',title:'In a Silent Way'};
+const collection={...solo,artist:'Various Artists',title:'Ultimate Collection'};
+assert.equal(isCompilation(collection),true);
+assert.equal(isCompilation(solo),false);
+const compilationBody={...neutral,note:'I want jazz'};
+const soloScore=scoreCandidate(solo,0.7,compilationBody);
+const compilationScore=scoreCandidate(collection,0.7,compilationBody);
+assert.ok(soloScore>compilationScore+0.2,'Comparable artist albums should outrank various-artist compilations');
+assert.ok(scoreCandidate(collection,0.7,{...compilationBody,note:'Give me a jazz compilation'})>compilationScore+0.2,
+ 'Compilation requests should preserve compilation eligibility');
+
+// The strongest album stays first. Later slots avoid repeating the same artist.
+const diverse=diverseTopK([
+ {score:0.95,candidate:solo},
+ {score:0.93,candidate:{...solo,id:'two',title:'Second Album'}},
+ {score:0.90,candidate:{...solo,id:'three',artist:'John Coltrane',title:'Blue Train'}}
+],3,()=>0);
+assert.equal(diverse[0].candidate.artist,'Miles Davis');
+assert.equal(diverse[1].candidate.artist,'John Coltrane');
+assert.equal(diverse.length,3);
+
+// Unknown mood data must not be disguised as a confirmed emotional match.
+const untagged={...solo,moods:[],tags:[],moodSource:'unknown'};
+const why=explanation({candidate:untagged,taste:{}},
+ {...neutral,intent:{moods:{dreamy:1},genres:[],avoidGenres:[],avoidMoods:{}}});
+assert.match(why,/mood tags not verified/);
+assert.doesNotMatch(why,/overall match/i);
+
 console.log('Ranking safety contracts passed.');
