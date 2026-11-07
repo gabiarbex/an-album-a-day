@@ -20,7 +20,9 @@ const feelingLexicon={
 const genreLexicon=[
  'alternative','indie','rock','pop','electronic','house','techno','ambient','jazz','classical','metal','punk',
  'hip hop','rap','r&b','soul','folk','country','reggae','ska','latin','bossa nova','samba','mpb','shoegaze',
- 'dream pop','synth-pop','synth pop','indie pop','ambient pop','neo soul','jazz fusion',
+ 'dream pop','synth-pop','synth pop','indie pop','indie rock','art pop','pop punk',
+ 'punk rock','post-rock','post rock','garage rock','ambient techno','acid jazz',
+ 'nu jazz','soul jazz','jazz fusion','ambient pop','neo soul',
  'contemporary jazz','rocksteady','trip hop','downtempo','drum and bass','chillwave',
  'post-punk','post punk','goth','darkwave','experimental','psychedelic','soundtrack','afrobeat'
 ];
