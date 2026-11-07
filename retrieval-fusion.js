@@ -55,8 +55,9 @@
   // scores; we then fill by fusion rank, promoting multi-source consensus.
   for(const source of SOURCE_ORDER){
    let taken=0;
+   const quota=Math.max(0,Math.round(MINIMUM[source]*limit/96));
    for(const id of ranksBySource[source]){
-    if(taken>=MINIMUM[source])break;
+    if(taken>=quota)break;
     if(add(entries.get(id),2))taken++;
    }
   }
