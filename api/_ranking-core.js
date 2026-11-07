@@ -43,12 +43,21 @@ function compilationPenalty(candidate, body) {
   return (multiArtist ? 0.23 : 0) + (compilationTitle ? (boxSet ? 0.24 : 0.15) : 0);
 }
 
+// "dream pop" requires that whole style; a generic "pop" tag alone is
+// insufficient. Conversely, excluding "rock" must not exclude "rocksteady".
+// Word boundaries permit real subgenres (e.g. "jazz fusion" for "jazz").
+export function styleMatches(label, requested) {
+ const value=String(label||'').toLowerCase().trim();
+ const query=String(requested||'').toLowerCase().trim();
+ if(!value||!query)return false;
+ const escaped=query.replace(/[.*+?^$()|[\]{}\\]/g,'\\export function genreConflict(candidate, avoided) {');
+ return new RegExp('(^|[^a-z0-9])'+escaped+'(?=$|[^a-z0-9])').test(value);
+}
+
 export function genreConflict(candidate, avoided) {
   if (!avoided.length) return false;
-  const haystack = [...cleanArray(candidate.genres), ...cleanArray(candidate.tags)]
-    .join(' ')
-    .toLowerCase();
-  return avoided.some(value => haystack.includes(String(value).toLowerCase()));
+  const labels=[...cleanArray(candidate.genres),...cleanArray(candidate.tags)];
+  return avoided.some(value=>labels.some(label=>styleMatches(label,value)));
 }
 
 export function moodConflict(candidate, avoided) {
@@ -80,7 +89,7 @@ export function requestedGenreFit(candidate, body) {
   if (!haystack.length) return { requested: true, known: false, match: false, matched: [] };
 
   const matched = wanted.filter(needle =>
-    haystack.some(value => value.includes(needle) || needle.includes(value))
+    haystack.some(value => styleMatches(value,needle))
   );
   return { requested: true, known: true, match: matched.length > 0, matched };
 }
