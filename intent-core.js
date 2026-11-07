@@ -11,7 +11,7 @@ const feelingLexicon={
  intense:['angry','rage','scream','furious','chaos','loud','explode','explosive','aggressive','hard-hitting','heavy','restless','raiva','gritar','intense'],
  energetic:['energetic','dance','party','run','drive fast','excited','alive','movement','move','upbeat','lively','high energy','fast-paced','fast paced','driving','pumping','bouncy','euphoric','dancar','festa','energia','animad'],
  dark:['dark','night','midnight','shadow','goth','haunt','ominous','eerie','bleak','noite','escuro','sombrio'],
- hopeful:['hope','better','healing','beginning','tomorrow','future','optimis','uplifting','positive','bright','esperanca','recomecar'],
+ hopeful:['hope','better','healing','beginning','tomorrow','future','optimis','uplifting','positive','bright','happy','cheerful','alegre','feliz','esperanca','recomecar'],
  alienated:['stranger','disconnected','out of place','belong','unreal','isolated','dissociat','estranha','deslocad'],
  cold:['winter','cold','rain','fog','frost','icy','inverno','frio','chuva'],
  gritty:['raw','dirty','grunge','rough','punk','noise','abrasive','distort','sujo','bruto']
@@ -82,7 +82,10 @@ function desiredListeningGoal(value){
  const stateMoods={},desiredMoods={};
  for(const [m,terms] of Object.entries(feelingLexicon)){
   if(scanTerms(earlier,terms).positive)stateMoods[m]=1;
-  if(scanTerms(target,terms).positive)desiredMoods[m]=1;
+  // A genre such as punk must not be mistaken for an explicitly desired
+  // emotion and erase the user's current emotional context.
+  const moodWords=terms.filter(term=>!['punk','noise','grunge','goth'].includes(term));
+  if(scanTerms(target,moodWords).positive)desiredMoods[m]=1;
  }
  if(!Object.keys(desiredMoods).some(m=>!stateMoods[m]))return null;
  return {start,stateMoods,desiredMoods};
