@@ -5,8 +5,14 @@ const SITE = process.env.BASELINE_URL || 'https://gabiarbex.github.io/an-album-a
 const fixture=JSON.parse(await fs.readFile('benchmarks/intent-100.json','utf8'));
 const sampleIds=new Set(['G01','G05','X01','M01','N01','P01','Q01','C01']);
 const goalScenarios=JSON.parse(await fs.readFile('benchmarks/emotional-goals.json','utf8'));
-const prompts=[...fixture.cases.filter(row=>sampleIds.has(row.id)),...goalScenarios.cases];
-if(prompts.length!==sampleIds.size+goalScenarios.cases.length || new Set(prompts.map(row=>row.id)).size!==prompts.length)throw new Error('Baseline prompt fixture mismatch');
+const extraFixture=process.env.BENCHMARK_CASES_FILE
+  ? JSON.parse(await fs.readFile(process.env.BENCHMARK_CASES_FILE,'utf8'))
+  : null;
+const prompts=extraFixture?.cases ||
+  [...fixture.cases.filter(row=>sampleIds.has(row.id)),...goalScenarios.cases];
+if(!prompts.length||new Set(prompts.map(row=>row.id)).size!==prompts.length||
+  (!extraFixture&&prompts.length!==sampleIds.size+goalScenarios.cases.length))
+  throw new Error('Baseline prompt fixture mismatch');
 const browser = await chromium.launch({headless:true});
 const results=[];
 try {
@@ -80,7 +86,7 @@ try {
  }
 }finally{await browser.close()}
 await fs.mkdir('baseline-results',{recursive:true});
-await fs.writeFile('baseline-results/production-top1.json',JSON.stringify({
+await fs.writeFile(process.env.BENCHMARK_OUTPUT || 'baseline-results/production-top1.json',JSON.stringify({
  captured_at:new Date().toISOString(),site:SITE,
  seed_policy:'stable per prompt albumaday-benchmark-fixed-v1 ID',
  note:'Observed top-one and up-to-five backend alternatives; no listening relevance judgments are inferred.',
