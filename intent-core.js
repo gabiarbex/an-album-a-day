@@ -154,7 +154,7 @@ function interpretFeeling(text){
  const goalText=goal?t.slice(goal.start):t;
  const highEnergy=scanTerms(goalText,[
   'dance','party','run','scream','rage','festa','dancar','gritar','alive','full blast',
-  'upbeat','lively','high energy','fast-paced','fast paced','driving','pumping','bouncy','euphoric','animad'
+  'upbeat','energetic','lively','high energy','fast-paced','fast paced','driving','pumping','bouncy','euphoric','animad'
  ]);
  const lowEnergy=scanTerms(goalText,[
   'quiet','slow','soft','gentle','sleep','calm','silencio','devagar','hushed','restrained','intimate','low energy'
