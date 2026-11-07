@@ -1,0 +1,486 @@
+{
+  "version": 1,
+  "description": "Synthetic realistic queries for offline teacher/student comparison; no human relevance labels.",
+  "cases": [
+    {
+      "id": "S01",
+      "language": "en",
+      "category": "emotion_shift",
+      "prompt": "I'm sad but I need a bright, danceable album",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S02",
+      "language": "en",
+      "category": "emotion_shift",
+      "prompt": "I feel anxious; give me something soothing and atmospheric",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S03",
+      "language": "en",
+      "category": "emotion_shift",
+      "prompt": "I'm angry, but I don't want aggressive music tonight",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S04",
+      "language": "en",
+      "category": "emotion_shift",
+      "prompt": "I'm nostalgic and need something futuristic and electronic",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S05",
+      "language": "en",
+      "category": "emotion_shift",
+      "prompt": "I'm lonely, yet I want funky music that makes me dance",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S06",
+      "language": "en",
+      "category": "emotion_shift",
+      "prompt": "I feel hopeful, but I want a genuinely melancholic record",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S07",
+      "language": "en",
+      "category": "emotion_shift",
+      "prompt": "I'm exhausted; I want gentle, quiet jazz",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S08",
+      "language": "en",
+      "category": "emotion_shift",
+      "prompt": "I'm happy but want to disappear into darkwave",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S09",
+      "language": "en",
+      "category": "mood",
+      "prompt": "Something warm and intimate for a rainy evening",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S10",
+      "language": "en",
+      "category": "mood",
+      "prompt": "A dreamy record that feels like floating",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S11",
+      "language": "en",
+      "category": "mood",
+      "prompt": "An eerie nighttime record, not too energetic",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S12",
+      "language": "en",
+      "category": "mood",
+      "prompt": "Give me something reflective and sparse",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S13",
+      "language": "en",
+      "category": "genre_exclusion",
+      "prompt": "I want jazz, absolutely no smooth jazz",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S14",
+      "language": "en",
+      "category": "genre_exclusion",
+      "prompt": "Dream pop but nothing metal",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S15",
+      "language": "en",
+      "category": "genre_exclusion",
+      "prompt": "Indie pop with no pop punk",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S16",
+      "language": "en",
+      "category": "genre_exclusion",
+      "prompt": "Electronic music, but not techno",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S17",
+      "language": "en",
+      "category": "genre_exclusion",
+      "prompt": "Soul that isn't hip hop",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S18",
+      "language": "en",
+      "category": "genre_exclusion",
+      "prompt": "Punk rock but not metal",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S19",
+      "language": "en",
+      "category": "genre",
+      "prompt": "Brazilian bossa nova for a quiet afternoon",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S20",
+      "language": "en",
+      "category": "genre",
+      "prompt": "A classic-sounding reggae album",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S21",
+      "language": "en",
+      "category": "genre",
+      "prompt": "Some interesting downtempo electronic music",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S22",
+      "language": "en",
+      "category": "genre",
+      "prompt": "I want psychedelic folk",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S23",
+      "language": "en",
+      "category": "narrative",
+      "prompt": "A record for the long way home when the city is empty",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S24",
+      "language": "en",
+      "category": "narrative",
+      "prompt": "A sunny Sunday morning, cooking breakfast and opening the windows",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S25",
+      "language": "pt",
+      "category": "emotion_shift",
+      "prompt": "estou triste, mas quero um disco de soul alegre",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S26",
+      "language": "pt",
+      "category": "emotion_shift",
+      "prompt": "estou ansiosa e preciso de algo calmo e instrumental",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S27",
+      "language": "pt",
+      "category": "emotion_shift",
+      "prompt": "me sinto sozinha, mas quero dançar com disco e funk",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S28",
+      "language": "pt",
+      "category": "emotion_shift",
+      "prompt": "estou animada mas quero uma coisa melancólica",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S29",
+      "language": "pt",
+      "category": "emotion_shift",
+      "prompt": "estou com saudade de casa e quero algo acolhedor",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S30",
+      "language": "pt",
+      "category": "emotion_shift",
+      "prompt": "estou irritada, preciso de ambient para relaxar",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S31",
+      "language": "pt",
+      "category": "emotion_shift",
+      "prompt": "estou triste mas quero samba pra levantar o astral",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S32",
+      "language": "pt",
+      "category": "emotion_shift",
+      "prompt": "me sinto confusa mas quero jazz contemplativo",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S33",
+      "language": "pt",
+      "category": "mood",
+      "prompt": "algo sonhador para ouvir de madrugada",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S34",
+      "language": "pt",
+      "category": "mood",
+      "prompt": "um álbum quentinho, íntimo e tranquilo",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S35",
+      "language": "pt",
+      "category": "mood",
+      "prompt": "quero uma música escura e introspectiva",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S36",
+      "language": "pt",
+      "category": "mood",
+      "prompt": "uma sonoridade nostálgica, delicada e calma",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S37",
+      "language": "pt",
+      "category": "genre_exclusion",
+      "prompt": "quero jazz, sem metal nem rock",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S38",
+      "language": "pt",
+      "category": "genre_exclusion",
+      "prompt": "quero bossa nova, mas sem soul",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S39",
+      "language": "pt",
+      "category": "genre_exclusion",
+      "prompt": "dream pop, sem nada de metal",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S40",
+      "language": "pt",
+      "category": "genre_exclusion",
+      "prompt": "indie pop, nada de pop punk",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S41",
+      "language": "pt",
+      "category": "genre_exclusion",
+      "prompt": "quero rocksteady e não rock",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S42",
+      "language": "pt",
+      "category": "genre_exclusion",
+      "prompt": "techno, mas sem house",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S43",
+      "language": "pt",
+      "category": "genre",
+      "prompt": "bossa nova brasileira para uma tarde chuvosa",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S44",
+      "language": "pt",
+      "category": "genre",
+      "prompt": "quero ouvir um álbum de samba",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S45",
+      "language": "pt",
+      "category": "genre",
+      "prompt": "quero uma mistura de jazz com funk",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S46",
+      "language": "pt",
+      "category": "genre",
+      "prompt": "um álbum de shoegaze bem atmosférico",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S47",
+      "language": "pt",
+      "category": "narrative",
+      "prompt": "música para pegar a estrada quando já está escuro",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "S48",
+      "language": "pt",
+      "category": "narrative",
+      "prompt": "algo para cozinhar no domingo de manhã com sol na janela",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    }
+  ]
+}
