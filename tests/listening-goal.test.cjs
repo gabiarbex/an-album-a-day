@@ -21,7 +21,11 @@ const cases=[
  {text:"I feel gloomy but want soothing ambient pop",yesM:['calm'],yesG:['ambient pop']},
  {text:"I feel a bit low, play something energetic",yesM:['energetic'],energy:8,shift:true},
  {text:"estou triste mas quero algo alegre",yesM:['hopeful'],noM:['melancholic'],shift:true},
- {text:"I want darkwave, not goth",yesG:['darkwave'],avoidG:['goth']}
+ {text:"I want darkwave, not goth",yesG:['darkwave'],avoidG:['goth']},
+ {text:"I feel sad, I want something gentle",yesM:['warm'],noM:['melancholic'],shift:true},
+ {text:"estou triste, preciso de algo tranquilo",yesM:['calm'],noM:['melancholic'],shift:true},
+ {text:"I feel lonely; need uplifting jazz",yesM:['hopeful'],noM:['melancholic'],yesG:['jazz'],shift:true},
+ {text:"I'm nervous. I want something calm",yesM:['calm'],energy:3,shift:true}
 ];
 const fields=[
  ['yesM',row=>Object.keys(row.moods),true],['noM',row=>Object.keys(row.moods),false],
@@ -40,4 +44,4 @@ for(const c of cases){
  const retrieval=retrievalText(c.text);
  for(const word of c.retrieveNot||[])assert.ok(!retrieval.includes(word),c.text+': retrieval leaked '+word);
 }
-console.log('20 contextual emotional-goal and compound-style regressions passed');
+console.log('24 contextual emotional-goal and compound-style regressions passed');
