@@ -1,0 +1,31 @@
+name: Recommendation intent regression
+
+on:
+  push:
+    paths:
+      - 'intent-core.js'
+      - 'selector.js'
+      - 'tests/retrieval-intent.test.cjs'
+      - '.github/workflows/recommendation-intent.yml'
+  pull_request:
+    paths:
+      - 'intent-core.js'
+      - 'selector.js'
+      - 'tests/retrieval-intent.test.cjs'
+      - '.github/workflows/recommendation-intent.yml'
+  workflow_dispatch:
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify JavaScript syntax
+        run: |
+          node --check intent-core.js
+          node --check selector.js
+      - name: Check exclusions and multilingual requests
+        run: node tests/retrieval-intent.test.cjs
