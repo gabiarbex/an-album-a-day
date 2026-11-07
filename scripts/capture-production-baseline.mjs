@@ -4,7 +4,8 @@ import fs from 'node:fs/promises';
 const SITE = process.env.BASELINE_URL || 'https://gabiarbex.github.io/an-album-a-day/';
 const fixture=JSON.parse(await fs.readFile('benchmarks/intent-100.json','utf8'));
 const sampleIds=new Set(['G01','G05','X01','M01','N01','P01','Q01','C01']);
-const prompts=fixture.cases.filter(row=>sampleIds.has(row.id));
+const goalScenarios=JSON.parse(await fs.readFile('benchmarks/emotional-goals.json','utf8'));
+const prompts=[...fixture.cases.filter(row=>sampleIds.has(row.id)),...goalScenarios.cases];
 if(prompts.length!==sampleIds.size)throw new Error('Baseline prompt fixture mismatch');
 const browser = await chromium.launch({headless:true});
 const results=[];
@@ -67,7 +68,7 @@ try {
 await fs.mkdir('baseline-results',{recursive:true});
 await fs.writeFile('baseline-results/production-top1.json',JSON.stringify({
  captured_at:new Date().toISOString(),site:SITE,
- note:'Observed top-1 outputs only; no relevance judgments or NDCG are inferred.',
+ note:'Observed top-one and up-to-five backend alternatives; no listening relevance judgments are inferred.',
  results
 },null,2)+'\n');
 // Reviewer rows stay unrated until a person actually listens and scores them.
