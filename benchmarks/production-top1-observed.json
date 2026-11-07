@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-11-07T15:01:27.041Z",
+  "captured_at": "2026-11-07T16:42:50.323Z",
   "site": "https://gabiarbex.github.io/an-album-a-day/",
   "note": "Observed top-1 outputs only; no relevance judgments or NDCG are inferred.",
   "results": [
@@ -39,7 +39,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 8,
+          "consideredCompilations": 10,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -199,7 +199,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 18,
+          "consideredCompilations": 17,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -258,6 +258,33 @@
           },
           {
             "rank": 3,
+            "id": "4aed80c99398fddc",
+            "artist": "Mr. Ocean",
+            "title": "Mid-Levels",
+            "genres": [
+              "bossa nova",
+              "dream pop",
+              "electronic",
+              "experimental",
+              "vaporwave"
+            ],
+            "tags": [
+              "bossa nova",
+              "dream pop",
+              "electronic",
+              "experimental",
+              "vaporwave",
+              "hong kong",
+              "mid-levels",
+              "midnight",
+              "rain",
+              "sheung wan"
+            ],
+            "moods": [],
+            "score": 0.893319
+          },
+          {
+            "rank": 4,
             "id": "3146c82d767f4af4",
             "artist": "Sarah Vaughan",
             "title": "The Definitive Collection",
@@ -279,51 +306,28 @@
             "score": 0.908109
           },
           {
-            "rank": 4,
-            "id": "b69529a40bf92387",
-            "artist": "Bossa Nostra",
-            "title": "Solaria",
-            "genres": [
-              "ambient",
-              "bossa nova",
-              "jazz",
-              "latin",
-              "soul jazz"
-            ],
-            "tags": [
-              "ambient",
-              "bossa nova",
-              "jazz",
-              "latin",
-              "soul jazz"
-            ],
-            "moods": [],
-            "score": 0.89724
-          },
-          {
             "rank": 5,
-            "id": "3dc8ef36e47c6aee",
-            "artist": "Antônio Carlos Jobim",
-            "title": "Wave",
+            "id": "b94edb2036174965",
+            "artist": "Fernanda Cunha",
+            "title": "Coração do Brasil",
             "genres": [
               "bossa nova",
-              "instrumental",
-              "jazz"
+              "mpb",
+              "samba"
             ],
             "tags": [
               "bossa nova",
-              "instrumental",
-              "jazz",
-              "acoustic",
-              "beach",
-              "calm",
-              "ethereal",
-              "lush",
-              "male vocalist",
-              "meditative"
+              "bossa-nova",
+              "brasil",
+              "brazil",
+              "brazilian music",
+              "coração do brasil",
+              "fernanda cunha",
+              "mpb",
+              "samba"
             ],
             "moods": [],
-            "score": 0.898037
+            "score": 0.886514
           }
         ]
       },
@@ -367,9 +371,9 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 12,
+          "consideredCompilations": 13,
           "chosenCompilation": false,
-          "excludedGenreMatches": 1
+          "excludedGenreMatches": 0
         },
         "alternatives": [
           {
@@ -609,45 +613,39 @@
           },
           {
             "rank": 4,
-            "id": "312ce94dd12ce04c",
-            "artist": "Rabit",
-            "title": "What Dreams May Come",
+            "id": "d6081c4debe61df8",
+            "artist": "Slowdive",
+            "title": "everything is alive",
             "genres": [
-              "electronic",
-              "bedroom pop",
               "dream pop",
-              "electronica",
-              "shoegaze"
+              "shoegaze",
+              "rock"
             ],
             "tags": [
-              "electronic",
-              "bedroom pop",
               "dream pop",
-              "electronica",
-              "shoegaze"
+              "shoegaze",
+              "rock"
             ],
             "moods": [],
-            "score": 0.658865
+            "score": 0.644764
           },
           {
             "rank": 5,
-            "id": "0a02797457acf493",
-            "artist": "Karla Kvlt",
-            "title": "Thunderhunter",
+            "id": "4e8865ef07220447",
+            "artist": "Alcian Blue",
+            "title": "Alcian Blue",
             "genres": [
-              "dream pop",
-              "drone",
+              "coldwave",
               "rock",
               "shoegaze"
             ],
             "tags": [
-              "dream pop",
-              "drone",
+              "coldwave",
               "rock",
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.644795
+            "score": 0.629742
           }
         ]
       },
@@ -691,7 +689,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 6,
+          "consideredCompilations": 7,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -775,9 +773,9 @@
           },
           {
             "rank": 5,
-            "id": "451199defc637685",
-            "artist": "Astrobrite",
-            "title": "Boombox Supernova",
+            "id": "63c912bec2eda01d",
+            "artist": "Dorias Baracca",
+            "title": "Dorias Baracca",
             "genres": [
               "rock",
               "shoegaze"
@@ -787,7 +785,7 @@
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.626576
+            "score": 0.62302
           }
         ]
       },
@@ -831,9 +829,9 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 10,
+          "consideredCompilations": 8,
           "chosenCompilation": false,
-          "excludedGenreMatches": 5
+          "excludedGenreMatches": 4
         },
         "alternatives": [
           {
@@ -996,9 +994,9 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 19,
+          "consideredCompilations": 17,
           "chosenCompilation": false,
-          "excludedGenreMatches": 5
+          "excludedGenreMatches": 2
         },
         "alternatives": [
           {
@@ -1155,7 +1153,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 10,
+          "consideredCompilations": 11,
           "chosenCompilation": false,
           "excludedGenreMatches": 4
         },
@@ -1187,32 +1185,6 @@
           },
           {
             "rank": 2,
-            "id": "24686faefaa279d3",
-            "artist": "Stina Nordenstam",
-            "title": "And She Closed Her Eyes",
-            "genres": [
-              "indie rock",
-              "alternative rock",
-              "dream pop",
-              "folk rock",
-              "jazz",
-              "jazz rock"
-            ],
-            "tags": [
-              "indie rock",
-              "alternative rock",
-              "dream pop",
-              "folk rock",
-              "jazz",
-              "jazz rock",
-              "pop",
-              "rock"
-            ],
-            "moods": [],
-            "score": 0.926779
-          },
-          {
-            "rank": 3,
             "id": "ce78bac5b8a16463",
             "artist": "The Jazz Networks",
             "title": "Blues 'N Ballads",
@@ -1233,7 +1205,7 @@
             "score": 0.889853
           },
           {
-            "rank": 4,
+            "rank": 3,
             "id": "8916081a1c8ecc40",
             "artist": "Miles Davis",
             "title": "In a Silent Way",
@@ -1256,6 +1228,24 @@
             ],
             "moods": [],
             "score": 0.886685
+          },
+          {
+            "rank": 4,
+            "id": "b386894c3ab38e88",
+            "artist": "SBB",
+            "title": "Follow My Dream",
+            "genres": [
+              "jazz",
+              "jazz rock",
+              "rock"
+            ],
+            "tags": [
+              "jazz",
+              "jazz rock",
+              "rock"
+            ],
+            "moods": [],
+            "score": 0.882218
           },
           {
             "rank": 5,
