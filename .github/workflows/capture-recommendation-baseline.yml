@@ -57,9 +57,13 @@ jobs:
           fi
           mkdir -p benchmarks
           cp baseline-results/production-top1.json benchmarks/production-top1-observed.json
+          if [ -f baseline-results/mobile-smoke.json ]; then
+            cp baseline-results/mobile-smoke.json benchmarks/mobile-smoke-latest.json
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add benchmarks/production-top1-observed.json
+          if [ -f benchmarks/mobile-smoke-latest.json ]; then git add benchmarks/mobile-smoke-latest.json; fi
           if ! git diff --cached --quiet; then
             git commit -m "Record actual production top-one benchmark observations"
             git pull --rebase origin main
