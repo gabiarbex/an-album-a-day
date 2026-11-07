@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-11-07T16:42:50.323Z",
+  "captured_at": "2026-11-07T16:46:30.637Z",
   "site": "https://gabiarbex.github.io/an-album-a-day/",
   "note": "Observed top-1 outputs only; no relevance judgments or NDCG are inferred.",
   "results": [
@@ -39,7 +39,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 10,
+          "consideredCompilations": 8,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -199,7 +199,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 17,
+          "consideredCompilations": 16,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -258,33 +258,6 @@
           },
           {
             "rank": 3,
-            "id": "4aed80c99398fddc",
-            "artist": "Mr. Ocean",
-            "title": "Mid-Levels",
-            "genres": [
-              "bossa nova",
-              "dream pop",
-              "electronic",
-              "experimental",
-              "vaporwave"
-            ],
-            "tags": [
-              "bossa nova",
-              "dream pop",
-              "electronic",
-              "experimental",
-              "vaporwave",
-              "hong kong",
-              "mid-levels",
-              "midnight",
-              "rain",
-              "sheung wan"
-            ],
-            "moods": [],
-            "score": 0.893319
-          },
-          {
-            "rank": 4,
             "id": "3146c82d767f4af4",
             "artist": "Sarah Vaughan",
             "title": "The Definitive Collection",
@@ -306,7 +279,7 @@
             "score": 0.908109
           },
           {
-            "rank": 5,
+            "rank": 4,
             "id": "b94edb2036174965",
             "artist": "Fernanda Cunha",
             "title": "Coração do Brasil",
@@ -328,6 +301,31 @@
             ],
             "moods": [],
             "score": 0.886514
+          },
+          {
+            "rank": 5,
+            "id": "3dc8ef36e47c6aee",
+            "artist": "Antônio Carlos Jobim",
+            "title": "Wave",
+            "genres": [
+              "bossa nova",
+              "instrumental",
+              "jazz"
+            ],
+            "tags": [
+              "bossa nova",
+              "instrumental",
+              "jazz",
+              "acoustic",
+              "beach",
+              "calm",
+              "ethereal",
+              "lush",
+              "male vocalist",
+              "meditative"
+            ],
+            "moods": [],
+            "score": 0.898037
           }
         ]
       },
@@ -371,7 +369,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 13,
+          "consideredCompilations": 9,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -450,6 +448,28 @@
           },
           {
             "rank": 4,
+            "id": "871eb1a59d148b7b",
+            "artist": "Sun Ra",
+            "title": "Singles (The Definitive 45’s Collection 1952–1991)",
+            "genres": [
+              "avant-garde jazz",
+              "jazz",
+              "experimental big band",
+              "free jazz",
+              "vocal jazz"
+            ],
+            "tags": [
+              "avant-garde jazz",
+              "jazz",
+              "experimental big band",
+              "free jazz",
+              "vocal jazz"
+            ],
+            "moods": [],
+            "score": 0.883883
+          },
+          {
+            "rank": 5,
             "id": "e17f7d428c731baf",
             "artist": "Chicago",
             "title": "Best",
@@ -468,26 +488,6 @@
             ],
             "moods": [],
             "score": 0.891856
-          },
-          {
-            "rank": 5,
-            "id": "ece108c99ae4409a",
-            "artist": "Somewhere off Jazz Street",
-            "title": "A Quiet Light",
-            "genres": [
-              "dark jazz",
-              "electronic",
-              "instrumental",
-              "jazz"
-            ],
-            "tags": [
-              "dark jazz",
-              "electronic",
-              "instrumental",
-              "jazz"
-            ],
-            "moods": [],
-            "score": 0.882362
           }
         ]
       },
@@ -529,7 +529,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 2,
+          "consideredCompilations": 4,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -613,39 +613,45 @@
           },
           {
             "rank": 4,
-            "id": "d6081c4debe61df8",
-            "artist": "Slowdive",
-            "title": "everything is alive",
+            "id": "312ce94dd12ce04c",
+            "artist": "Rabit",
+            "title": "What Dreams May Come",
             "genres": [
+              "electronic",
+              "bedroom pop",
               "dream pop",
-              "shoegaze",
-              "rock"
+              "electronica",
+              "shoegaze"
             ],
             "tags": [
+              "electronic",
+              "bedroom pop",
               "dream pop",
-              "shoegaze",
-              "rock"
+              "electronica",
+              "shoegaze"
             ],
             "moods": [],
-            "score": 0.644764
+            "score": 0.658865
           },
           {
             "rank": 5,
-            "id": "4e8865ef07220447",
-            "artist": "Alcian Blue",
-            "title": "Alcian Blue",
+            "id": "0a02797457acf493",
+            "artist": "Karla Kvlt",
+            "title": "Thunderhunter",
             "genres": [
-              "coldwave",
+              "dream pop",
+              "drone",
               "rock",
               "shoegaze"
             ],
             "tags": [
-              "coldwave",
+              "dream pop",
+              "drone",
               "rock",
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.629742
+            "score": 0.644795
           }
         ]
       },
@@ -689,7 +695,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 7,
+          "consideredCompilations": 6,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -739,9 +745,9 @@
           },
           {
             "rank": 3,
-            "id": "1ab8702982fc71d8",
-            "artist": "Sleeping States",
-            "title": "There the Open Spaces",
+            "id": "b915e6a028165483",
+            "artist": "The Daysleepers",
+            "title": "Drowned in a Sea of Sound",
             "genres": [
               "rock",
               "shoegaze"
@@ -751,10 +757,38 @@
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.624754
+            "score": 0.63462
           },
           {
             "rank": 4,
+            "id": "133898249754c9b5",
+            "artist": "Passion Pit",
+            "title": "Manners",
+            "genres": [
+              "chillwave",
+              "indie rock",
+              "alternative dance",
+              "electronic",
+              "pop",
+              "pop rock"
+            ],
+            "tags": [
+              "chillwave",
+              "indie rock",
+              "alternative dance",
+              "electronic",
+              "pop",
+              "pop rock",
+              "rock",
+              "synth-pop",
+              "synthpop",
+              "wonky pop"
+            ],
+            "moods": [],
+            "score": 0.629155
+          },
+          {
+            "rank": 5,
             "id": "0acaaae12a91be7a",
             "artist": "heavenward",
             "title": "Pyrophonics",
@@ -770,22 +804,6 @@
             ],
             "moods": [],
             "score": 0.634444
-          },
-          {
-            "rank": 5,
-            "id": "63c912bec2eda01d",
-            "artist": "Dorias Baracca",
-            "title": "Dorias Baracca",
-            "genres": [
-              "rock",
-              "shoegaze"
-            ],
-            "tags": [
-              "rock",
-              "shoegaze"
-            ],
-            "moods": [],
-            "score": 0.62302
           }
         ]
       },
@@ -802,15 +820,15 @@
       ],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "Lúpiter",
-      "detail": "TODAY'S RECORD\nLúpiter\n\nJazz the Roots · 2017",
+      "title": "Carnivale Electricos",
+      "detail": "TODAY'S RECORD\nCarnivale Electricos\n\nGalactic · 2012",
       "reason": "jazz.",
       "signals": "JAZZ",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "0eb6d76f6340c0d6",
-        "catalogGenres": "contemporary jazz | dancehall | dub | experimental | funk | hip hop",
-        "catalogTags": "contemporary jazz | dancehall | dub | experimental | funk | hip hop | jazz | ragga | reggae | rock",
+        "albumId": "f75081f0fdf8d86d",
+        "catalogGenres": "acid jazz | electronic | funk | jazz | rock",
+        "catalogTags": "acid jazz | electronic | funk | jazz | rock",
         "catalogMoods": "",
         "selectionMode": "backend"
       },
@@ -819,9 +837,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v4",
         "diagnostics": {
-          "neural": 0.532011,
+          "neural": 0.596655,
           "local": 1,
-          "lexical": 0.8382185,
+          "lexical": 0.8465655000000001,
           "candidates": 96,
           "vectorCacheHits": 96,
           "liveEmbeddings": 0,
@@ -829,13 +847,55 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 8,
+          "consideredCompilations": 6,
           "chosenCompilation": false,
-          "excludedGenreMatches": 4
+          "excludedGenreMatches": 3
         },
         "alternatives": [
           {
             "rank": 1,
+            "id": "f75081f0fdf8d86d",
+            "artist": "Galactic",
+            "title": "Carnivale Electricos",
+            "genres": [
+              "acid jazz",
+              "electronic",
+              "funk",
+              "jazz",
+              "rock"
+            ],
+            "tags": [
+              "acid jazz",
+              "electronic",
+              "funk",
+              "jazz",
+              "rock"
+            ],
+            "moods": [],
+            "score": 0.885037
+          },
+          {
+            "rank": 2,
+            "id": "89321fd496337540",
+            "artist": "Paloma San Basilio",
+            "title": "Invierno Sur",
+            "genres": [
+              "jazz",
+              "musical",
+              "pop",
+              "smooth jazz"
+            ],
+            "tags": [
+              "jazz",
+              "musical",
+              "pop",
+              "smooth jazz"
+            ],
+            "moods": [],
+            "score": 0.880022
+          },
+          {
+            "rank": 3,
             "id": "0eb6d76f6340c0d6",
             "artist": "Jazz the Roots",
             "title": "Lúpiter",
@@ -863,7 +923,7 @@
             "score": 0.881274
           },
           {
-            "rank": 2,
+            "rank": 4,
             "id": "d3e8ea9b5657409d",
             "artist": "Camino 84",
             "title": "Don't read this. You will be kissed...",
@@ -889,68 +949,18 @@
             "score": 0.864995
           },
           {
-            "rank": 3,
-            "id": "505de2a3a10d9f1c",
-            "artist": "Sun Ra and His Astro Infinity Arkestra",
-            "title": "Continuation",
-            "genres": [
-              "avant-garde jazz",
-              "big band",
-              "free jazz",
-              "jazz"
-            ],
-            "tags": [
-              "avant-garde jazz",
-              "big band",
-              "free jazz",
-              "jazz"
-            ],
-            "moods": [],
-            "score": 0.870654
-          },
-          {
-            "rank": 4,
-            "id": "89321fd496337540",
-            "artist": "Paloma San Basilio",
-            "title": "Invierno Sur",
-            "genres": [
-              "jazz",
-              "musical",
-              "pop",
-              "smooth jazz"
-            ],
-            "tags": [
-              "jazz",
-              "musical",
-              "pop",
-              "smooth jazz"
-            ],
-            "moods": [],
-            "score": 0.880022
-          },
-          {
             "rank": 5,
-            "id": "1c29b77563210f93",
-            "artist": "Mesmonium",
-            "title": "Warp Whistle, Volume 2 (Super Mario)",
+            "id": "8983444147e680bb",
+            "artist": "Sun Ra and His Arkestra",
+            "title": "Super-Sonic Jazz",
             "genres": [
-              "acid jazz",
-              "hip hop",
-              "jazz",
-              "jazz fusion",
-              "liquid funk",
-              "smooth jazz"
+              "jazz"
             ],
             "tags": [
-              "acid jazz",
-              "hip hop",
-              "jazz",
-              "jazz fusion",
-              "liquid funk",
-              "smooth jazz"
+              "jazz"
             ],
             "moods": [],
-            "score": 0.879335
+            "score": 0.867509
           }
         ]
       },
@@ -994,7 +1004,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 17,
+          "consideredCompilations": 15,
           "chosenCompilation": false,
           "excludedGenreMatches": 2
         },
@@ -1021,55 +1031,6 @@
           },
           {
             "rank": 2,
-            "id": "9e2ee348e8700f2a",
-            "artist": "Smokey Robinson",
-            "title": "Motown Legends: Cruisin' / Being With You",
-            "genres": [
-              "motown",
-              "quiet storm",
-              "r&b",
-              "smooth soul",
-              "soul"
-            ],
-            "tags": [
-              "motown",
-              "quiet storm",
-              "r&b",
-              "smooth soul",
-              "soul",
-              "urban"
-            ],
-            "moods": [],
-            "score": 0.869594
-          },
-          {
-            "rank": 3,
-            "id": "a58ebb23cede2c63",
-            "artist": "Kali Uchis",
-            "title": "Sin Miedo (del Amor y Otros Demonios) ∞",
-            "genres": [
-              "contemporary r&b",
-              "reggaeton",
-              "latin",
-              "bolero",
-              "latin pop",
-              "neo soul"
-            ],
-            "tags": [
-              "contemporary r&b",
-              "reggaeton",
-              "latin",
-              "bolero",
-              "latin pop",
-              "neo soul",
-              "pop",
-              "reggaetón"
-            ],
-            "moods": [],
-            "score": 0.852052
-          },
-          {
-            "rank": 4,
             "id": "90cb636b5f67aa11",
             "artist": "Jackie Wilson",
             "title": "The Jackie Wilson Story",
@@ -1090,7 +1051,7 @@
             "score": 0.867222
           },
           {
-            "rank": 5,
+            "rank": 3,
             "id": "a0ad6a6defd29c57",
             "artist": "The Delfonics",
             "title": "The Delfonics",
@@ -1108,6 +1069,54 @@
             ],
             "moods": [],
             "score": 0.861797
+          },
+          {
+            "rank": 4,
+            "id": "ba94dcd068b7a65f",
+            "artist": "Otis Redding",
+            "title": "Dock of the Bay Sessions",
+            "genres": [
+              "soul",
+              "blues",
+              "deep soul",
+              "pop",
+              "r&b"
+            ],
+            "tags": [
+              "soul",
+              "blues",
+              "deep soul",
+              "pop",
+              "r&b"
+            ],
+            "moods": [],
+            "score": 0.867432
+          },
+          {
+            "rank": 5,
+            "id": "72eec4e5da50000b",
+            "artist": "Sly and the Family Stone",
+            "title": "Stand!",
+            "genres": [
+              "funk",
+              "psychedelic soul",
+              "psychedelic",
+              "psychedelic rock",
+              "rock",
+              "soul"
+            ],
+            "tags": [
+              "funk",
+              "psychedelic soul",
+              "psychedelic",
+              "psychedelic rock",
+              "am pop",
+              "rock",
+              "soul",
+              "soul and reggae"
+            ],
+            "moods": [],
+            "score": 0.85683
           }
         ]
       },
@@ -1153,7 +1162,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 11,
+          "consideredCompilations": 7,
           "chosenCompilation": false,
           "excludedGenreMatches": 4
         },
@@ -1231,24 +1240,6 @@
           },
           {
             "rank": 4,
-            "id": "b386894c3ab38e88",
-            "artist": "SBB",
-            "title": "Follow My Dream",
-            "genres": [
-              "jazz",
-              "jazz rock",
-              "rock"
-            ],
-            "tags": [
-              "jazz",
-              "jazz rock",
-              "rock"
-            ],
-            "moods": [],
-            "score": 0.882218
-          },
-          {
-            "rank": 5,
             "id": "13fef24e073a5c99",
             "artist": "Hot Jazz Band",
             "title": "Celebration With Louis Armstrong",
@@ -1266,6 +1257,26 @@
             ],
             "moods": [],
             "score": 0.882409
+          },
+          {
+            "rank": 5,
+            "id": "ece108c99ae4409a",
+            "artist": "Somewhere off Jazz Street",
+            "title": "A Quiet Light",
+            "genres": [
+              "dark jazz",
+              "electronic",
+              "instrumental",
+              "jazz"
+            ],
+            "tags": [
+              "dark jazz",
+              "electronic",
+              "instrumental",
+              "jazz"
+            ],
+            "moods": [],
+            "score": 0.878973
           }
         ]
       },

@@ -1,6 +1,6 @@
 {
   "site": "https://gabiarbex.github.io/an-album-a-day/",
-  "checked_at": "2026-11-07T16:42:50.706Z",
+  "checked_at": "2026-11-07T16:46:31.021Z",
   "viewport": {
     "width": 390,
     "height": 844
@@ -12,13 +12,13 @@
   },
   "result": {
     "horizontalOverflow": 0,
-    "title": "Floating Into the Night",
+    "title": "Ocean of Light",
     "imageHasSource": true,
     "spotifyEnabled": true,
     "diarySaveEnabled": true
   },
   "noRepeat": {
-    "firstId": "573e128f5b4be670",
+    "firstId": "00d537057b33d68d",
     "secondId": "20f532d3423e58d0",
     "seenBeforeReload": 2,
     "seenAfterReload": 2,
