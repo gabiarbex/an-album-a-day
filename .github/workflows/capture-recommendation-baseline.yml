@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/capture-production-baseline.mjs'
       - 'scripts/analyze-production-baseline.mjs'
+      - 'scripts/compare-production-baselines.mjs'
       - 'scripts/smoke-mobile.mjs'
       - 'editorial.css'
       - 'style.css'
@@ -47,6 +48,13 @@ jobs:
           if [ -f baseline-results/production-top1.json ]; then
             node scripts/analyze-production-baseline.mjs baseline-results/production-top1.json > baseline-results/metadata-report.json
             cat baseline-results/metadata-report.json
+          fi
+      - name: Compare with frozen v4 reference
+        if: always()
+        run: |
+          if [ -f baseline-results/production-top1.json ]; then
+            node scripts/compare-production-baselines.mjs benchmarks/2026-11-07-v4-reference.json baseline-results/production-top1.json > baseline-results/version-comparison.json
+            cat baseline-results/version-comparison.json
           fi
       - name: Publish public baseline observations
         if: always()
