@@ -2650,7 +2650,7 @@ function completeCurrentPick(options={}){
    daily_date:logs[index].daily_date||(currentShowMode==='daily'?getDate():null)};
  }
  persist();markTodayComplete();
- if(options.dislike)recordFeedback('wrong_vibe').catch(()=>{});
+ if(options.dislike)recordFeedback('less_like_this').catch(()=>{});
  window.AlbumAnalytics?.track('listening_completed',{disliked:Boolean(options.dislike),saved_before:existed});
  if($('todayRubric'))$('todayRubric').textContent='finished today';
  if($('recordStamp'))$('recordStamp').textContent='FINISHED ✓ / '+getDate();
@@ -2678,7 +2678,7 @@ function setQuickRating(value){
 }
 function applyLearningSignal(signal){
  if(!pick)return;
- const map={more_like_this:'love_this',less_like_this:'wrong_vibe',more_adventurous:'too_obvious'};
+ const map={more_like_this:'love_this',less_like_this:'less_like_this',more_adventurous:'too_obvious'};
  if(signal==='less_artist'){
   suppressArtist(pick.artist);
   recordFeedback('less_artist').catch(()=>{});
@@ -2735,11 +2735,11 @@ function correctionForFeedback(event,album){
  if(event==='too_slow')return {energyDelta:2.5};
  if(event==='too_obvious')return {forceExplore:true};
  if(event==='less_artist'){suppressArtist(album?.artist);return {forceExplore:true}};
- if(event==='wrong_vibe'){
+ if(event==='wrong_vibe'||event==='less_like_this'){
   const avoidMoods=Object.fromEntries(reliablePickMoods(album).map(name=>[name,1]));
   const requestedGenres=correctedIntent(interpretFeeling($('feelingInput')?.value||'')).genres||[];
   const firstGenre=(album?.genres||[]).map(x=>String(typeof x==='string'?x:x?.name||'').toLowerCase()).find(Boolean);
-  const avoidGenres=firstGenre&&!requestedGenres.some(g=>firstGenre.includes(g)||String(g).includes(firstGenre))
+  const avoidGenres=firstGenre&&!requestedGenres.some(g=>globalThis.AlbumIntent?.styleMatches?.(firstGenre,g)===true)
    ? [firstGenre]
    : [];
   return {avoidMoods,avoidGenres,forceExplore:!Object.keys(avoidMoods).length&&!avoidGenres.length};
