@@ -1293,16 +1293,19 @@ async function rankWithBackend(pool,seed,daily){
  const rows=new Map();
  let retrievalQueryVector=null;
  const sourceCounts={neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
+ const sourcePositions={neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
  const add=(a,semanticScore=0,source='controls')=>{
   if(!a||albumWasSeen(a)||logged.has(key(a)))return;
   const id=lookupId(a);
+  const position=++sourcePositions[source];
   const current=rows.get(id);
   if(!current){
-   rows.set(id,{album:a,semanticScore:Number(semanticScore)||0,sources:new Set([source])});
+   rows.set(id,{album:a,semanticScore:Number(semanticScore)||0,sources:new Set([source]),sourceRanks:{[source]:position}});
    sourceCounts[source]=(sourceCounts[source]||0)+1;
    return;
   }
   current.sources.add(source);
+  if(!current.sourceRanks[source])current.sourceRanks[source]=position;
   if(Math.abs(Number(semanticScore)||0)>Math.abs(Number(current.semanticScore)||0)){
    current.semanticScore=Number(semanticScore)||0;
   }
@@ -1387,14 +1390,12 @@ async function rankWithBackend(pool,seed,daily){
 
  const allRows=[...rows.values()];
  // Interleave sources so no retrieval method can monopolize the 96 slots.
- const buckets={
-  neural:allRows.filter(row=>row.sources.has('neural')),
-  semantic:allRows.filter(row=>row.sources.has('semantic')),
-  controls:allRows.filter(row=>row.sources.has('controls')),
-  adjacent:allRows.filter(row=>row.sources.has('adjacent')),
-  familiar:allRows.filter(row=>row.sources.has('familiar')),
-  explore:allRows.filter(row=>row.sources.has('explore'))
- };
+ const buckets=Object.fromEntries(
+  ['neural','semantic','controls','adjacent','familiar','explore'].map(source=>[
+   source,allRows.filter(row=>row.sources.has(source))
+    .sort((a,b)=>(a.sourceRanks[source]||Infinity)-(b.sourceRanks[source]||Infinity))
+  ])
+ );
  // Rank fusion combines independent neural, lexical and control lists without
  // adding incompatible raw similarity scales. The previous quota blend remains
  // a safe fallback if this optional helper cannot load.
