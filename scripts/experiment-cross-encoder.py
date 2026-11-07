@@ -72,10 +72,13 @@ def main():
     parser.add_argument("--model",default=DEFAULT_MODEL)
     parser.add_argument("--batch-size",type=int,default=8)
     parser.add_argument("--output",default=None)
+    parser.add_argument("--pairs-output",default=None,help="export actual public candidate pairs for an external ONNX teacher")
     args=parser.parse_args()
     rows=load_pairs(args.observations)
     if not rows: raise SystemExit("No actual top-k backend candidates were captured")
     if args.batch_size<1:parser.error("batch-size must be positive")
+    if args.pairs_output:
+        Path(args.pairs_output).write_text(json.dumps({"source":args.observations,"mode":"unscored-pairs","results":rows},indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
     summary={"model":args.model if args.score else "not run",
              "mode":"scored" if args.score else "dry-run",
              "source":args.observations,
