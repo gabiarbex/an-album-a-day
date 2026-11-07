@@ -9,6 +9,9 @@ on:
       - 'tests/intent-100.test.cjs'
       - 'retrieval-fusion.js'
       - 'scripts/experiment-cross-encoder.py'
+      - 'api/_student-ranker.js'
+      - 'scripts/train-student.mjs'
+      - 'tests/student-ranker.test.mjs'
       - 'tests/retrieval-fusion.test.cjs'
       - 'tests/listening-goal.test.cjs'
       - 'api/_taste-policy.js'
@@ -27,6 +30,9 @@ on:
       - 'tests/intent-100.test.cjs'
       - 'retrieval-fusion.js'
       - 'scripts/experiment-cross-encoder.py'
+      - 'api/_student-ranker.js'
+      - 'scripts/train-student.mjs'
+      - 'tests/student-ranker.test.mjs'
       - 'tests/retrieval-fusion.test.cjs'
       - 'tests/listening-goal.test.cjs'
       - 'api/_taste-policy.js'
@@ -52,6 +58,8 @@ jobs:
           node --check intent-core.js
           node --check selector.js
           node --check retrieval-fusion.js
+          node --check api/_student-ranker.js
+          node --check scripts/train-student.mjs
       - name: Validate shadow ML experiment without model downloads
         run: |
           python3 -m py_compile scripts/experiment-cross-encoder.py
@@ -64,3 +72,4 @@ jobs:
           node tests/retrieval-fusion.test.cjs
           node tests/listening-goal.test.cjs
           node tests/taste-policy.test.mjs
+          node tests/student-ranker.test.mjs
