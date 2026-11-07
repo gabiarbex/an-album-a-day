@@ -10,6 +10,8 @@ on:
       - 'retrieval-fusion.js'
       - 'scripts/experiment-cross-encoder.py'
       - 'tests/retrieval-fusion.test.cjs'
+      - 'tests/listening-goal.test.cjs'
+      - 'benchmarks/emotional-goals.json'
       - 'tests/ranking-contract.test.mjs'
       - 'benchmarks/intent-100.json'
       - 'api/_ranking-core.js'
@@ -23,6 +25,8 @@ on:
       - 'retrieval-fusion.js'
       - 'scripts/experiment-cross-encoder.py'
       - 'tests/retrieval-fusion.test.cjs'
+      - 'tests/listening-goal.test.cjs'
+      - 'benchmarks/emotional-goals.json'
       - 'tests/ranking-contract.test.mjs'
       - 'benchmarks/intent-100.json'
       - 'api/_ranking-core.js'
@@ -52,3 +56,4 @@ jobs:
           node tests/intent-100.test.cjs
           node tests/ranking-contract.test.mjs
           node tests/retrieval-fusion.test.cjs
+          node tests/listening-goal.test.cjs
