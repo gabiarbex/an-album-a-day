@@ -40,7 +40,11 @@ try {
           const a=albums.get(String(row.id))||{};
           return {rank:i+1,id:String(row.id),artist:String(a.artist||''),title:String(a.title||''),
             genres:a.genres||[],tags:(a.tags||[]).slice(0,12),moods:a.moods||[],
-            score:row.score};
+            score:row.score,neural:row.neural,
+            profileQuality:a.profileQuality??null,
+            moodSource:a.moodSource||'',
+            energySource:a.energySource||'',energyConfidence:a.energyConfidence??null,
+            energy:a.energy??null};
         })
       };
     })().catch(e=>({ok:false,error:String(e).slice(0,160)}));
