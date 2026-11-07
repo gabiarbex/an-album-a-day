@@ -1395,27 +1395,38 @@ async function rankWithBackend(pool,seed,daily){
   familiar:allRows.filter(row=>row.sources.has('familiar')),
   explore:allRows.filter(row=>row.sources.has('explore'))
  };
- const shortlist=[];
- const used=new Set();
- const quotas=comfort==='exploration'
-  ? {neural:30,semantic:16,controls:28,adjacent:16,familiar:2,explore:4}
-  : comfort==='comfort'
-    ? {neural:28,semantic:16,controls:28,adjacent:8,familiar:12,explore:4}
-    : {neural:30,semantic:16,controls:28,adjacent:12,familiar:6,explore:4};
- for(const source of ['neural','semantic','controls','adjacent','familiar','explore']){
-  let taken=0;
-  for(const row of buckets[source]){
+ // Rank fusion combines independent neural, lexical and control lists without
+ // adding incompatible raw similarity scales. The previous quota blend remains
+ // a safe fallback if this optional helper cannot load.
+ let shortlist=globalThis.AlbumFusion?.select?.(buckets,{
+  limit:96,
+  comfort,
+  idOf:row=>lookupId(row.album),
+  artistOf:row=>row.album?.artist||''
+ });
+ if(!Array.isArray(shortlist)||!shortlist.length){
+  shortlist=[];
+  const used=new Set();
+  const quotas=comfort==='exploration'
+   ? {neural:30,semantic:16,controls:28,adjacent:16,familiar:2,explore:4}
+   : comfort==='comfort'
+     ? {neural:28,semantic:16,controls:28,adjacent:8,familiar:12,explore:4}
+     : {neural:30,semantic:16,controls:28,adjacent:12,familiar:6,explore:4};
+  for(const source of ['neural','semantic','controls','adjacent','familiar','explore']){
+   let taken=0;
+   for(const row of buckets[source]){
+    const id=lookupId(row.album);
+    if(used.has(id))continue;
+    shortlist.push(row);used.add(id);taken++;
+    if(taken>=quotas[source])break;
+   }
+  }
+  for(const row of allRows){
+   if(shortlist.length>=96)break;
    const id=lookupId(row.album);
    if(used.has(id))continue;
-   shortlist.push(row);used.add(id);taken++;
-   if(taken>=quotas[source])break;
+   shortlist.push(row);used.add(id);
   }
- }
- for(const row of allRows){
-  if(shortlist.length>=96)break;
-  const id=lookupId(row.album);
-  if(used.has(id))continue;
-  shortlist.push(row);used.add(id);
  }
  if(shortlist.length<2)return null;
 
