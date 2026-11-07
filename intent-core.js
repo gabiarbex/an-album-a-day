@@ -111,20 +111,20 @@ function interpretFeeling(text){
 // retrieve metal more strongly. Keep the raw note for intent/reranking, but
 // remove explicit exclusion spans before embedding or lexical retrieval.
 function retrievalText(value){
- const text=normalizeText(value).replace(/\\s+/g,' ').trim();
+ const text=normalizeText(value).replace(/\s+/g,' ').trim();
  if(!text)return '';
- const clauses=text.split(/([,;.!?]|\\bbut\\b|\\bhowever\\b|\\bmas\\b|\\bporem\\b)/i);
+ const clauses=text.split(/([,;.!?]|\bbut\b|\bhowever\b|\bmas\b|\bporem\b)/i);
  const kept=[];
  for(let i=0;i<clauses.length;i+=2){
   const clause=(clauses[i]||'').trim();
   if(!clause)continue;
   // Remove the negative request from the first negation onwards, retaining
   // any earlier positive context in the same clause.
-  const match=/\\b(?:don't|dont|do not|not|without|avoid|avoiding|anything but|no|nao|sem|evita|evitar)\\b/i.exec(clause);
+  const match=/\b(?:don't|dont|do not|not|without|avoid|avoiding|anything but|no|nao|sem|evita|evitar)\b/i.exec(clause);
   const positive=match?clause.slice(0,match.index).trim():clause;
   if(positive)kept.push(positive);
  }
- return kept.join(' ').replace(/\\s+/g,' ').trim();
+ return kept.join(' ').replace(/\s+/g,' ').trim();
 }
 
 root.AlbumIntent={interpretFeeling,retrievalText,termIsNegated,normalizeText,genreLexicon,feelingLexicon};
