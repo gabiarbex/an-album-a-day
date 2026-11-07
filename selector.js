@@ -3118,7 +3118,7 @@ function artPlaceholder(a){
 function explainPick(a,context={}){
  if(context.rankingMode==='shared')return '';
  if(context.rankingMode==='surprise')return 'random pick.';
- if(context.rankingMode==='backend'&&a._backendRank?.reason)return a._backendRank.reason+'.';
+ if(context.rankingMode==='backend'&&a._backendRank?.reason)return String(a._backendRank.reason).trim().replace(/[.]+$/,'')+'.';
 
  const note=$('feelingInput')?.value.trim()||'';
  const intent=correctedIntent(interpretFeeling(note));
