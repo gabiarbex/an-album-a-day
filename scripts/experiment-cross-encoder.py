@@ -38,14 +38,29 @@ def load_pairs(file):
         # Never fake absent candidates or substitute a different listening query.
         for alt in results:
             if not alt.get("title") or not alt.get("artist"): continue
+            frontend_intent=(record.get("frontend") or {}).get("intent") or {}
+            query_intent={
+                "genres":list(frontend_intent.get("genres") or record.get("wantGenres") or []),
+                "avoidGenres":list(frontend_intent.get("avoidedGenres") or record.get("avoidGenres") or []),
+                "moods":{str(mood):1 for mood in (frontend_intent.get("moods") or record.get("wantMoods") or [])},
+                "avoidMoods":{str(mood):1 for mood in (frontend_intent.get("avoidedMoods") or record.get("avoidMoods") or [])},
+                "goalShift":bool(frontend_intent.get("goalShift",False)),
+            }
             pairs.append({
                 "query_id":record["id"],
                 "prompt":normalize(record["prompt"]),
+                "language":normalize(record.get("language")),
+                "category":normalize(record.get("category")),
+                "query_intent":query_intent,
                 "rank":int(alt.get("rank",0)),
                 "artist":normalize(alt["artist"]),
                 "album":normalize(alt["title"]),
                 "album_id":normalize(alt.get("id")),
+                "genres":list(alt.get("genres") or []),
+                "tags":list(alt.get("tags") or []),
+                "moods":list(alt.get("moods") or []),
                 "original_score":alt.get("score"),
+                "neural_score":alt.get("neural"),
                 "passage":format_candidate(alt),
             })
     return pairs
