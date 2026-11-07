@@ -13,6 +13,12 @@ try {
  for (const {id,prompt,category,language,wantGenres,avoidGenres,wantMoods,avoidMoods} of prompts) {
   const context=await browser.newContext({viewport:{width:1280,height:900}});
   const page=await context.newPage();
+  // Fixed per-prompt salt makes shard loading, daily seeds and client taste
+  // identity repeatable across algorithm versions. Each case has its own
+  // isolated browser context, so seen-history still starts empty.
+  await page.addInitScript(seed=>{
+    try{localStorage.setItem('albumaday.salt',seed)}catch{}
+  },'albumaday-benchmark-fixed-v1-'+id);
   let error='';
   let backendObservation=null;
   page.on('response',response=>{
@@ -76,6 +82,7 @@ try {
 await fs.mkdir('baseline-results',{recursive:true});
 await fs.writeFile('baseline-results/production-top1.json',JSON.stringify({
  captured_at:new Date().toISOString(),site:SITE,
+ seed_policy:'stable per prompt albumaday-benchmark-fixed-v1 ID',
  note:'Observed top-one and up-to-five backend alternatives; no listening relevance judgments are inferred.',
  results
 },null,2)+'\n');
