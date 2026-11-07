@@ -27,6 +27,13 @@ const genreLexicon=[
  'post-punk','post punk','goth','darkwave','experimental','psychedelic','soundtrack','afrobeat'
 ];
 
+function styleMatches(label, requested){
+ const value=normalizeText(label).trim(),query=normalizeText(requested).trim();
+ if(!value||!query)return false;
+ const escaped=query.replace(/[.*+?^$()|[\]{}\\]/g,'\\function genreMentions(text){');
+ return new RegExp('(^|[^a-z0-9])'+escaped+'(?=$|[^a-z0-9])').test(value);
+}
+
 function genreMentions(text){
  const genres=[],avoidGenres=[],spans=[];
  const escape=value=>value.replace(/[.*+?^$()|[\]{}\\]/g,'\\function normalizeText(value){');
@@ -186,5 +193,5 @@ function retrievalText(value){
  return kept.join(' ').replace(/\s+/g,' ').trim();
 }
 
-root.AlbumIntent={interpretFeeling,desiredListeningGoal,retrievalText,termIsNegated,normalizeText,genreMentions,genreLexicon,feelingLexicon};
+root.AlbumIntent={interpretFeeling,desiredListeningGoal,retrievalText,termIsNegated,normalizeText,styleMatches,genreMentions,genreLexicon,feelingLexicon};
 })(globalThis);
