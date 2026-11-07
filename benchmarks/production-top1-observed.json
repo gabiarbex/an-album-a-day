@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-11-07T14:50:22.542Z",
+  "captured_at": "2026-11-07T14:52:46.334Z",
   "site": "https://gabiarbex.github.io/an-album-a-day/",
   "note": "Observed top-1 outputs only; no relevance judgments or NDCG are inferred.",
   "results": [
@@ -39,7 +39,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 11,
+          "consideredCompilations": 8,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -173,15 +173,15 @@
       "avoidGenres": [],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "Shine",
-      "detail": "TODAY'S RECORD\nShine\n\nClara Hill · 2020",
+      "title": "Stay Moist",
+      "detail": "TODAY'S RECORD\nStay Moist\n\nMellow Blush · 2017",
       "reason": "bossa nova.",
       "signals": "BOSSA NOVA",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "4dc14d80dcbfa930",
-        "catalogGenres": "bossa nova | electronic | folk | indie pop | jazz | pop",
-        "catalogTags": "bossa nova | electronic | folk | indie pop | jazz | pop | psychedelic | smooth jazz | soul",
+        "albumId": "83971f1568e2292c",
+        "catalogGenres": "bossa nova | easy listening | electronic | folk | indietronica | instrumental",
+        "catalogTags": "bossa nova | easy listening | electronic | folk | fusion | indietronica | instrumental | instrumentall | j-pop | jazz",
         "catalogMoods": "",
         "selectionMode": "backend"
       },
@@ -190,9 +190,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v4",
         "diagnostics": {
-          "neural": 0.653996,
+          "neural": 0.669962,
           "local": 1,
-          "lexical": 0.8691415,
+          "lexical": 0.8263785,
           "candidates": 96,
           "vectorCacheHits": 96,
           "liveEmbeddings": 0,
@@ -200,37 +200,38 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 18,
+          "consideredCompilations": 15,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "4dc14d80dcbfa930",
-            "artist": "Clara Hill",
-            "title": "Shine",
+            "id": "83971f1568e2292c",
+            "artist": "Mellow Blush",
+            "title": "Stay Moist",
             "genres": [
               "bossa nova",
+              "easy listening",
               "electronic",
               "folk",
-              "indie pop",
-              "jazz",
-              "pop"
+              "indietronica",
+              "instrumental"
             ],
             "tags": [
               "bossa nova",
+              "easy listening",
               "electronic",
               "folk",
-              "indie pop",
-              "jazz",
-              "pop",
-              "psychedelic",
-              "smooth jazz",
-              "soul"
+              "fusion",
+              "indietronica",
+              "instrumental",
+              "instrumentall",
+              "j-pop",
+              "jazz"
             ],
             "moods": [],
-            "score": 0.908138
+            "score": 0.912629
           },
           {
             "rank": 2,
@@ -259,6 +260,33 @@
           },
           {
             "rank": 3,
+            "id": "4dc14d80dcbfa930",
+            "artist": "Clara Hill",
+            "title": "Shine",
+            "genres": [
+              "bossa nova",
+              "electronic",
+              "folk",
+              "indie pop",
+              "jazz",
+              "pop"
+            ],
+            "tags": [
+              "bossa nova",
+              "electronic",
+              "folk",
+              "indie pop",
+              "jazz",
+              "pop",
+              "psychedelic",
+              "smooth jazz",
+              "soul"
+            ],
+            "moods": [],
+            "score": 0.908138
+          },
+          {
+            "rank": 4,
             "id": "3146c82d767f4af4",
             "artist": "Sarah Vaughan",
             "title": "The Definitive Collection",
@@ -280,7 +308,7 @@
             "score": 0.908109
           },
           {
-            "rank": 4,
+            "rank": 5,
             "id": "f32bd22508946547",
             "artist": "ClascyJitto",
             "title": "KIPIDON MUSIC SAMPLER",
@@ -300,28 +328,6 @@
             ],
             "moods": [],
             "score": 0.893257
-          },
-          {
-            "rank": 5,
-            "id": "b69529a40bf92387",
-            "artist": "Bossa Nostra",
-            "title": "Solaria",
-            "genres": [
-              "ambient",
-              "bossa nova",
-              "jazz",
-              "latin",
-              "soul jazz"
-            ],
-            "tags": [
-              "ambient",
-              "bossa nova",
-              "jazz",
-              "latin",
-              "soul jazz"
-            ],
-            "moods": [],
-            "score": 0.89724
           }
         ]
       },
@@ -359,15 +365,15 @@
           "local": 1,
           "lexical": 0.86259,
           "candidates": 96,
-          "vectorCacheHits": 96,
-          "liveEmbeddings": 0,
+          "vectorCacheHits": 95,
+          "liveEmbeddings": 1,
           "queryVectorSource": "retrieval-reuse",
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
           "consideredCompilations": 10,
           "chosenCompilation": false,
-          "excludedGenreMatches": 1
+          "excludedGenreMatches": 0
         },
         "alternatives": [
           {
@@ -523,7 +529,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 6,
+          "consideredCompilations": 1,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -691,7 +697,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 6,
+          "consideredCompilations": 5,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -726,31 +732,23 @@
           },
           {
             "rank": 2,
-            "id": "b24b2a97edcecf43",
-            "artist": "Doldrums",
-            "title": "The Air Conditioned Nightmare",
+            "id": "f3b25849601c083c",
+            "artist": "The Infinite Trip",
+            "title": "We Are Like Dream Children",
             "genres": [
-              "deep house",
-              "electro",
-              "electronic",
-              "electropop",
-              "indie rock",
-              "indietronica"
+              "freakbeat",
+              "garage rock",
+              "psychedelic rock",
+              "rock"
             ],
             "tags": [
-              "deep house",
-              "electro",
-              "electronic",
-              "electropop",
-              "indie rock",
-              "indietronica",
-              "leftfield",
-              "neo-psychedelia",
-              "rock",
-              "synth punk"
+              "freakbeat",
+              "garage rock",
+              "psychedelic rock",
+              "rock"
             ],
             "moods": [],
-            "score": 0.590066
+            "score": 0.591148
           },
           {
             "rank": 3,
@@ -865,9 +863,9 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 6,
+          "consideredCompilations": 5,
           "chosenCompilation": false,
-          "excludedGenreMatches": 4
+          "excludedGenreMatches": 3
         },
         "alternatives": [
           {
@@ -1003,16 +1001,16 @@
       ],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "Full of Fire",
-      "detail": "TODAY'S RECORD\nFull of Fire\n\nAl Green · 1976\n\nWARM",
+      "title": "Gold",
+      "detail": "TODAY'S RECORD\nGold\n\nCleo Sol · 2023",
       "reason": "soul.",
       "signals": "SOUL",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "92851ca6eb3f818f",
-        "catalogGenres": "soul | r&b | smooth soul",
-        "catalogTags": "soul | memphis soul | pop-soul | r&b | smooth soul",
-        "catalogMoods": "warm",
+        "albumId": "827058d6b4bbe9ae",
+        "catalogGenres": "neo soul | r&b | soul",
+        "catalogTags": "acoustic | human on cover | neo soul | r&b | soul | uk | uk neo soul | uk r&b | uk soul | united kingdom",
+        "catalogMoods": "",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
@@ -1020,9 +1018,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v4",
         "diagnostics": {
-          "neural": 0.522305,
+          "neural": 0.517669,
           "local": 1,
-          "lexical": 0.9976417799452761,
+          "lexical": 0.9966414254167901,
           "candidates": 96,
           "vectorCacheHits": 96,
           "liveEmbeddings": 0,
@@ -1037,26 +1035,58 @@
         "alternatives": [
           {
             "rank": 1,
-            "id": "92851ca6eb3f818f",
-            "artist": "Al Green",
-            "title": "Full of Fire",
+            "id": "827058d6b4bbe9ae",
+            "artist": "Cleo Sol",
+            "title": "Gold",
             "genres": [
-              "soul",
+              "neo soul",
               "r&b",
-              "smooth soul"
+              "soul"
             ],
             "tags": [
-              "soul",
-              "memphis soul",
-              "pop-soul",
+              "acoustic",
+              "human on cover",
+              "neo soul",
               "r&b",
-              "smooth soul"
+              "soul",
+              "uk",
+              "uk neo soul",
+              "uk r&b",
+              "uk soul",
+              "united kingdom"
             ],
             "moods": [],
-            "score": 0.870934
+            "score": 0.879918
           },
           {
             "rank": 2,
+            "id": "2d2ca97d54c4b5ac",
+            "artist": "Norman and Joey Jay",
+            "title": "Good Times 3",
+            "genres": [
+              "dancehall",
+              "disco",
+              "downtempo",
+              "electronic",
+              "funk",
+              "house"
+            ],
+            "tags": [
+              "dancehall",
+              "disco",
+              "downtempo",
+              "electronic",
+              "funk",
+              "house",
+              "reggae",
+              "roots reggae",
+              "soul"
+            ],
+            "moods": [],
+            "score": 0.85666
+          },
+          {
+            "rank": 3,
             "id": "90cb636b5f67aa11",
             "artist": "Jackie Wilson",
             "title": "The Jackie Wilson Story",
@@ -1077,52 +1107,52 @@
             "score": 0.867222
           },
           {
-            "rank": 3,
-            "id": "a0ad6a6defd29c57",
-            "artist": "The Delfonics",
-            "title": "The Delfonics",
-            "genres": [
-              "philly soul",
-              "pop soul",
-              "smooth soul",
-              "soul"
-            ],
-            "tags": [
-              "philly soul",
-              "pop soul",
-              "smooth soul",
-              "soul"
-            ],
-            "moods": [],
-            "score": 0.861797
-          },
-          {
             "rank": 4,
-            "id": "bc5821940306d79e",
-            "artist": "Michael Kiwanuka",
-            "title": "Home Again",
+            "id": "92851ca6eb3f818f",
+            "artist": "Al Green",
+            "title": "Full of Fire",
             "genres": [
-              "soul"
+              "soul",
+              "r&b",
+              "smooth soul"
             ],
             "tags": [
-              "soul"
+              "soul",
+              "memphis soul",
+              "pop-soul",
+              "r&b",
+              "smooth soul"
             ],
             "moods": [],
-            "score": 0.853956
+            "score": 0.870934
           },
           {
             "rank": 5,
-            "id": "62f93f2092105f5d",
-            "artist": "Stevie Wonder",
-            "title": "Best Ballads",
+            "id": "f8d9b345c2b5f30c",
+            "artist": "Kali Uchis",
+            "title": "Red Moon In Venus",
             "genres": [
-              "soul"
+              "funk",
+              "contemporary r&b",
+              "neo soul",
+              "alternative r&b",
+              "electronic",
+              "latin"
             ],
             "tags": [
-              "soul"
+              "funk",
+              "contemporary r&b",
+              "neo soul",
+              "alternative r&b",
+              "electronic",
+              "latin",
+              "pop",
+              "psychedelic",
+              "psychedelic soul",
+              "r&b"
             ],
             "moods": [],
-            "score": 0.857069
+            "score": 0.866869
           }
         ]
       },
@@ -1170,7 +1200,7 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 8,
           "chosenCompilation": false,
-          "excludedGenreMatches": 4
+          "excludedGenreMatches": 3
         },
         "alternatives": [
           {
