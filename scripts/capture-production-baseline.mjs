@@ -42,6 +42,12 @@ try {
    await page.waitForTimeout(500);
    const backend=backendObservation?await backendObservation:null;
    const result=await page.evaluate(()=>({
+    frontend:{
+      fusionAvailable:Boolean(globalThis.AlbumFusion?.select),
+      scripts:[...document.scripts].map(node=>node.src)
+        .filter(src=>/selector\.js|retrieval-fusion\.js/.test(src))
+        .map(src=>{try{const url=new URL(src);return url.pathname+url.search}catch{return src}})
+    },
     title:document.querySelector('#details h2')?.textContent?.trim()||'',
     detail:document.querySelector('#details')?.innerText?.trim()||'',
     reason:document.querySelector('#whyText')?.textContent?.trim()||'',
