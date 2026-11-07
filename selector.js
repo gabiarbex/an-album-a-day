@@ -1592,7 +1592,7 @@ function setPickBusy(busy){
  if($('recommend')){
   $('recommend').classList.toggle('is-loading',busy);
   $('recommend').setAttribute('aria-busy',String(busy));
-  $('recommend').querySelector('span:first-child').textContent=busy?'finding your record…':'pick my album';
+  $('recommend').querySelector('span:first-child').textContent=busy?'looking through the records…':'find a record';
  }
  setPickProgress(busy);
 }
