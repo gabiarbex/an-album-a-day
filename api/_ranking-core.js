@@ -278,9 +278,23 @@ export function explanation(row, body) {
     bits.push(`${Math.round(duration)} min`);
   }
 
-  const unique = [...new Set(bits.filter(Boolean))].slice(0, 3);
-  if (unique.length) return unique.join(' · ');
-  if (moodFit.suggestive?.length) return 'style suggests the mood · not independently verified';
-  if (moodFit.requested) return 'sonic similarity · mood tags not verified';
-  return 'catalog similarity · no confirmed style tags';
+  const unique = [...new Set(bits.filter(Boolean))].slice(0,3);
+  const genre=genreFit.matched[0];
+  const mood=moodFit.matched[0];
+  if(genre&&mood)return `Catalog tags: ${genre} and ${mood}.`;
+  if(genre&&moodFit.suggestive?.length){
+    return `Catalogued as ${genre}; its style also suggests ${moodFit.suggestive[0]}, though that mood isn't independently verified.`;
+  }
+  if(genre)return `Its catalog tags include ${genre}.`;
+  if(mood)return `The catalog includes ${mood} among its mood tags.`;
+  if(moodFit.suggestive?.length){
+    const matchingStyles=cleanArray(candidate.genres,12).filter(g=>
+      /dream pop|ethereal wave|shoegaze|ambient pop|chillwave|hypnagogic pop|minimal ambient|slowcore|dark ambient|darkwave|gothic rock|dance.punk|dance pop/i.test(g)
+    );
+    const style=matchingStyles[0]||'its listed genres';
+    return `${style} suggests ${moodFit.suggestive[0]} music, but the mood is not independently verified.`;
+  }
+  if(unique.length)return `Matched on ${unique.join(' and ')}.`;
+  if(moodFit.requested)return 'Its sound may suit your note, but the catalog has no verified mood tags.';
+  return 'Selected using catalog similarity; more descriptive tags are not available.';
 }
