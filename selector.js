@@ -2531,12 +2531,13 @@ function show(a,context={}){
  if(why)why.textContent=explanation;
  if(signals){
   signals.replaceChildren();
-  const pieces=String(explanation||'')
-   .replace(/[.]$/,'')
-   .split(/\s*[·/]\s*/)
-   .map(value=>value.trim())
-   .filter(Boolean)
-   .slice(0,4);
+  // Display actual catalog genres, not the same explanation a second time.
+  const genres=(Array.isArray(a.genres)?a.genres:[])
+   .map(value=>String(typeof value==='string'?value:value?.name||'').trim())
+   .filter(Boolean);
+  const requested=correctedIntent(interpretFeeling($('feelingInput')?.value||'')).genres||[];
+  const matching=genres.filter(value=>requested.some(w=>value.toLowerCase().includes(w)||w.includes(value.toLowerCase())));
+  const pieces=[...new Set([...matching,...genres])].slice(0,3);
   for(const value of pieces){
    const chip=document.createElement('span');
    chip.textContent=value;
