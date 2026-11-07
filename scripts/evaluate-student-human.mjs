@@ -25,10 +25,11 @@ function csvRows(csv){
  for(const required of ['query_id','artist','album','relevance'])if(!header.includes(required))throw Error('Judgment CSV lacks '+required);
  return records.map(values=>Object.fromEntries(header.map((name,i)=>[name,values[i]??''])));
 }
-const ndcg=(rows)=>{
+const ndcg=(rows,fullPool)=>{
  const gains=rows.map(r=>2**r.grade-1);
  const dcg=values=>values.reduce((total,g,i)=>total+g/Math.log2(i+2),0);
- const ideal=[...gains].sort((a,b)=>b-a);
+ // Use the *same* full judged candidate pool for every ranking's ideal DCG.
+ const ideal=fullPool.map(r=>2**r.grade-1).sort((a,b)=>b-a).slice(0,rows.length);
  return ideal.every(x=>x===0)?0:dcg(gains)/dcg(ideal);
 };
 const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:null;
@@ -78,7 +79,7 @@ export function evaluateHuman(teacher,artifact,judgmentCsv,{k=5,minQueries=40}={
   const teacherRank=[...group].sort((a,b)=>b.teacher_score-a.teacher_score).slice(0,k);
   perQuery.push({
    id,language:group[0].language||'unknown',category:group[0].category||'unknown',
-   baseline:ndcg(baseline),student:ndcg(challenger),teacher:ndcg(teacherRank),
+   baseline:ndcg(baseline,group),student:ndcg(challenger,group),teacher:ndcg(teacherRank,group),
   });
  }
  const diffs=perQuery.map(q=>q.student-q.baseline);
@@ -99,6 +100,11 @@ export function evaluateHuman(teacher,artifact,judgmentCsv,{k=5,minQueries=40}={
   student_uplift_vs_baseline:mean(diffs),
   uplift_95pct_bootstrap_interval:ci,
   by_language:byLanguage,
+  by_category:Object.fromEntries([...new Set(perQuery.map(r=>r.category))].map(category=>{
+   const subset=perQuery.filter(r=>r.category===category);
+   return [category,{queries:subset.length,baseline:mean(subset.map(r=>r.baseline)),
+     student:mean(subset.map(r=>r.student)),uplift:mean(subset.map(r=>r.student-r.baseline))}];
+  })),
   eligible_for_production:false,
   release_gate:{
    enough_heldout_human_judgments:perQuery.length>=minQueries,
