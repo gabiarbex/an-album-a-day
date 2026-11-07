@@ -146,12 +146,14 @@ def run_case(name, body, candidates, expected, query_vector_override=None):
             {"moods": {}, "avoidMoods": {}, "genres": [], "avoidGenres": []},
         ),
         "recentArtists": body.get("recentArtists", []),
+        "retrievalSelection": body.get("retrievalSelection", "source-quota-v0"),
         "candidates": candidates,
     }
     if query_vector_override is not None:
         payload["queryVector"] = query_vector_override
     data, elapsed = post_json(RECOMMEND_URL, payload)
-    assert data.get("engine") == "hybrid-neural-reranker-v3", data
+    expected_engine = ("hybrid-neural-reranker-v5-rrf" if body.get("retrievalSelection") == "weighted-rrf-v1" else "hybrid-neural-reranker-v4")
+    assert data.get("engine") == expected_engine, data
     assert data.get("albumId") == expected, (
         name,
         expected,
