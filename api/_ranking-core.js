@@ -24,6 +24,24 @@ function energyLabel(value) {
   return 'medium energy';
 }
 
+export function isCompilation(candidate) {
+  const artist = String(candidate?.artist || '').trim().toLowerCase();
+  const title = String(candidate?.title || '').trim().toLowerCase();
+  return /^(?:various(?: artists)?|v\\/?a|v\\.a\\.)$/.test(artist) ||
+    /\\b(?:greatest hits|the best of|ultimate collection|compilation|anthology)\\b/.test(title);
+}
+
+function compilationPenalty(candidate, body) {
+  const request = String(body?.note || '').toLowerCase();
+  // Anthologies and label samplers remain available when explicitly requested.
+  if (/\\b(?:compilation|anthology|greatest hits|best of|various artists|sampler|mixtape|soundtrack|coletanea|compilacao)\\b/.test(request.normalize('NFD').replace(/[\\u0300-\\u036f]/g,''))) return 0;
+  const artist = String(candidate?.artist || '').trim().toLowerCase();
+  const title = String(candidate?.title || '').trim().toLowerCase();
+  const multiArtist = /^(?:various(?: artists)?|v\\/?a|v\\.a\\.)$/.test(artist);
+  const compilationTitle = /\\b(?:greatest hits|the best of|ultimate collection|compilation|anthology)\\b/.test(title);
+  return (multiArtist ? 0.23 : 0) + (compilationTitle ? 0.09 : 0);
+}
+
 export function genreConflict(candidate, avoided) {
   if (!avoided.length) return false;
   const haystack = [...cleanArray(candidate.genres), ...cleanArray(candidate.tags)]
@@ -151,16 +169,17 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
     adjacencyWeight * adjacency;
 
   // Explicit positive controls should beat a superficially stronger embedding.
-  if (genreFit.match) score += 0.11;
+  if (genreFit.match) score += 0.15;
   else if (genreFit.known) score -= 0.18;
 
-  if (moodFit.match) score += 0.10;
+  if (moodFit.match) score += 0.13;
   else if (moodFit.known) score -= 0.10;
 
   const energyDistance = reliableEnergyDistance(candidate, body);
   if (energyDistance !== null && energyDistance <= 1.5) score += 0.07;
 
   score -= energyPenalty(candidate, body);
+  score -= compilationPenalty(candidate, body);
 
   const recentArtists = new Set((body.recentArtists || []).map(value => String(value).toLowerCase()));
   if (recentArtists.has(String(candidate.artist || '').toLowerCase())) score -= 0.22;
@@ -220,5 +239,7 @@ export function explanation(row, body) {
   }
 
   const unique = [...new Set(bits.filter(Boolean))].slice(0, 3);
-  return unique.length ? unique.join(' · ') : 'overall match';
+  if (unique.length) return unique.join(' · ');
+  if (moodFit.requested) return 'sonic similarity · mood tags not verified';
+  return 'catalog similarity · no confirmed style tags';
 }
