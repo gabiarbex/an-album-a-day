@@ -11,6 +11,26 @@
 - Reproducible 100-prompt English/Portuguese intent checks, plus real browser top-1/top-5 capture (when the backend responds).
 - Local diary, explicit completion and rating signals. Unrated listens are **not** assumed disliked, and an unseen album is **not** a negative training sample.
 
+## Implemented recommendation-quality safeguards (November 7, 2026)
+
+- **Current emotion vs desired musical outcome:** when listeners describe a contrasting target (e.g. "I'm sad, but I want hopeful music"), the goal classifier uses the desired mood for retrieval and reranking, not the mood they're trying to leave. English and Portuguese cases are covered in `tests/listening-goal.test.cjs`.
+- **Precisely scoped genres:** whole-style matching respects "dream pop" vs generic "pop" and "rock" vs "rocksteady"; compound exclusions are not automatically broadened.
+- **Provenance-aware energy:** audio-derived and sufficiently confident energy can influence ranking; weak or unlabeled energy estimates cannot override the request.
+- **Contextual feedback vs preference labels:** `wrong_vibe`, `too_upbeat`, `too_slow`, `save`, `spotify_open`, and artist-variety feedback do not become permanent positive or negative taste labels. Explicit ratings, `love_this`, and `less_like_this` do.
+- **Listening Lab:** `benchmarks/review.html` provides private browser-local rating of real captured backend candidates with a CSV export. It does not transmit listener ratings to a server.
+- **Expanded browser validation:** `benchmarks/emotional-goals.json` provides six difficult real-world prompts on top of the existing eight production baseline prompts. Capture reports parsed intent separately from the selected album's catalog evidence.
+
+Run the human review against the matching fixture:
+
+```bash
+python3 scripts/score_recommendations.py \
+  --judgments path/to/exported-listening-judgments.csv \
+  --fixture benchmarks/listening-lab-fixture.json \
+  --k 5
+```
+
+This is an opt-in evaluation workflow, **not proof of human relevance improvement**. A trained cross-encoder or online policy must be compared against its judged results and the existing production baseline before promotion.
+
 ## Phase A: better retrieval, experimentally (first)
 
 **Candidate generation:** compare the current English-biased MiniLM baseline against multilingual-E5 and BGE-M3, with a smaller compatible multilingual model as a latency-focused alternative. Run tests on English, Portuguese, short mood phrases, long ambiguous notes, negation, genre requests, and genre exclusions.
