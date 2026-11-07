@@ -64,4 +64,17 @@ await fs.writeFile('baseline-results/production-top1.json',JSON.stringify({
  note:'Observed top-1 outputs only; no relevance judgments or NDCG are inferred.',
  results
 },null,2)+'\n');
+// Reviewer rows stay unrated until a person actually listens and scores them.
+const csvCell=value=>'"'+String(value??'').replaceAll('"','""')+'"';
+const review=[['query_id','rank','artist','album','relevance','exclusion_violation','already_seen']];
+for(const row of results){
+  if(!row.ok)continue;
+  const alternatives=row.backend?.alternatives?.length
+    ? row.backend.alternatives
+    : [{rank:1,artist:(row.detail||'').split('\\n').find(t=>t.includes(' · '))?.split(' · ')[0]||'',title:row.title}];
+  for(const album of alternatives)review.push([row.id,album.rank,album.artist,album.title,'','','']);
+}
+await fs.writeFile('baseline-results/review-sheet.csv',
+ review.map(row=>row.map(csvCell).join(',')).join('\\n')+'\\n');
+
 if(results.filter(r=>r.ok).length<4)process.exitCode=1;
