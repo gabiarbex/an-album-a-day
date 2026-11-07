@@ -5,6 +5,7 @@
 ## What exists now
 
 - Full-catalog semantic recall over 100,000 albums and 64-dimensional quantized search vectors.
+- Weighted reciprocal-rank fusion combines neural, lexical, control, and personalized candidate rankings, with minimum source coverage, per-artist caps and the older shortlist as a fallback. Backend responses label this as `hybrid-neural-reranker-v5-rrf` when the frontend has loaded the fusion helper.
 - MiniLM-L6-v2, 384-dimensional vector reranking of a limited candidate set, combined with metadata, energy, familiarity and lightweight learned taste.
 - Exclusion-aware retrieval text, explicit genre constraint checks, compilation deprioritization, artist-diverse alternatives via MMR, and provenance-based explanations.
 - Reproducible 100-prompt English/Portuguese intent checks, plus real browser top-1/top-5 capture (when the backend responds).
@@ -19,6 +20,25 @@
 **Representation:** use an album profile built from verified release/artist/genre/tag metadata and explicit provenance. Prefer reliability-weighted descriptions over made-up mood/energy labels.
 
 **Quality gates:** frozen human-rated queries; compare NDCG@5, constraint violations, source and artist diversity, subgroup regressions, p95 latency, model memory and runtime costs. No cross-user logging of free text by default.
+
+### Executable multilingual shadow test
+
+The cross-encoder challenger is implemented as **offline experiment tooling**, not a deployed model. It tests [BAAI/bge-reranker-v2-m3](https://huggingface.co/BAAI/bge-reranker-v2-m3) on captured *actual* top-five candidates.
+
+```bash
+# Validate public candidate/prompt pairing; runs without downloading a model
+python3 scripts/experiment-cross-encoder.py --observations benchmarks/production-top1-observed.json
+
+# Optional heavy run, on a machine with sufficient RAM / GPU
+pip install sentence-transformers
+python3 scripts/experiment-cross-encoder.py --score \
+  --observations benchmarks/production-top1-observed.json \
+  --output cross-encoder-shadow.json
+```
+
+The script ranks the same candidate set independently and records both old and teacher ranks. It does **not** train a personalized model, establish higher real-world relevance, evaluate unseen catalog items, or write predictions into production. The model needs substantial memory; budget for an offline environment rather than dropping it into small Vercel functions.
+
+For repeatable live comparisons, `benchmarks/2026-11-07-v4-reference.json` is immutable and `scripts/compare-production-baselines.mjs` compares it with live captures. Metadata proxies do not count as listening judgments.
 
 ## Phase B: trained cross-encoder teacher + fast student
 
