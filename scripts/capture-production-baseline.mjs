@@ -15,7 +15,7 @@ try {
   let error='';
   let backendObservation=null;
   page.on('response',response=>{
-    if(!/\\/api\\/recommend(?:\\?|$)/.test(response.url()))return;
+    if(!/\/api\/recommend(?:\?|$)/.test(response.url()))return;
     // Persist public album metadata, never request client IDs or taste signals.
     backendObservation=(async()=>{
       if(!response.ok())return {ok:false,status:response.status()};
