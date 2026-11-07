@@ -1284,6 +1284,7 @@ async function rankWithBackend(pool,seed,daily){
  const endpoint=backendUrl('/api/recommend');
  if(!endpoint||Date.now()<backendUnavailableUntil)return null;
  const note=$('feelingInput')?.value.trim()||'';
+ const retrievalNote=globalThis.AlbumIntent?.retrievalText?.(note)??note;
  const intent=correctedIntent(interpretFeeling(note));
  const comfort=recommendationComfort();
  const effectiveEnergy=recommendationEnergy(intent);
@@ -1308,7 +1309,7 @@ async function rankWithBackend(pool,seed,daily){
 
  // Full-catalog MiniLM recall: search all 100k projected vectors before final reranking.
  const neuralQueryActive=Boolean(
-  note.length>=2 ||
+  retrievalNote.length>=2 ||
   state.moods.length ||
   effectiveEnergy!==null ||
   (intent.genres||[]).length ||
@@ -1323,7 +1324,7 @@ async function rankWithBackend(pool,seed,daily){
      method:'POST',
      headers:{'Content-Type':'application/json'},
      body:JSON.stringify({
-      note,
+      note:retrievalNote,
       moods:[...state.moods],
       energy:effectiveEnergy,
       comfort,
@@ -1344,9 +1345,9 @@ async function rankWithBackend(pool,seed,daily){
  }
 
  // Lexical/SVD retrieval is useful for recall, but it no longer owns the shortlist.
- if(note.length>=2&&globalThis.AlbumSemantic?.search&&catalogManifest){
+ if(retrievalNote.length>=2&&globalThis.AlbumSemantic?.search&&catalogManifest){
   try{
-   const raw=await globalThis.AlbumSemantic.search(note,64);
+   const raw=await globalThis.AlbumSemantic.search(retrievalNote,64);
    const resolved=await resolveSemanticResults(raw,6);
    for(const row of resolved.slice(0,36))add(row.album,row.semanticScore,'semantic');
   }catch(e){console.info('Candidate retrieval fallback',e)}
@@ -1863,10 +1864,11 @@ async function getAlbumTracks(album){
 }
 async function rankWithSemantic(seed,daily){
  const note=$('feelingInput')?.value.trim()||'';
- if(note.length<2||!globalThis.AlbumSemantic?.search||!catalogManifest)return null;
+ const retrievalNote=globalThis.AlbumIntent?.retrievalText?.(note)??note;
+ if(retrievalNote.length<2||!globalThis.AlbumSemantic?.search||!catalogManifest)return null;
  $('status').textContent='searching albums…';
  let raw;
- try{raw=await globalThis.AlbumSemantic.search(note,120)}
+ try{raw=await globalThis.AlbumSemantic.search(retrievalNote,120)}
  catch(e){console.info('Semantic index unavailable; using live fallback.',e);return null}
  if(!raw.length)return null;
 
