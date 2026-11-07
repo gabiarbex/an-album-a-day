@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {scoreCandidate,genreConflict,moodConflict,isCompilation,diverseTopK,explanation,styleMatches,requestedGenreFit,energyPenalty} from '../api/_ranking-core.js';
+import {scoreCandidate,genreConflict,moodConflict,isCompilation,diverseTopK,explanation,styleMatches,requestedGenreFit,energyPenalty,moodStyleSignal} from '../api/_ranking-core.js';
 
 // Controlled fixtures isolate the reranker; these are not claims about real albums.
 const base={
@@ -96,5 +96,21 @@ assert.equal(scoreCandidate(weakHigh,0.5,lowEnergyBrief),scoreCandidate(weakLow,
 const measuredHigh={...weakHigh,energySource:'audio',energyConfidence:1};
 assert.ok(energyPenalty(measuredHigh,lowEnergyBrief)>0);
 assert.ok(scoreCandidate(measuredHigh,0.5,lowEnergyBrief)<scoreCandidate(weakHigh,0.5,lowEnergyBrief));
+
+
+// A higher title/embedding similarity must not reward audibly implausible
+// genre evidence over a better mood-direction candidate.
+const upliftingBrief={...neutral,note:"I feel sad but want uplifting music",
+ intent:{genres:[],avoidGenres:[],moods:{hopeful:1},avoidMoods:{},goalShift:true}};
+const darkNoise={...base,genres:['noise rock','drone'],tags:['noise','drone'],moods:[],energy:null};
+const upliftingSoul={...base,genres:['soul','funk'],tags:['soul','funk'],moods:[],energy:null};
+assert.ok(moodStyleSignal(darkNoise,upliftingBrief).penalty>0.25);
+assert.ok(moodStyleSignal(upliftingSoul,upliftingBrief).bonus>0);
+assert.ok(scoreCandidate(upliftingSoul,0.5,upliftingBrief)>scoreCandidate(darkNoise,0.7,upliftingBrief),
+ 'Clearly contradictory noise/drone styles must not beat supportive uplifting styles');
+const calmingBrief={...upliftingBrief,note:"I'm anxious but want calm music",intent:{...upliftingBrief.intent,moods:{calm:1}}};
+const restful={...base,genres:['ambient','downtempo'],tags:['ambient'],moods:[]};
+assert.ok(scoreCandidate(restful,0.55,calmingBrief)>scoreCandidate(darkNoise,0.7,calmingBrief),
+ 'Calming requests should prefer credible ambient/downtempo cues over noise');
 
 console.log('Ranking safety contracts passed.');
