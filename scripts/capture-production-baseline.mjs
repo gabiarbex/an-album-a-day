@@ -6,7 +6,7 @@ const fixture=JSON.parse(await fs.readFile('benchmarks/intent-100.json','utf8'))
 const sampleIds=new Set(['G01','G05','X01','M01','N01','P01','Q01','C01']);
 const goalScenarios=JSON.parse(await fs.readFile('benchmarks/emotional-goals.json','utf8'));
 const prompts=[...fixture.cases.filter(row=>sampleIds.has(row.id)),...goalScenarios.cases];
-if(prompts.length!==sampleIds.size)throw new Error('Baseline prompt fixture mismatch');
+if(prompts.length!==sampleIds.size+goalScenarios.cases.length || new Set(prompts.map(row=>row.id)).size!==prompts.length)throw new Error('Baseline prompt fixture mismatch');
 const browser = await chromium.launch({headless:true});
 const results=[];
 try {
