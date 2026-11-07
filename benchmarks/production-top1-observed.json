@@ -1,0 +1,95 @@
+{
+  "captured_at": "2026-11-07T14:36:22.776Z",
+  "site": "https://gabiarbex.github.io/an-album-a-day/",
+  "note": "Observed top-1 outputs only; no relevance judgments or NDCG are inferred.",
+  "results": [
+    {
+      "id": "G01",
+      "prompt": "I want jazz music today",
+      "title": "The Best of Acid Jazz",
+      "detail": "TODAY'S RECORD\nThe Best of Acid Jazz\n\nVarious Artists · 1989",
+      "reason": "jazz.",
+      "signals": "JAZZ",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "G05",
+      "prompt": "I want bossa nova music today",
+      "title": "Jazz for Lovers, Volume 2",
+      "detail": "TODAY'S RECORD\nJazz for Lovers, Volume 2\n\nVarious Artists · 2010",
+      "reason": "bossa nova.",
+      "signals": "BOSSA NOVA",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "X01",
+      "prompt": "Give me jazz, not house",
+      "title": "Jazz Rock",
+      "detail": "TODAY'S RECORD\nJazz Rock\n\nVarious Artists · 2008",
+      "reason": "jazz.",
+      "signals": "JAZZ",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "M01",
+      "prompt": "I feel dreamy; find me a record that sounds dreamy",
+      "title": "One of 18 Angels",
+      "detail": "TODAY'S RECORD\nOne of 18 Angels\n\nDiary of Dreams · 2000",
+      "reason": "overall match.",
+      "signals": "OVERALL MATCH",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "N01",
+      "prompt": "I want something dreamy, but not energetic",
+      "title": "Samhain Sonics 2020",
+      "detail": "TODAY'S RECORD\nSamhain Sonics 2020\n\nModulator ESP · 2020",
+      "reason": "overall match.",
+      "signals": "OVERALL MATCH",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "P01",
+      "prompt": "quero ouvir jazz, sem soul",
+      "title": "Mojo Club Presents: Dancefloor Jazz, Volume 5: Sunshine of Your Love",
+      "detail": "TODAY'S RECORD\nMojo Club Presents: Dancefloor Jazz, Volume 5: Sunshine of Your Love\n\nVarious Artists · 1996",
+      "reason": "jazz.",
+      "signals": "JAZZ",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "Q01",
+      "prompt": "nao quero jazz, quero soul",
+      "title": "Studio One Soul",
+      "detail": "TODAY'S RECORD\nStudio One Soul\n\nVarious Artists · 2001",
+      "reason": "soul.",
+      "signals": "SOUL",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    },
+    {
+      "id": "C01",
+      "prompt": "I'm feeling dreamy and I want jazz, but no soul",
+      "title": "The Real… Jazz: The Ultimate Jazz Collection",
+      "detail": "TODAY'S RECORD\nThe Real… Jazz: The Ultimate Jazz Collection\n\nVarious Artists · 2014",
+      "reason": "jazz.",
+      "signals": "JAZZ",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "ok": true
+    }
+  ]
+}
