@@ -30,7 +30,7 @@ try{
  const reroll=page.locator('#reroll');
  if(!firstId||!(await reroll.isVisible()))throw Error('No repeat-testable album or reroll button');
  await reroll.click();
- await page.waitForFunction(previous=>document.querySelector('#details')?.dataset.albumId!==previous,firstId,{timeout:90000});
+ await page.waitForFunction(previous=>{const id=document.querySelector('#details')?.dataset.albumId;return !!id&&id!==previous},firstId,{timeout:90000});
  const secondId=await page.locator('#details').getAttribute('data-album-id');
  const beforeReload=await page.evaluate(()=>JSON.parse(localStorage.getItem('albumaday.seenKeys.v1')||'[]'));
  await page.screenshot({path:'baseline-results/mobile-result.png',fullPage:true});
