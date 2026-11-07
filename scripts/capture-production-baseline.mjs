@@ -21,11 +21,11 @@ try {
   let error='';
   try {
    await page.goto(SITE,{waitUntil:'domcontentloaded',timeout:45000});
-   await page.waitForFunction(()=>{const b=document.querySelector('#recommend');return b&&!b.disabled},{timeout:80000});
+   await page.waitForFunction(()=>{const b=document.querySelector('#recommend');return b&&!b.disabled},null,{timeout:80000});
    await page.locator('#feelingInput').fill(prompt);
    await page.locator('#recommend').click();
    await page.waitForFunction(()=>document.body.classList.contains('has-record')&&
-      document.querySelector('#details h2')?.textContent?.trim()!=='pull a record.',{timeout:90000});
+      document.querySelector('#details h2')?.textContent?.trim()!=='pull a record.',null,{timeout:90000});
    await page.waitForTimeout(500);
    const result=await page.evaluate(()=>({
     title:document.querySelector('#details h2')?.textContent?.trim()||'',
