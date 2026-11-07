@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Listening Lab | An Album a Day</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{--paper:#eee8dc;--ink:#242019;--accent:#b24731;--line:#aaa193;--white:#fdfaf3}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{background:var(--paper);color:var(--ink);margin:0;font:14px/1.45 Arial,Helvetica,sans-serif}
+a{color:inherit}a:hover{color:var(--accent)}
+button,select{font:inherit}button{cursor:pointer;min-height:44px}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+header,main,footer{max-width:1100px;margin:auto;padding:0 24px}
+header{padding-top:35px;border-top:7px solid var(--ink)}
+.kicker,.subhead,.count,.prompt-id,.panel-number{font:700 11px/1.3 'Courier New',monospace;text-transform:uppercase;letter-spacing:.09em}
+.kicker{border-bottom:1px solid var(--ink);padding:0 0 12px}
+h1{font:700 clamp(44px,7.5vw,96px)/.93 Georgia,serif;max-width:760px;letter-spacing:-.065em;margin:30px 0 20px}
+header>p{max-width:65ch;font:17px/1.5 Georgia,serif;margin:0 0 28px}
+.toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-block:1px solid var(--ink);padding:15px 0;margin-bottom:32px}
+.toolbar button{background:var(--ink);color:#fff;border:0;padding:0 21px}
+.toolbar button:hover{background:var(--accent)}
+.toolbar small{color:#5a5047}
+main{padding-bottom:45px}
+.prompt{display:grid;grid-template-columns:minmax(170px,1fr) minmax(0,2.6fr);gap:28px;padding:28px 0 40px;border-bottom:2px solid var(--ink)}
+.prompt h2{font:700 clamp(24px,3vw,39px)/1.1 Georgia,serif;letter-spacing:-.04em;margin:13px 0}
+.prompt .instruction{color:#5e544a;font-size:12px;max-width:260px}
+.candidates{display:grid;gap:12px}
+.record{background:var(--white);border:1px solid var(--line);padding:18px 20px}
+.record-head{display:flex;justify-content:space-between;align-items:start;gap:14px}
+.record h3{font:700 23px/1.1 Georgia,serif;letter-spacing:-.025em;margin:6px 0}
+.record .artist{margin:0 0 12px;color:#5b524a}
+.record .tags{font:11px/1.4 'Courier New',monospace;color:#71685d;margin:10px 0 16px}
+.listen-link{font:700 11px/1.2 'Courier New',monospace;white-space:nowrap;margin-top:7px;text-decoration:underline;text-underline-offset:3px}
+fieldset{border:0;padding:0;margin:0}
+legend{font-size:11px;font-weight:700;letter-spacing:.04em;margin-bottom:8px}
+.grade-options{display:flex;flex-wrap:wrap;gap:5px}
+.grade{position:relative}
+.grade input{position:absolute;opacity:0;width:1px;height:1px}
+.grade span{display:block;border:1px solid #9b9285;padding:8px 11px;font:700 12px Arial,sans-serif;cursor:pointer}
+.grade input:checked+span{background:var(--ink);border-color:var(--ink);color:#fff}
+.grade input:focus-visible+span{outline:3px solid var(--accent);outline-offset:2px}
+.flags{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;border-top:1px solid #d8d1c6;padding-top:13px}
+.flags label{display:flex;gap:8px;align-items:center;font-size:11px}
+.flags select{border:1px solid #9b9285;background:var(--white);min-height:36px;padding:0 8px}
+footer{padding:20px 24px 38px;border-top:1px solid var(--ink);color:#5d5449;font-size:12px}
+.note{background:#e4d9c8;padding:12px 15px;margin-bottom:20px;font-size:12px}
+#status{font:700 12px/1.4 'Courier New',monospace}
+@media(max-width:690px){header,main,footer{padding-inline:16px}header{padding-top:20px}.prompt{grid-template-columns:1fr;gap:10px}.record{padding:15px}.record h3{font-size:21px}.listen-link{white-space:normal}.flags{gap:10px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="kicker">An Album a Day / editorial listening research / issue 01</div>
+  <h1>Does it<br>actually fit?</h1>
+  <p>Here's what the recommender really picked. Listen to the music, then judge whether the album fits the request. Your ratings stay on this device until you export them.</p>
+  <div class="toolbar">
+    <span id="status" aria-live="polite">Loading actual recommendations…</span>
+    <button id="export" type="button" disabled>Export judgments .csv</button>
+    <small id="captured"></small>
+  </div>
+</header>
+<main>
+  <p class="note"><strong>The rules:</strong> 0 = wrong, 1 = weak fit, 2 = good fit, 3 = excellent fit. Do not guess from artwork or album titles alone. Open the music, listen, and leave uncertain results unrated. This is not a popularity contest.</p>
+  <div id="prompts"></div>
+</main>
+<footer>
+  <p>No login, analytics, remote saving, or model training occurs on this page. Only real captured candidates are shown. The CSV can be scored with <code>scripts/score_recommendations.py</code>.</p>
+  <a href="../">Back to Album-a-Day</a>
+</footer>
+<script type="module">
+const KEY='albumaday.listeninglab.v1';
+const root=document.querySelector('#prompts');
+const count=document.querySelector('#status');
+const exportButton=document.querySelector('#export');
+const captured=document.querySelector('#captured');
+const stored=(()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}})();
+let items=[];
+function node(type,cls,text){
+ const el=document.createElement(type);
+ if(cls)el.className=cls;
+ if(text!==undefined)el.textContent=String(text);
+ return el;
+}
+function make(label,tag,cls){
+ const e=node(tag||'div',cls||'',label);
+ return e;
+}
+function save(){
+ try{localStorage.setItem(KEY,JSON.stringify(stored))}catch{}
+ updateProgress();
+}
+function updateProgress(){
+ const rated=items.filter(item=>stored[item.key]?.relevance!==undefined&&stored[item.key]?.relevance!=='').length;
+ count.textContent=String(rated)+' / '+String(items.length)+' judged';
+ exportButton.disabled=rated===0;
+}
+function keyFor(query,candidate){
+ return JSON.stringify([query.id,String(candidate.id||candidate.artist+'::'+candidate.title)]);
+}
+function selectFlag(holder,title,item,field){
+ const label=node('label');
+ label.append(node('span','',title));
+ const select=document.createElement('select');
+ for(const [value,name] of [['','Unknown'],['0','No'],['1','Yes']]){
+  const option=document.createElement('option');option.value=value;option.textContent=name;select.append(option);
+ }
+ select.value=String(stored[item.key]?.[field]??'');
+ select.addEventListener('change',()=>{
+  stored[item.key]??={};
+  stored[item.key][field]=select.value;
+  save();
+ });
+ label.append(select);holder.append(label);
+}
+function renderAlbum(query,candidate){
+ const item={key:keyFor(query,candidate),query,candidate};
+ items.push(item);
+ const card=node('article','record');
+ const heading=node('div','record-head');
+ const names=node('div');
+ names.append(node('div','panel-number','Candidate '+candidate.rank));
+ names.append(node('h3','',candidate.title));
+ names.append(node('p','artist',candidate.artist));
+ const link=document.createElement('a');
+ link.className='listen-link';link.target='_blank';link.rel='noopener noreferrer';
+ link.href='https://open.spotify.com/search/'+encodeURIComponent(candidate.artist+' '+candidate.title);
+ link.textContent='Find on Spotify ↗';
+ heading.append(names,link);card.append(heading);
+ const tags=[...(candidate.genres||[])].slice(0,5);
+ if(tags.length)card.append(node('div','tags',tags.join(' / ')));
+ const fieldset=document.createElement('fieldset');
+ fieldset.append(node('legend','','How well does it match?'));
+ const grades=node('div','grade-options');
+ for(const [value,label] of [['','Unrated'],['0','0 / Miss'],['1','1 / Weak'],['2','2 / Good'],['3','3 / Excellent']]){
+  const wrap=node('label','grade');
+  const input=document.createElement('input');
+  input.type='radio';input.name='grade-'+items.length;input.value=value;
+  input.checked=String(stored[item.key]?.relevance??'')===value;
+  input.addEventListener('change',()=>{
+   stored[item.key]??={};
+   stored[item.key].relevance=value;
+   save();
+  });
+  wrap.append(input,node('span','',label));grades.append(wrap);
+ }
+ fieldset.append(grades);card.append(fieldset);
+ const flags=node('div','flags');
+ selectFlag(flags,'Excluded style?',item,'exclusion_violation');
+ selectFlag(flags,'Already seen?',item,'already_seen');
+ card.append(flags);return card;
+}
+function csvQuote(value){return '"'+String(value??'').replaceAll('"','""')+'"'}
+function exportCsv(){
+ const lines=[['query_id','rank','artist','album','relevance','exclusion_violation','already_seen']];
+ for(const item of items){
+  const row=stored[item.key];
+  if(!row||row.relevance===undefined||row.relevance==='')continue;
+  lines.push([item.query.id,item.candidate.rank,item.candidate.artist,item.candidate.title,
+   row.relevance,row.exclusion_violation??'',row.already_seen??'']);
+ }
+ const content=lines.map(row=>row.map(csvQuote).join(',')).join('\n')+'\n';
+ const url=URL.createObjectURL(new Blob([content],{type:'text/csv;charset=utf-8'}));
+ const link=document.createElement('a');link.href=url;
+ link.download='albumaday-listening-judgments-'+new Date().toISOString().slice(0,10)+'.csv';
+ link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+exportButton.addEventListener('click',exportCsv);
+async function start(){
+ try{
+  const response=await fetch('./production-top1-observed.json',{cache:'no-store'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const data=await response.json();
+  const rows=(data.results||[]).filter(row=>row.ok&&row.backend?.alternatives?.length);
+  if(!rows.length)throw Error('No captured top-ranked albums available.');
+  captured.textContent='Snapshot: '+new Date(data.captured_at).toLocaleString();
+  for(const query of rows){
+   const block=node('section','prompt');
+   const intro=node('div');
+   intro.append(node('div','prompt-id',query.id+' / '+(query.language||'listening request')));
+   intro.append(node('h2','',query.prompt));
+   intro.append(node('p','instruction','Rate the music against this exact request, not against your usual taste.'));
+   const candidates=node('div','candidates');
+   for(const candidate of query.backend.alternatives)if(candidate.artist&&candidate.title){
+    candidates.append(renderAlbum(query,candidate));
+   }
+   block.append(intro,candidates);root.append(block);
+  }
+  updateProgress();
+ }catch(error){
+  count.textContent='No data available';
+  root.append(node('p','note','Could not load live candidate observations: '+String(error.message||error)));
+ }
+}
+start();
+</script>
+</body>
+</html>
