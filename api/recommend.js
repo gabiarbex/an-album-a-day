@@ -12,7 +12,7 @@ import {
 } from './_embedding.js';
 import { loadVectorChunk } from './_vector-store.js';
 import { loadTasteProfile, tasteSimilarity } from './_taste-store.js';
-import { scoreCandidate, explanation } from './_ranking-core.js';
+import { scoreCandidate, explanation, genreConflict, isCompilation, diverseTopK } from './_ranking-core.js';
 
 const MAX_CANDIDATES = 96;
 
@@ -112,13 +112,22 @@ export default {
         };
       }).sort((a, b) => b.score - a.score);
 
-      const chosen = ranked[0];
-      const top = ranked.slice(0, 8);
+      // Explicit genre exclusions override embedding similarity whenever an
+      // eligible candidate exists; hidden genres are never assumed absent.
+      const avoided = Array.isArray(body.intent?.avoidGenres) ? body.intent.avoidGenres : [];
+      const genreSafe = avoided.length ? ranked.filter(row => !genreConflict(row.candidate, avoided)) : ranked;
+      const eligible = genreSafe.length ? genreSafe : ranked;
+      const chosen = eligible[0];
+      const top = diverseTopK(eligible, 5, (left, right) => {
+        const a = cached.get(String(left.candidate.id));
+        const b = cached.get(String(right.candidate.id));
+        return a && b ? cosine(a, b) : 0;
+      });
       const cacheHits = candidates.length - missing.length;
 
       return json({
         ok: true,
-        engine: 'hybrid-neural-reranker-v3',
+        engine: 'hybrid-neural-reranker-v4',
         model: EMBEDDING_MODEL,
         dimensions: EMBEDDING_DIMENSIONS,
         albumId: chosen.candidate.id,
@@ -134,9 +143,12 @@ export default {
           taste: Number((chosen.taste?.score || 0).toFixed(6)),
           tasteConfidence: Number((chosen.taste?.confidence || 0).toFixed(6)),
           tasteAdjacency: Number((chosen.candidate.tasteAdjacency || 0).toFixed(6)),
+          consideredCompilations: candidates.filter(isCompilation).length,
+          chosenCompilation: isCompilation(chosen.candidate),
+          excludedGenreMatches: ranked.length - genreSafe.length,
         },
         reason: explanation(chosen, body),
-        alternatives: top.slice(0, 5).map(row => ({
+        alternatives: top.map(row => ({
           id: row.candidate.id,
           score: Number(row.score.toFixed(6)),
           neural: Number(row.neural.toFixed(6)),
