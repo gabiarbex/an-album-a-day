@@ -98,6 +98,7 @@ function desiredListeningGoal(value){
  const cues=[
   /\b(?:but|however|mas|porem)\s+(?:(?:i|eu)\s+)?(?:want|need|would like|prefer|quero|preciso|queria|prefiro)\b/g,
   /\b(?:and|e)\s+(?:(?:i|eu)\s+)?(?:want|need|would like|prefer|quero|preciso|queria|prefiro)\b/g,
+  /(?:^|[,;.!?]\s*)(?:(?:i|eu)\s+)?(?:want|need|would like|prefer|quero|preciso|queria|prefiro)\b/g,
   /\b(?:give me|play me|play|find me|looking for|me de|coloca|bota|poe)\b/g
  ];
  const found=[];
