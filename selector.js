@@ -1361,6 +1361,34 @@ async function rankWithBackend(pool,seed,daily){
   }catch(e){console.info('Candidate retrieval fallback',e)}
  }
 
+ // Emotional correction is a distinct retrieval objective. A listener who
+ // feels sad but asks for a lift should not receive gloomy title matches just
+ // because a general-purpose embedding is similar. These are tentative style
+ // priors; backend mood evidence still decides the final rank.
+ const goalAnchors={
+  hopeful:['sunshine pop','gospel','disco','funk','reggae','afrobeat','soul','dance pop'],
+  calm:['ambient','downtempo','chillout','new age','lounge'],
+  dreamy:['dream pop','ethereal wave','shoegaze','ambient pop','chillwave'],
+  energetic:['disco','dance pop','funk','house','dance-punk'],
+  warm:['soul','soft rock','bossa nova','quiet storm']
+ };
+ const goalMood=intent.goalShift&&!intent.genres?.length
+  ? Object.keys(intent.moods||{}).find(m=>goalAnchors[m])
+  : null;
+ if(goalMood){
+  const cues=goalAnchors[goalMood];
+  const samples=sampleCandidates(pool,seed+'|goal-style',Math.min(10000,pool.length),daily)
+   .map(a=>{
+    const styles=[...(a.genres||[]),...(a.tags||[])].map(v=>String(typeof v==='string'?v:v?.name||''));
+    const evidence=cues.filter(g=>styles.some(style=>globalThis.AlbumIntent?.styleMatches?.(style,g))).length;
+    return {a,evidence};
+   })
+   .filter(row=>row.evidence>0)
+   .sort((a,b)=>b.evidence-a.evidence||score(b.a,intent)-score(a.a,intent))
+   .slice(0,28);
+  for(const row of samples)add(row.a,0,'controls');
+ }
+
  // Explicit controls and mood intent always get a substantial share.
  const local=sampleCandidates(pool,seed+'|backend-controls',Math.min(2600,pool.length),daily)
   .map(a=>({a,v:score(a,intent)}))
