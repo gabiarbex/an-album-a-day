@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-11-07T14:52:46.334Z",
+  "captured_at": "2026-11-07T14:55:32.775Z",
   "site": "https://gabiarbex.github.io/an-album-a-day/",
   "note": "Observed top-1 outputs only; no relevance judgments or NDCG are inferred.",
   "results": [
@@ -39,7 +39,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 8,
+          "consideredCompilations": 10,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -94,6 +94,28 @@
           },
           {
             "rank": 3,
+            "id": "871eb1a59d148b7b",
+            "artist": "Sun Ra",
+            "title": "Singles (The Definitive 45’s Collection 1952–1991)",
+            "genres": [
+              "avant-garde jazz",
+              "jazz",
+              "experimental big band",
+              "free jazz",
+              "vocal jazz"
+            ],
+            "tags": [
+              "avant-garde jazz",
+              "jazz",
+              "experimental big band",
+              "free jazz",
+              "vocal jazz"
+            ],
+            "moods": [],
+            "score": 0.888041
+          },
+          {
+            "rank": 4,
             "id": "13fef24e073a5c99",
             "artist": "Hot Jazz Band",
             "title": "Celebration With Louis Armstrong",
@@ -113,7 +135,7 @@
             "score": 0.889032
           },
           {
-            "rank": 4,
+            "rank": 5,
             "id": "5e175e24de9c2182",
             "artist": "Miles Davis",
             "title": "Get Up With It",
@@ -135,30 +157,6 @@
             ],
             "moods": [],
             "score": 0.886693
-          },
-          {
-            "rank": 5,
-            "id": "25692d2fbbfeb807",
-            "artist": "Perpetual Groove",
-            "title": "All This Everything",
-            "genres": [
-              "jazz rock",
-              "pop",
-              "post-rock",
-              "psychedelic rock",
-              "rock",
-              "soft rock"
-            ],
-            "tags": [
-              "jazz rock",
-              "pop",
-              "post-rock",
-              "psychedelic rock",
-              "rock",
-              "soft rock"
-            ],
-            "moods": [],
-            "score": 0.880712
           }
         ]
       },
@@ -173,15 +171,15 @@
       "avoidGenres": [],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "Stay Moist",
-      "detail": "TODAY'S RECORD\nStay Moist\n\nMellow Blush · 2017",
+      "title": "Shine",
+      "detail": "TODAY'S RECORD\nShine\n\nClara Hill · 2020",
       "reason": "bossa nova.",
       "signals": "BOSSA NOVA",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "83971f1568e2292c",
-        "catalogGenres": "bossa nova | easy listening | electronic | folk | indietronica | instrumental",
-        "catalogTags": "bossa nova | easy listening | electronic | folk | fusion | indietronica | instrumental | instrumentall | j-pop | jazz",
+        "albumId": "4dc14d80dcbfa930",
+        "catalogGenres": "bossa nova | electronic | folk | indie pop | jazz | pop",
+        "catalogTags": "bossa nova | electronic | folk | indie pop | jazz | pop | psychedelic | smooth jazz | soul",
         "catalogMoods": "",
         "selectionMode": "backend"
       },
@@ -190,9 +188,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v4",
         "diagnostics": {
-          "neural": 0.669962,
+          "neural": 0.653996,
           "local": 1,
-          "lexical": 0.8263785,
+          "lexical": 0.8691415,
           "candidates": 96,
           "vectorCacheHits": 96,
           "liveEmbeddings": 0,
@@ -200,38 +198,37 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 15,
+          "consideredCompilations": 17,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "83971f1568e2292c",
-            "artist": "Mellow Blush",
-            "title": "Stay Moist",
+            "id": "4dc14d80dcbfa930",
+            "artist": "Clara Hill",
+            "title": "Shine",
             "genres": [
               "bossa nova",
-              "easy listening",
               "electronic",
               "folk",
-              "indietronica",
-              "instrumental"
+              "indie pop",
+              "jazz",
+              "pop"
             ],
             "tags": [
               "bossa nova",
-              "easy listening",
               "electronic",
               "folk",
-              "fusion",
-              "indietronica",
-              "instrumental",
-              "instrumentall",
-              "j-pop",
-              "jazz"
+              "indie pop",
+              "jazz",
+              "pop",
+              "psychedelic",
+              "smooth jazz",
+              "soul"
             ],
             "moods": [],
-            "score": 0.912629
+            "score": 0.908138
           },
           {
             "rank": 2,
@@ -260,33 +257,6 @@
           },
           {
             "rank": 3,
-            "id": "4dc14d80dcbfa930",
-            "artist": "Clara Hill",
-            "title": "Shine",
-            "genres": [
-              "bossa nova",
-              "electronic",
-              "folk",
-              "indie pop",
-              "jazz",
-              "pop"
-            ],
-            "tags": [
-              "bossa nova",
-              "electronic",
-              "folk",
-              "indie pop",
-              "jazz",
-              "pop",
-              "psychedelic",
-              "smooth jazz",
-              "soul"
-            ],
-            "moods": [],
-            "score": 0.908138
-          },
-          {
-            "rank": 4,
             "id": "3146c82d767f4af4",
             "artist": "Sarah Vaughan",
             "title": "The Definitive Collection",
@@ -308,7 +278,7 @@
             "score": 0.908109
           },
           {
-            "rank": 5,
+            "rank": 4,
             "id": "f32bd22508946547",
             "artist": "ClascyJitto",
             "title": "KIPIDON MUSIC SAMPLER",
@@ -328,6 +298,28 @@
             ],
             "moods": [],
             "score": 0.893257
+          },
+          {
+            "rank": 5,
+            "id": "b69529a40bf92387",
+            "artist": "Bossa Nostra",
+            "title": "Solaria",
+            "genres": [
+              "ambient",
+              "bossa nova",
+              "jazz",
+              "latin",
+              "soul jazz"
+            ],
+            "tags": [
+              "ambient",
+              "bossa nova",
+              "jazz",
+              "latin",
+              "soul jazz"
+            ],
+            "moods": [],
+            "score": 0.89724
           }
         ]
       },
@@ -365,13 +357,13 @@
           "local": 1,
           "lexical": 0.86259,
           "candidates": 96,
-          "vectorCacheHits": 95,
-          "liveEmbeddings": 1,
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
           "queryVectorSource": "retrieval-reuse",
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 10,
+          "consideredCompilations": 11,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -450,6 +442,28 @@
           },
           {
             "rank": 4,
+            "id": "871eb1a59d148b7b",
+            "artist": "Sun Ra",
+            "title": "Singles (The Definitive 45’s Collection 1952–1991)",
+            "genres": [
+              "avant-garde jazz",
+              "jazz",
+              "experimental big band",
+              "free jazz",
+              "vocal jazz"
+            ],
+            "tags": [
+              "avant-garde jazz",
+              "jazz",
+              "experimental big band",
+              "free jazz",
+              "vocal jazz"
+            ],
+            "moods": [],
+            "score": 0.883883
+          },
+          {
+            "rank": 5,
             "id": "e17f7d428c731baf",
             "artist": "Chicago",
             "title": "Best",
@@ -468,26 +482,6 @@
             ],
             "moods": [],
             "score": 0.891856
-          },
-          {
-            "rank": 5,
-            "id": "ece108c99ae4409a",
-            "artist": "Somewhere off Jazz Street",
-            "title": "A Quiet Light",
-            "genres": [
-              "dark jazz",
-              "electronic",
-              "instrumental",
-              "jazz"
-            ],
-            "tags": [
-              "dark jazz",
-              "electronic",
-              "instrumental",
-              "jazz"
-            ],
-            "moods": [],
-            "score": 0.882362
           }
         ]
       },
@@ -529,7 +523,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 1,
+          "consideredCompilations": 2,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -697,7 +691,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 5,
+          "consideredCompilations": 7,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -863,9 +857,9 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 5,
+          "consideredCompilations": 6,
           "chosenCompilation": false,
-          "excludedGenreMatches": 3
+          "excludedGenreMatches": 4
         },
         "alternatives": [
           {
@@ -1001,16 +995,16 @@
       ],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "Gold",
-      "detail": "TODAY'S RECORD\nGold\n\nCleo Sol · 2023",
+      "title": "Full of Fire",
+      "detail": "TODAY'S RECORD\nFull of Fire\n\nAl Green · 1976\n\nWARM",
       "reason": "soul.",
       "signals": "SOUL",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "827058d6b4bbe9ae",
-        "catalogGenres": "neo soul | r&b | soul",
-        "catalogTags": "acoustic | human on cover | neo soul | r&b | soul | uk | uk neo soul | uk r&b | uk soul | united kingdom",
-        "catalogMoods": "",
+        "albumId": "92851ca6eb3f818f",
+        "catalogGenres": "soul | r&b | smooth soul",
+        "catalogTags": "soul | memphis soul | pop-soul | r&b | smooth soul",
+        "catalogMoods": "warm",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
@@ -1018,9 +1012,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v4",
         "diagnostics": {
-          "neural": 0.517669,
+          "neural": 0.522305,
           "local": 1,
-          "lexical": 0.9966414254167901,
+          "lexical": 0.9976417799452761,
           "candidates": 96,
           "vectorCacheHits": 96,
           "liveEmbeddings": 0,
@@ -1028,65 +1022,33 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 17,
+          "consideredCompilations": 18,
           "chosenCompilation": false,
           "excludedGenreMatches": 2
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "827058d6b4bbe9ae",
-            "artist": "Cleo Sol",
-            "title": "Gold",
+            "id": "92851ca6eb3f818f",
+            "artist": "Al Green",
+            "title": "Full of Fire",
             "genres": [
-              "neo soul",
+              "soul",
               "r&b",
-              "soul"
+              "smooth soul"
             ],
             "tags": [
-              "acoustic",
-              "human on cover",
-              "neo soul",
-              "r&b",
               "soul",
-              "uk",
-              "uk neo soul",
-              "uk r&b",
-              "uk soul",
-              "united kingdom"
+              "memphis soul",
+              "pop-soul",
+              "r&b",
+              "smooth soul"
             ],
             "moods": [],
-            "score": 0.879918
+            "score": 0.870934
           },
           {
             "rank": 2,
-            "id": "2d2ca97d54c4b5ac",
-            "artist": "Norman and Joey Jay",
-            "title": "Good Times 3",
-            "genres": [
-              "dancehall",
-              "disco",
-              "downtempo",
-              "electronic",
-              "funk",
-              "house"
-            ],
-            "tags": [
-              "dancehall",
-              "disco",
-              "downtempo",
-              "electronic",
-              "funk",
-              "house",
-              "reggae",
-              "roots reggae",
-              "soul"
-            ],
-            "moods": [],
-            "score": 0.85666
-          },
-          {
-            "rank": 3,
             "id": "90cb636b5f67aa11",
             "artist": "Jackie Wilson",
             "title": "The Jackie Wilson Story",
@@ -1107,52 +1069,72 @@
             "score": 0.867222
           },
           {
-            "rank": 4,
-            "id": "92851ca6eb3f818f",
-            "artist": "Al Green",
-            "title": "Full of Fire",
+            "rank": 3,
+            "id": "a0ad6a6defd29c57",
+            "artist": "The Delfonics",
+            "title": "The Delfonics",
             "genres": [
-              "soul",
-              "r&b",
-              "smooth soul"
+              "philly soul",
+              "pop soul",
+              "smooth soul",
+              "soul"
             ],
             "tags": [
-              "soul",
-              "memphis soul",
-              "pop-soul",
-              "r&b",
-              "smooth soul"
+              "philly soul",
+              "pop soul",
+              "smooth soul",
+              "soul"
             ],
             "moods": [],
-            "score": 0.870934
+            "score": 0.861797
           },
           {
-            "rank": 5,
-            "id": "f8d9b345c2b5f30c",
-            "artist": "Kali Uchis",
-            "title": "Red Moon In Venus",
+            "rank": 4,
+            "id": "ba94dcd068b7a65f",
+            "artist": "Otis Redding",
+            "title": "Dock of the Bay Sessions",
             "genres": [
-              "funk",
-              "contemporary r&b",
-              "neo soul",
-              "alternative r&b",
-              "electronic",
-              "latin"
+              "soul",
+              "blues",
+              "deep soul",
+              "pop",
+              "r&b"
             ],
             "tags": [
-              "funk",
-              "contemporary r&b",
-              "neo soul",
-              "alternative r&b",
-              "electronic",
-              "latin",
+              "soul",
+              "blues",
+              "deep soul",
               "pop",
-              "psychedelic",
-              "psychedelic soul",
               "r&b"
             ],
             "moods": [],
-            "score": 0.866869
+            "score": 0.867432
+          },
+          {
+            "rank": 5,
+            "id": "72eec4e5da50000b",
+            "artist": "Sly and the Family Stone",
+            "title": "Stand!",
+            "genres": [
+              "funk",
+              "psychedelic soul",
+              "psychedelic",
+              "psychedelic rock",
+              "rock",
+              "soul"
+            ],
+            "tags": [
+              "funk",
+              "psychedelic soul",
+              "psychedelic",
+              "psychedelic rock",
+              "am pop",
+              "rock",
+              "soul",
+              "soul and reggae"
+            ],
+            "moods": [],
+            "score": 0.85683
           }
         ]
       },
@@ -1171,16 +1153,16 @@
         "dreamy"
       ],
       "avoidMoods": [],
-      "title": "10 CD Collection, 21 Original Albums: Milestones Of A Jazz Legend",
-      "detail": "TODAY'S RECORD\n10 CD Collection, 21 Original Albums: Milestones Of A Jazz Legend\n\nMiles Davis · 2016",
+      "title": "Floating Into the Night",
+      "detail": "TODAY'S RECORD\nFloating Into the Night\n\nJulee Cruise · 1989\n\nDREAMY",
       "reason": "jazz.",
       "signals": "JAZZ",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "0879bf0e605096c5",
-        "catalogGenres": "big band | cool jazz | hard bop | jazz | post-bop | bebop",
-        "catalogTags": "big band | cool jazz | hard bop | jazz | post-bop | bebop | modal jazz",
-        "catalogMoods": "",
+        "albumId": "573e128f5b4be670",
+        "catalogGenres": "dream pop | ethereal wave | ambient pop | dark jazz | jazz pop | lounge",
+        "catalogTags": "dream pop | ethereal wave | ambient pop | dark jazz | jazz pop | lounge | sophisti-pop",
+        "catalogMoods": "dreamy",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
@@ -1188,9 +1170,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v4",
         "diagnostics": {
-          "neural": 0.594996,
+          "neural": 0.52888,
           "local": 1,
-          "lexical": 0.878844,
+          "lexical": 0.8482490657319088,
           "candidates": 96,
           "vectorCacheHits": 96,
           "liveEmbeddings": 0,
@@ -1200,36 +1182,11 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 8,
           "chosenCompilation": false,
-          "excludedGenreMatches": 3
+          "excludedGenreMatches": 2
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "0879bf0e605096c5",
-            "artist": "Miles Davis",
-            "title": "10 CD Collection, 21 Original Albums: Milestones Of A Jazz Legend",
-            "genres": [
-              "big band",
-              "cool jazz",
-              "hard bop",
-              "jazz",
-              "post-bop",
-              "bebop"
-            ],
-            "tags": [
-              "big band",
-              "cool jazz",
-              "hard bop",
-              "jazz",
-              "post-bop",
-              "bebop",
-              "modal jazz"
-            ],
-            "moods": [],
-            "score": 0.890559
-          },
-          {
-            "rank": 2,
             "id": "573e128f5b4be670",
             "artist": "Julee Cruise",
             "title": "Floating Into the Night",
@@ -1251,7 +1208,35 @@
               "sophisti-pop"
             ],
             "moods": [],
-            "score": 0.874845
+            "score": 0.954845
+          },
+          {
+            "rank": 2,
+            "id": "7bccf07d78ef352a",
+            "artist": "Mabisyo",
+            "title": "The Tears Of The Sea",
+            "genres": [
+              "ambient",
+              "barber beats",
+              "chillwave",
+              "downtempo",
+              "drum and bass",
+              "electronic"
+            ],
+            "tags": [
+              "ambient",
+              "anime",
+              "barber beats",
+              "chillwave",
+              "downtempo",
+              "drum and bass",
+              "electronic",
+              "experimental",
+              "jazzwave",
+              "lounge"
+            ],
+            "moods": [],
+            "score": 0.913887
           },
           {
             "rank": 3,
@@ -1276,41 +1261,46 @@
           },
           {
             "rank": 4,
-            "id": "6199eb0dec7ddfa9",
-            "artist": "Santana & McLaughlin",
-            "title": "Invitation to Illumination: Live at Montreux 2011",
+            "id": "8916081a1c8ecc40",
+            "artist": "Miles Davis",
+            "title": "In a Silent Way",
             "genres": [
               "jazz",
-              "jazz rock",
-              "rock"
+              "avant-garde jazz",
+              "jazz fusion",
+              "modal jazz",
+              "post-bop"
             ],
             "tags": [
               "jazz",
-              "jazz rock",
-              "rock"
+              "avant-garde jazz",
+              "jazz fusion",
+              "modal jazz",
+              "post bop",
+              "fusion",
+              "modal",
+              "post-bop"
             ],
             "moods": [],
-            "score": 0.876906
+            "score": 0.886685
           },
           {
             "rank": 5,
-            "id": "13fef24e073a5c99",
-            "artist": "Hot Jazz Band",
-            "title": "Celebration With Louis Armstrong",
+            "id": "b386894c3ab38e88",
+            "artist": "SBB",
+            "title": "Follow My Dream",
             "genres": [
-              "dixieland",
               "jazz",
-              "smooth jazz",
-              "swing"
+              "jazz rock",
+              "rock"
             ],
             "tags": [
-              "dixieland",
               "jazz",
-              "smooth jazz",
-              "swing"
+              "jazz rock",
+              "rock"
             ],
             "moods": [],
-            "score": 0.882409
+            "score": 0.882218
           }
         ]
       },
