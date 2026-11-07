@@ -117,6 +117,7 @@ export function requestedMoodFit(candidate, body) {
   // High-precision style hints support retrieval, but are not confirmed moods.
   const styleHints = {
     dreamy:['dream pop','ethereal wave','shoegaze','ambient pop','chillwave','hypnagogic pop'],
+    calm:['ambient','downtempo','chillout','new age','minimal ambient','lounge'],
     reflective:['minimal ambient','ambient jazz','slowcore'],
     energetic:['dance-punk','dance pop','hard dance','high energy'],
     dark:['dark ambient','darkwave','gothic rock']
@@ -298,7 +299,7 @@ export function explanation(row, body) {
   if(mood)return `The catalog includes ${mood} among its mood tags.`;
   if(moodFit.suggestive?.length){
     const matchingStyles=cleanArray(candidate.genres,12).filter(g=>
-      /dream pop|ethereal wave|shoegaze|ambient pop|chillwave|hypnagogic pop|minimal ambient|slowcore|dark ambient|darkwave|gothic rock|dance.punk|dance pop/i.test(g)
+      /dream pop|ethereal wave|shoegaze|ambient pop|chillwave|hypnagogic pop|downtempo|chillout|new age|lounge|ambient|minimal ambient|slowcore|dark ambient|darkwave|gothic rock|dance.punk|dance pop/i.test(g)
     );
     const style=matchingStyles[0]||'its listed genres';
     return `${style} suggests ${moodFit.suggestive[0]} music, but the mood is not independently verified.`;
