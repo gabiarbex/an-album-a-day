@@ -13,6 +13,11 @@ on:
       - 'scripts/train-student.mjs'
       - 'tests/student-ranker.test.mjs'
       - 'scripts/evaluate-student-human.mjs'
+      - 'scripts/select-active-review.mjs'
+      - 'tests/active-review.test.mjs'
+      - 'scripts/score-teacher-onnx.mjs'
+      - 'benchmarks/review.html'
+      - 'benchmarks/ml-stress-prompts.json'
       - 'tests/student-human-eval.test.mjs'
       - 'tests/retrieval-fusion.test.cjs'
       - 'tests/listening-goal.test.cjs'
@@ -36,6 +41,11 @@ on:
       - 'scripts/train-student.mjs'
       - 'tests/student-ranker.test.mjs'
       - 'scripts/evaluate-student-human.mjs'
+      - 'scripts/select-active-review.mjs'
+      - 'tests/active-review.test.mjs'
+      - 'scripts/score-teacher-onnx.mjs'
+      - 'benchmarks/review.html'
+      - 'benchmarks/ml-stress-prompts.json'
       - 'tests/student-human-eval.test.mjs'
       - 'tests/retrieval-fusion.test.cjs'
       - 'tests/listening-goal.test.cjs'
@@ -65,10 +75,14 @@ jobs:
           node --check api/_student-ranker.js
           node --check scripts/train-student.mjs
           node --check scripts/evaluate-student-human.mjs
+          node --check scripts/select-active-review.mjs
+          node --check scripts/score-teacher-onnx.mjs
       - name: Validate shadow ML experiment without model downloads
         run: |
           python3 -m py_compile scripts/experiment-cross-encoder.py
           python3 scripts/experiment-cross-encoder.py --observations benchmarks/production-top1-observed.json
+          python3 scripts/experiment-cross-encoder.py --observations benchmarks/production-top1-observed.json --pairs-output /tmp/album-pairs.json
+          node scripts/score-teacher-onnx.mjs --pairs /tmp/album-pairs.json
       - name: Check exclusions and multilingual requests
         run: |
           node tests/retrieval-intent.test.cjs
@@ -79,3 +93,4 @@ jobs:
           node tests/taste-policy.test.mjs
           node tests/student-ranker.test.mjs
           node tests/student-human-eval.test.mjs
+          node tests/active-review.test.mjs
