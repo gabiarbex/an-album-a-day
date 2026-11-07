@@ -23,6 +23,25 @@ const genreLexicon=[
  'dream pop','post-punk','post punk','goth','darkwave','experimental','psychedelic','soundtrack','afrobeat'
 ];
 
+function genreMentions(text){
+ const genres=[],avoidGenres=[],spans=[];
+ const escape=value=>value.replace(/[.*+?^$()|[\]{}\\]/g,'\\function normalizeText(value){');
+ for(const genre of [...genreLexicon].sort((a,b)=>b.length-a.length)){
+  const re=new RegExp('\\b'+escape(genre)+'\\b','g');
+  for(const match of text.matchAll(re)){
+   const start=match.index,end=start+match[0].length;
+   if(spans.some(([a,b])=>start<b&&end>a))continue;
+   spans.push([start,end]);
+   const dest=termIsNegated(text,start)?avoidGenres:genres;
+   if(!dest.includes(genre))dest.push(genre);
+  }
+ }
+ // Preserve offsets and sentence boundaries when masking genre terms.
+ const chars=[...text];
+ for(const [start,end] of spans)for(let i=start;i<end;i++)chars[i]=' ';
+ return {genres,avoidGenres,moodText:chars.join('')};
+}
+
 function normalizeText(value){
  return String(value||'').toLocaleLowerCase().replace(/[’‘]/g,"'").normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 }
@@ -62,6 +81,7 @@ function scanTerms(text,terms){
 // empathetic matching behavior ("I feel dreamy and want jazz").
 function desiredListeningGoal(value){
  const t=normalizeText(value);
+ const moodText=genreMentions(t).moodText;
  const state=/\b(?:i(?:'m| am)|i feel|feeling|me sinto|estou|to me sentindo)\b/.exec(t);
  if(!state)return null;
  const cues=[
@@ -77,8 +97,8 @@ function desiredListeningGoal(value){
  }
  if(!found.length)return null;
  const start=Math.min(...found);
- const target=t.slice(start);
- const earlier=t.slice(0,start);
+ const target=moodText.slice(start);
+ const earlier=moodText.slice(0,start);
  const stateMoods={},desiredMoods={};
  for(const [m,terms] of Object.entries(feelingLexicon)){
   if(scanTerms(earlier,terms).positive)stateMoods[m]=1;
@@ -93,11 +113,12 @@ function desiredListeningGoal(value){
 
 function interpretFeeling(text){
  const t=normalizeText(text);
+ const parsedGenres=genreMentions(t);
  const goal=desiredListeningGoal(t);
  const moods={},avoidMoods={};
 
  for(const [m,terms] of Object.entries(feelingLexicon)){
-  const hits=scanTerms(t,terms);
+  const hits=scanTerms(parsedGenres.moodText,terms);
   if(hits.positive)moods[m]=Math.min(hits.positive,3);
   if(hits.negative)avoidMoods[m]=Math.min(hits.negative,3);
  }
@@ -115,19 +136,7 @@ function interpretFeeling(text){
   if(!avoidMoods.melancholic)moods.melancholic=Math.max(moods.melancholic||0,1);
  }
 
- const genres=[],avoidGenres=[];
- // Longest first prevents "rock" in "post-punk" style phrases from dominating.
- for(const g of [...genreLexicon].sort((a,b)=>b.length-a.length)){
-  let from=0,positive=false,negative=false;
-  while(true){
-   const i=t.indexOf(g,from);
-   if(i<0)break;
-   if(termIsNegated(t,i))negative=true;else positive=true;
-   from=i+g.length;
-  }
-  if(positive)genres.push(g);
-  if(negative)avoidGenres.push(g);
- }
+ const {genres,avoidGenres}=parsedGenres;
 
  const ranked=Object.entries(moods).sort((a,b)=>b[1]-a[1]);
  const avoided=Object.entries(avoidMoods).sort((a,b)=>b[1]-a[1]);
@@ -173,5 +182,5 @@ function retrievalText(value){
  return kept.join(' ').replace(/\s+/g,' ').trim();
 }
 
-root.AlbumIntent={interpretFeeling,desiredListeningGoal,retrievalText,termIsNegated,normalizeText,genreLexicon,feelingLexicon};
+root.AlbumIntent={interpretFeeling,desiredListeningGoal,retrievalText,termIsNegated,normalizeText,genreMentions,genreLexicon,feelingLexicon};
 })(globalThis);
