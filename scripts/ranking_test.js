@@ -19,6 +19,7 @@ const candidate = overrides => ({
   tags: [],
   moods: [],
   energy: null,
+  energySource: 'audio',
   energyConfidence: 1,
   duration: 40,
   ...overrides,
