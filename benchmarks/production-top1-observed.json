@@ -1,6 +1,7 @@
 {
-  "captured_at": "2026-11-07T17:38:46.775Z",
+  "captured_at": "2026-11-07T17:43:05.442Z",
   "site": "https://gabiarbex.github.io/an-album-a-day/",
+  "seed_policy": "stable per prompt albumaday-benchmark-fixed-v1 ID",
   "note": "Observed top-one and up-to-five backend alternatives; no listening relevance judgments are inferred.",
   "results": [
     {
@@ -241,7 +242,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 3,
+          "consideredCompilations": 4,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -322,47 +323,50 @@
           },
           {
             "rank": 4,
-            "id": "80ae64705c7d3e43",
-            "artist": "The BNB",
-            "title": "Bossa Down Abbey Road",
+            "id": "b69529a40bf92387",
+            "artist": "Bossa Nostra",
+            "title": "Solaria",
             "genres": [
+              "ambient",
               "bossa nova",
-              "easy listening",
               "jazz",
-              "pop"
+              "latin",
+              "soul jazz"
             ],
             "tags": [
+              "ambient",
               "bossa nova",
-              "easy listening",
               "jazz",
-              "pop"
+              "latin",
+              "soul jazz"
             ],
             "moods": [],
-            "score": 0.897564
+            "score": 0.89724
           },
           {
             "rank": 5,
-            "id": "b94edb2036174965",
-            "artist": "Fernanda Cunha",
-            "title": "Coração do Brasil",
+            "id": "3dc8ef36e47c6aee",
+            "artist": "Antônio Carlos Jobim",
+            "title": "Wave",
             "genres": [
               "bossa nova",
-              "mpb",
-              "samba"
+              "instrumental",
+              "jazz"
             ],
             "tags": [
               "bossa nova",
-              "bossa-nova",
-              "brasil",
-              "brazil",
-              "brazilian music",
-              "coração do brasil",
-              "fernanda cunha",
-              "mpb",
-              "samba"
+              "instrumental",
+              "jazz",
+              "acoustic",
+              "beach",
+              "calm",
+              "ethereal",
+              "lush",
+              "male vocalist",
+              "meditative"
             ],
             "moods": [],
-            "score": 0.886514
+            "score": 0.898037
           }
         ]
       },
@@ -431,7 +435,7 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 1
+          "excludedGenreMatches": 0
         },
         "alternatives": [
           {
@@ -508,6 +512,28 @@
           },
           {
             "rank": 4,
+            "id": "871eb1a59d148b7b",
+            "artist": "Sun Ra",
+            "title": "Singles (The Definitive 45’s Collection 1952–1991)",
+            "genres": [
+              "avant-garde jazz",
+              "jazz",
+              "experimental big band",
+              "free jazz",
+              "vocal jazz"
+            ],
+            "tags": [
+              "avant-garde jazz",
+              "jazz",
+              "experimental big band",
+              "free jazz",
+              "vocal jazz"
+            ],
+            "moods": [],
+            "score": 0.883883
+          },
+          {
+            "rank": 5,
             "id": "e17f7d428c731baf",
             "artist": "Chicago",
             "title": "Best",
@@ -526,26 +552,6 @@
             ],
             "moods": [],
             "score": 0.891856
-          },
-          {
-            "rank": 5,
-            "id": "ece108c99ae4409a",
-            "artist": "Somewhere off Jazz Street",
-            "title": "A Quiet Light",
-            "genres": [
-              "dark jazz",
-              "electronic",
-              "instrumental",
-              "jazz"
-            ],
-            "tags": [
-              "dark jazz",
-              "electronic",
-              "instrumental",
-              "jazz"
-            ],
-            "moods": [],
-            "score": 0.882362
           }
         ]
       },
@@ -608,7 +614,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 2,
+          "consideredCompilations": 1,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -710,9 +716,9 @@
           },
           {
             "rank": 5,
-            "id": "1ab8702982fc71d8",
-            "artist": "Sleeping States",
-            "title": "There the Open Spaces",
+            "id": "392eb76465ae9c78",
+            "artist": "Astrobrite",
+            "title": "All the Stars Will Fall",
             "genres": [
               "rock",
               "shoegaze"
@@ -722,7 +728,7 @@
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.672313
+            "score": 0.661389
           }
         ]
       },
@@ -821,27 +827,27 @@
           },
           {
             "rank": 2,
-            "id": "728100a4104bdf13",
-            "artist": "Bryan’s Magic Tears",
-            "title": "Bryan’s Magic Tears",
+            "id": "f51cb3b0903b99a0",
+            "artist": "sadness, abriction",
+            "title": "that lasts forever",
             "genres": [
-              "grunge",
-              "rock",
+              "blackgaze",
+              "emo",
               "shoegaze"
             ],
             "tags": [
-              "grunge",
-              "rock",
+              "blackgaze",
+              "emo",
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.683648
+            "score": 0.67554
           },
           {
             "rank": 3,
-            "id": "1ab8702982fc71d8",
-            "artist": "Sleeping States",
-            "title": "There the Open Spaces",
+            "id": "e1acfa2b3fdc46db",
+            "artist": "Ester Drang",
+            "title": "That Is When He Turns Us Golden",
             "genres": [
               "rock",
               "shoegaze"
@@ -851,10 +857,38 @@
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.669754
+            "score": 0.663039
           },
           {
             "rank": 4,
+            "id": "3c5807fa88215783",
+            "artist": "Xiu Xiu",
+            "title": "La Forêt",
+            "genres": [
+              "alternative rock",
+              "electronic",
+              "experimental",
+              "rock",
+              "ambient pop",
+              "art pop"
+            ],
+            "tags": [
+              "alternative rock",
+              "electronic",
+              "experimental",
+              "rock",
+              "ambient pop",
+              "art pop",
+              "art rock",
+              "avant-folk",
+              "dark wave",
+              "experimental rock"
+            ],
+            "moods": [],
+            "score": 0.666535
+          },
+          {
+            "rank": 5,
             "id": "0acaaae12a91be7a",
             "artist": "heavenward",
             "title": "Pyrophonics",
@@ -870,22 +904,6 @@
             ],
             "moods": [],
             "score": 0.679444
-          },
-          {
-            "rank": 5,
-            "id": "e1acfa2b3fdc46db",
-            "artist": "Ester Drang",
-            "title": "That Is When He Turns Us Golden",
-            "genres": [
-              "rock",
-              "shoegaze"
-            ],
-            "tags": [
-              "rock",
-              "shoegaze"
-            ],
-            "moods": [],
-            "score": 0.663039
           }
         ]
       },
@@ -952,7 +970,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 5,
+          "consideredCompilations": 3,
           "chosenCompilation": false,
           "excludedGenreMatches": 3
         },
@@ -1140,7 +1158,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 6,
+          "consideredCompilations": 5,
           "chosenCompilation": false,
           "excludedGenreMatches": 2
         },
@@ -1167,20 +1185,57 @@
           },
           {
             "rank": 2,
-            "id": "4c810fdeae568852",
-            "artist": "Nina Simone",
-            "title": "The Diva Series",
+            "id": "9e2ee348e8700f2a",
+            "artist": "Smokey Robinson",
+            "title": "Motown Legends: Cruisin' / Being With You",
             "genres": [
+              "motown",
+              "quiet storm",
+              "r&b",
+              "smooth soul",
               "soul"
             ],
             "tags": [
-              "soul"
+              "motown",
+              "quiet storm",
+              "r&b",
+              "smooth soul",
+              "soul",
+              "urban"
             ],
             "moods": [],
-            "score": 0.859206
+            "score": 0.869594
           },
           {
             "rank": 3,
+            "id": "5754be3800ab3ea6",
+            "artist": "Kali Uchis",
+            "title": "Isolation",
+            "genres": [
+              "contemporary r&b",
+              "neo soul",
+              "bossa nova",
+              "hip hop",
+              "latin",
+              "psychedelic soul"
+            ],
+            "tags": [
+              "contemporary r&b",
+              "neo soul",
+              "bossa nova",
+              "hip hop",
+              "latin",
+              "psychedelic soul",
+              "reggaeton",
+              "sophisti-pop",
+              "synth funk",
+              "trip hop"
+            ],
+            "moods": [],
+            "score": 0.860889
+          },
+          {
+            "rank": 4,
             "id": "90cb636b5f67aa11",
             "artist": "Jackie Wilson",
             "title": "The Jackie Wilson Story",
@@ -1201,7 +1256,7 @@
             "score": 0.867222
           },
           {
-            "rank": 4,
+            "rank": 5,
             "id": "a0ad6a6defd29c57",
             "artist": "The Delfonics",
             "title": "The Delfonics",
@@ -1219,26 +1274,6 @@
             ],
             "moods": [],
             "score": 0.861797
-          },
-          {
-            "rank": 5,
-            "id": "549cf6f72c341f84",
-            "artist": "須藤薫",
-            "title": "PLANETARIUM",
-            "genres": [
-              "city pop",
-              "funk",
-              "pop",
-              "soul"
-            ],
-            "tags": [
-              "city pop",
-              "funk",
-              "pop",
-              "soul"
-            ],
-            "moods": [],
-            "score": 0.854926
           }
         ]
       },
@@ -1281,16 +1316,16 @@
           "/an-album-a-day/selector.js?v=goal-003"
         ]
       },
-      "title": "Blues 'N Ballads",
-      "detail": "TODAY'S RECORD\nBlues 'N Ballads\n\nThe Jazz Networks · 1994",
-      "reason": "Its catalog tags include jazz.",
-      "signals": "JAZZ\nSMOOTH JAZZ\nBLUES",
+      "title": "Floating Into the Night",
+      "detail": "TODAY'S RECORD\nFloating Into the Night\n\nJulee Cruise · 1989\n\nDREAMY",
+      "reason": "Catalogued as jazz; its style also suggests dreamy, though that mood isn't independently verified.",
+      "signals": "DARK JAZZ\nJAZZ POP\nDREAM POP",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "ce78bac5b8a16463",
-        "catalogGenres": "blues | jazz | smooth jazz | swing",
-        "catalogTags": "blues | fusion | jazz | smooth jazz | swing",
-        "catalogMoods": "",
+        "albumId": "573e128f5b4be670",
+        "catalogGenres": "dream pop | ethereal wave | ambient pop | dark jazz | jazz pop | lounge",
+        "catalogTags": "dream pop | ethereal wave | ambient pop | dark jazz | jazz pop | lounge | sophisti-pop",
+        "catalogMoods": "dreamy",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
@@ -1298,9 +1333,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v5-rrf",
         "diagnostics": {
-          "neural": 0.611945,
+          "neural": 0.52888,
           "local": 1,
-          "lexical": 0.886123,
+          "lexical": 0.8482490657319088,
           "candidates": 96,
           "retrievalSelection": "weighted-rrf-v1",
           "vectorCacheHits": 96,
@@ -1311,11 +1346,64 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 4,
           "chosenCompilation": false,
-          "excludedGenreMatches": 3
+          "excludedGenreMatches": 4
         },
         "alternatives": [
           {
             "rank": 1,
+            "id": "573e128f5b4be670",
+            "artist": "Julee Cruise",
+            "title": "Floating Into the Night",
+            "genres": [
+              "dream pop",
+              "ethereal wave",
+              "ambient pop",
+              "dark jazz",
+              "jazz pop",
+              "lounge"
+            ],
+            "tags": [
+              "dream pop",
+              "ethereal wave",
+              "ambient pop",
+              "dark jazz",
+              "jazz pop",
+              "lounge",
+              "sophisti-pop"
+            ],
+            "moods": [],
+            "score": 1.054845
+          },
+          {
+            "rank": 2,
+            "id": "e701be0f9f2c9810",
+            "artist": "Air",
+            "title": "Moon Safari",
+            "genres": [
+              "downtempo",
+              "electronic",
+              "ambient",
+              "ambient pop",
+              "chillout",
+              "electronica"
+            ],
+            "tags": [
+              "downtempo",
+              "electronic",
+              "ambient",
+              "ambient pop",
+              "5+ wochen",
+              "chillout",
+              "electronica",
+              "electronica dance",
+              "english",
+              "future jazz"
+            ],
+            "moods": [],
+            "score": 0.963926
+          },
+          {
+            "rank": 3,
             "id": "ce78bac5b8a16463",
             "artist": "The Jazz Networks",
             "title": "Blues 'N Ballads",
@@ -1336,27 +1424,7 @@
             "score": 0.889853
           },
           {
-            "rank": 2,
-            "id": "505de2a3a10d9f1c",
-            "artist": "Sun Ra and His Astro Infinity Arkestra",
-            "title": "Continuation",
-            "genres": [
-              "avant-garde jazz",
-              "big band",
-              "free jazz",
-              "jazz"
-            ],
-            "tags": [
-              "avant-garde jazz",
-              "big band",
-              "free jazz",
-              "jazz"
-            ],
-            "moods": [],
-            "score": 0.871659
-          },
-          {
-            "rank": 3,
+            "rank": 4,
             "id": "13fef24e073a5c99",
             "artist": "Hot Jazz Band",
             "title": "Celebration With Louis Armstrong",
@@ -1376,7 +1444,7 @@
             "score": 0.882409
           },
           {
-            "rank": 4,
+            "rank": 5,
             "id": "5e175e24de9c2182",
             "artist": "Miles Davis",
             "title": "Get Up With It",
@@ -1398,26 +1466,6 @@
             ],
             "moods": [],
             "score": 0.881944
-          },
-          {
-            "rank": 5,
-            "id": "ece108c99ae4409a",
-            "artist": "Somewhere off Jazz Street",
-            "title": "A Quiet Light",
-            "genres": [
-              "dark jazz",
-              "electronic",
-              "instrumental",
-              "jazz"
-            ],
-            "tags": [
-              "dark jazz",
-              "electronic",
-              "instrumental",
-              "jazz"
-            ],
-            "moods": [],
-            "score": 0.878973
           }
         ]
       },
@@ -1452,16 +1500,16 @@
           "/an-album-a-day/selector.js?v=goal-003"
         ]
       },
-      "title": "Hit Vibes",
-      "detail": "TODAY'S RECORD\nHit Vibes\n\nSaint Pepsi · 2013\n\nENERGETIC",
+      "title": "Satisfied",
+      "detail": "TODAY'S RECORD\nSatisfied\n\nLinda & The Funky Boys · 2021",
       "reason": "Its sound may suit your note, but the catalog has no verified mood tags.",
-      "signals": "ELECTRONIC\nHOUSE\nVAPORWAVE",
+      "signals": "DISCO\nFUNK\nSOUL",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "3d4b2f850f89940b",
-        "catalogGenres": "electronic | house | vaporwave | disco | downtempo | funk",
-        "catalogTags": "electronic | house | vaporwave | disco | downtempo | funk | synth-pop | synthwave | funk / soul | future funk",
-        "catalogMoods": "energetic",
+        "albumId": "f8a51a115498337a",
+        "catalogGenres": "disco | funk | soul",
+        "catalogTags": "disco | funk | soul",
+        "catalogMoods": "",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
@@ -1469,9 +1517,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v5-rrf",
         "diagnostics": {
-          "neural": 0.43567,
+          "neural": 0.437821,
           "local": 0.5,
-          "lexical": 0.5,
+          "lexical": 0.8439825000000001,
           "candidates": 96,
           "retrievalSelection": "weighted-rrf-v1",
           "vectorCacheHits": 96,
@@ -1480,41 +1528,13 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 2,
+          "consideredCompilations": 4,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "3d4b2f850f89940b",
-            "artist": "Saint Pepsi",
-            "title": "Hit Vibes",
-            "genres": [
-              "electronic",
-              "house",
-              "vaporwave",
-              "disco",
-              "downtempo",
-              "funk"
-            ],
-            "tags": [
-              "electronic",
-              "house",
-              "vaporwave",
-              "disco",
-              "downtempo",
-              "funk",
-              "synth-pop",
-              "synthwave",
-              "funk / soul",
-              "future funk"
-            ],
-            "moods": [],
-            "score": 0.660518
-          },
-          {
-            "rank": 2,
             "id": "f8a51a115498337a",
             "artist": "Linda & The Funky Boys",
             "title": "Satisfied",
@@ -1532,7 +1552,7 @@
             "score": 0.659266
           },
           {
-            "rank": 3,
+            "rank": 2,
             "id": "aa8d0172165d316b",
             "artist": "SAULT",
             "title": "Untitled (Black Is)",
@@ -1558,7 +1578,7 @@
             "score": 0.653955
           },
           {
-            "rank": 4,
+            "rank": 3,
             "id": "ee563724cff3165e",
             "artist": "Talking Heads",
             "title": "Speaking in Tongues",
@@ -1586,31 +1606,58 @@
             "score": 0.65228
           },
           {
-            "rank": 5,
-            "id": "20132f03767fb896",
-            "artist": "大橋純子&美乃家セントラル・ステイション",
-            "title": "クリスタル・シティー",
+            "rank": 4,
+            "id": "d0c0fe028e80a74c",
+            "artist": "Danny Krivit",
+            "title": "Grass Roots: Danny Krivit",
             "genres": [
-              "city pop",
-              "pop",
-              "soul",
+              "deep house",
               "disco",
+              "electronic",
               "funk",
-              "j-pop"
+              "gospel",
+              "soul"
             ],
             "tags": [
-              "city pop",
-              "pop",
-              "soul",
+              "deep house",
               "disco",
+              "electronic",
               "funk",
+              "gospel",
+              "soul",
               "funk soul",
-              "j-pop",
-              "jazz-funk",
-              "kayōkyoku"
+              "jazzdance"
             ],
             "moods": [],
-            "score": 0.654528
+            "score": 0.652657
+          },
+          {
+            "rank": 5,
+            "id": "3efebe8546a6bc38",
+            "artist": "Bruno Mars",
+            "title": "Unorthodox Jukebox",
+            "genres": [
+              "pop",
+              "contemporary r&b",
+              "pop rock",
+              "r&b",
+              "rock",
+              "boogie"
+            ],
+            "tags": [
+              "pop",
+              "contemporary r&b",
+              "pop rock",
+              "r&b",
+              "rock",
+              "boogie",
+              "disco",
+              "funk",
+              "pop soul",
+              "reggae"
+            ],
+            "moods": [],
+            "score": 0.655022
           }
         ]
       },
@@ -1645,16 +1692,16 @@
           "/an-album-a-day/selector.js?v=goal-003"
         ]
       },
-      "title": "Lifeforms",
-      "detail": "TODAY'S RECORD\nLifeforms\n\nThe Future Sound Of London · 1994\n\nDREAMY · ENERGETIC · REFLECTIVE",
-      "reason": "ambient suggests calm music, but the mood is not independently verified.",
-      "signals": "AMBIENT\nELECTRONIC\nLEFTFIELD",
+      "title": "Winds of Change",
+      "detail": "TODAY'S RECORD\nWinds of Change\n\nESOTERICISM · 2023",
+      "reason": "chillout suggests calm music, but the mood is not independently verified.",
+      "signals": "BARBER BEATS\nCHILLOUT\nDOWNTEMPO",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "c668bc053cc658dc",
-        "catalogGenres": "ambient | electronic | leftfield | experimental | idm | ambient techno",
-        "catalogTags": "ambient | electronic | leftfield | experimental | idm | ambient techno | downtempo | aquatic | atmospheric | chillout",
-        "catalogMoods": "dreamy | energetic | reflective",
+        "albumId": "48fdf2c342d7d038",
+        "catalogGenres": "barber beats | chillout | downtempo | experimental | instrumental | lounge",
+        "catalogTags": "barber beats | chillout | downtempo | experimental | instrumental | lounge | plunderphonics | post-vaporwave | post-wave | vaporwave",
+        "catalogMoods": "",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
@@ -1662,7 +1709,7 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v5-rrf",
         "diagnostics": {
-          "neural": 0.495758,
+          "neural": 0.49602,
           "local": 0.5,
           "lexical": 0.5,
           "candidates": 96,
@@ -1673,13 +1720,41 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 5,
+          "consideredCompilations": 6,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
         "alternatives": [
           {
             "rank": 1,
+            "id": "48fdf2c342d7d038",
+            "artist": "ESOTERICISM",
+            "title": "Winds of Change",
+            "genres": [
+              "barber beats",
+              "chillout",
+              "downtempo",
+              "experimental",
+              "instrumental",
+              "lounge"
+            ],
+            "tags": [
+              "barber beats",
+              "chillout",
+              "downtempo",
+              "experimental",
+              "instrumental",
+              "lounge",
+              "plunderphonics",
+              "post-vaporwave",
+              "post-wave",
+              "vaporwave"
+            ],
+            "moods": [],
+            "score": 0.754442
+          },
+          {
+            "rank": 2,
             "id": "c668bc053cc658dc",
             "artist": "The Future Sound Of London",
             "title": "Lifeforms",
@@ -1707,90 +1782,35 @@
             "score": 0.754381
           },
           {
-            "rank": 2,
-            "id": "a297333e62ebafa5",
-            "artist": "Tau Sagittarii",
-            "title": "Sensory Data",
-            "genres": [
-              "ambient",
-              "chillout",
-              "chillwave",
-              "downtempo",
-              "electro",
-              "electronic"
-            ],
-            "tags": [
-              "ambient",
-              "chillout",
-              "chillwave",
-              "downtempo",
-              "electro",
-              "electronic",
-              "electronica",
-              "idm",
-              "instrumental",
-              "synthwave"
-            ],
-            "moods": [],
-            "score": 0.74644
-          },
-          {
             "rank": 3,
-            "id": "14c89d65917eb1ca",
-            "artist": "Ephemeral Mists",
-            "title": "Moon Ritual",
+            "id": "e701be0f9f2c9810",
+            "artist": "Air",
+            "title": "Moon Safari",
             "genres": [
-              "ambient",
               "downtempo",
-              "new age",
+              "electronic",
+              "ambient",
+              "ambient pop",
               "chillout",
-              "electronica",
-              "psybient"
+              "electronica"
             ],
             "tags": [
-              "ambient",
               "downtempo",
-              "new age",
-              "chill",
+              "electronic",
+              "ambient",
+              "ambient pop",
+              "5+ wochen",
               "chillout",
               "electronica",
-              "psybient",
-              "psychill",
-              "sacred bass music",
-              "electronic"
+              "electronica dance",
+              "english",
+              "future jazz"
             ],
             "moods": [],
-            "score": 0.750063
+            "score": 0.750979
           },
           {
             "rank": 4,
-            "id": "2c743637e89f1d1f",
-            "artist": "Torn Hawk",
-            "title": "Let's Cry and Do Pushups at the Same Time",
-            "genres": [
-              "ambient",
-              "downtempo",
-              "electro",
-              "electronic",
-              "experimental",
-              "leftfield"
-            ],
-            "tags": [
-              "ambient",
-              "downtempo",
-              "electro",
-              "electronic",
-              "experimental",
-              "leftfield",
-              "new age",
-              "noise",
-              "synth-pop"
-            ],
-            "moods": [],
-            "score": 0.73934
-          },
-          {
-            "rank": 5,
             "id": "140c15059a30ccf4",
             "artist": "Ghost Harmonics",
             "title": "Constellations",
@@ -1810,6 +1830,33 @@
             ],
             "moods": [],
             "score": 0.748127
+          },
+          {
+            "rank": 5,
+            "id": "4790422162fd87a4",
+            "artist": "Alice Thompson",
+            "title": "Enchanted Piano",
+            "genres": [
+              "ambient",
+              "avant-garde",
+              "chillout",
+              "classical",
+              "contemporary classical",
+              "electronic"
+            ],
+            "tags": [
+              "ambient",
+              "avant-garde",
+              "chillout",
+              "classical",
+              "contemporary classical",
+              "electronic",
+              "instrumental",
+              "modern classical",
+              "new age"
+            ],
+            "moods": [],
+            "score": 0.742539
           }
         ]
       },
@@ -1876,7 +1923,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 3,
+          "consideredCompilations": 2,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -1934,31 +1981,28 @@
           },
           {
             "rank": 3,
-            "id": "5754be3800ab3ea6",
-            "artist": "Kali Uchis",
-            "title": "Isolation",
+            "id": "e630f1c92a267552",
+            "artist": "T.C. Pfeiler",
+            "title": "T.C. Pfeiler Jazz Organ Trio - BAROCK BAR Live!",
             "genres": [
-              "contemporary r&b",
-              "neo soul",
+              "blues",
               "bossa nova",
-              "hip hop",
-              "latin",
-              "psychedelic soul"
+              "easy listening",
+              "hard bop",
+              "jazz",
+              "jazz-funk"
             ],
             "tags": [
-              "contemporary r&b",
-              "neo soul",
+              "blues",
               "bossa nova",
-              "hip hop",
-              "latin",
-              "psychedelic soul",
-              "reggaeton",
-              "sophisti-pop",
-              "synth funk",
-              "trip hop"
+              "easy listening",
+              "hard bop",
+              "jazz",
+              "jazz-funk",
+              "swing"
             ],
             "moods": [],
-            "score": 0.959051
+            "score": 0.900671
           },
           {
             "rank": 4,
@@ -1987,27 +2031,28 @@
           },
           {
             "rank": 5,
-            "id": "b94edb2036174965",
-            "artist": "Fernanda Cunha",
-            "title": "Coração do Brasil",
+            "id": "44ae9ec3c36a31a0",
+            "artist": "Stan Getz",
+            "title": "Big Band Bossa Nova",
             "genres": [
               "bossa nova",
-              "mpb",
-              "samba"
+              "jazz",
+              "latin",
+              "cool jazz",
+              "instrumental jazz",
+              "latin jazz"
             ],
             "tags": [
               "bossa nova",
-              "bossa-nova",
-              "brasil",
-              "brazil",
-              "brazilian music",
-              "coração do brasil",
-              "fernanda cunha",
-              "mpb",
-              "samba"
+              "jazz",
+              "latin",
+              "cool jazz",
+              "instrumental jazz",
+              "latin jazz",
+              "post-bop"
             ],
             "moods": [],
-            "score": 0.891671
+            "score": 0.904836
           }
         ]
       },
@@ -2076,7 +2121,7 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 1
+          "excludedGenreMatches": 2
         },
         "alternatives": [
           {
@@ -2107,6 +2152,34 @@
           },
           {
             "rank": 2,
+            "id": "7203c0fcffa21249",
+            "artist": "Pale Saints",
+            "title": "The Comforts of Madness",
+            "genres": [
+              "shoegaze",
+              "dream pop",
+              "jangle pop",
+              "neo-psychedelia",
+              "noise pop",
+              "psychedelic"
+            ],
+            "tags": [
+              "shoegaze",
+              "dream pop",
+              "abstract",
+              "atmospheric",
+              "dense",
+              "eclectic",
+              "energetic",
+              "ethereal",
+              "hypnotic",
+              "jangle pop"
+            ],
+            "moods": [],
+            "score": 0.894646
+          },
+          {
+            "rank": 3,
             "id": "da867fa272ba66b3",
             "artist": "Broadcast",
             "title": "Tender Buttons",
@@ -2132,7 +2205,7 @@
             "score": 0.89691
           },
           {
-            "rank": 3,
+            "rank": 4,
             "id": "5f48f93dfdc3346f",
             "artist": "The Church",
             "title": "Starfish",
@@ -2160,7 +2233,7 @@
             "score": 0.897957
           },
           {
-            "rank": 4,
+            "rank": 5,
             "id": "49f0ec91dfc35b91",
             "artist": "Peach Pit",
             "title": "Being so Normal",
@@ -2184,24 +2257,6 @@
             ],
             "moods": [],
             "score": 0.885864
-          },
-          {
-            "rank": 5,
-            "id": "cfabd59d2ee76126",
-            "artist": "High-tails",
-            "title": "A Slight Hi",
-            "genres": [
-              "dream pop",
-              "pop",
-              "soul"
-            ],
-            "tags": [
-              "dream pop",
-              "pop",
-              "soul"
-            ],
-            "moods": [],
-            "score": 0.883903
           }
         ]
       },
@@ -2262,15 +2317,15 @@
           "lexical": 0.8768975,
           "candidates": 96,
           "retrievalSelection": "weighted-rrf-v1",
-          "vectorCacheHits": 96,
-          "liveEmbeddings": 0,
+          "vectorCacheHits": 95,
+          "liveEmbeddings": 1,
           "queryVectorSource": "retrieval-reuse",
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
           "consideredCompilations": 2,
           "chosenCompilation": false,
-          "excludedGenreMatches": 1
+          "excludedGenreMatches": 2
         },
         "alternatives": [
           {
@@ -2319,6 +2374,58 @@
           },
           {
             "rank": 3,
+            "id": "3edd0d99a38d6a8b",
+            "artist": "Panda Bear & Sonic Boom",
+            "title": "Reset",
+            "genres": [
+              "neo-psychedelia",
+              "ambient pop",
+              "electronic",
+              "experimental",
+              "indie pop",
+              "indie rock"
+            ],
+            "tags": [
+              "neo-psychedelia",
+              "ambient pop",
+              "electronic",
+              "english",
+              "experimental",
+              "indie pop",
+              "indie rock",
+              "indietronica",
+              "ph_2_stars",
+              "plattentests.de"
+            ],
+            "moods": [],
+            "score": 0.888705
+          },
+          {
+            "rank": 4,
+            "id": "4fe1df54da65bd4d",
+            "artist": "Walter Etc.",
+            "title": "Gloom Cruise",
+            "genres": [
+              "folk punk",
+              "indie pop",
+              "indie rock",
+              "surf"
+            ],
+            "tags": [
+              "folk punk",
+              "indie pop",
+              "indie rock",
+              "surf",
+              "alternative",
+              "california",
+              "emo surf",
+              "surf emo"
+            ],
+            "moods": [],
+            "score": 0.892027
+          },
+          {
+            "rank": 5,
             "id": "0ed8107e1f86aba5",
             "artist": "The Primitives",
             "title": "Lovely",
@@ -2341,56 +2448,6 @@
             ],
             "moods": [],
             "score": 0.886975
-          },
-          {
-            "rank": 4,
-            "id": "97b8fac23ae0fb49",
-            "artist": "Mid-State Orange",
-            "title": "Odds",
-            "genres": [
-              "indie pop",
-              "indie rock",
-              "pop",
-              "pop rock",
-              "rock"
-            ],
-            "tags": [
-              "indie pop",
-              "indie rock",
-              "pop",
-              "pop rock",
-              "rock"
-            ],
-            "moods": [],
-            "score": 0.886585
-          },
-          {
-            "rank": 5,
-            "id": "09fef6742778ea25",
-            "artist": "Beach House",
-            "title": "Depression Cherry",
-            "genres": [
-              "dream pop",
-              "indie pop",
-              "indie rock",
-              "pop",
-              "shoegaze",
-              "rock"
-            ],
-            "tags": [
-              "dream pop",
-              "indie pop",
-              "indie rock",
-              "pop",
-              "shoegaze",
-              "alternative",
-              "rock",
-              "ambient pop",
-              "ethereal wave",
-              "vyrzukhisuc-album"
-            ],
-            "moods": [],
-            "score": 0.879284
           }
         ]
       },
@@ -2457,9 +2514,9 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 4,
+          "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 29
+          "excludedGenreMatches": 28
         },
         "alternatives": [
           {
@@ -2517,49 +2574,41 @@
           },
           {
             "rank": 4,
-            "id": "90b5ae78c3002aec",
-            "artist": "OverClocked ReMix",
-            "title": "Super Mario RPG: Window to the Stars",
+            "id": "277d1166c6645af7",
+            "artist": "Derrick Morgan",
+            "title": "I Am the Ruler",
             "genres": [
-              "chiptune",
-              "dubstep",
-              "electronic",
-              "folk",
-              "jazz",
-              "pop"
+              "reggae",
+              "rocksteady",
+              "ska"
             ],
             "tags": [
-              "chiptune",
-              "dubstep",
-              "electronic",
-              "folk",
-              "game remix",
-              "jazz",
-              "pop",
-              "psytrance",
               "reggae",
-              "rocksteady"
+              "rocksteady",
+              "ska"
             ],
             "moods": [],
-            "score": 0.84157
+            "score": 0.841547
           },
           {
             "rank": 5,
-            "id": "b0df2696d1f45e75",
-            "artist": "Los Dingos",
-            "title": "Dreams of Glory",
+            "id": "732156293988c6c3",
+            "artist": "The Regulators",
+            "title": "In A Dancing Mood",
             "genres": [
               "reggae",
               "rocksteady",
               "ska"
             ],
             "tags": [
+              "in a dancing mood",
               "reggae",
+              "regulators",
               "rocksteady",
               "ska"
             ],
             "moods": [],
-            "score": 0.861163
+            "score": 0.856054
           }
         ]
       },
