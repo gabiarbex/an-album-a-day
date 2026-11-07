@@ -142,6 +142,46 @@ export function requestedMoodFit(candidate, body) {
   };
 }
 
+// Style cues are *weak evidence* about emotional character, not a verified
+// acoustic mood label. We use them to reject obvious contradictions and as
+// low-weight priors for under-tagged records.
+const MOOD_STYLE_CUES={
+ hopeful:{
+  supporting:['sunshine pop','gospel','disco','dance pop','funk','reggae','afrobeat','soul'],
+  opposing:['noise','drone','harsh noise','doom metal','black metal','dark ambient','darkwave','industrial']
+ },
+ calm:{
+  supporting:['ambient','downtempo','chillout','new age','lounge','soft jazz'],
+  opposing:['noise rock','harsh noise','grindcore','thrash metal','hardcore punk','gabber']
+ },
+ dreamy:{
+  supporting:['dream pop','ethereal wave','shoegaze','ambient pop','chillwave'],
+  opposing:['noise rock','grindcore','thrash metal','hardcore punk']
+ },
+ energetic:{
+  supporting:['disco','dance pop','funk','house','dance-punk'],
+  opposing:['drone','new age','slowcore','minimal ambient']
+ },
+ warm:{
+  supporting:['soul','quiet storm','singer-songwriter','soft rock','bossa nova'],
+  opposing:['harsh noise','dark ambient']
+ }
+};
+export function moodStyleSignal(candidate, body){
+ const requested=Object.keys(body?.intent?.moods||{});
+ const labels=[...cleanArray(candidate.genres,20),...cleanArray(candidate.tags,24)];
+ let bonus=0,penalty=0;
+ for(const mood of requested.slice(0,2)){
+  const cues=MOOD_STYLE_CUES[mood];
+  if(!cues)continue;
+  const positive=cues.supporting.filter(q=>labels.some(g=>styleMatches(g,q))).length;
+  const negative=cues.opposing.filter(q=>labels.some(g=>styleMatches(g,q))).length;
+  bonus+=Math.min(.1,.045*positive);
+  penalty+=Math.min(.31,.20*negative);
+ }
+ return {bonus:Math.min(.14,bonus),penalty:Math.min(.36,penalty)};
+}
+
 function reliableEnergyDistance(candidate, body) {
   if (body?.energy == null || candidate?.energy == null) return null;
   if(!trustedEnergy(candidate))return null;
@@ -202,6 +242,9 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
   if (moodFit.match) score += 0.13;
   else if (moodFit.suggestive?.length) score += 0.08;
   else if (moodFit.known) score -= 0.20;
+
+  const goalEvidence=moodStyleSignal(candidate,body);
+  score+=goalEvidence.bonus-goalEvidence.penalty;
 
   const energyDistance = reliableEnergyDistance(candidate, body);
   if (energyDistance !== null && energyDistance <= 1.5) score += 0.07;
