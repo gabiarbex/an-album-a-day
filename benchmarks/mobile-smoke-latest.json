@@ -1,0 +1,28 @@
+{
+  "site": "https://gabiarbex.github.io/an-album-a-day/",
+  "checked_at": "2026-11-07T15:01:27.397Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "initial": {
+    "horizontalOverflow": 0,
+    "submitLabel": "find a record\n        ↗",
+    "textAreaVisible": true
+  },
+  "result": {
+    "horizontalOverflow": 0,
+    "title": "Ocean of Light",
+    "imageHasSource": true,
+    "spotifyEnabled": true,
+    "diarySaveEnabled": true
+  },
+  "noRepeat": {
+    "firstId": "00d537057b33d68d",
+    "secondId": "20f532d3423e58d0",
+    "seenBeforeReload": 2,
+    "seenAfterReload": 2,
+    "persisted": true
+  },
+  "ok": true
+}

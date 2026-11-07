@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-11-07T14:58:23.098Z",
+  "captured_at": "2026-11-07T15:01:27.041Z",
   "site": "https://gabiarbex.github.io/an-album-a-day/",
   "note": "Observed top-1 outputs only; no relevance judgments or NDCG are inferred.",
   "results": [
@@ -39,7 +39,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 7,
+          "consideredCompilations": 8,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -172,15 +172,15 @@
       "avoidGenres": [],
       "wantMoods": [],
       "avoidMoods": [],
-      "title": "Stay Moist",
-      "detail": "TODAY'S RECORD\nStay Moist\n\nMellow Blush · 2017",
+      "title": "Shine",
+      "detail": "TODAY'S RECORD\nShine\n\nClara Hill · 2020",
       "reason": "bossa nova.",
       "signals": "BOSSA NOVA",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "83971f1568e2292c",
-        "catalogGenres": "bossa nova | easy listening | electronic | folk | indietronica | instrumental",
-        "catalogTags": "bossa nova | easy listening | electronic | folk | fusion | indietronica | instrumental | instrumentall | j-pop | jazz",
+        "albumId": "4dc14d80dcbfa930",
+        "catalogGenres": "bossa nova | electronic | folk | indie pop | jazz | pop",
+        "catalogTags": "bossa nova | electronic | folk | indie pop | jazz | pop | psychedelic | smooth jazz | soul",
         "catalogMoods": "",
         "selectionMode": "backend"
       },
@@ -189,9 +189,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v4",
         "diagnostics": {
-          "neural": 0.669962,
+          "neural": 0.653996,
           "local": 1,
-          "lexical": 0.8263785,
+          "lexical": 0.8691415,
           "candidates": 96,
           "vectorCacheHits": 96,
           "liveEmbeddings": 0,
@@ -206,31 +206,30 @@
         "alternatives": [
           {
             "rank": 1,
-            "id": "83971f1568e2292c",
-            "artist": "Mellow Blush",
-            "title": "Stay Moist",
+            "id": "4dc14d80dcbfa930",
+            "artist": "Clara Hill",
+            "title": "Shine",
             "genres": [
               "bossa nova",
-              "easy listening",
               "electronic",
               "folk",
-              "indietronica",
-              "instrumental"
+              "indie pop",
+              "jazz",
+              "pop"
             ],
             "tags": [
               "bossa nova",
-              "easy listening",
               "electronic",
               "folk",
-              "fusion",
-              "indietronica",
-              "instrumental",
-              "instrumentall",
-              "j-pop",
-              "jazz"
+              "indie pop",
+              "jazz",
+              "pop",
+              "psychedelic",
+              "smooth jazz",
+              "soul"
             ],
             "moods": [],
-            "score": 0.912629
+            "score": 0.908138
           },
           {
             "rank": 2,
@@ -259,33 +258,6 @@
           },
           {
             "rank": 3,
-            "id": "4dc14d80dcbfa930",
-            "artist": "Clara Hill",
-            "title": "Shine",
-            "genres": [
-              "bossa nova",
-              "electronic",
-              "folk",
-              "indie pop",
-              "jazz",
-              "pop"
-            ],
-            "tags": [
-              "bossa nova",
-              "electronic",
-              "folk",
-              "indie pop",
-              "jazz",
-              "pop",
-              "psychedelic",
-              "smooth jazz",
-              "soul"
-            ],
-            "moods": [],
-            "score": 0.908138
-          },
-          {
-            "rank": 4,
             "id": "3146c82d767f4af4",
             "artist": "Sarah Vaughan",
             "title": "The Definitive Collection",
@@ -307,24 +279,51 @@
             "score": 0.908109
           },
           {
+            "rank": 4,
+            "id": "b69529a40bf92387",
+            "artist": "Bossa Nostra",
+            "title": "Solaria",
+            "genres": [
+              "ambient",
+              "bossa nova",
+              "jazz",
+              "latin",
+              "soul jazz"
+            ],
+            "tags": [
+              "ambient",
+              "bossa nova",
+              "jazz",
+              "latin",
+              "soul jazz"
+            ],
+            "moods": [],
+            "score": 0.89724
+          },
+          {
             "rank": 5,
-            "id": "febfbf7a73e66ede",
-            "artist": "Klaus Wunderlich",
-            "title": "Sud Americana No. 2",
+            "id": "3dc8ef36e47c6aee",
+            "artist": "Antônio Carlos Jobim",
+            "title": "Wave",
             "genres": [
               "bossa nova",
-              "easy listening",
-              "jazz",
-              "pop"
+              "instrumental",
+              "jazz"
             ],
             "tags": [
               "bossa nova",
-              "easy listening",
+              "instrumental",
               "jazz",
-              "pop"
+              "acoustic",
+              "beach",
+              "calm",
+              "ethereal",
+              "lush",
+              "male vocalist",
+              "meditative"
             ],
             "moods": [],
-            "score": 0.902975
+            "score": 0.898037
           }
         ]
       },
@@ -692,7 +691,7 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 9,
+          "consideredCompilations": 6,
           "chosenCompilation": false,
           "excludedGenreMatches": 0
         },
@@ -776,31 +775,19 @@
           },
           {
             "rank": 5,
-            "id": "2fb5b0315e2e46a6",
-            "artist": "Air",
-            "title": "The Virgin Suicides",
+            "id": "451199defc637685",
+            "artist": "Astrobrite",
+            "title": "Boombox Supernova",
             "genres": [
-              "ambient pop",
-              "electronic",
-              "downtempo",
-              "electronica",
-              "ambient",
-              "rock"
+              "rock",
+              "shoegaze"
             ],
             "tags": [
-              "ambient pop",
-              "electronic",
-              "downtempo",
-              "electronica",
-              "ambient",
-              "score",
-              "soundtrack",
-              "film score",
               "rock",
-              "adolescence"
+              "shoegaze"
             ],
             "moods": [],
-            "score": 0.638074
+            "score": 0.626576
           }
         ]
       },
@@ -844,9 +831,9 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 5,
+          "consideredCompilations": 10,
           "chosenCompilation": false,
-          "excludedGenreMatches": 4
+          "excludedGenreMatches": 5
         },
         "alternatives": [
           {
@@ -1003,15 +990,15 @@
           "local": 1,
           "lexical": 0.9976417799452761,
           "candidates": 96,
-          "vectorCacheHits": 95,
-          "liveEmbeddings": 1,
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
           "queryVectorSource": "retrieval-reuse",
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 21,
+          "consideredCompilations": 19,
           "chosenCompilation": false,
-          "excludedGenreMatches": 3
+          "excludedGenreMatches": 5
         },
         "alternatives": [
           {
@@ -1036,6 +1023,29 @@
           },
           {
             "rank": 2,
+            "id": "9e2ee348e8700f2a",
+            "artist": "Smokey Robinson",
+            "title": "Motown Legends: Cruisin' / Being With You",
+            "genres": [
+              "motown",
+              "quiet storm",
+              "r&b",
+              "smooth soul",
+              "soul"
+            ],
+            "tags": [
+              "motown",
+              "quiet storm",
+              "r&b",
+              "smooth soul",
+              "soul",
+              "urban"
+            ],
+            "moods": [],
+            "score": 0.869594
+          },
+          {
+            "rank": 3,
             "id": "a58ebb23cede2c63",
             "artist": "Kali Uchis",
             "title": "Sin Miedo (del Amor y Otros Demonios) ∞",
@@ -1061,7 +1071,7 @@
             "score": 0.852052
           },
           {
-            "rank": 3,
+            "rank": 4,
             "id": "90cb636b5f67aa11",
             "artist": "Jackie Wilson",
             "title": "The Jackie Wilson Story",
@@ -1082,7 +1092,7 @@
             "score": 0.867222
           },
           {
-            "rank": 4,
+            "rank": 5,
             "id": "a0ad6a6defd29c57",
             "artist": "The Delfonics",
             "title": "The Delfonics",
@@ -1100,28 +1110,6 @@
             ],
             "moods": [],
             "score": 0.861797
-          },
-          {
-            "rank": 5,
-            "id": "ba94dcd068b7a65f",
-            "artist": "Otis Redding",
-            "title": "Dock of the Bay Sessions",
-            "genres": [
-              "soul",
-              "blues",
-              "deep soul",
-              "pop",
-              "r&b"
-            ],
-            "tags": [
-              "soul",
-              "blues",
-              "deep soul",
-              "pop",
-              "r&b"
-            ],
-            "moods": [],
-            "score": 0.867432
           }
         ]
       },
@@ -1167,9 +1155,9 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 11,
+          "consideredCompilations": 10,
           "chosenCompilation": false,
-          "excludedGenreMatches": 2
+          "excludedGenreMatches": 4
         },
         "alternatives": [
           {
@@ -1199,6 +1187,32 @@
           },
           {
             "rank": 2,
+            "id": "24686faefaa279d3",
+            "artist": "Stina Nordenstam",
+            "title": "And She Closed Her Eyes",
+            "genres": [
+              "indie rock",
+              "alternative rock",
+              "dream pop",
+              "folk rock",
+              "jazz",
+              "jazz rock"
+            ],
+            "tags": [
+              "indie rock",
+              "alternative rock",
+              "dream pop",
+              "folk rock",
+              "jazz",
+              "jazz rock",
+              "pop",
+              "rock"
+            ],
+            "moods": [],
+            "score": 0.926779
+          },
+          {
+            "rank": 3,
             "id": "ce78bac5b8a16463",
             "artist": "The Jazz Networks",
             "title": "Blues 'N Ballads",
@@ -1219,7 +1233,7 @@
             "score": 0.889853
           },
           {
-            "rank": 3,
+            "rank": 4,
             "id": "8916081a1c8ecc40",
             "artist": "Miles Davis",
             "title": "In a Silent Way",
@@ -1244,7 +1258,7 @@
             "score": 0.886685
           },
           {
-            "rank": 4,
+            "rank": 5,
             "id": "13fef24e073a5c99",
             "artist": "Hot Jazz Band",
             "title": "Celebration With Louis Armstrong",
@@ -1262,26 +1276,6 @@
             ],
             "moods": [],
             "score": 0.882409
-          },
-          {
-            "rank": 5,
-            "id": "ece108c99ae4409a",
-            "artist": "Somewhere off Jazz Street",
-            "title": "A Quiet Light",
-            "genres": [
-              "dark jazz",
-              "electronic",
-              "instrumental",
-              "jazz"
-            ],
-            "tags": [
-              "dark jazz",
-              "electronic",
-              "instrumental",
-              "jazz"
-            ],
-            "moods": [],
-            "score": 0.878973
           }
         ]
       },
