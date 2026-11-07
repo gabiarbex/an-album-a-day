@@ -45,8 +45,16 @@ try {
    const result=await page.evaluate(()=>({
     frontend:{
       fusionAvailable:Boolean(globalThis.AlbumFusion?.select),
+      intent:(()=>{
+        const note=document.querySelector('#feelingInput')?.value||'';
+        const v=globalThis.AlbumIntent?.interpretFeeling?.(note);
+        return v?{goalShift:Boolean(v.goalShift),moods:Object.keys(v.moods||{}),
+          avoidedMoods:Object.keys(v.avoidMoods||{}),
+          genres:v.genres||[],avoidedGenres:v.avoidGenres||[],
+          energy:v.energy}:null;
+      })(),
       scripts:[...document.scripts].map(node=>node.src)
-        .filter(src=>/selector\.js|retrieval-fusion\.js/.test(src))
+        .filter(src=>/selector\.js|intent-core\.js|retrieval-fusion\.js/.test(src))
         .map(src=>{try{const url=new URL(src);return url.pathname+url.search}catch{return src}})
     },
     title:document.querySelector('#details h2')?.textContent?.trim()||'',
