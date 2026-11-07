@@ -1152,12 +1152,16 @@ function score(a,intent){
   weighted+=ww*(albumGenres.some(x=>globalThis.AlbumIntent?.styleMatches?.(x,g)===true)?0:1);totalWeight+=ww;
  }
 
- const translatedEnergyGuess=String(a.provenance?.energy?.source||'')==='musicbrainz-tag-translation';
- const rawEnergy=translatedEnergyGuess
-  ? NaN
-  : (a.features?.energy!==null&&a.features?.energy!==undefined
-    ? Number(a.features.energy)*10
-    : Number(a.energy_level));
+ const energySource=String(a.provenance?.energy?.source||'');
+ const energyConfidence=Number(a.provenance?.energy?.confidence)||0;
+ const trustedCatalogEnergy=energySource&&energySource!=='musicbrainz-tag-translation'&&energyConfidence>=.65;
+ const energyCandidates=[
+  a._acoustic?.energy,a._live?.signals?.energy,
+  trustedCatalogEnergy&&a.features?.energy!=null?Number(a.features.energy)*10:null,
+  trustedCatalogEnergy?a.energy_level:null
+ ];
+ const reliableEnergy=energyCandidates.find(v=>v!==null&&v!==undefined&&Number.isFinite(Number(v)));
+ const rawEnergy=reliableEnergy===undefined?NaN:Number(reliableEnergy);
  const targetEnergy=recommendationEnergy(intent);
  if(targetEnergy!==null&&targetEnergy!==undefined&&Number.isFinite(rawEnergy)){
   const ww=1.8*confidence('energy',.75);
