@@ -2483,6 +2483,14 @@ function show(a,context={}){
  $('emptyCover').style.display='none';
  cover.src=artPlaceholder(a);
  const info=$('details');info.replaceChildren();
+ // Public catalog attributes support non-invasive end-to-end recommendation QA.
+ // No diary, account information or free-text notes are exposed here.
+ const publicNames=items=>(Array.isArray(items)?items:[]).map(v=>String(typeof v==='string'?v:v?.name||'').trim()).filter(Boolean);
+ info.dataset.albumId=String(lookupId(a)||'');
+ info.dataset.catalogGenres=publicNames(a.genres).join(' | ');
+ info.dataset.catalogTags=publicNames(a.tags).slice(0,24).join(' | ');
+ info.dataset.catalogMoods=publicNames(a.moods).join(' | ');
+ info.dataset.selectionMode=String(context.rankingMode||context.mode||'');
  const tag=document.createElement('div');tag.className='eyebrow';
  const modeLabels={
   shared:'SHARED RECORD',
