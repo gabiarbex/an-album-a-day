@@ -31,7 +31,7 @@ const verified={...brazil,vocalLanguages:['nl']};
 assert.equal(geographyFit(verified,singing).vocalMatch,true);
 
 // Country association is only a fallback hint when lyrics are unknown.
-const dutchLyrics={...body,intent:{...body.intent,originCountries:[],vocalLanguages:['nl']}};
+const dutchLyrics={...body,intent:{...body.intent,originCountries:[],avoidOriginCountries:[],vocalLanguages:['nl']}};
 assert.equal(plausibleVocalOrigin(dutch,dutchLyrics),true);
 assert.equal(plausibleVocalOrigin(brazil,dutchLyrics),false);
 assert.equal(plausibleVocalOrigin(unknown,dutchLyrics),false);
