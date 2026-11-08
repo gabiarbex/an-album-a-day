@@ -4,16 +4,16 @@
   "does_not_infer_vocal_language": true,
   "country_counts": {
     "BR": {
-      "roster_artists": 51,
-      "matched_artists": 38,
-      "catalog_albums": 135,
-      "indexed_albums": 115
+      "roster_artists": 144,
+      "matched_artists": 84,
+      "catalog_albums": 218,
+      "indexed_albums": 197
     },
     "NL": {
-      "roster_artists": 46,
-      "matched_artists": 30,
-      "catalog_albums": 83,
-      "indexed_albums": 71
+      "roster_artists": 116,
+      "matched_artists": 62,
+      "catalog_albums": 162,
+      "indexed_albums": 140
     },
     "PT": {
       "roster_artists": 18,
