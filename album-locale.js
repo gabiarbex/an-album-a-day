@@ -59,7 +59,7 @@ const TRANSLATE=[
 ];
 const LANG_CUES={
  nl:/\b(?:ik wil|ik zoek|ik voel me|geen|zonder|muziek|nederlandse|nederlands|dromerig|rustig|vrolijk)\b/,
- pt:/\b(?:quero|preciso|estou|brasileiro|brasileira|nao|sem|sossegad|alegre|triste)\b/,
+ pt:/\b(?:quero|preciso|estou|brasileiro|brasileira|nao|sem|sossegad|alegre|triste|em\s+(?:holandes|portugues|ingles))\b/,
  es:/\b(?:quiero|busco|espanol|sin|pero|estoy|brasilena|brasileno)\b/,
  de:/\b(?:ich will|ich suche|ohne|keine|nicht|musik|ruhig|traurig)\b/,
  fr:/\b(?:je veux|je cherche|musique|sans|mais|francais)\b/,
