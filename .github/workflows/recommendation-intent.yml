@@ -4,6 +4,13 @@ on:
   push:
     paths:
       - 'intent-core.js'
+      - 'album-locale.js'
+      - 'geo-catalog.js'
+      - 'data/geography/**'
+      - 'tests/global-requests.test.cjs'
+      - 'tests/geo-catalog.test.cjs'
+      - 'tests/geography-ranking.test.mjs'
+      - 'api/_embedding.js'
       - 'selector.js'
       - 'tests/retrieval-intent.test.cjs'
       - 'tests/intent-100.test.cjs'
@@ -32,6 +39,13 @@ on:
   pull_request:
     paths:
       - 'intent-core.js'
+      - 'album-locale.js'
+      - 'geo-catalog.js'
+      - 'data/geography/**'
+      - 'tests/global-requests.test.cjs'
+      - 'tests/geo-catalog.test.cjs'
+      - 'tests/geography-ranking.test.mjs'
+      - 'api/_embedding.js'
       - 'selector.js'
       - 'tests/retrieval-intent.test.cjs'
       - 'tests/intent-100.test.cjs'
@@ -70,6 +84,10 @@ jobs:
       - name: Verify JavaScript syntax
         run: |
           node --check intent-core.js
+          node --check album-locale.js
+          node --check geo-catalog.js
+          node --check api/_ranking-core.js
+          node --check api/_embedding.js
           node --check selector.js
           node --check retrieval-fusion.js
           node --check api/_student-ranker.js
@@ -91,6 +109,9 @@ jobs:
           node tests/retrieval-fusion.test.cjs
           node tests/listening-goal.test.cjs
           node tests/taste-policy.test.mjs
+          node tests/global-requests.test.cjs
+          node tests/geo-catalog.test.cjs
+          node tests/geography-ranking.test.mjs
           node tests/student-ranker.test.mjs
           node tests/student-human-eval.test.mjs
           node tests/active-review.test.mjs
