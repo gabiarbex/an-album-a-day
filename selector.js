@@ -1328,9 +1328,13 @@ async function rankWithBackend(pool,seed,daily){
 
  // Country is an explicit artist-area filter, not a genre or lyric-language
  // guess. Load real records from the existing catalog and preserve no-repeat.
- if(intent.originCountries?.length&&globalThis.AlbumGeo?.countryRecords){
+ const vocalCountryHints={nl:['NL'],pt:['BR','PT'],fr:['FR','BE'],de:['DE'],es:['ES','AR'],ja:['JP'],uk:['UA']};
+ const countryResearch=intent.originCountries?.length
+  ? intent.originCountries
+  : (intent.vocalLanguages||[]).flatMap(language=>vocalCountryHints[language]||[]);
+ if(countryResearch.length&&globalThis.AlbumGeo?.countryRecords){
   try{
-   const geo=await globalThis.AlbumGeo.countryRecords(intent.originCountries);
+   const geo=await globalThis.AlbumGeo.countryRecords(countryResearch);
    const regional=geo.rows
     .filter(a=>!albumWasSeen(a)&&!logged.has(key(a)))
     .map(a=>({a,relevance:score(a,intent)}))
