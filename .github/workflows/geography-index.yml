@@ -1,0 +1,51 @@
+name: Build global artist-origin discovery index
+
+on:
+  push:
+    paths:
+      - 'scripts/build_geography_index.py'
+      - 'data/geography/artist-roster.json'
+      - '.github/workflows/geography-index.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: global-geography-catalog
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build origin indexes from actual catalog albums
+        run: |
+          python3 scripts/build_geography_index.py --catalog-dir data/catalog --out-dir data/geography
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('data/geography/manifest.json').read_text())
+          for key in ('BR','NL'):
+              assert m['country_counts'][key]['indexed_albums'] >= 5, (key,m['country_counts'][key])
+          assert m['does_not_infer_vocal_language'] is True
+          print('Country catalog indexing passed for Brazil and the Netherlands.')
+          PY
+      - name: Publish generated origin records
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "Newer repository commit; avoid publishing stale catalog results."
+            exit 0
+          fi
+          git add data/geography/*.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate international artist-origin indexes from existing 100k catalog"
+            git push origin HEAD:main
+          fi
