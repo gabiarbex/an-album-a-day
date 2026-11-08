@@ -28,26 +28,24 @@ const genreLexicon=[
 ];
 
 function styleMatches(label, requested){
- const value=normalizeText(label).trim(),query=normalizeText(requested).trim();
- if(!value||!query)return false;
- const escaped=query.replace(/[.*+?^$()|[\]{}\\]/g,'\\function genreMentions(text){');
- return new RegExp('(^|[^a-z0-9])'+escaped+'(?=$|[^a-z0-9])').test(value);
+ const norm=v=>normalizeText(v).replace(/[^a-z0-9]+/g,' ').trim();
+ const full=norm(label),part=norm(requested);
+ return Boolean(full&&part&&(' '+full+' ').includes(' '+part+' '));
 }
 
 function genreMentions(text){
  const genres=[],avoidGenres=[],spans=[];
- const escape=value=>value.replace(/[.*+?^$()|[\]{}\\]/g,'\\function normalizeText(value){');
+ const escape=value=>value.replace(/[^a-z0-9 ]/g,ch=>'\\'+ch).replace(/ +/g,'\\s+');
  for(const genre of [...genreLexicon].sort((a,b)=>b.length-a.length)){
-  const re=new RegExp('\\b'+escape(genre)+'\\b','g');
+  const re=new RegExp('(^|[^a-z0-9])('+escape(genre)+')(?=$|[^a-z0-9])','g');
   for(const match of text.matchAll(re)){
-   const start=match.index,end=start+match[0].length;
+   const start=match.index+match[1].length,end=start+match[2].length;
    if(spans.some(([a,b])=>start<b&&end>a))continue;
    spans.push([start,end]);
    const dest=termIsNegated(text,start)?avoidGenres:genres;
    if(!dest.includes(genre))dest.push(genre);
   }
  }
- // Preserve offsets and sentence boundaries when masking genre terms.
  const chars=[...text];
  for(const [start,end] of spans)for(let i=start;i<end;i++)chars[i]=' ';
  return {genres,avoidGenres,moodText:chars.join('')};
