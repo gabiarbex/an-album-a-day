@@ -98,9 +98,9 @@ a claim to perfect translation of arbitrary prose.
 - Original album identities, no-repeat history and explicit genre exclusions
   remain active across country searches.
 
-The first verified index includes **115 Brazilian albums across 38 roster
-artists** and **71 Dutch albums across 30 roster artists**. The underlying
-catalog has 135 and 83 matching albums respectively. Counts are from
+The latest verified index includes **197 Brazilian albums across 84 curated
+artist matches** and **133 Dutch albums across 59 curated artist matches**. The
+underlying catalog has 218 and 155 matching artist–album records respectively. Counts are from
 `data/geography/manifest.json`; broader geographic coverage is still an
 important catalog-building priority.
 
