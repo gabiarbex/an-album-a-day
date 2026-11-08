@@ -5,18 +5,19 @@ const SITE = process.env.BASELINE_URL || 'https://gabiarbex.github.io/an-album-a
 const fixture=JSON.parse(await fs.readFile('benchmarks/intent-100.json','utf8'));
 const sampleIds=new Set(['G01','G05','X01','M01','N01','P01','Q01','C01']);
 const goalScenarios=JSON.parse(await fs.readFile('benchmarks/emotional-goals.json','utf8'));
+const globalScenarios=JSON.parse(await fs.readFile('benchmarks/global-requests.json','utf8'));
 const extraFixture=process.env.BENCHMARK_CASES_FILE
   ? JSON.parse(await fs.readFile(process.env.BENCHMARK_CASES_FILE,'utf8'))
   : null;
 const prompts=extraFixture?.cases ||
-  [...fixture.cases.filter(row=>sampleIds.has(row.id)),...goalScenarios.cases];
+  [...fixture.cases.filter(row=>sampleIds.has(row.id)),...goalScenarios.cases,...globalScenarios.cases];
 if(!prompts.length||new Set(prompts.map(row=>row.id)).size!==prompts.length||
-  (!extraFixture&&prompts.length!==sampleIds.size+goalScenarios.cases.length))
+  (!extraFixture&&prompts.length!==sampleIds.size+goalScenarios.cases.length+globalScenarios.cases.length))
   throw new Error('Baseline prompt fixture mismatch');
 const browser = await chromium.launch({headless:true});
 const results=[];
 try {
- for (const {id,prompt,category,language,wantGenres,avoidGenres,wantMoods,avoidMoods} of prompts) {
+ for (const {id,prompt,category,language,wantGenres,avoidGenres,wantMoods,avoidMoods,wantCountries,avoidCountries,wantVocals} of prompts) {
   const context=await browser.newContext({viewport:{width:1280,height:900}});
   const page=await context.newPage();
   // Fixed per-prompt salt makes shard loading, daily seeds and client taste
@@ -44,7 +45,8 @@ try {
             profileQuality:a.profileQuality??null,
             moodSource:a.moodSource||'',
             energySource:a.energySource||'',energyConfidence:a.energyConfidence??null,
-            energy:a.energy??null};
+            energy:a.energy??null,originCountry:a.originCountry||null,
+            vocalLanguages:a.vocalLanguages||[]};
         })
       };
     })().catch(e=>({ok:false,error:String(e).slice(0,160)}));
@@ -67,10 +69,12 @@ try {
         return v?{goalShift:Boolean(v.goalShift),moods:Object.keys(v.moods||{}),
           avoidedMoods:Object.keys(v.avoidMoods||{}),
           genres:v.genres||[],avoidedGenres:v.avoidGenres||[],
-          energy:v.energy}:null;
+          energy:v.energy,queryLanguage:v.queryLanguage,
+          originCountries:v.originCountries||[],avoidedOriginCountries:v.avoidOriginCountries||[],
+          vocalLanguages:v.vocalLanguages||[]}:null;
       })(),
       scripts:[...document.scripts].map(node=>node.src)
-        .filter(src=>/selector\.js|intent-core\.js|retrieval-fusion\.js/.test(src))
+        .filter(src=>/selector\.js|intent-core\.js|retrieval-fusion\.js|album-locale\.js|geo-catalog\.js/.test(src))
         .map(src=>{try{const url=new URL(src);return url.pathname+url.search}catch{return src}})
     },
     title:document.querySelector('#details h2')?.textContent?.trim()||'',
@@ -81,10 +85,10 @@ try {
     catalog:({...document.querySelector('#details')?.dataset}),
     page:location.href
    }));
-   results.push({id,prompt,category,language,wantGenres,avoidGenres,wantMoods,avoidMoods,...result,backend,ok:true});
+   results.push({id,prompt,category,language,wantGenres,avoidGenres,wantMoods,avoidMoods,wantCountries,avoidCountries,wantVocals,...result,backend,ok:true});
   }catch(e){
    error=String(e?.message||e).slice(0,450);
-   results.push({id,prompt,category,language,wantGenres,avoidGenres,wantMoods,avoidMoods,ok:false,error,status:await page.locator('#status').textContent().catch(()=>null)});
+   results.push({id,prompt,category,language,wantGenres,avoidGenres,wantMoods,avoidMoods,wantCountries,avoidCountries,wantVocals,ok:false,error,status:await page.locator('#status').textContent().catch(()=>null)});
   }finally{await context.close()}
   console.log(JSON.stringify(results.at(-1)));
  }
