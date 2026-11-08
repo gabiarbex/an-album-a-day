@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {geographyFit,scoreCandidate,explanation} from '../api/_ranking-core.js';
+import {geographyFit,scoreCandidate,explanation,plausibleVocalOrigin} from '../api/_ranking-core.js';
 const manifest=JSON.parse(fs.readFileSync(new URL('../data/geography/manifest.json',import.meta.url),'utf8'));
 const data=code=>JSON.parse(fs.readFileSync(new URL('../data/geography/'+code+'.json',import.meta.url),'utf8'));
 assert.equal(manifest.does_not_infer_vocal_language,true);
@@ -29,4 +29,15 @@ assert.match(explanation({candidate:brazil,taste:{}},singing),/cannot verify the
 assert.equal(geographyFit(brazil,singing).vocalMatch,false);
 const verified={...brazil,vocalLanguages:['nl']};
 assert.equal(geographyFit(verified,singing).vocalMatch,true);
+
+// Country association is only a fallback hint when lyrics are unknown.
+const dutchLyrics={...body,intent:{...body.intent,originCountries:[],vocalLanguages:['nl']}};
+assert.equal(plausibleVocalOrigin(dutch,dutchLyrics),true);
+assert.equal(plausibleVocalOrigin(brazil,dutchLyrics),false);
+assert.equal(plausibleVocalOrigin(unknown,dutchLyrics),false);
+assert.equal(geographyFit(dutch,dutchLyrics).vocalMatch,false,
+ 'Dutch origin must not be presented as proof of Dutch vocals');
+assert.match(explanation({candidate:dutch,taste:{}},dutchLyrics),/cannot verify the language sung/);
+assert.ok(scoreCandidate(dutch,.4,dutchLyrics)>scoreCandidate(unknown,.4,dutchLyrics));
+
 console.log('Artist-origin index and genre-vs-vocal-language evidence contracts passed.');
