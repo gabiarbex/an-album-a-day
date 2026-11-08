@@ -166,7 +166,7 @@
       <div class="clerk-intro">
         <div class="eyebrow">today’s listen</div>
         <h2>What are you in the mood for?</h2>
-        <p>A genre, a feeling, a situation. Write it however you would say it to a friend.</p>
+        <p>A genre, a feeling, a place. Tell us what you want to hear, in your own language.</p>
         <div class="listener-flow" aria-label="How it works">
           <span><b>1</b> describe</span>
           <span><b>2</b> get one record</span>
@@ -213,6 +213,7 @@
         <p id="meaningMatchNote" class="ai-match-note" hidden><b>SEARCH NOTE</b> we read your description alongside catalog tags. results aren’t always exact.</p>
         <div class="feeling-foot">
           <span id="feelingInsight" aria-live="polite"></span>
+          <small class="locale-hint">English · português · Nederlands · español · Deutsch · français</small>
           <button id="clearFeeling" type="button" disabled>clear text</button>
         </div>
       </div>
@@ -578,10 +579,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="auth-config.js?v=zine-070" defer></script>
   <script src="analytics.js?v=zine-070" defer></script>
-  <script src="intent-core.js?v=goal-002"></script>
+  <script src="album-locale.js?v=global-001"></script>
+  <script src="geo-catalog.js?v=global-001"></script>
+  <script src="intent-core.js?v=global-001"></script>
   <script src="semantic-core.js?v=zine-050"></script>
-  <script src="retrieval-fusion.js?v=rrf-001"></script>
-  <script src="selector.js?v=goal-003" defer></script>
+  <script src="retrieval-fusion.js?v=global-001"></script>
+  <script src="selector.js?v=global-001" defer></script>
   <script src="auth-sync.js?v=zine-070" defer></script>
   <script src="supporter-core.js?v=zine-070"></script>
   <script src="supporter.js?v=zine-070" defer></script>
