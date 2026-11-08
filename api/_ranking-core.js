@@ -79,6 +79,17 @@ export function geographyFit(candidate, body){
  };
 }
 
+// Broad area is a recall hint for a lyric-language request, NEVER proof
+// that a specific album contains vocals in that language.
+export function plausibleVocalOrigin(candidate, body){
+ const country=String(candidate?.originCountry||'').toUpperCase();
+ if(!country)return false;
+ const requested=Array.isArray(body?.intent?.vocalLanguages)?body.intent.vocalLanguages:[];
+ const hints={nl:['NL','BE'],pt:['BR','PT'],fr:['FR','BE'],de:['DE'],es:['ES','AR'],
+  ja:['JP'],uk:['UA']};
+ return requested.some(code=>(hints[code]||[]).includes(country));
+}
+
 export function moodConflict(candidate, avoided) {
   const avoid = new Set((avoided || []).map(value => String(value).toLowerCase()));
   if (!avoid.size) return false;
@@ -273,7 +284,7 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
   const area=geographyFit(candidate,body);
   if(area.requestedCountry)score+=area.countryMatch?0.4:(area.known?-0.6:-0.25);
   if(area.excludedCountry)score-=0.85;
-  if(area.requestedVocalLanguage)score+=area.vocalMatch?0.35:(area.knownVocalLanguage?-0.5:0);
+  if(area.requestedVocalLanguage)score+=area.vocalMatch?0.35:(area.knownVocalLanguage?-0.5:(plausibleVocalOrigin(candidate,body)?0.12:0));
   if(area.excludedVocalLanguage)score-=0.75;
 
   score -= energyPenalty(candidate, body);
@@ -367,7 +378,10 @@ export function explanation(row, body) {
   const areaNames={BR:'Brazil',NL:'the Netherlands',PT:'Portugal',BE:'Belgium',DE:'Germany',
    FR:'France',ES:'Spain',JP:'Japan',AR:'Argentina',NG:'Nigeria',UA:'Ukraine'};
   if(area.requestedVocalLanguage&&!area.vocalMatch){
-   const sound=area.countryMatch?`The artist is associated with ${areaNames[candidate.originCountry]||candidate.originCountry}. `:'';
+   const hint=plausibleVocalOrigin(candidate,body);
+   const sound=area.countryMatch||hint
+    ? `Artist associated with ${areaNames[candidate.originCountry]||candidate.originCountry}. `
+    : '';
    return sound+'The catalog cannot verify the language sung on this album.';
   }
   if(area.countryMatch){
