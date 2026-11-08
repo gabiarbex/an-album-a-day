@@ -103,6 +103,8 @@ export function albumProfile(album) {
     genres.length ? `genres and styles: ${genres.join(', ')}` : '',
     tags.length ? `descriptive music tags: ${tags.join(', ')}` : '',
     moods.length ? `catalog mood tags: ${moods.join(', ')}` : '',
+    album.originCountry ? `artist associated with country: ${({BR:'Brazil',NL:'Netherlands',PT:'Portugal',BE:'Belgium',DE:'Germany',FR:'France',ES:'Spain',JP:'Japan',AR:'Argentina',NG:'Nigeria',UA:'Ukraine'})[album.originCountry]||album.originCountry}` : '',
+    Array.isArray(album.vocalLanguages)&&album.vocalLanguages.length ? `verified sung languages: ${album.vocalLanguages.join(', ')}` : '',
     featureMoods.length ? `estimated emotional qualities: ${featureMoods.join(', ')}` : '',
     energy === undefined ? '' : energyLabel(Number(energy)),
     duration === undefined ? '' : `runtime: about ${Math.round(Number(duration))} minutes`,
@@ -115,6 +117,11 @@ export function queryProfile(body) {
   const moods = cleanArray(body.moods, 24);
 
   const genres = cleanArray(body.intent?.genres, 12);
+  const requestedCountries = cleanArray(body.intent?.originCountries, 12).map(code=>({
+   BR:'Brazilian artists',NL:'Dutch artists',PT:'Portuguese artists',BE:'Belgian artists',DE:'German artists',
+   FR:'French artists',ES:'Spanish artists',JP:'Japanese artists',AR:'Argentinian artists',NG:'Nigerian artists',UA:'Ukrainian artists'
+  })[code]||'');
+  const requestedVocals = cleanArray(body.intent?.vocalLanguages, 12);
 
   const energy = body.energy == null ? '' : energyLabel(body.energy);
   const familiarity = body.comfort === 'comfort'
@@ -130,6 +137,8 @@ export function queryProfile(body) {
     moods.length ? `desired emotional qualities: ${moods.join(', ')}` : '',
 
     genres.length ? `requested genres or styles: ${genres.join(', ')}` : '',
+    requestedCountries.length ? `artist origins: ${requestedCountries.join(', ')}` : '',
+    requestedVocals.length ? `requested sung languages (unverified unless tagged): ${requestedVocals.join(', ')}` : '',
 
     energy,
     familiarity,
