@@ -1300,6 +1300,12 @@ async function rankWithBackend(pool,seed,daily){
  const note=$('feelingInput')?.value.trim()||'';
  const retrievalNote=globalThis.AlbumIntent?.retrievalText?.(note)??note;
  const intent=correctedIntent(interpretFeeling(note));
+ // An exclusion-only country request must load the artist roster even
+ // without a positive origin request. Unknown artists remain unknown.
+ if(intent.avoidOriginCountries?.length&&globalThis.AlbumGeo?.ready){
+  try{await globalThis.AlbumGeo.ready()}
+  catch(error){console.info('Artist origin lookup unavailable',error)}
+ }
  const comfort=recommendationComfort();
  const effectiveEnergy=recommendationEnergy(intent);
  const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
