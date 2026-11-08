@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "source": "curated-artist-area-v1",
+  "does_not_infer_vocal_language": true,
+  "country_counts": {
+    "BR": {
+      "roster_artists": 51,
+      "matched_artists": 38,
+      "catalog_albums": 135,
+      "indexed_albums": 115
+    },
+    "NL": {
+      "roster_artists": 46,
+      "matched_artists": 30,
+      "catalog_albums": 83,
+      "indexed_albums": 71
+    },
+    "PT": {
+      "roster_artists": 18,
+      "matched_artists": 7,
+      "catalog_albums": 7,
+      "indexed_albums": 7
+    },
+    "BE": {
+      "roster_artists": 17,
+      "matched_artists": 12,
+      "catalog_albums": 25,
+      "indexed_albums": 25
+    },
+    "DE": {
+      "roster_artists": 17,
+      "matched_artists": 14,
+      "catalog_albums": 125,
+      "indexed_albums": 61
+    },
+    "FR": {
+      "roster_artists": 16,
+      "matched_artists": 14,
+      "catalog_albums": 85,
+      "indexed_albums": 57
+    },
+    "ES": {
+      "roster_artists": 13,
+      "matched_artists": 7,
+      "catalog_albums": 13,
+      "indexed_albums": 13
+    },
+    "JP": {
+      "roster_artists": 14,
+      "matched_artists": 7,
+      "catalog_albums": 42,
+      "indexed_albums": 36
+    },
+    "AR": {
+      "roster_artists": 9,
+      "matched_artists": 9,
+      "catalog_albums": 39,
+      "indexed_albums": 32
+    },
+    "NG": {
+      "roster_artists": 11,
+      "matched_artists": 3,
+      "catalog_albums": 3,
+      "indexed_albums": 3
+    },
+    "UA": {
+      "roster_artists": 10,
+      "matched_artists": 2,
+      "catalog_albums": 2,
+      "indexed_albums": 2
+    }
+  }
+}
