@@ -24,7 +24,9 @@ const genreLexicon=[
  'punk rock','post-rock','post rock','garage rock','ambient techno','acid jazz',
  'nu jazz','soul jazz','jazz fusion','ambient pop','neo soul',
  'contemporary jazz','rocksteady','trip hop','downtempo','drum and bass','chillwave',
- 'post-punk','post punk','goth','darkwave','experimental','psychedelic','soundtrack','afrobeat'
+ 'post-punk','post punk','goth','darkwave','experimental','psychedelic','soundtrack','afrobeat',
+ 'nederpop','nederhop','levenslied','smartlap','gabber','hardstyle','fado','forro','forró',
+ 'pagode','funk carioca','sertanejo','axe','axé','samba rock','brega','mangue beat','city pop','j-pop','afrobeats'
 ];
 
 function styleMatches(label, requested){
@@ -122,7 +124,8 @@ function desiredListeningGoal(value){
 }
 
 function interpretFeeling(text){
- const t=normalizeText(text);
+ const locale=root.AlbumLocale?.parse?.(text)||null;
+ const t=normalizeText(locale?.canonicalText??text);
  const parsedGenres=genreMentions(t);
  const goal=desiredListeningGoal(t);
  const moods={},avoidMoods={};
@@ -167,14 +170,19 @@ function interpretFeeling(text){
  if(avoided.length)parts.push('not '+avoided.slice(0,2).map(([m])=>m).join(' / '));
  if(avoidGenres.length)parts.push('not '+avoidGenres.slice(0,2).join(' / '));
 
- return {moods,avoidMoods,genres,avoidGenres,energy,exploration,listenerState:goal?.stateMoods||{},desiredMoods:goal?.desiredMoods||{},goalShift:Boolean(goal),summary:parts.join(' · ')};
+ return {moods,avoidMoods,genres,avoidGenres,energy,exploration,
+  originCountries:locale?.originCountries||[],avoidOriginCountries:locale?.avoidOriginCountries||[],
+  vocalLanguages:locale?.vocalLanguages||[],avoidVocalLanguages:locale?.avoidVocalLanguages||[],
+  queryLanguage:locale?.queryLanguage||'und',
+  listenerState:goal?.stateMoods||{},desiredMoods:goal?.desiredMoods||{},goalShift:Boolean(goal),summary:parts.join(' · ')};
 }
 
 // Retrieval models match words rather than logic: "not metal" can otherwise
 // retrieve metal more strongly. Keep the raw note for intent/reranking, but
 // remove explicit exclusion spans before embedding or lexical retrieval.
 function retrievalText(value){
- const raw=normalizeText(value).replace(/\s+/g,' ').trim();
+ const locale=root.AlbumLocale?.parse?.(value)||null;
+ const raw=normalizeText(locale?.canonicalText??value).replace(/\s+/g,' ').trim();
  const goal=desiredListeningGoal(raw);
  const text=goal?raw.slice(goal.start):raw;
  if(!text)return '';
@@ -189,7 +197,12 @@ function retrievalText(value){
   const positive=match?clause.slice(0,match.index).trim():clause;
   if(positive)kept.push(positive);
  }
- return kept.join(' ').replace(/\s+/g,' ').trim();
+ const positive=kept.join(' ').replace(/\s+/g,' ').trim();
+ const countryHints={BR:'brazilian music',NL:'dutch music',PT:'portuguese music',BE:'belgian music',
+  DE:'german music',FR:'french music',ES:'spanish music',JP:'japanese music',AR:'argentinian music',
+  NG:'nigerian music',UA:'ukrainian music'};
+ const extra=(locale?.originCountries||[]).map(c=>countryHints[c]).filter(Boolean);
+ return [positive,...extra].filter(Boolean).join(' ').trim();
 }
 
 root.AlbumIntent={interpretFeeling,desiredListeningGoal,retrievalText,termIsNegated,normalizeText,styleMatches,genreMentions,genreLexicon,feelingLexicon};
