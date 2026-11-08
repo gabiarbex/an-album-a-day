@@ -12,7 +12,7 @@ import {
 } from './_embedding.js';
 import { loadVectorChunk } from './_vector-store.js';
 import { loadTasteProfile, tasteSimilarity } from './_taste-store.js';
-import { scoreCandidate, explanation, genreConflict, isCompilation, diverseTopK } from './_ranking-core.js';
+import { scoreCandidate, explanation, genreConflict, isCompilation, diverseTopK, plausibleVocalOrigin } from './_ranking-core.js';
 
 const MAX_CANDIDATES = 96;
 
@@ -126,11 +126,20 @@ export default {
       const vocalRequests=Array.isArray(body.intent?.vocalLanguages)?body.intent.vocalLanguages:[];
       const knownVocalMatches=vocalRequests.length?(knownOriginMatches.length?knownOriginMatches:countrySafe)
         .filter(row=>vocalRequests.some(code=>(row.candidate.vocalLanguages||[]).includes(code))):[];
-      // Verified positive geography wins over embeddings; lyric language is
-      // enforced only when actual album-level evidence is available.
+      // A country association can only be a *weak retrieval fallback*
+      // when an album's sung language is unknown. Never call it verified.
+      const plausibleVocalMatches=vocalRequests.length&&!knownVocalMatches.length&&!knownOriginMatches.length
+        ? countrySafe.filter(row=>plausibleVocalOrigin(row.candidate,body))
+        : [];
+      // Explicit excluded origins are hard constraints: never restore a
+      // forbidden country simply because the candidate list was exhausted.
       const eligible=knownVocalMatches.length?knownVocalMatches:
         knownOriginMatches.length?knownOriginMatches:
-        countrySafe.length?countrySafe:ranked;
+        plausibleVocalMatches.length?plausibleVocalMatches:
+        countrySafe;
+      if(!eligible.length)return json({
+        error:'No candidates satisfy the explicit country exclusions.'
+      },422,headers);
       const chosen=eligible[0];
       const top = diverseTopK(eligible, 5, (left, right) => {
         const a = cached.get(String(left.candidate.id));
@@ -166,6 +175,7 @@ export default {
           selectedOriginCountry:chosen.candidate.originCountry||null,
           requestedVocalLanguages:vocalRequests,
           verifiedVocalMatches:knownVocalMatches.length,
+          plausibleVocalOriginMatches:plausibleVocalMatches.length,
         },
         reason: explanation(chosen, body),
         alternatives: top.map(row => ({
