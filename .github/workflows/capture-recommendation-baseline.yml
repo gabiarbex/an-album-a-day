@@ -14,6 +14,11 @@ on:
       - 'api/_ranking-core.js'
       - 'api/_embedding.js'
       - 'selector.js'
+      - 'album-locale.js'
+      - 'geo-catalog.js'
+      - 'data/geography/**'
+      - 'benchmarks/global-requests.json'
+      - 'scripts/verify-global-baseline.mjs'
       - 'index.html'
       - '.github/workflows/capture-recommendation-baseline.yml'
 
@@ -38,10 +43,23 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.58.2
           npx playwright install --with-deps chromium
-      - name: Capture eight live production recommendations
+      - name: Wait for international frontend assets on GitHub Pages
+        run: |
+          found=0
+          for i in $(seq 1 24); do
+            if curl --fail --silent --show-error https://gabiarbex.github.io/an-album-a-day/ | grep -q 'album-locale.js?v=global-001'; then
+              found=1
+              break
+            fi
+            sleep 10
+          done
+          [ "$found" -eq 1 ] || { echo "Global frontend assets are not deployed yet."; exit 1; }
+      - name: Capture multilingual production recommendations
         run: node scripts/capture-production-baseline.mjs
         env:
           BASELINE_URL: https://gabiarbex.github.io/an-album-a-day/
+      - name: Verify live country selection and lyric-language uncertainty
+        run: node scripts/verify-global-baseline.mjs baseline-results/production-top1.json
       - name: Check phone-size layout, picker and save controls
         if: always()
         run: node scripts/smoke-mobile.mjs
