@@ -14,7 +14,7 @@ function negated(text,start){
  return NEGATION.test(phrase);
 }
 const COUNTRIES={
- BR:['brazilian','brazil','brasil','brasileir','brasilian','braziliaans','braziliaanse','brasileno','brasilena','bresilien','bresilienne'],
+ BR:['brazilian','brazil','brasil','brasileiro','brasileira','brasileiros','brasileiras','brasilian','braziliaans','braziliaanse','brasileno','brasilena','bresilien','bresilienne'],
  NL:['dutch','netherlands','nederland','nederlandse','nederlands','holland','hollands','hollandse','holandes','holandesa','neerlandes','neerlandaise'],
  PT:['portugal','portuguese','portugues','portuguesa','portugies','portugiese'],
  BE:['belgium','belgian','belgie','belgisch','belgische','belgique','belga','belgica','belge'],
@@ -59,8 +59,8 @@ const TRANSLATE=[
 ];
 const LANG_CUES={
  nl:/\b(?:ik wil|ik zoek|ik voel me|geen|zonder|muziek|nederlandse|nederlands|dromerig|rustig|vrolijk)\b/,
- pt:/\b(?:quero|preciso|estou|musica|brasileir|nao|sem|sossegad|alegre|triste)\b/,
- es:/\b(?:quiero|busco|musica|espanol|sin|pero|estoy)\b/,
+ pt:/\b(?:quero|preciso|estou|brasileiro|brasileira|nao|sem|sossegad|alegre|triste)\b/,
+ es:/\b(?:quiero|busco|espanol|sin|pero|estoy|brasilena|brasileno)\b/,
  de:/\b(?:ich will|ich suche|ohne|keine|nicht|musik|ruhig|traurig)\b/,
  fr:/\b(?:je veux|je cherche|musique|sans|mais|francais)\b/,
  en:/\b(?:i want|i need|i feel|give me|sung in|without|something|i'm)\b/
@@ -84,7 +84,8 @@ function parse(value){
   for(const name of names){
    for(const span of phraseMatches(raw,name)){
     const context=raw.slice(Math.max(0,span.start-45),span.start);
-    const explicit=VOCAL_CONTEXT.test(context) || /(?:-language|-sprachig|stalig)$/.test(name);
+    const suffix=raw.slice(span.end,span.end+35);
+    const explicit=VOCAL_CONTEXT.test(context) || /^(?:[- ](?:language|lyrics|vocals|songs|language music)|stalige?\b)/.test(suffix) || /(?:-language|-sprachig|stalig)$/.test(name);
     if(!explicit)continue;
     used.push(span);
     (negated(raw,span.start)?avoidVocalLanguages:vocalLanguages).push(code);
