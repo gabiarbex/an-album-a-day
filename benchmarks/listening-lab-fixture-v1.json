@@ -1,0 +1,194 @@
+{
+  "version": 1,
+  "description": "14 captured prompts for manual ratings. This fixture is not a label file.",
+  "cases": [
+    {
+      "id": "G01",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want jazz music today",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "G05",
+      "category": "genre",
+      "language": "en",
+      "prompt": "I want bossa nova music today",
+      "wantGenres": [
+        "bossa nova"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "X01",
+      "category": "genre_exclusion",
+      "language": "en",
+      "prompt": "Give me jazz, not metal",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "M01",
+      "category": "mood",
+      "language": "en",
+      "prompt": "I feel dreamy; find me a record that sounds dreamy",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "dreamy"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "N01",
+      "category": "mood_exclusion",
+      "language": "en",
+      "prompt": "I want something dreamy, but not warm",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "dreamy"
+      ],
+      "avoidMoods": [
+        "warm"
+      ]
+    },
+    {
+      "id": "P01",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "quero ouvir jazz, sem soul",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [
+        "soul"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "Q01",
+      "category": "portuguese",
+      "language": "pt",
+      "prompt": "nao quero jazz, quero soul",
+      "wantGenres": [
+        "soul"
+      ],
+      "avoidGenres": [
+        "jazz"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "C01",
+      "category": "mixed_intent",
+      "language": "en",
+      "prompt": "I'm feeling dreamy and I want jazz, but no soul",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [
+        "soul"
+      ],
+      "wantMoods": [
+        "dreamy"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "E01",
+      "category": "emotion_shift",
+      "language": "en",
+      "prompt": "I'm sad but want uplifting music",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "hopeful"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "E02",
+      "category": "emotion_shift",
+      "language": "en",
+      "prompt": "I'm anxious and need something calm",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "calm"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "E03",
+      "category": "emotion_shift",
+      "language": "pt",
+      "prompt": "estou triste e quero bossa nova alegre",
+      "wantGenres": [
+        "bossa nova"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [
+        "hopeful"
+      ],
+      "avoidMoods": []
+    },
+    {
+      "id": "E04",
+      "category": "style_precision",
+      "language": "en",
+      "prompt": "I want dream pop, not metal",
+      "wantGenres": [
+        "dream pop"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "E05",
+      "category": "style_precision",
+      "language": "en",
+      "prompt": "give me indie pop, not pop punk",
+      "wantGenres": [
+        "indie pop"
+      ],
+      "avoidGenres": [
+        "pop punk"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    },
+    {
+      "id": "E06",
+      "category": "style_precision",
+      "language": "en",
+      "prompt": "I want rocksteady, not rock",
+      "wantGenres": [
+        "rocksteady"
+      ],
+      "avoidGenres": [
+        "rock"
+      ],
+      "wantMoods": [],
+      "avoidMoods": []
+    }
+  ]
+}
