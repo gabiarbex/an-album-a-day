@@ -1151,6 +1151,13 @@ function score(a,intent){
   const ww=2*confidence('genres',.65);
   weighted+=ww*(albumGenres.some(x=>globalThis.AlbumIntent?.styleMatches?.(x,g)===true)?0:1);totalWeight+=ww;
  }
+ const artistArea=globalThis.AlbumGeo?.countryForAlbum?.(a)||'';
+ if(intent.originCountries?.length){
+  const ww=4.5;weighted+=ww*(intent.originCountries.includes(artistArea)?1:0);totalWeight+=ww;
+ }
+ if(intent.avoidOriginCountries?.includes(artistArea)){
+  const ww=6;weighted+=0;totalWeight+=ww;
+ }
 
  const energySource=String(a.provenance?.energy?.source||'');
  const energyConfidence=Number(a.provenance?.energy?.confidence)||0;
@@ -1281,6 +1288,8 @@ function backendCandidate(a,intent,semanticScore=0){
   moodConfidence:Number(a.provenance?.moods?.confidence)||0,
   energySource:a._acoustic?.energy!=null?'audio':(a._live?.signals?.energy!=null?'live':String(a.provenance?.energy?.source||'')),
   energyConfidence:a._acoustic?.energy!=null||a._live?.signals?.energy!=null?1:(Number(a.provenance?.energy?.confidence)||0),
+  originCountry:globalThis.AlbumGeo?.countryForAlbum?.(a)||null,
+  vocalLanguages:a.provenance?.vocalLanguages?.source&&Array.isArray(a.vocalLanguages)?a.vocalLanguages.slice(0,4):[],
   catalogFile:a._catalogFile||null,
   catalogChunk:Number(a._catalogChunk)||0
  };
@@ -1296,10 +1305,12 @@ async function rankWithBackend(pool,seed,daily){
  const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
  const rows=new Map();
  let retrievalQueryVector=null;
- const sourceCounts={neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
- const sourcePositions={neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
+ const sourceCounts={regional:0,neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
+ const sourcePositions={regional:0,neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
  const add=(a,semanticScore=0,source='controls')=>{
   if(!a||albumWasSeen(a)||logged.has(key(a)))return;
+  const knownCountry=globalThis.AlbumGeo?.countryForAlbum?.(a);
+  if(knownCountry&&intent.avoidOriginCountries?.includes(knownCountry))return;
   const id=lookupId(a);
   const position=++sourcePositions[source];
   const current=rows.get(id);
@@ -1314,6 +1325,23 @@ async function rankWithBackend(pool,seed,daily){
    current.semanticScore=Number(semanticScore)||0;
   }
  };
+
+ // Country is an explicit artist-area filter, not a genre or lyric-language
+ // guess. Load real records from the existing catalog and preserve no-repeat.
+ if(intent.originCountries?.length&&globalThis.AlbumGeo?.countryRecords){
+  try{
+   const geo=await globalThis.AlbumGeo.countryRecords(intent.originCountries);
+   const regional=geo.rows
+    .filter(a=>!albumWasSeen(a)&&!logged.has(key(a)))
+    .map(a=>({a,relevance:score(a,intent)}))
+    .sort((a,b)=>b.relevance-a.relevance||String(a.a.lookup_id).localeCompare(String(b.a.lookup_id)))
+    .slice(0,75).map(row=>row.a);
+   if(regional.length){
+    mergeAlbums(regional);
+    for(const a of regional)add(a,0,'regional');
+   }
+  }catch(error){console.info('Origin-index fallback',error)}
+ }
 
  // Full-catalog MiniLM recall: search all 100k projected vectors before final reranking.
  const neuralQueryActive=Boolean(
@@ -1423,7 +1451,7 @@ async function rankWithBackend(pool,seed,daily){
  const allRows=[...rows.values()];
  // Interleave sources so no retrieval method can monopolize the 96 slots.
  const buckets=Object.fromEntries(
-  ['neural','semantic','controls','adjacent','familiar','explore'].map(source=>[
+  ['regional','neural','semantic','controls','adjacent','familiar','explore'].map(source=>[
    source,allRows.filter(row=>row.sources.has(source))
     .sort((a,b)=>(a.sourceRanks[source]||Infinity)-(b.sourceRanks[source]||Infinity))
   ])
@@ -1441,11 +1469,11 @@ async function rankWithBackend(pool,seed,daily){
   shortlist=[];
   const used=new Set();
   const quotas=comfort==='exploration'
-   ? {neural:30,semantic:16,controls:28,adjacent:16,familiar:2,explore:4}
+   ? {regional:24,neural:30,semantic:16,controls:28,adjacent:16,familiar:2,explore:4}
    : comfort==='comfort'
-     ? {neural:28,semantic:16,controls:28,adjacent:8,familiar:12,explore:4}
-     : {neural:30,semantic:16,controls:28,adjacent:12,familiar:6,explore:4};
-  for(const source of ['neural','semantic','controls','adjacent','familiar','explore']){
+     ? {regional:24,neural:28,semantic:16,controls:28,adjacent:8,familiar:12,explore:4}
+     : {regional:24,neural:30,semantic:16,controls:28,adjacent:12,familiar:6,explore:4};
+  for(const source of ['regional','neural','semantic','controls','adjacent','familiar','explore']){
    let taken=0;
    for(const row of buckets[source]){
     const id=lookupId(row.album);
@@ -1488,6 +1516,7 @@ async function rankWithBackend(pool,seed,daily){
     queryVector:retrievalQueryVector,
     retrievalSelection:globalThis.AlbumFusion?.select?'weighted-rrf-v1':'source-quota-v0',
     retrieval:{
+     regional:sourceCounts.regional,
      neural:sourceCounts.neural,
      semantic:sourceCounts.semantic,
      controls:sourceCounts.controls,
