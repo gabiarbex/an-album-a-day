@@ -79,6 +79,48 @@ For example, **“I miss someone but I don’t want a sad record”** does not t
 
 Semantic retrieval is tried for prose requests when the static semantic index is available; the lexical interpreter remains a transparent fallback and supplies explicit control signals.
 
+### Global discovery and multilingual requests (2026)
+
+The free-text listening prompt accepts practical mood, genre and country
+requests in **English, Portuguese, Dutch, Spanish, German and French**.
+The locale parser normalizes common listening phrases and negation while
+preserving user intent. This is a growing rules-and-neural hybrid, **not**
+a claim to perfect translation of arbitrary prose.
+
+- `album-locale.js`: country, vocal-language and request-language intent are separate fields.
+- `data/geography/artist-roster.json`: curated artist-area associations; they do
+  **not** imply a song was sung in the country's majority language.
+- `data/geography/{BR,NL,PT,BE,DE,FR,ES,JP,AR,NG,UA}.json`: actual
+  albums from the global catalog, selected only for those curated artist
+  matches. `scripts/build_geography_index.py` regenerates the indexes.
+- `geo-catalog.js`: loads regional candidates when requested; the backend
+  prioritizes positively verified artist-area matches over weaker vector similarity.
+- Original album identities, no-repeat history and explicit genre exclusions
+  remain active across country searches.
+
+The first verified index includes **115 Brazilian albums across 38 roster
+artists** and **71 Dutch albums across 30 roster artists**. The underlying
+catalog has 135 and 83 matching albums respectively. Counts are from
+`data/geography/manifest.json`; broader geographic coverage is still an
+important catalog-building priority.
+
+Examples:
+
+```text
+quero um álbum brasileiro de samba, sem metal
+ik wil Nederlandse indie muziek, maar geen metal
+quiero música brasileña sin metal
+ich will ruhige deutsche Musik ohne Metal
+je veux de la musique française calme
+I want Dutch artists, singing in English
+```
+
+An artist being Dutch does **not** prove an album is sung in Dutch.
+When the catalog lacks trustworthy vocal-language evidence, the explanation
+explicitly says that lyric language is unverified. MusicBrainz release
+language refers to the tracklist/title language, not necessarily the lyrics.
+See [global-music design](docs/GLOBAL-MUSIC.md).
+
 ### Selected-record facts
 
 After a record is chosen, the app can enrich its display with factual metadata:
