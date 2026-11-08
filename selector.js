@@ -1554,6 +1554,27 @@ async function rankWithBackend(pool,seed,daily){
  }catch(e){
   console.info('Recommendation backend unavailable; using browser fallback.',e);
   backendUnavailableUntil=Date.now()+120000;
+  // Preserve explicitly requested artist area if the neural backend fails.
+  const names={BR:'Brazil',NL:'the Netherlands',PT:'Portugal',BE:'Belgium',
+   DE:'Germany',FR:'France',ES:'Spain',JP:'Japan',AR:'Argentina',NG:'Nigeria',UA:'Ukraine'};
+  const voiceAreas={nl:['NL','BE'],pt:['BR','PT'],fr:['FR','BE'],de:['DE'],
+   es:['ES','AR'],ja:['JP'],uk:['UA']};
+  const desired=intent.originCountries||[];
+  const suggested=(intent.vocalLanguages||[]).flatMap(language=>voiceAreas[language]||[]);
+  const regional=[...rows.values()].filter(row=>{
+   const area=globalThis.AlbumGeo?.countryForAlbum?.(row.album);
+   return area&&(desired.length?desired.includes(area):suggested.includes(area))
+    &&!intent.avoidOriginCountries?.includes(area)
+    &&!albumWasSeen(row.album)&&!logged.has(key(row.album));
+  }).sort((a,b)=>score(b.album,intent)-score(a.album,intent));
+  if(regional.length){
+   const album=regional[0].album;
+   const area=globalThis.AlbumGeo?.countryForAlbum?.(album);
+   album._regionalExplanation=desired.length
+    ? `Artist associated with ${names[area]||area}; selected from the regional catalog while the neural service was unavailable.`
+    : `Artist associated with ${names[area]||area}. The catalog cannot verify the language sung on this album.`;
+   return {album,featuresUsed:true,mode:'regional'};
+  }
   return null;
  }
 }
@@ -3190,6 +3211,7 @@ function explainPick(a,context={}){
  if(context.rankingMode==='shared')return '';
  if(context.rankingMode==='surprise')return 'random pick.';
  if(context.rankingMode==='backend'&&a._backendRank?.reason)return String(a._backendRank.reason).trim().replace(/[.]+$/,'')+'.';
+ if(context.rankingMode==='regional'&&a._regionalExplanation)return a._regionalExplanation;
 
  const note=$('feelingInput')?.value.trim()||'';
  const intent=correctedIntent(interpretFeeling(note));
