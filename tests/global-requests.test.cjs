@@ -42,7 +42,7 @@ for(const c of cases){
  if(c.notMood)eq(!Object.hasOwn(a.moods,c.notMood),'not mood');
  if(c.goalShift!==undefined)eq(a.goalShift===c.goalShift,'goal shift');
  const query=retrievalText(c.text);
- if(c.avoidGenre)eq(!query.includes(c.avoidGenre),'no excluded genre in query');
+ if(c.avoidGenre)eq(!globalThis.AlbumIntent.styleMatches(query,c.avoidGenre),'no excluded whole genre in query');
 }
 assert.equal(globalThis.AlbumIntent.styleMatches('rocksteady','rock'),false);
 assert.equal(globalThis.AlbumIntent.styleMatches('indie pop','pop punk'),false);
