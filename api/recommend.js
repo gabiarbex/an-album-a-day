@@ -116,8 +116,22 @@ export default {
       // eligible candidate exists; hidden genres are never assumed absent.
       const avoided = Array.isArray(body.intent?.avoidGenres) ? body.intent.avoidGenres : [];
       const genreSafe = avoided.length ? ranked.filter(row => !genreConflict(row.candidate, avoided)) : ranked;
-      const eligible = genreSafe.length ? genreSafe : ranked;
-      const chosen = eligible[0];
+      const knownAvoided=Array.isArray(body.intent?.avoidOriginCountries)?body.intent.avoidOriginCountries:[];
+      const countrySafe=(genreSafe.length?genreSafe:ranked)
+        .filter(row=>!knownAvoided.includes(String(row.candidate.originCountry||'').toUpperCase()));
+      const requestedCountries=Array.isArray(body.intent?.originCountries)?body.intent.originCountries:[];
+      const knownOriginMatches=requestedCountries.length
+        ? countrySafe.filter(row=>requestedCountries.includes(String(row.candidate.originCountry||'').toUpperCase()))
+        : [];
+      const vocalRequests=Array.isArray(body.intent?.vocalLanguages)?body.intent.vocalLanguages:[];
+      const knownVocalMatches=vocalRequests.length?(knownOriginMatches.length?knownOriginMatches:countrySafe)
+        .filter(row=>vocalRequests.some(code=>(row.candidate.vocalLanguages||[]).includes(code))):[];
+      // Verified positive geography wins over embeddings; lyric language is
+      // enforced only when actual album-level evidence is available.
+      const eligible=knownVocalMatches.length?knownVocalMatches:
+        knownOriginMatches.length?knownOriginMatches:
+        countrySafe.length?countrySafe:ranked;
+      const chosen=eligible[0];
       const top = diverseTopK(eligible, 5, (left, right) => {
         const a = cached.get(String(left.candidate.id));
         const b = cached.get(String(right.candidate.id));
@@ -147,6 +161,11 @@ export default {
           consideredCompilations: candidates.filter(isCompilation).length,
           chosenCompilation: isCompilation(chosen.candidate),
           excludedGenreMatches: ranked.length - genreSafe.length,
+          requestedOriginCountries:requestedCountries,
+          verifiedOriginMatches:knownOriginMatches.length,
+          selectedOriginCountry:chosen.candidate.originCountry||null,
+          requestedVocalLanguages:vocalRequests,
+          verifiedVocalMatches:knownVocalMatches.length,
         },
         reason: explanation(chosen, body),
         alternatives: top.map(row => ({
