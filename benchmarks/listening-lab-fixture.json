@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "description": "14 captured prompts for manual ratings. This fixture is not a label file.",
+  "version": 2,
+  "description": "22 fixed listening requests including Brazilian Dutch and multilingual country cases; no human labels assumed.",
   "cases": [
     {
       "id": "G01",
@@ -189,6 +189,143 @@
       ],
       "wantMoods": [],
       "avoidMoods": []
+    },
+    {
+      "id": "L01",
+      "language": "pt",
+      "category": "artist_origin",
+      "prompt": "quero um álbum brasileiro de samba, sem metal",
+      "wantGenres": [
+        "samba"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [
+        "BR"
+      ],
+      "avoidCountries": []
+    },
+    {
+      "id": "L02",
+      "language": "nl",
+      "category": "artist_origin",
+      "prompt": "ik wil Nederlandse indie muziek, maar geen metal",
+      "wantGenres": [
+        "indie"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [
+        "NL"
+      ],
+      "avoidCountries": []
+    },
+    {
+      "id": "L03",
+      "language": "es",
+      "category": "artist_origin",
+      "prompt": "quiero música brasileña sin metal",
+      "wantGenres": [],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [
+        "BR"
+      ],
+      "avoidCountries": []
+    },
+    {
+      "id": "L04",
+      "language": "de",
+      "category": "artist_origin",
+      "prompt": "ich will ruhige deutsche Musik ohne Metal",
+      "wantGenres": [],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [
+        "calm"
+      ],
+      "avoidMoods": [],
+      "wantCountries": [
+        "DE"
+      ],
+      "avoidCountries": []
+    },
+    {
+      "id": "L05",
+      "language": "fr",
+      "category": "artist_origin",
+      "prompt": "je veux de la musique française calme",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "calm"
+      ],
+      "avoidMoods": [],
+      "wantCountries": [
+        "FR"
+      ],
+      "avoidCountries": []
+    },
+    {
+      "id": "L06",
+      "language": "nl",
+      "category": "vocal_language",
+      "prompt": "ik wil muziek in het Nederlands",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [],
+      "wantVocals": [
+        "nl"
+      ],
+      "avoidCountries": []
+    },
+    {
+      "id": "L07",
+      "language": "en",
+      "category": "artist_origin",
+      "prompt": "I want Japanese ambient, not metal",
+      "wantGenres": [
+        "ambient"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [
+        "JP"
+      ],
+      "avoidCountries": []
+    },
+    {
+      "id": "L08",
+      "language": "en",
+      "category": "artist_origin",
+      "prompt": "not Dutch, give me Brazilian jazz",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [
+        "BR"
+      ],
+      "avoidCountries": [
+        "NL"
+      ]
     }
   ]
 }
