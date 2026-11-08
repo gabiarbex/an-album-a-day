@@ -32,8 +32,8 @@ MusicBrainz metadata and catalog-file provenance; no albums are invented.
 
 The build's manifest reports original matched totals, distinct artists and
 the smaller indexed discovery subset for each country. The initial
-verified run matched 135 Brazil-associated records and 83 Netherlands-associated
-records from the 100k catalog; 115 and 71 are indexed for direct discovery.
+verified run matched 218 Brazil-associated records and 155 Netherlands-associated
+records from the 100k catalog; 197 and 133 are indexed for direct discovery.
 Other country indexes include Portugal, Belgium, Germany, France, Spain,
 Japan, Argentina, Nigeria and Ukraine, but smaller countries need improved
 catalog depth.
