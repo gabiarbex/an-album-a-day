@@ -60,6 +60,25 @@ export function genreConflict(candidate, avoided) {
   return avoided.some(value=>labels.some(label=>styleMatches(label,value)));
 }
 
+export function geographyFit(candidate, body){
+ const wanted=Array.isArray(body?.intent?.originCountries)?body.intent.originCountries:[];
+ const avoided=Array.isArray(body?.intent?.avoidOriginCountries)?body.intent.avoidOriginCountries:[];
+ const code=String(candidate?.originCountry||'').toUpperCase();
+ const voice=Array.isArray(candidate?.vocalLanguages)?candidate.vocalLanguages.map(x=>String(x).toLowerCase()):[];
+ const wantedVoice=Array.isArray(body?.intent?.vocalLanguages)?body.intent.vocalLanguages:[];
+ const avoidVoice=Array.isArray(body?.intent?.avoidVocalLanguages)?body.intent.avoidVocalLanguages:[];
+ return {
+  known:Boolean(code),
+  requestedCountry:wanted.length>0,
+  countryMatch:Boolean(code&&wanted.includes(code)),
+  excludedCountry:Boolean(code&&avoided.includes(code)),
+  knownVocalLanguage:voice.length>0,
+  requestedVocalLanguage:wantedVoice.length>0,
+  vocalMatch:wantedVoice.some(code=>voice.includes(code)),
+  excludedVocalLanguage:avoidVoice.some(code=>voice.includes(code))
+ };
+}
+
 export function moodConflict(candidate, avoided) {
   const avoid = new Set((avoided || []).map(value => String(value).toLowerCase()));
   if (!avoid.size) return false;
@@ -220,7 +239,9 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
     genreFit.requested ||
     moodFit.requested ||
     avoidGenres.length ||
-    avoidMoods.length
+    avoidMoods.length ||
+    Boolean(body.intent?.originCountries?.length) ||
+    Boolean(body.intent?.vocalLanguages?.length)
   );
 
   const neuralWeight = hasExplicitControls ? 0.56 : 0.66;
@@ -248,6 +269,12 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
 
   const energyDistance = reliableEnergyDistance(candidate, body);
   if (energyDistance !== null && energyDistance <= 1.5) score += 0.07;
+
+  const area=geographyFit(candidate,body);
+  if(area.requestedCountry)score+=area.countryMatch?0.4:(area.known?-0.6:-0.25);
+  if(area.excludedCountry)score-=0.85;
+  if(area.requestedVocalLanguage)score+=area.vocalMatch?0.35:(area.knownVocalLanguage?-0.5:0);
+  if(area.excludedVocalLanguage)score-=0.75;
 
   score -= energyPenalty(candidate, body);
   score -= compilationPenalty(candidate, body);
@@ -320,6 +347,7 @@ export function explanation(row, body) {
 
   const genreFit = requestedGenreFit(candidate, body);
   if (genreFit.match) bits.push(...genreFit.matched.slice(0, 1));
+  const area=geographyFit(candidate,body);
 
   const adjacency = Number(candidate.tasteAdjacency) || 0;
   const familiarity = Number(candidate.familiarity) || 0;
@@ -336,6 +364,20 @@ export function explanation(row, body) {
   }
 
   const unique = [...new Set(bits.filter(Boolean))].slice(0,3);
+  const areaNames={BR:'Brazil',NL:'the Netherlands',PT:'Portugal',BE:'Belgium',DE:'Germany',
+   FR:'France',ES:'Spain',JP:'Japan',AR:'Argentina',NG:'Nigeria',UA:'Ukraine'};
+  if(area.requestedVocalLanguage&&!area.vocalMatch){
+   const sound=area.countryMatch?`The artist is associated with ${areaNames[candidate.originCountry]||candidate.originCountry}. `:'';
+   return sound+'The catalog cannot verify the language sung on this album.';
+  }
+  if(area.countryMatch){
+   const where=areaNames[candidate.originCountry]||candidate.originCountry;
+   const genre=requestedGenreFit(candidate,body).matched[0];
+   return `Artist associated with ${where}${genre?' · catalog tags include '+genre:''}.`;
+  }
+  if(area.requestedCountry&&!area.countryMatch){
+   return 'The catalog cannot verify an artist-origin match for this request.';
+  }
   const genre=genreFit.matched[0];
   const mood=moodFit.matched[0];
   if(genre&&mood)return `Catalog tags: ${genre} and ${mood}.`;
