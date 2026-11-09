@@ -129,8 +129,8 @@ function relationshipNarrative(text){
  const t=normalizeText(text);
  const partner=/\b(?:girlfriend|boyfriend|partner|wife|husband|relationship|marriage|spouse|namorad[ao]|relacionamento|parceir[ao]|casamento|vriendin|vriendje|relatie|pareja|novi[ao])\b/.test(t);
  if(!partner)return null;
- const conflict=/\b(?:fight|fought|argument|argu(?:e|ed|ing)|disagreement|tension|hard lately|really hard|difficult|struggling|briga|briguei|brigamos|discussao|discuti|discutimos|moeilijk|ruzie|streit|pelea|discusion)\b/.test(t);
- const uncertain=/\b(?:idk|i don't know|i dont know|not sure|unsure|whether|if we|future|will (?:we|it)|could end|might end|breaking up|break up|separat|end of us|terminar|acabou|futuro|nao sei|incerto|incerta|twijfel|onzeker|duda|futuro)\b/.test(t);
+ const conflict=/\b(?:fight|fought|argument|argu(?:e|ed|ing)|disagreement|tension|hard lately|really hard|difficult|struggling|fragile|strained|on the rocks|briga|briguei|brigamos|discussao|discuti|discutimos|moeilijk|ruzie|streit|pelea|discusion)\b/.test(t);
+ const uncertain=/\b(?:idk|i don't know|i dont know|not sure|unsure|whether|if we|future|will (?:we|it)|could end|might end|might separate|break(?:ing)? up|separat(?:e|ion|ing)|end of us|terminar|acabou|futuro|nao sei|incerto|incerta|twijfel|onzeker|duda|futuro)\b/.test(t);
  const loss=/\b(?:break my heart|breaks my heart|broken heart|heartbroken|heartbreak|lose (?:her|him|them|my)|losing (?:her|him|them|my)|can't lose|cant lose|saudade|coracao partido|coracao quebrado|meu coracao|perder (?:ela|ele|voce)|perd(?:er|endo)|verlieren|verlies)\b/.test(t);
  const regret=/\b(?:i'm sorry|im sorry|i am sorry|apolog|regret|my fault|guilty|culpa|desculp|arrepend|me arrependo|sinto muito|schuld|spijt|perdon|lo siento)\b/.test(t);
  if(!(loss||(conflict&&(uncertain||regret))||(uncertain&&regret)))return null;
