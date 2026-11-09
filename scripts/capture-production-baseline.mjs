@@ -57,7 +57,12 @@ try {
    await page.locator('#feelingInput').fill(prompt);
    if((uiMoods||[]).length||uiEnergy||uiComfort)await page.locator('#fineTune summary').click();
    for(const tag of uiMoods||[]){
-    const moodButton=page.locator('#moods button').filter({hasText:new RegExp('^'+tag+'
+    const moodButton=page.locator('#moods button').filter({hasText:tag}).first();
+    await moodButton.evaluate(button=>button.click());
+   }
+   if(uiEnergy)await page.locator('#energy button').filter({hasText:uiEnergy}).first().click();
+   if(uiComfort)await page.locator('#comfort button').filter({hasText:uiComfort}).first().click();
+   await page.locator('#recommend').click();
    await page.waitForFunction(()=>document.body.classList.contains('has-record')&&
       document.querySelector('#details h2')?.textContent?.trim()!=='pull a record.',null,{timeout:90000});
    await page.waitForTimeout(500);
