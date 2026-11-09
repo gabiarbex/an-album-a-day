@@ -1311,8 +1311,8 @@ async function rankWithBackend(pool,seed,daily){
  const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
  const rows=new Map();
  let retrievalQueryVector=null;
- const sourceCounts={regional:0,neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
- const sourcePositions={regional:0,neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
+ const sourceCounts={regional:0,emotional:0,neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
+ const sourcePositions={regional:0,emotional:0,neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
  const add=(a,semanticScore=0,source='controls')=>{
   if(!a||albumWasSeen(a)||logged.has(key(a)))return;
   const knownCountry=globalThis.AlbumGeo?.countryForAlbum?.(a);
@@ -1371,7 +1371,7 @@ async function rankWithBackend(pool,seed,daily){
      headers:{'Content-Type':'application/json'},
      body:JSON.stringify({
       note:retrievalNote,
-      moods:[...state.moods],
+      moods:mergeUnique([...state.moods,...Object.keys(selectedMoodSignals())]),
       energy:effectiveEnergy,
       comfort,
       time:state.time,
@@ -1427,6 +1427,28 @@ async function rankWithBackend(pool,seed,daily){
   for(const row of samples)add(row.a,0,'controls');
  }
 
+ // A relationship in crisis calls for emotional *relevance*, not the
+ // nearest album title. This recall source uses tentative sound/style cues
+ // and actual album tags; final ranking still judges and can reject them.
+ if(intent.narrativeKind==='relationship-uncertainty'&&!intent.genres?.length){
+  const cues=[
+   'slowcore','sadcore','singer-songwriter','indie folk','chamber pop',
+   'ambient folk','acoustic','dream pop','soft rock','downtempo',
+   'melancholic','reflective','bittersweet','heartbreak','introspective'
+  ];
+  const sample=sampleCandidates(pool,seed+'|relationship-tone',Math.min(12000,pool.length),daily)
+   .map(a=>{
+    const labels=[...(a.genres||[]),...(a.tags||[]),...(a.moods||[])]
+     .map(v=>String(typeof v==='string'?v:v?.name||'').toLowerCase());
+    const strong=cues.filter(c=>labels.some(v=>globalThis.AlbumIntent?.styleMatches?.(v,c))).length;
+    return {a,strong,score:score(a,intent)};
+   })
+   .filter(row=>row.strong>0)
+   .sort((a,b)=>b.strong-a.strong||b.score-a.score)
+   .slice(0,48);
+  for(const row of sample)add(row.a,0,'emotional');
+ }
+
  // Explicit controls and mood intent always get a substantial share.
  const local=sampleCandidates(pool,seed+'|backend-controls',Math.min(2600,pool.length),daily)
   .map(a=>({a,v:score(a,intent)}))
@@ -1461,7 +1483,7 @@ async function rankWithBackend(pool,seed,daily){
  const allRows=[...rows.values()];
  // Interleave sources so no retrieval method can monopolize the 96 slots.
  const buckets=Object.fromEntries(
-  ['regional','neural','semantic','controls','adjacent','familiar','explore'].map(source=>[
+  ['regional','emotional','neural','semantic','controls','adjacent','familiar','explore'].map(source=>[
    source,allRows.filter(row=>row.sources.has(source))
     .sort((a,b)=>(a.sourceRanks[source]||Infinity)-(b.sourceRanks[source]||Infinity))
   ])
@@ -1479,11 +1501,11 @@ async function rankWithBackend(pool,seed,daily){
   shortlist=[];
   const used=new Set();
   const quotas=comfort==='exploration'
-   ? {regional:24,neural:30,semantic:16,controls:28,adjacent:16,familiar:2,explore:4}
+   ? {regional:18,emotional:20,neural:30,semantic:16,controls:28,adjacent:16,familiar:2,explore:4}
    : comfort==='comfort'
-     ? {regional:24,neural:28,semantic:16,controls:28,adjacent:8,familiar:12,explore:4}
-     : {regional:24,neural:30,semantic:16,controls:28,adjacent:12,familiar:6,explore:4};
-  for(const source of ['regional','neural','semantic','controls','adjacent','familiar','explore']){
+     ? {regional:18,emotional:20,neural:28,semantic:16,controls:28,adjacent:8,familiar:12,explore:4}
+     : {regional:18,emotional:20,neural:30,semantic:16,controls:28,adjacent:12,familiar:6,explore:4};
+  for(const source of ['regional','emotional','neural','semantic','controls','adjacent','familiar','explore']){
    let taken=0;
    for(const row of buckets[source]){
     const id=lookupId(row.album);
@@ -1514,7 +1536,7 @@ async function rankWithBackend(pool,seed,daily){
     client_id:clientFeedbackId(),
     note,
     retrievalNote,
-    moods:[...state.moods],
+    moods:mergeUnique([...state.moods,...Object.keys(selectedMoodSignals())]),
     energy:effectiveEnergy,
     comfort,
     time:state.time,
@@ -1527,6 +1549,7 @@ async function rankWithBackend(pool,seed,daily){
     retrievalSelection:globalThis.AlbumFusion?.select?'weighted-rrf-v1':'source-quota-v0',
     retrieval:{
      regional:sourceCounts.regional,
+     emotional:sourceCounts.emotional,
      neural:sourceCounts.neural,
      semantic:sourceCounts.semantic,
      controls:sourceCounts.controls,
