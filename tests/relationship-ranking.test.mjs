@@ -37,4 +37,11 @@ assert.equal(relationshipStyleFit(exuberant,energetic).penalty,0,
  'Explicitly high-energy request must override default style restraint');
 const generic={...body,intent:{...body.intent,narrativeKind:null,moods:{},avoidMoods:{}},moods:[]};
 assert.equal(relationshipStyleFit(intimate,generic).bonus,0,'Other requests must be unchanged');
+// When an account has no tastes yet, the preserved editorial library
+// receives a modest prior. It must not override clear mood contradictions.
+const baseCatalog={...subdued,catalogFile:'base.json',familiarity:0};
+const obscureCatalog={...subdued,catalogFile:'shard-088.json',familiarity:0};
+assert.ok(scoreCandidate(baseCatalog,.45,body)>scoreCandidate(obscureCatalog,.45,body));
+assert.ok(scoreCandidate(baseCatalog,.45,{...body,comfort:'exploration'})===
+  scoreCandidate(obscureCatalog,.45,{...body,comfort:'exploration'}));
 console.log('Relationship-sensitive ranking and low-energy counterfactual passed.');
