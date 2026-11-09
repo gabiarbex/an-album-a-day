@@ -1,0 +1,47 @@
+name: Real relationship-mood recommendations
+
+on:
+  push:
+    paths:
+      - '.github/workflows/relationship-recommendations.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  relationship-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Wait for updated browser code to appear
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error https://gabiarbex.github.io/an-album-a-day/ | grep -q 'selector.js?v=emotion-001'; then exit 0; fi
+            sleep 10
+          done
+          echo 'Updated emotional recommender not deployed'; exit 1
+      - name: Capture genuine backend candidates for six synthetic emotional requests
+        env:
+          BENCHMARK_CASES_FILE: benchmarks/relationship-scenarios.json
+          BENCHMARK_OUTPUT: baseline-results/relationship-observed.json
+          BASELINE_URL: https://gabiarbex.github.io/an-album-a-day/
+        run: node scripts/capture-production-baseline.mjs
+      - name: Audit mood interpretation and obvious soundtrack mismatch
+        run: node scripts/verify-relationship-baseline.mjs baseline-results/relationship-observed.json
+      - name: Retain benchmark (no private listener diary)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relationship-mood-relevance-qa
+          path: baseline-results/
+          retention-days: 21
+          if-no-files-found: warn
