@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: relationship-tone-live-qa
+  cancel-in-progress: true
+
 jobs:
   relationship-benchmark:
     runs-on: ubuntu-latest
@@ -29,6 +33,10 @@ jobs:
             sleep 10
           done
           echo 'Updated emotional recommender not deployed'; exit 1
+      - name: Verify benchmark syntax and fixture
+        run: |
+          node --check scripts/capture-production-baseline.mjs
+          node --check scripts/verify-relationship-baseline.mjs
       - name: Capture genuine backend candidates for six synthetic emotional requests
         env:
           BENCHMARK_CASES_FILE: benchmarks/relationship-scenarios.json
