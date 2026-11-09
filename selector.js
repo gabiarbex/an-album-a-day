@@ -1462,6 +1462,17 @@ async function rankWithBackend(pool,seed,daily){
   .sort((a,b)=>artistFamiliarity(b.artist)-artistFamiliarity(a.artist))
   .slice(0,comfort==='comfort'?24:10);
  for(const a of familiarCandidates)add(a,0,'familiar');
+ if(comfort==='comfort'&&!familiarCandidates.length){
+  // A new listener has no known artist neighborhood. Prefer a restrained
+  // selection from the editorial catalog rather than claiming an obscure
+  // randomly drawn record is personally familiar.
+  const curated=pool.filter(a=>a._catalogFile==='base.json');
+  const fallback=sampleCandidates(curated,seed+'|editorial-familiar',Math.min(5000,curated.length),daily)
+   .map(a=>({a,value:score(a,intent)}))
+   .sort((a,b)=>b.value-a.value)
+   .slice(0,24);
+  for(const row of fallback)add(row.a,0,'familiar');
+ }
 
  const adjacencySample=sampleCandidates(pool,seed+'|backend-adjacent',Math.min(3200,pool.length),daily)
   .filter(a=>artistFamiliarity(a.artist)<.25)
