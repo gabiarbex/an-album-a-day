@@ -1598,6 +1598,17 @@ async function rankWithBackend(pool,seed,daily){
     : `Artist associated with ${names[area]||area}. The catalog cannot verify the language sung on this album.`;
    return {album,featuresUsed:true,mode:'regional'};
   }
+  // On a neural service outage, use the evidence-backed emotional shortlist
+  // before allowing an unrelated weighted-random fallback.
+  if(intent.narrativeKind==='relationship-uncertainty'){
+   const eligible=[...rows.values()].filter(row=>row.sources.has('emotional')
+    &&!albumWasSeen(row.album)&&!logged.has(key(row.album)));
+   if(eligible.length){
+    const album=eligible[0].album;
+    album._regionalExplanation='Selected from a quieter, introspective catalog style. Its emotional character is not independently verified.';
+    return {album,featuresUsed:true,mode:'regional'};
+   }
+  }
   return null;
  }
 }
@@ -2013,6 +2024,16 @@ async function rankWithSemantic(seed,daily){
    const personal=diaryTasteScore(row.album);
    const repeat=recentArtistPenalty(row.album.artist);
    let relevance=.74*semantic+.18*controls;
+   if(intent.narrativeKind==='relationship-uncertainty'){
+    const labels=[...(row.album?.genres||[]),...(row.album?.tags||[])]
+     .map(v=>String(typeof v==='string'?v:v?.name||'').toLowerCase());
+    const supportive=['slowcore','sadcore','singer-songwriter','indie folk',
+     'chamber pop','acoustic','melancholic','reflective','bittersweet'];
+    const conflicting=['disco','dance pop','jazz-funk','happy hardcore','party'];
+    const good=supportive.filter(c=>labels.some(label=>globalThis.AlbumIntent?.styleMatches?.(label,c))).length;
+    const bad=conflicting.filter(c=>labels.some(label=>globalThis.AlbumIntent?.styleMatches?.(label,c))).length;
+    relevance=.50*semantic+.35*controls+Math.min(.27,good*.085)-Math.min(.31,bad*.14);
+   }
    if(personal.active)relevance+=.08*personal.score;
    if(repeat>0)relevance-=.16*repeat;
    return {...row,v:relevance,semantic};
@@ -2036,12 +2057,12 @@ async function rankWithSemantic(seed,daily){
   ranked.sort((a,b)=>b.v-a.v);
  }
 
- const top=ranked.slice(0,Math.min(50,ranked.length));
+ const top=ranked.slice(0,Math.min(intent.narrativeKind==='relationship-uncertainty'?3:50,ranked.length));
  const weights=top.map((row,i)=>Math.max(.01,(row.v+.04)*(1-i/(top.length*1.35))));
  const total=weights.reduce((n,v)=>n+v,0);
  let needle=(daily?seededUnit(seed+'|semantic-final'):Math.random())*total;
  let chosen=top[0];
- for(let i=0;i<top.length;i++){needle-=weights[i];if(needle<=0){chosen=top[i];break}}
+ if(intent.narrativeKind!=='relationship-uncertainty')for(let i=0;i<top.length;i++){needle-=weights[i];if(needle<=0){chosen=top[i];break}}
  chosen.album._semantic={...(chosen.album._semantic||{}),score:chosen.semantic,method:'tfidf-svd-64'};
  return {album:chosen.album,featuresUsed:true,mode:'semantic'};
 }
