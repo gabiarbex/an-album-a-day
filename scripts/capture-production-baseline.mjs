@@ -55,6 +55,7 @@ try {
    await page.goto(SITE,{waitUntil:'domcontentloaded',timeout:45000});
    await page.waitForFunction(()=>{const b=document.querySelector('#recommend');return b&&!b.disabled},null,{timeout:80000});
    await page.locator('#feelingInput').fill(prompt);
+   if((uiMoods||[]).length||uiEnergy||uiComfort)await page.locator('#fineTune summary').click();
    for(const tag of uiMoods||[]){
     const moodButton=page.locator('#moods button').filter({hasText:new RegExp('^'+tag+'
    await page.waitForFunction(()=>document.body.classList.contains('has-record')&&
