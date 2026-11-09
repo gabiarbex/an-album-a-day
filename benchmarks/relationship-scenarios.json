@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "description": "Synthetic emotional-context and counterfactual listening prompts. No private diary content. Album ratings remain human-unjudged.",
+  "cases": [
+    {
+      "id": "R01",
+      "category": "relationship_uncertainty",
+      "language": "en",
+      "prompt": "I had a painful argument with my partner and I regret it. Things between us have been difficult; I'm not sure we have a future, and losing them would break my heart.",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "melancholic",
+        "reflective"
+      ],
+      "avoidMoods": [],
+      "uiMoods": [
+        "heartbroken"
+      ],
+      "uiEnergy": "low",
+      "uiComfort": "familiar",
+      "expectNarrative": "relationship-uncertainty"
+    },
+    {
+      "id": "R02",
+      "category": "relationship_uncertainty",
+      "language": "en",
+      "prompt": "My girlfriend and I argued and I'm sorry for my part. I still care deeply, but our relationship has been strained and I'm afraid of losing her.",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "melancholic",
+        "reflective"
+      ],
+      "avoidMoods": [],
+      "uiMoods": [
+        "vulnerable"
+      ],
+      "uiEnergy": "low",
+      "uiComfort": "familiar",
+      "expectNarrative": "relationship-uncertainty"
+    },
+    {
+      "id": "R03",
+      "category": "relationship_uncertainty",
+      "language": "pt",
+      "prompt": "briguei com minha namorada e estou arrependida; nosso relacionamento está difícil e não sei se temos futuro.",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "melancholic",
+        "reflective"
+      ],
+      "avoidMoods": [],
+      "uiMoods": [
+        "heartbroken"
+      ],
+      "uiEnergy": "low",
+      "expectNarrative": "relationship-uncertainty"
+    },
+    {
+      "id": "R04",
+      "category": "relationship_uncertainty",
+      "language": "nl",
+      "prompt": "Ik heb ruzie met mijn vriendin en ik twijfel of onze relatie toekomst heeft.",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "melancholic",
+        "reflective"
+      ],
+      "avoidMoods": [],
+      "uiMoods": [
+        "heartbroken"
+      ],
+      "uiEnergy": "low",
+      "expectNarrative": "relationship-uncertainty"
+    },
+    {
+      "id": "R05",
+      "category": "mood_shift_guard",
+      "language": "en",
+      "prompt": "I had a disagreement with my girlfriend, but I need upbeat energetic dance music to cheer me up.",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "energetic"
+      ],
+      "avoidMoods": [],
+      "uiMoods": [
+        "energetic"
+      ],
+      "uiEnergy": "high",
+      "expectNarrative": null
+    },
+    {
+      "id": "R06",
+      "category": "neutral_future_guard",
+      "language": "en",
+      "prompt": "I want a hopeful record about the future and new beginnings.",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "hopeful"
+      ],
+      "avoidMoods": [],
+      "uiMoods": [
+        "hopeful"
+      ],
+      "expectNarrative": null
+    }
+  ]
+}
