@@ -3,13 +3,13 @@
    lexical / score scales, are combined. Safe in browsers and Node tests. */
 (function(root){
  'use strict';
- const SOURCE_ORDER=['regional','neural','semantic','controls','adjacent','familiar','explore'];
- const NORMAL={regional:1.55,neural:1.15,semantic:0.8,controls:1.15,adjacent:0.45,familiar:0.25,explore:0.22};
+ const SOURCE_ORDER=['regional','emotional','neural','semantic','controls','adjacent','familiar','explore'];
+ const NORMAL={regional:1.55,emotional:1.4,neural:1.15,semantic:0.8,controls:1.15,adjacent:0.45,familiar:0.25,explore:0.22};
  const COMFORT={...NORMAL,regional:1.55,familiar:0.85,adjacent:0.22,explore:0.12};
  const EXPLORATION={...NORMAL,regional:1.55,familiar:0.08,adjacent:0.82,explore:0.5};
  // Retain a minimum pool for each distinct recall method. Saturation is
  // prevented by per-artist caps rather than dropping an entire method.
- const MINIMUM={regional:24,neural:16,semantic:10,controls:18,adjacent:6,familiar:3,explore:3};
+ const MINIMUM={regional:18,emotional:20,neural:16,semantic:10,controls:18,adjacent:6,familiar:3,explore:3};
  function select(buckets,options={}){
   const limit=Math.max(1,Math.min(256,Math.floor(Number(options.limit)||96)));
   const idOf=typeof options.idOf==='function'?options.idOf:(row=>row?.id);
