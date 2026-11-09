@@ -11,7 +11,7 @@ const feelingLexicon={
  intense:['angry','rage','scream','furious','chaos','loud','explode','explosive','aggressive','hard-hitting','heavy','restless','raiva','gritar','intense'],
  energetic:['energetic','dance','party','run','drive fast','excited','alive','movement','move','upbeat','lively','high energy','fast-paced','fast paced','driving','pumping','bouncy','euphoric','dancar','festa','energia','animad'],
  dark:['dark','night','midnight','shadow','goth','haunt','ominous','eerie','bleak','noite','escuro','sombrio'],
- hopeful:['hope','better','healing','beginning','tomorrow','future','optimis','uplifting','positive','bright','happy','cheerful','alegre','feliz','esperanca','recomecar'],
+ hopeful:['hope','better','healing','beginning','tomorrow','optimis','uplifting','positive','bright','happy','cheerful','alegre','feliz','esperanca','recomecar'],
  alienated:['stranger','disconnected','out of place','belong','unreal','isolated','dissociat','estranha','deslocad'],
  cold:['winter','cold','rain','fog','frost','icy','inverno','frio','chuva'],
  gritty:['raw','dirty','grunge','rough','punk','noise','abrasive','distort','sujo','bruto']
@@ -123,11 +123,31 @@ function desiredListeningGoal(value){
  return {start,stateMoods,desiredMoods};
 }
 
+// Detect *emotional context*, not the musical style or a diagnosis.
+// In particular "I don't know if we have a future" is uncertainty, not hope.
+function relationshipNarrative(text){
+ const t=normalizeText(text);
+ const partner=/\b(?:girlfriend|boyfriend|partner|wife|husband|relationship|marriage|spouse|namorad[ao]|relacionamento|parceir[ao]|casamento|vriendin|vriendje|relatie|pareja|novi[ao])\b/.test(t);
+ if(!partner)return null;
+ const conflict=/\b(?:fight|fought|argument|argu(?:e|ed|ing)|disagreement|tension|hard lately|really hard|difficult|struggling|briga|briguei|brigamos|discussao|discuti|discutimos|moeilijk|ruzie|streit|pelea|discusion)\b/.test(t);
+ const uncertain=/\b(?:idk|i don't know|i dont know|not sure|unsure|whether|if we|future|will (?:we|it)|could end|might end|breaking up|break up|separat|end of us|terminar|acabou|futuro|nao sei|incerto|incerta|twijfel|onzeker|duda|futuro)\b/.test(t);
+ const loss=/\b(?:break my heart|breaks my heart|broken heart|heartbroken|heartbreak|lose (?:her|him|them|my)|losing (?:her|him|them|my)|can't lose|cant lose|saudade|coracao partido|coracao quebrado|meu coracao|perder (?:ela|ele|voce)|perd(?:er|endo)|verlieren|verlies)\b/.test(t);
+ const regret=/\b(?:i'm sorry|im sorry|i am sorry|apolog|regret|my fault|guilty|culpa|desculp|arrepend|me arrependo|sinto muito|schuld|spijt|perdon|lo siento)\b/.test(t);
+ if(!(loss||(conflict&&(uncertain||regret))||(uncertain&&regret)))return null;
+ // Explicitly requested *musical outcome* overrides current distress.
+ const desiredSound=/\b(?:i (?:want|need|would like|prefer)|give me|play me|quero|preciso|ik wil|ich will|quiero)\b[\s\S]{0,85}\b(?:uplifting|happy|cheerful|energetic|danceable|dance music|party|euphoric|upbeat|alegre|animad[ao]|dancar|fest[ae]|vrolijk|energiek|frohlich)\b/.test(t);
+ const themes=[conflict?'conflict':null,uncertain?'uncertainty':null,regret?'regret':null,loss?'fear of loss':null].filter(Boolean);
+ return {kind:'relationship-uncertainty',themes,goalOverride:desiredSound,
+  // This phrase is a music-search hint, not a claim about the listener's mental health.
+  retrievalHint:'intimate reflective melancholic bittersweet tender vulnerable quiet relationship heartbreak uncertainty regret singer-songwriter slowcore indie folk chamber pop acoustic'};
+}
+
 function interpretFeeling(text){
  const locale=root.AlbumLocale?.parse?.(text)||null;
  const t=normalizeText(locale?.canonicalText??text);
  const parsedGenres=genreMentions(t);
  const goal=desiredListeningGoal(t);
+ const relationship=relationshipNarrative(t);
  const moods={},avoidMoods={};
 
  for(const [m,terms] of Object.entries(feelingLexicon)){
@@ -140,6 +160,16 @@ function interpretFeeling(text){
  // explicitly requested to help move through that feeling.
  if(goal){
   for(const mood of Object.keys(moods))if(!goal.desiredMoods[mood])delete moods[mood];
+ }
+
+ // A disagreement about a relationship's future is not "hopeful" just
+ // because the word future appears. Match the conflicted, vulnerable tone
+ // unless the listener explicitly asks the music to lift their mood.
+ if(relationship&&!relationship.goalOverride&&!goal?.desiredMoods?.hopeful){
+  moods.melancholic=Math.max(2,moods.melancholic||0);
+  moods.reflective=Math.max(2,moods.reflective||0);
+  if(relationship.themes.includes('fear of loss'))moods.nostalgic=Math.max(1,moods.nostalgic||0);
+  delete moods.hopeful;
  }
 
  // Relationship longing is usually warmer/more intimate than generic "sad".
@@ -174,7 +204,10 @@ function interpretFeeling(text){
   originCountries:locale?.originCountries||[],avoidOriginCountries:locale?.avoidOriginCountries||[],
   vocalLanguages:locale?.vocalLanguages||[],avoidVocalLanguages:locale?.avoidVocalLanguages||[],
   queryLanguage:locale?.queryLanguage||'und',
-  listenerState:goal?.stateMoods||{},desiredMoods:goal?.desiredMoods||{},goalShift:Boolean(goal),summary:parts.join(' · ')};
+  narrativeKind:relationship&&!relationship.goalOverride&&!goal?'relationship-uncertainty':null,
+  narrativeThemes:relationship?.themes||[],
+  listenerState:goal?.stateMoods||{},desiredMoods:goal?.desiredMoods||{},
+  goalShift:Boolean(goal||relationship?.goalOverride),summary:parts.join(' · ')};
 }
 
 // Retrieval models match words rather than logic: "not metal" can otherwise
@@ -184,6 +217,11 @@ function retrievalText(value){
  const locale=root.AlbumLocale?.parse?.(value)||null;
  const raw=normalizeText(locale?.canonicalText??value).replace(/\s+/g,' ').trim();
  const goal=desiredListeningGoal(raw);
+ const relationship=relationshipNarrative(raw);
+ // The full personal story can contain semantically misleading words like
+ // "future", "fight", "sorry", or "never". Search the *musical direction*
+ // rather than treating those words as album-title evidence.
+ if(relationship&&!relationship.goalOverride&&!goal)return relationship.retrievalHint;
  const text=goal?raw.slice(goal.start):raw;
  if(!text)return '';
  const clauses=text.split(/([,;.!?]|\bbut\b|\bhowever\b|\bmas\b|\bporem\b)/i);
@@ -205,5 +243,5 @@ function retrievalText(value){
  return [positive,...extra].filter(Boolean).join(' ').trim();
 }
 
-root.AlbumIntent={interpretFeeling,desiredListeningGoal,retrievalText,termIsNegated,normalizeText,styleMatches,genreMentions,genreLexicon,feelingLexicon};
+root.AlbumIntent={interpretFeeling,relationshipNarrative,desiredListeningGoal,retrievalText,termIsNegated,normalizeText,styleMatches,genreMentions,genreLexicon,feelingLexicon};
 })(globalThis);
