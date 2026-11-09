@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - '.github/workflows/relationship-recommendations.yml'
+      - 'scripts/capture-production-baseline.mjs'
+      - 'scripts/verify-relationship-baseline.mjs'
   workflow_dispatch:
 
 permissions:
