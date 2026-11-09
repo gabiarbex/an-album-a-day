@@ -6,7 +6,7 @@ const {interpretFeeling,retrievalText}=globalThis.AlbumIntent;
 const cases=[
  {id:'regret-uncertainty-en',note:"I had an awful argument with my partner, and I regret what I said. I don't know if our relationship can last; losing them would break my heart.",moods:['melancholic','reflective'],kind:'relationship-uncertainty',themes:['conflict','uncertainty','regret','fear of loss']},
  {id:'hard-relationship-en',note:"My girlfriend and I keep fighting. Things have been difficult and I feel guilty. I'm scared we might separate.",moods:['melancholic','reflective'],kind:'relationship-uncertainty'},
- {id:'romance-uncertain-en',note:"My relationship feels fragile, and I don't know whether we have a future.",moods:[],kind:null},
+ {id:'romance-uncertain-en',note:"My relationship feels fragile, and I don't know whether we have a future.",moods:['melancholic','reflective'],kind:'relationship-uncertainty'},
  {id:'not-hope-future-en',note:"I'm not sure what the future holds, and I feel uncertain.",moods:[],kind:null},
  {id:'relationship-repair-pt',note:"briguei com minha namorada e estou arrependida; nosso relacionamento está difícil e não sei se temos futuro.",moods:['melancholic','reflective'],kind:'relationship-uncertainty'},
  {id:'relationship-repair-nl',note:"Ik heb ruzie met mijn vriendin en ik twijfel of onze relatie toekomst heeft.",moods:['melancholic','reflective'],kind:'relationship-uncertainty'},
