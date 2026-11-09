@@ -28,6 +28,9 @@ on:
       - 'tests/student-human-eval.test.mjs'
       - 'tests/retrieval-fusion.test.cjs'
       - 'tests/listening-goal.test.cjs'
+      - 'tests/relationship-intent.test.cjs'
+      - 'tests/relationship-ranking.test.mjs'
+      - 'benchmarks/relationship-scenarios.json'
       - 'api/_taste-policy.js'
       - 'api/_taste-store.js'
       - 'tests/taste-policy.test.mjs'
@@ -63,6 +66,9 @@ on:
       - 'tests/student-human-eval.test.mjs'
       - 'tests/retrieval-fusion.test.cjs'
       - 'tests/listening-goal.test.cjs'
+      - 'tests/relationship-intent.test.cjs'
+      - 'tests/relationship-ranking.test.mjs'
+      - 'benchmarks/relationship-scenarios.json'
       - 'api/_taste-policy.js'
       - 'api/_taste-store.js'
       - 'tests/taste-policy.test.mjs'
@@ -108,6 +114,8 @@ jobs:
           node tests/ranking-contract.test.mjs
           node tests/retrieval-fusion.test.cjs
           node tests/listening-goal.test.cjs
+          node tests/relationship-intent.test.cjs
+          node tests/relationship-ranking.test.mjs
           node tests/taste-policy.test.mjs
           node tests/global-requests.test.cjs
           node tests/geo-catalog.test.cjs
