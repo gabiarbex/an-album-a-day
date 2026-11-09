@@ -318,6 +318,12 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
   else if (moodFit.suggestive?.length) score += 0.08;
   else if (moodFit.known) score -= 0.20;
 
+  // When no personal listening history is available, 'familiar' cannot
+  // mean a known artist. Use a small editorial-shelf prior as fallback.
+  if(body.comfort==='comfort'&&familiarity<0.15&&candidate.catalogFile==='base.json'){
+   score+=0.085;
+  }
+
   const goalEvidence=moodStyleSignal(candidate,body);
   score+=goalEvidence.bonus-goalEvidence.penalty;
   const relationshipEvidence=relationshipStyleFit(candidate,body);
