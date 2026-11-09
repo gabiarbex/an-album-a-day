@@ -212,6 +212,49 @@ export function moodStyleSignal(candidate, body){
  return {bonus:Math.min(.14,bonus),penalty:Math.min(.36,penalty)};
 }
 
+// A personal conflict is not itself a genre. These are bounded style cues,
+// not proof that an album's lyrics describe the listener's story.
+export function relationshipStyleFit(candidate, body){
+ if(body?.intent?.narrativeKind!=='relationship-uncertainty')return {
+  active:false,bonus:0,penalty:0,evidence:[],verifiedMood:false
+ };
+ const styles=cleanArray(candidate?.genres,20).map(x=>x.toLowerCase());
+ const tags=cleanArray(candidate?.tags,24).map(x=>x.toLowerCase());
+ const labels=[...styles,...tags];
+ const trustedMoods=String(candidate?.moodSource||'')!=='musicbrainz-tag-translation'
+  ?cleanArray(candidate?.moods,24).map(x=>x.toLowerCase()):[];
+ const musicMood=['melancholic','reflective','introspective','bittersweet','tender','heartbroken'];
+ const verifiedMood=musicMood.some(w=>trustedMoods.some(x=>styleMatches(x,w)));
+ const stylistic=[
+  ['slowcore',.15],['sadcore',.15],['singer-songwriter',.11],
+  ['indie folk',.10],['chamber pop',.09],['ambient folk',.11],
+  ['folk',.065],['acoustic',.07],['dream pop',.07],['art pop',.04],
+  ['piano',.05],['soft rock',.055],['downtempo',.05]
+ ];
+ const evidence=stylistic.filter(([name])=>labels.some(x=>styleMatches(x,name))).map(([name])=>name);
+ let support=evidence.reduce((sum,name)=>sum+(stylistic.find(x=>x[0]===name)?.[1]||0),0);
+ const moodKeywords=['melancholic','melancholy','sad','bittersweet','heartbreak','introspective','reflective'];
+ if(tags.some(x=>moodKeywords.some(term=>styleMatches(x,term))))support+=.12;
+ if(verifiedMood)support+=.18;
+ // Evidently dance-oriented or abrasive albums are a poor *default* for
+ // a low-energy, conflicted relationship note, but are not forbidden genres.
+ const opposing=[
+  ['disco',.17],['jazz-funk',.08],['dance pop',.14],
+  ['dance-punk',.10],['nu-disco',.13],['dancehall',.09],
+  ['party',.15],['gabber',.18],['hardstyle',.16],['happy hardcore',.19],
+  ['hard dance',.15],['grindcore',.12],['noise rock',.09],
+  ['funk',.045],['house',.05]
+ ];
+ const requestedEnergy=body?.energy==null?null:Number(body.energy);
+ const energyLow=Number.isFinite(requestedEnergy)&&requestedEnergy<=4;
+ const mismatch=opposing.reduce((sum,[name,weight])=>
+   sum+(labels.some(x=>styleMatches(x,name))?weight:0),0);
+ // An explicit request for high-energy music always takes priority.
+ const energeticGoal=Number.isFinite(requestedEnergy)&&requestedEnergy>=7;
+ const penalty=energeticGoal?0:Math.min(0.38,mismatch*(energyLow?1.45:1));
+ return {active:true,bonus:Math.min(.34,support),penalty,evidence:evidence.slice(0,4),verifiedMood};
+}
+
 function reliableEnergyDistance(candidate, body) {
   if (body?.energy == null || candidate?.energy == null) return null;
   if(!trustedEnergy(candidate))return null;
@@ -277,6 +320,8 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
 
   const goalEvidence=moodStyleSignal(candidate,body);
   score+=goalEvidence.bonus-goalEvidence.penalty;
+  const relationshipEvidence=relationshipStyleFit(candidate,body);
+  score+=relationshipEvidence.bonus-relationshipEvidence.penalty;
 
   const energyDistance = reliableEnergyDistance(candidate, body);
   if (energyDistance !== null && energyDistance <= 1.5) score += 0.07;
@@ -344,6 +389,13 @@ export function diverseTopK(ranked, limit=5, pairSimilarity=()=>0) {
 export function explanation(row, body) {
   const candidate = row?.candidate || {};
   const bits = [];
+  const relationship=relationshipStyleFit(candidate,body);
+  if(relationship.active){
+   const style=relationship.evidence[0];
+   if(relationship.verifiedMood)return 'Catalogued with a reflective or melancholic mood; the lyrics have not been checked.';
+   if(style)return 'Filed under '+style+'; a quieter direction, though the emotional fit is not verified.';
+   return 'A tentative match. The catalog cannot verify whether its music fits this particular feeling.';
+  }
 
   const moodFit = requestedMoodFit(candidate, body);
   if (moodFit.match) bits.push(...moodFit.matched.slice(0, 1));
