@@ -1,15 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#f4efe5"/>
-  <rect width="1200" height="62" fill="#111111"/>
-  <rect x="0" y="62" width="74" height="568" fill="#ffe45d"/>
-  <rect x="836" y="76" width="300" height="144" fill="#ff5aa7"/>
-  <rect x="742" y="492" width="458" height="138" fill="#2f5cff"/>
-  <rect x="74" y="522" width="252" height="108" fill="#c8ff37"/>
-  <text x="42" y="39" fill="#ffffff" font-family="Courier New, monospace" font-size="15" letter-spacing="3">ISSUE 01 / DAILY LISTENING</text>
-  <text x="1145" y="39" text-anchor="end" fill="#c8ff37" font-family="Courier New, monospace" font-size="15" letter-spacing="2">100,000 ALBUMS</text>
-  <text x="124" y="270" fill="#111111" font-family="Georgia, Times New Roman, serif" font-size="138" font-style="italic" font-weight="700" letter-spacing="-8">an album</text>
-  <text x="512" y="392" fill="#2f5cff" font-family="Marker Felt, Chalkboard SE, Segoe Print, cursive" font-size="112" font-weight="700" transform="rotate(-3 512 392)">a day</text>
-  <text x="124" y="452" fill="#111111" font-family="Courier New, monospace" font-size="18" letter-spacing="1">ONE RECORD EVERY DAY. LISTEN TO THE WHOLE THING.</text>
-  <text x="784" y="555" fill="#ffffff" font-family="Courier New, monospace" font-size="16" letter-spacing="2">DISCOVER / LISTEN / SAVE / REPEAT</text>
-  <text x="112" y="586" fill="#111111" font-family="Courier New, monospace" font-size="14">2026</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Album-a-Day, the daily record shop. One record, every day.">
+  <rect width="1200" height="630" fill="#e9e5dd"/>
+  <rect x="36" y="30" width="1128" height="568" fill="none" stroke="#201e1a" stroke-width="2"/>
+  <path d="M62 108H1138M62 522H1138" stroke="#201e1a" stroke-width="1.5"/>
+  <text x="62" y="75" font-family="Courier New, monospace" font-size="19" font-weight="700" letter-spacing="2" fill="#201e1a">THE DAILY RECORD SHOP</text>
+  <text x="1138" y="75" text-anchor="end" font-family="Courier New, monospace" font-size="17" letter-spacing="1.6" fill="#59554d">100,000 ALBUMS / ONE A DAY</text>
+  <rect x="62" y="147" width="92" height="64" fill="#a84635"/>
+  <text x="108" y="193" text-anchor="middle" font-family="Courier New, monospace" font-size="41" font-weight="700" fill="#fffdfa">an</text>
+  <text x="65" y="336" font-family="Impact, Arial Black, Arial, sans-serif" font-size="190" font-weight="900" letter-spacing="-6" fill="#201e1a">ALBUM</text>
+  <path d="M68 369H740" stroke="#a84635" stroke-width="3"/>
+  <text x="410" y="469" font-family="Georgia, Times New Roman, serif" font-size="132" font-weight="700" font-style="italic" letter-spacing="-7" fill="#201e1a">a day</text>
+  <path d="M944 164 A161 161 0 1 1 943.9 164" fill="#201e1a"/>
+  <circle cx="945" cy="324" r="143" fill="none" stroke="#e9e5dd" stroke-opacity=".20" stroke-width="2"/>
+  <circle cx="945" cy="324" r="121" fill="none" stroke="#e9e5dd" stroke-opacity=".12" stroke-width="2"/>
+  <circle cx="945" cy="324" r="97" fill="none" stroke="#e9e5dd" stroke-opacity=".10" stroke-width="2"/>
+  <circle cx="945" cy="324" r="69" fill="#a84635"/>
+  <circle cx="945" cy="324" r="23" fill="#e9e5dd"/>
+  <circle cx="945" cy="324" r="7" fill="#201e1a"/>
+  <text x="945" y="285" text-anchor="middle" font-family="Courier New,monospace" font-size="13" font-weight="700" letter-spacing="1.5" fill="#fffdfa">AAD / 001</text>
+  <text x="945" y="375" text-anchor="middle" font-family="Courier New,monospace" font-size="12" letter-spacing="1.3" fill="#fffdfa">SIDE A</text>
+  <text x="62" y="558" font-family="Georgia, Times New Roman, serif" font-size="27" fill="#201e1a">One record. A little time to get lost in it.</text>
+  <text x="1138" y="561" text-anchor="end" font-family="Courier New,monospace" font-size="15" letter-spacing="1" fill="#59554d">LISTEN / KEEP / REPEAT</text>
 </svg>
