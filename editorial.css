@@ -894,3 +894,63 @@ body.today-complete .daily-home{border-left-color:var(--blue);box-shadow:none}
   .record-stage.revealed .sleeve,
   .record-stage.revealed .record{animation:none!important}
 }
+
+/* CTAs and recommendation explanations are content, not reveal animations.
+   They must remain visible at every reduced-motion preference and frame. */
+body.has-record .album-details,
+body.has-record .why-panel,
+body.has-record .result-actions{
+  animation:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transform:none!important;
+}
+.why-panel .why-copy{
+  position:static;
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:59ch;
+  margin:11px 0 0;
+  padding:0;
+  clip:auto;
+  clip-path:none;
+  overflow:visible;
+  white-space:normal;
+  opacity:1;
+  font:400 14px/1.55 Georgia,"Times New Roman",serif;
+  color:#504b42;
+}
+.result-actions{
+  display:grid;
+  grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto auto;
+  align-items:stretch;
+  gap:8px;
+  opacity:1;
+}
+.result-actions>a,.result-actions>button{
+  visibility:visible;
+  opacity:1;
+  min-height:45px;
+  white-space:normal;
+  text-align:center;
+}
+.result-actions>a.disabled,
+.result-actions>button:disabled{
+  opacity:.5;
+}
+@media(max-width:1000px){
+  .result-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  body.has-record .result-actions{
+    position:static;
+    margin:14px 0 0;
+    padding:0;
+    border:0;
+    box-shadow:none;
+    background:transparent;
+    backdrop-filter:none;
+  }
+  .result-actions>a,.result-actions>button{min-height:44px}
+}
