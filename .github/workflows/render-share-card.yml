@@ -1,0 +1,47 @@
+name: Render social-preview PNG
+
+on:
+  push:
+    paths:
+      - 'assets/share-card.svg'
+      - '.github/workflows/render-share-card.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: record-shop-social-card
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render the editable SVG to a social-compatible PNG
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq librsvg2-bin
+          rsvg-convert --format png --width 1200 --height 630 assets/share-card.svg > assets/share-card.png
+          python3 - <<'PY'
+          import struct
+          from pathlib import Path
+          p=Path('assets/share-card.png')
+          b=p.read_bytes()
+          assert b[:8]==bytes.fromhex('89504e470d0a1a0a')
+          w,h=struct.unpack('>II',b[16:24])
+          assert (w,h)==(1200,630),(w,h)
+          assert len(b)<2_000_000,len(b)
+          print(f"PNG social preview: {w}×{h}, {len(b)} bytes")
+          PY
+      - name: Commit PNG if needed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/share-card.png
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Render editable record-shop artwork as PNG social preview"
+          git pull --rebase origin main
+          git push origin HEAD:main
