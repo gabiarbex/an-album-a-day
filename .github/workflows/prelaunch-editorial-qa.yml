@@ -34,7 +34,7 @@ jobs:
           ready=0
           for n in $(seq 1 30); do
             if curl -fsSL https://gabiarbex.github.io/an-album-a-day/ |
-              grep -q 'editorial.css?v=print-003'; then
+              grep -q 'editorial.css?v=print-004'; then
               ready=1
               break
             fi
