@@ -49,7 +49,7 @@ try{
      headingFont:getComputedStyle(heading).fontFamily,
      inputVisible:document.querySelector('#feelingInput').getClientRects().length>0,
      heading:heading?.textContent?.trim(),
-     editorialAsset:[...document.styleSheets].some(sheet=>/editorial\.css\?v=print-003/.test(sheet.href||'')),
+     editorialAsset:[...document.styleSheets].some(sheet=>/editorial\.css\?v=print-004/.test(sheet.href||'')),
      subtitle:document.querySelector('.masthead p')?.textContent?.trim()||''
     };
    });
