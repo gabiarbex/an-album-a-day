@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-11-07T18:02:47.865Z",
+  "captured_at": "2026-11-10T12:03:20.996Z",
   "site": "https://gabiarbex.github.io/an-album-a-day/",
   "seed_policy": "stable per prompt albumaday-benchmark-fixed-v1 ID",
   "note": "Observed top-one and up-to-five backend alternatives; no listening relevance judgments are inferred.",
@@ -25,18 +25,26 @@
             "jazz"
           ],
           "avoidedGenres": [],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
       "title": "Blues 'N Ballads",
       "detail": "TODAY'S RECORD\nBlues 'N Ballads\n\nThe Jazz Networks · 1994",
-      "reason": "Its catalog tags include jazz.",
-      "signals": "JAZZ\nSMOOTH JAZZ\nBLUES",
+      "reason": "Filed under jazz. That’s the strongest match we can explain from the catalog.",
+      "signals": "jazz\nsmooth jazz\nblues",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
         "albumId": "ce78bac5b8a16463",
@@ -61,9 +69,15 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 3,
+          "consideredCompilations": 2,
           "chosenCompilation": false,
-          "excludedGenreMatches": 0
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
@@ -85,7 +99,15 @@
               "swing"
             ],
             "moods": [],
-            "score": 0.894505
+            "score": 0.894505,
+            "neural": 0.636998,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
@@ -112,7 +134,15 @@
               "rap"
             ],
             "moods": [],
-            "score": 0.887751
+            "score": 0.887751,
+            "neural": 0.565779,
+            "profileQuality": 0.655,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 3,
@@ -132,7 +162,15 @@
               "swing"
             ],
             "moods": [],
-            "score": 0.889032
+            "score": 0.889032,
+            "neural": 0.623683,
+            "profileQuality": 0.53,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 4,
@@ -156,7 +194,15 @@
               "jazz-funk"
             ],
             "moods": [],
-            "score": 0.886693
+            "score": 0.886693,
+            "neural": 0.590541,
+            "profileQuality": 0.5800000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 5,
@@ -179,7 +225,15 @@
               "jazz-pop"
             ],
             "moods": [],
-            "score": 0.892885
+            "score": 0.892885,
+            "neural": 0.610113,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -206,18 +260,26 @@
             "bossa nova"
           ],
           "avoidedGenres": [],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
       "title": "Shine",
       "detail": "TODAY'S RECORD\nShine\n\nClara Hill · 2020",
-      "reason": "Its catalog tags include bossa nova.",
-      "signals": "BOSSA NOVA\nELECTRONIC\nFOLK",
+      "reason": "Filed under bossa nova. That’s the strongest match we can explain from the catalog.",
+      "signals": "bossa nova\nelectronic\nfolk",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
         "albumId": "4dc14d80dcbfa930",
@@ -242,9 +304,15 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 4,
+          "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 0
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
@@ -272,7 +340,15 @@
               "soul"
             ],
             "moods": [],
-            "score": 0.908138
+            "score": 0.908138,
+            "neural": 0.653996,
+            "profileQuality": 0.655,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
@@ -297,7 +373,15 @@
               "post-bop"
             ],
             "moods": [],
-            "score": 0.905369
+            "score": 0.905369,
+            "neural": 0.66681,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 3,
@@ -319,54 +403,75 @@
               "swing"
             ],
             "moods": [],
-            "score": 0.908109
+            "score": 0.908109,
+            "neural": 0.703086,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 4,
-            "id": "b69529a40bf92387",
-            "artist": "Bossa Nostra",
-            "title": "Solaria",
+            "id": "febfbf7a73e66ede",
+            "artist": "Klaus Wunderlich",
+            "title": "Sud Americana No. 2",
             "genres": [
-              "ambient",
               "bossa nova",
+              "easy listening",
               "jazz",
-              "latin",
-              "soul jazz"
+              "pop"
             ],
             "tags": [
-              "ambient",
               "bossa nova",
+              "easy listening",
               "jazz",
-              "latin",
-              "soul jazz"
+              "pop"
             ],
             "moods": [],
-            "score": 0.89724
+            "score": 0.902975,
+            "neural": 0.696128,
+            "profileQuality": 0.53,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 5,
-            "id": "3dc8ef36e47c6aee",
-            "artist": "Antônio Carlos Jobim",
-            "title": "Wave",
+            "id": "b94edb2036174965",
+            "artist": "Fernanda Cunha",
+            "title": "Coração do Brasil",
             "genres": [
               "bossa nova",
-              "instrumental",
-              "jazz"
+              "mpb",
+              "samba"
             ],
             "tags": [
               "bossa nova",
-              "instrumental",
-              "jazz",
-              "acoustic",
-              "beach",
-              "calm",
-              "ethereal",
-              "lush",
-              "male vocalist",
-              "meditative"
+              "bossa-nova",
+              "brasil",
+              "brazil",
+              "brazilian music",
+              "coração do brasil",
+              "fernanda cunha",
+              "mpb",
+              "samba"
             ],
             "moods": [],
-            "score": 0.898037
+            "score": 0.886514,
+            "neural": 0.569094,
+            "profileQuality": 0.57,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -397,18 +502,26 @@
           "avoidedGenres": [
             "metal"
           ],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
       "title": "Blues 'N Ballads",
       "detail": "TODAY'S RECORD\nBlues 'N Ballads\n\nThe Jazz Networks · 1994",
-      "reason": "Its catalog tags include jazz.",
-      "signals": "JAZZ\nSMOOTH JAZZ\nBLUES",
+      "reason": "Filed under jazz. That’s the strongest match we can explain from the catalog.",
+      "signals": "jazz\nsmooth jazz\nblues",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
         "albumId": "ce78bac5b8a16463",
@@ -435,7 +548,13 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 0
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
@@ -457,7 +576,15 @@
               "swing"
             ],
             "moods": [],
-            "score": 0.895164
+            "score": 0.895164,
+            "neural": 0.64151,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
@@ -484,7 +611,15 @@
               "rap"
             ],
             "moods": [],
-            "score": 0.884232
+            "score": 0.884232,
+            "neural": 0.55303,
+            "profileQuality": 0.655,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 3,
@@ -508,32 +643,18 @@
               "jazz-funk"
             ],
             "moods": [],
-            "score": 0.886232
+            "score": 0.886232,
+            "neural": 0.590659,
+            "profileQuality": 0.5800000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 4,
-            "id": "871eb1a59d148b7b",
-            "artist": "Sun Ra",
-            "title": "Singles (The Definitive 45’s Collection 1952–1991)",
-            "genres": [
-              "avant-garde jazz",
-              "jazz",
-              "experimental big band",
-              "free jazz",
-              "vocal jazz"
-            ],
-            "tags": [
-              "avant-garde jazz",
-              "jazz",
-              "experimental big band",
-              "free jazz",
-              "vocal jazz"
-            ],
-            "moods": [],
-            "score": 0.883883
-          },
-          {
-            "rank": 5,
             "id": "e17f7d428c731baf",
             "artist": "Chicago",
             "title": "Best",
@@ -551,7 +672,46 @@
               "soft rock"
             ],
             "moods": [],
-            "score": 0.891856
+            "score": 0.891856,
+            "neural": 0.642124,
+            "profileQuality": 0.525,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "142ffecff294d24f",
+            "artist": "Peter White",
+            "title": "Promenade",
+            "genres": [
+              "jazz",
+              "smooth jazz",
+              "contemporary jazz",
+              "crossover jazz"
+            ],
+            "tags": [
+              "jazz",
+              "smooth jazz",
+              "contemporary jazz",
+              "crossover jazz",
+              "guitar jazz",
+              "jazz instrument",
+              "jazz-pop"
+            ],
+            "moods": [],
+            "score": 0.890592,
+            "neural": 0.602297,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -578,18 +738,26 @@
           "avoidedMoods": [],
           "genres": [],
           "avoidedGenres": [],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
       "title": "Floating Into the Night",
-      "detail": "TODAY'S RECORD\nFloating Into the Night\n\nJulee Cruise · 1989\n\nDREAMY",
-      "reason": "dream pop suggests dreamy music, but the mood is not independently verified.",
-      "signals": "DREAM POP\nETHEREAL WAVE\nAMBIENT POP",
+      "detail": "TODAY'S RECORD\nFloating Into the Night\n\nJulee Cruise · 1989",
+      "reason": "Filed under dream pop. We’re guessing at the dreamy mood from its style.",
+      "signals": "dream pop\nethereal wave\nambient pop",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
         "albumId": "573e128f5b4be670",
@@ -614,9 +782,15 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 2,
+          "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 0
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
@@ -642,7 +816,15 @@
               "sophisti-pop"
             ],
             "moods": [],
-            "score": 0.766639
+            "score": 0.766639,
+            "neural": 0.515924,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
@@ -668,7 +850,15 @@
               "lo-fi hip hop"
             ],
             "moods": [],
-            "score": 0.717183
+            "score": 0.717183,
+            "neural": 0.531762,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 3,
@@ -694,7 +884,15 @@
               "vyrzukhisuc-album"
             ],
             "moods": [],
-            "score": 0.724366
+            "score": 0.724366,
+            "neural": 0.566063,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 4,
@@ -712,13 +910,21 @@
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.67382
+            "score": 0.67382,
+            "neural": 0.35836,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 5,
-            "id": "392eb76465ae9c78",
-            "artist": "Astrobrite",
-            "title": "All the Stars Will Fall",
+            "id": "1ab8702982fc71d8",
+            "artist": "Sleeping States",
+            "title": "There the Open Spaces",
             "genres": [
               "rock",
               "shoegaze"
@@ -728,7 +934,15 @@
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.661389
+            "score": 0.672313,
+            "neural": 0.375591,
+            "profileQuality": 0.37,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -759,18 +973,26 @@
           ],
           "genres": [],
           "avoidedGenres": [],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
       "title": "Floating Into the Night",
-      "detail": "TODAY'S RECORD\nFloating Into the Night\n\nJulee Cruise · 1989\n\nDREAMY",
-      "reason": "dream pop suggests dreamy music, but the mood is not independently verified.",
-      "signals": "DREAM POP\nETHEREAL WAVE\nAMBIENT POP",
+      "detail": "TODAY'S RECORD\nFloating Into the Night\n\nJulee Cruise · 1989",
+      "reason": "Filed under dream pop. We’re guessing at the dreamy mood from its style.",
+      "signals": "dream pop\nethereal wave\nambient pop",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
         "albumId": "573e128f5b4be670",
@@ -797,7 +1019,13 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 0
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
@@ -823,7 +1051,15 @@
               "sophisti-pop"
             ],
             "moods": [],
-            "score": 0.763805
+            "score": 0.763805,
+            "neural": 0.503631,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
@@ -841,7 +1077,15 @@
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.67554
+            "score": 0.67554,
+            "neural": 0.367669,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 3,
@@ -857,38 +1101,18 @@
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.663039
+            "score": 0.663039,
+            "neural": 0.324444,
+            "profileQuality": 0.37,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 4,
-            "id": "3c5807fa88215783",
-            "artist": "Xiu Xiu",
-            "title": "La Forêt",
-            "genres": [
-              "alternative rock",
-              "electronic",
-              "experimental",
-              "rock",
-              "ambient pop",
-              "art pop"
-            ],
-            "tags": [
-              "alternative rock",
-              "electronic",
-              "experimental",
-              "rock",
-              "ambient pop",
-              "art pop",
-              "art rock",
-              "avant-folk",
-              "dark wave",
-              "experimental rock"
-            ],
-            "moods": [],
-            "score": 0.666535
-          },
-          {
-            "rank": 5,
             "id": "0acaaae12a91be7a",
             "artist": "heavenward",
             "title": "Pyrophonics",
@@ -903,7 +1127,39 @@
               "shoegaze"
             ],
             "moods": [],
-            "score": 0.679444
+            "score": 0.679444,
+            "neural": 0.387435,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "1ab8702982fc71d8",
+            "artist": "Sleeping States",
+            "title": "There the Open Spaces",
+            "genres": [
+              "rock",
+              "shoegaze"
+            ],
+            "tags": [
+              "rock",
+              "shoegaze"
+            ],
+            "moods": [],
+            "score": 0.669754,
+            "neural": 0.36195,
+            "profileQuality": 0.37,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -934,24 +1190,32 @@
           "avoidedGenres": [
             "soul"
           ],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "pt",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
-      "title": "Lúpiter",
-      "detail": "TODAY'S RECORD\nLúpiter\n\nJazz the Roots · 2017",
-      "reason": "Its catalog tags include jazz.",
-      "signals": "CONTEMPORARY JAZZ\nDANCEHALL\nDUB",
+      "title": "Get Up With It",
+      "detail": "TODAY'S RECORD\nGet Up With It\n\nMiles Davis · 1974",
+      "reason": "Filed under jazz. That’s the strongest match we can explain from the catalog.",
+      "signals": "jazz\njazz fusion\navant-garde jazz",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "0eb6d76f6340c0d6",
-        "catalogGenres": "contemporary jazz | dancehall | dub | experimental | funk | hip hop",
-        "catalogTags": "contemporary jazz | dancehall | dub | experimental | funk | hip hop | jazz | ragga | reggae | rock",
-        "catalogMoods": "",
+        "albumId": "5e175e24de9c2182",
+        "catalogGenres": "jazz | jazz fusion | avant-garde jazz | jazz rock | ambient | jazz-funk",
+        "catalogTags": "jazz | jazz fusion | avant-garde jazz | jazz rock | ambient | jazz-funk",
+        "catalogMoods": "reflective | dreamy",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
@@ -959,9 +1223,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v5-rrf",
         "diagnostics": {
-          "neural": 0.532011,
+          "neural": 0.579196,
           "local": 1,
-          "lexical": 0.8382185,
+          "lexical": 0.85673,
           "candidates": 96,
           "retrievalSelection": "weighted-rrf-v1",
           "vectorCacheHits": 96,
@@ -972,126 +1236,156 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 3
+          "excludedGenreMatches": 1,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "0eb6d76f6340c0d6",
-            "artist": "Jazz the Roots",
-            "title": "Lúpiter",
+            "id": "5e175e24de9c2182",
+            "artist": "Miles Davis",
+            "title": "Get Up With It",
             "genres": [
-              "contemporary jazz",
-              "dancehall",
-              "dub",
-              "experimental",
-              "funk",
-              "hip hop"
+              "jazz",
+              "jazz fusion",
+              "avant-garde jazz",
+              "jazz rock",
+              "ambient",
+              "jazz-funk"
             ],
             "tags": [
-              "contemporary jazz",
-              "dancehall",
-              "dub",
-              "experimental",
-              "funk",
-              "hip hop",
               "jazz",
-              "ragga",
-              "reggae",
-              "rock"
+              "jazz fusion",
+              "avant-garde jazz",
+              "jazz rock",
+              "ambient",
+              "jazz-funk"
             ],
             "moods": [],
-            "score": 0.881274
+            "score": 0.883982,
+            "neural": 0.579196,
+            "profileQuality": 0.5800000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
-            "id": "d3e8ea9b5657409d",
-            "artist": "Camino 84",
-            "title": "Don't read this. You will be kissed...",
+            "id": "d6738d633a742867",
+            "artist": "Linley Hamilton",
+            "title": "Ginger's Hollow",
             "genres": [
-              "bossa nova",
-              "disco",
-              "funk",
-              "indie pop",
-              "jazz-funk",
-              "pop"
+              "bebop",
+              "jazz",
+              "nu jazz",
+              "spiritual jazz"
             ],
             "tags": [
-              "bossa nova",
-              "disco",
-              "funk",
-              "indie",
-              "indie pop",
-              "jazz-funk",
-              "pop",
-              "power pop"
+              "bebop",
+              "jazz",
+              "nu jazz",
+              "spiritual jazz"
             ],
             "moods": [],
-            "score": 0.864995
+            "score": 0.869134,
+            "neural": 0.502367,
+            "profileQuality": 0.53,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 3,
-            "id": "505de2a3a10d9f1c",
-            "artist": "Sun Ra and His Astro Infinity Arkestra",
-            "title": "Continuation",
+            "id": "871eb1a59d148b7b",
+            "artist": "Sun Ra",
+            "title": "Singles (The Definitive 45’s Collection 1952–1991)",
             "genres": [
               "avant-garde jazz",
-              "big band",
+              "jazz",
+              "experimental big band",
               "free jazz",
-              "jazz"
+              "vocal jazz"
             ],
             "tags": [
               "avant-garde jazz",
-              "big band",
+              "jazz",
+              "experimental big band",
               "free jazz",
-              "jazz"
+              "vocal jazz"
             ],
             "moods": [],
-            "score": 0.870654
+            "score": 0.882109,
+            "neural": 0.578546,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 4,
-            "id": "89321fd496337540",
-            "artist": "Paloma San Basilio",
-            "title": "Invierno Sur",
+            "id": "f2267fa9aa8f5be2",
+            "artist": "Dorian Dumont",
+            "title": "APHEXionS",
             "genres": [
-              "jazz",
-              "musical",
-              "pop",
-              "smooth jazz"
+              "ambient",
+              "classical",
+              "jazz"
             ],
             "tags": [
-              "jazz",
-              "musical",
-              "pop",
-              "smooth jazz"
+              "ambient",
+              "classical",
+              "jazz"
             ],
             "moods": [],
-            "score": 0.880022
+            "score": 0.865837,
+            "neural": 0.545507,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 5,
-            "id": "1c29b77563210f93",
-            "artist": "Mesmonium",
-            "title": "Warp Whistle, Volume 2 (Super Mario)",
+            "id": "d7711a00aa7b3b1b",
+            "artist": "The Unherd",
+            "title": "Looking for the Light",
             "genres": [
-              "acid jazz",
-              "hip hop",
               "jazz",
-              "jazz fusion",
-              "liquid funk",
+              "pop",
               "smooth jazz"
             ],
             "tags": [
-              "acid jazz",
-              "hip hop",
               "jazz",
-              "jazz fusion",
-              "liquid funk",
+              "pop",
               "smooth jazz"
             ],
             "moods": [],
-            "score": 0.879335
+            "score": 0.879489,
+            "neural": 0.608503,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -1122,18 +1416,26 @@
           "avoidedGenres": [
             "jazz"
           ],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "pt",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
       "title": "Full of Fire",
-      "detail": "TODAY'S RECORD\nFull of Fire\n\nAl Green · 1976\n\nWARM",
-      "reason": "Its catalog tags include soul.",
-      "signals": "SOUL\nSMOOTH SOUL\nR&B",
+      "detail": "TODAY'S RECORD\nFull of Fire\n\nAl Green · 1976",
+      "reason": "Filed under soul. That’s the strongest match we can explain from the catalog.",
+      "signals": "soul\nsmooth soul\nr&b",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
         "albumId": "92851ca6eb3f818f",
@@ -1147,9 +1449,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v5-rrf",
         "diagnostics": {
-          "neural": 0.522305,
+          "neural": 0.556793,
           "local": 1,
-          "lexical": 0.9976417799452761,
+          "lexical": 0.9976417797894443,
           "candidates": 96,
           "retrievalSelection": "weighted-rrf-v1",
           "vectorCacheHits": 96,
@@ -1158,9 +1460,15 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 5,
+          "consideredCompilations": 4,
           "chosenCompilation": false,
-          "excludedGenreMatches": 2
+          "excludedGenreMatches": 5,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
@@ -1181,10 +1489,47 @@
               "smooth soul"
             ],
             "moods": [],
-            "score": 0.870934
+            "score": 0.877935,
+            "neural": 0.556793,
+            "profileQuality": 0.5,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
+            "id": "90cb636b5f67aa11",
+            "artist": "Jackie Wilson",
+            "title": "The Jackie Wilson Story",
+            "genres": [
+              "chicago soul",
+              "soul",
+              "r&b"
+            ],
+            "tags": [
+              "chicago soul",
+              "soul",
+              "early r&b",
+              "pop-soul",
+              "r&b",
+              "uptown soul"
+            ],
+            "moods": [],
+            "score": 0.874927,
+            "neural": 0.531728,
+            "profileQuality": 0.525,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
             "id": "9e2ee348e8700f2a",
             "artist": "Smokey Robinson",
             "title": "Motown Legends: Cruisin' / Being With You",
@@ -1204,76 +1549,80 @@
               "urban"
             ],
             "moods": [],
-            "score": 0.869594
-          },
-          {
-            "rank": 3,
-            "id": "5754be3800ab3ea6",
-            "artist": "Kali Uchis",
-            "title": "Isolation",
-            "genres": [
-              "contemporary r&b",
-              "neo soul",
-              "bossa nova",
-              "hip hop",
-              "latin",
-              "psychedelic soul"
-            ],
-            "tags": [
-              "contemporary r&b",
-              "neo soul",
-              "bossa nova",
-              "hip hop",
-              "latin",
-              "psychedelic soul",
-              "reggaeton",
-              "sophisti-pop",
-              "synth funk",
-              "trip hop"
-            ],
-            "moods": [],
-            "score": 0.860889
+            "score": 0.867723,
+            "neural": 0.477309,
+            "profileQuality": 0.5800000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 4,
-            "id": "90cb636b5f67aa11",
-            "artist": "Jackie Wilson",
-            "title": "The Jackie Wilson Story",
+            "id": "44f65fbc17469025",
+            "artist": "Frankie Knuckles",
+            "title": "Choice: A Collection of Classics",
             "genres": [
-              "chicago soul",
-              "soul",
-              "r&b"
+              "disco",
+              "electronic",
+              "funk",
+              "garage house"
             ],
             "tags": [
-              "chicago soul",
-              "soul",
-              "early r&b",
-              "pop-soul",
-              "r&b",
-              "uptown soul"
+              "disco",
+              "electronic",
+              "funk",
+              "garage house",
+              "funk soul"
             ],
             "moods": [],
-            "score": 0.867222
+            "score": 0.85791,
+            "neural": 0.533928,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 5,
-            "id": "a0ad6a6defd29c57",
-            "artist": "The Delfonics",
-            "title": "The Delfonics",
+            "id": "ec6c05b629077152",
+            "artist": "James Blake",
+            "title": "Friends That Break Your Heart",
             "genres": [
-              "philly soul",
-              "pop soul",
-              "smooth soul",
-              "soul"
+              "leftfield",
+              "pop",
+              "alternative r&b",
+              "ambient pop",
+              "electronic",
+              "pop soul"
             ],
             "tags": [
-              "philly soul",
+              "leftfield",
+              "pop",
+              "1–4 wochen",
+              "alternative r&b",
+              "ambient pop",
+              "electronic",
+              "offizielle charts",
               "pop soul",
-              "smooth soul",
-              "soul"
+              "soul",
+              "trap"
             ],
             "moods": [],
-            "score": 0.861797
+            "score": 0.857127,
+            "neural": 0.485988,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -1308,18 +1657,26 @@
           "avoidedGenres": [
             "soul"
           ],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
       "title": "Floating Into the Night",
-      "detail": "TODAY'S RECORD\nFloating Into the Night\n\nJulee Cruise · 1989\n\nDREAMY",
-      "reason": "Catalogued as jazz; its style also suggests dreamy, though that mood isn't independently verified.",
-      "signals": "DARK JAZZ\nJAZZ POP\nDREAM POP",
+      "detail": "TODAY'S RECORD\nFloating Into the Night\n\nJulee Cruise · 1989",
+      "reason": "Filed under jazz. dreamy is a guess from the style, not a checked mood tag.",
+      "signals": "dark jazz\njazz pop\ndream pop",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
         "albumId": "573e128f5b4be670",
@@ -1344,9 +1701,15 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 4,
+          "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 4
+          "excludedGenreMatches": 2,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
@@ -1372,38 +1735,18 @@
               "sophisti-pop"
             ],
             "moods": [],
-            "score": 1.054845
+            "score": 1.054845,
+            "neural": 0.52888,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
-            "id": "e701be0f9f2c9810",
-            "artist": "Air",
-            "title": "Moon Safari",
-            "genres": [
-              "downtempo",
-              "electronic",
-              "ambient",
-              "ambient pop",
-              "chillout",
-              "electronica"
-            ],
-            "tags": [
-              "downtempo",
-              "electronic",
-              "ambient",
-              "ambient pop",
-              "5+ wochen",
-              "chillout",
-              "electronica",
-              "electronica dance",
-              "english",
-              "future jazz"
-            ],
-            "moods": [],
-            "score": 0.963926
-          },
-          {
-            "rank": 3,
             "id": "ce78bac5b8a16463",
             "artist": "The Jazz Networks",
             "title": "Blues 'N Ballads",
@@ -1421,10 +1764,18 @@
               "swing"
             ],
             "moods": [],
-            "score": 0.889853
+            "score": 0.889853,
+            "neural": 0.611945,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
-            "rank": 4,
+            "rank": 3,
             "id": "13fef24e073a5c99",
             "artist": "Hot Jazz Band",
             "title": "Celebration With Louis Armstrong",
@@ -1441,10 +1792,18 @@
               "swing"
             ],
             "moods": [],
-            "score": 0.882409
+            "score": 0.882409,
+            "neural": 0.589234,
+            "profileQuality": 0.53,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
-            "rank": 5,
+            "rank": 4,
             "id": "5e175e24de9c2182",
             "artist": "Miles Davis",
             "title": "Get Up With It",
@@ -1465,7 +1824,43 @@
               "jazz-funk"
             ],
             "moods": [],
-            "score": 0.881944
+            "score": 0.881944,
+            "neural": 0.565203,
+            "profileQuality": 0.5800000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "ece108c99ae4409a",
+            "artist": "Somewhere off Jazz Street",
+            "title": "A Quiet Light",
+            "genres": [
+              "dark jazz",
+              "electronic",
+              "instrumental",
+              "jazz"
+            ],
+            "tags": [
+              "dark jazz",
+              "electronic",
+              "instrumental",
+              "jazz"
+            ],
+            "moods": [],
+            "score": 0.878973,
+            "neural": 0.572939,
+            "profileQuality": 0.53,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -1492,24 +1887,32 @@
           "avoidedMoods": [],
           "genres": [],
           "avoidedGenres": [],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
-      "title": "Satisfied",
-      "detail": "TODAY'S RECORD\nSatisfied\n\nLinda & The Funky Boys · 2021",
-      "reason": "Its sound may suit your note, but the catalog has no verified mood tags.",
-      "signals": "DISCO\nFUNK\nSOUL",
+      "title": "A Funk Odyssey",
+      "detail": "TODAY'S RECORD\nA Funk Odyssey\n\nJamiroquai · 2001",
+      "reason": "No reliable mood tags for this record. If it misses, tell us and we’ll try another.",
+      "signals": "acid jazz\nfunk\nelectronic",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "f8a51a115498337a",
-        "catalogGenres": "disco | funk | soul",
-        "catalogTags": "disco | funk | soul",
-        "catalogMoods": "",
+        "albumId": "e71cb22c522e1432",
+        "catalogGenres": "acid jazz | funk | electronic | dance-pop | disco | pop",
+        "catalogTags": "acid jazz | adult alternative pop/rock | electronic_disco_jazzdance | funk | jazzdance | electronic | alt rock | dance-pop | disco | pop",
+        "catalogMoods": "energetic | reflective",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
@@ -1517,9 +1920,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v5-rrf",
         "diagnostics": {
-          "neural": 0.437821,
+          "neural": 0.439064,
           "local": 0.5,
-          "lexical": 0.8439825000000001,
+          "lexical": 0.5,
           "candidates": 96,
           "retrievalSelection": "weighted-rrf-v1",
           "vectorCacheHits": 96,
@@ -1528,31 +1931,91 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 4,
+          "consideredCompilations": 2,
           "chosenCompilation": false,
-          "excludedGenreMatches": 0
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "f8a51a115498337a",
-            "artist": "Linda & The Funky Boys",
-            "title": "Satisfied",
+            "id": "e71cb22c522e1432",
+            "artist": "Jamiroquai",
+            "title": "A Funk Odyssey",
             "genres": [
-              "disco",
+              "acid jazz",
               "funk",
-              "soul"
+              "electronic",
+              "dance-pop",
+              "disco",
+              "pop"
             ],
             "tags": [
-              "disco",
+              "acid jazz",
+              "adult alternative pop/rock",
+              "electronic_disco_jazzdance",
               "funk",
-              "soul"
+              "jazzdance",
+              "electronic",
+              "alt rock",
+              "dance-pop",
+              "disco",
+              "pop"
             ],
             "moods": [],
-            "score": 0.659266
+            "score": 0.661301,
+            "neural": 0.439064,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
+            "id": "61ed1bcda55ae314",
+            "artist": "Jessie Ware",
+            "title": "That! Feels Good!",
+            "genres": [
+              "disco",
+              "pop",
+              "boogie",
+              "dance-pop",
+              "funk",
+              "alternative dance"
+            ],
+            "tags": [
+              "disco",
+              "pop",
+              "boogie",
+              "dance-pop",
+              "funk",
+              "1–4 wochen",
+              "adult alternative pop/rock",
+              "alternative dance",
+              "contemporary r&b",
+              "diva house"
+            ],
+            "moods": [],
+            "score": 0.65592,
+            "neural": 0.415742,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
             "id": "aa8d0172165d316b",
             "artist": "SAULT",
             "title": "Untitled (Black Is)",
@@ -1575,10 +2038,18 @@
               "rock"
             ],
             "moods": [],
-            "score": 0.653955
+            "score": 0.653955,
+            "neural": 0.421284,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
-            "rank": 3,
+            "rank": 4,
             "id": "ee563724cff3165e",
             "artist": "Talking Heads",
             "title": "Speaking in Tongues",
@@ -1603,61 +2074,41 @@
               "r&b/soul"
             ],
             "moods": [],
-            "score": 0.65228
-          },
-          {
-            "rank": 4,
-            "id": "d0c0fe028e80a74c",
-            "artist": "Danny Krivit",
-            "title": "Grass Roots: Danny Krivit",
-            "genres": [
-              "deep house",
-              "disco",
-              "electronic",
-              "funk",
-              "gospel",
-              "soul"
-            ],
-            "tags": [
-              "deep house",
-              "disco",
-              "electronic",
-              "funk",
-              "gospel",
-              "soul",
-              "funk soul",
-              "jazzdance"
-            ],
-            "moods": [],
-            "score": 0.652657
+            "score": 0.65228,
+            "neural": 0.399966,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 5,
-            "id": "3efebe8546a6bc38",
-            "artist": "Bruno Mars",
-            "title": "Unorthodox Jukebox",
+            "id": "f8a51a115498337a",
+            "artist": "Linda & The Funky Boys",
+            "title": "Satisfied",
             "genres": [
-              "pop",
-              "contemporary r&b",
-              "pop rock",
-              "r&b",
-              "rock",
-              "boogie"
-            ],
-            "tags": [
-              "pop",
-              "contemporary r&b",
-              "pop rock",
-              "r&b",
-              "rock",
-              "boogie",
               "disco",
               "funk",
-              "pop soul",
-              "reggae"
+              "soul"
+            ],
+            "tags": [
+              "disco",
+              "funk",
+              "soul"
             ],
             "moods": [],
-            "score": 0.655022
+            "score": 0.659266,
+            "neural": 0.437821,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -1684,18 +2135,26 @@
           "avoidedMoods": [],
           "genres": [],
           "avoidedGenres": [],
-          "energy": 3
+          "energy": 3,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
       "title": "Lifeforms",
-      "detail": "TODAY'S RECORD\nLifeforms\n\nThe Future Sound Of London · 1994\n\nDREAMY · ENERGETIC · REFLECTIVE",
-      "reason": "ambient suggests calm music, but the mood is not independently verified.",
-      "signals": "AMBIENT\nELECTRONIC\nLEFTFIELD",
+      "detail": "TODAY'S RECORD\nLifeforms\n\nThe Future Sound Of London · 1994",
+      "reason": "Filed under ambient. We’re guessing at the calm mood from its style.",
+      "signals": "ambient\nelectronic\nleftfield",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
         "albumId": "c668bc053cc658dc",
@@ -1722,7 +2181,13 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 5,
           "chosenCompilation": false,
-          "excludedGenreMatches": 0
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
@@ -1751,33 +2216,51 @@
               "chillout"
             ],
             "moods": [],
-            "score": 0.754381
+            "score": 0.754381,
+            "neural": 0.495758,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
-            "id": "f62b138f3a954113",
-            "artist": "Washed Out",
-            "title": "Within and Without",
+            "id": "104512a72c156252",
+            "artist": "eternal judge",
+            "title": "opulent",
             "genres": [
-              "chillwave",
+              "ambient",
+              "barber beats",
               "chillout",
-              "lounge",
-              "psychedelic"
+              "chillwave",
+              "downtempo",
+              "electronic"
             ],
             "tags": [
-              "chillwave",
-              "atmospheric",
-              "bittersweet",
-              "bright",
+              "ambient",
+              "barber beats",
               "chillout",
-              "compassionate",
-              "ethereal",
-              "hazy",
-              "hypnotic",
-              "longing"
+              "chillwave",
+              "downtempo",
+              "electronic",
+              "lo-fi",
+              "lounge",
+              "plunderphonics",
+              "trip hop"
             ],
             "moods": [],
-            "score": 0.741642
+            "score": 0.752964,
+            "neural": 0.489613,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 3,
@@ -1805,58 +2288,82 @@
               "future jazz"
             ],
             "moods": [],
-            "score": 0.750979
+            "score": 0.750979,
+            "neural": 0.481011,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 4,
-            "id": "569759f53a7edc1d",
-            "artist": "Blank Embrace",
-            "title": "Horrible",
+            "id": "0f9c28106a18cc3d",
+            "artist": "overscape",
+            "title": "Branches",
             "genres": [
               "ambient",
+              "chillout",
               "dark ambient",
-              "downtempo",
               "drone",
-              "electronic",
-              "new age"
+              "new age",
+              "noise"
             ],
             "tags": [
               "ambient",
+              "chillout",
               "dark ambient",
-              "downtempo",
               "drone",
-              "electronic",
-              "new age"
+              "new age",
+              "noise"
             ],
             "moods": [],
-            "score": 0.741917
+            "score": 0.740741,
+            "neural": 0.467866,
+            "profileQuality": 0.5800000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 5,
-            "id": "624249098c83cad4",
-            "artist": "Supply Fi",
-            "title": "Unruly Predation",
+            "id": "5c5f1ad784f2dad2",
+            "artist": "Cloud 6",
+            "title": "On Losing Everything",
             "genres": [
-              "chillout",
-              "electronic",
-              "idm",
               "ambient",
+              "dark ambient",
+              "dark wave",
               "downtempo",
-              "new age"
+              "electronic",
+              "experimental"
             ],
             "tags": [
-              "chillout",
-              "electronic",
-              "idm",
               "ambient",
-              "beats",
+              "dark ambient",
+              "dark wave",
               "downtempo",
-              "new age",
-              "nu jazz",
-              "nu-jazz"
+              "electronic",
+              "experimental",
+              "pop",
+              "r&b",
+              "trip hop"
             ],
             "moods": [],
-            "score": 0.73813
+            "score": 0.738054,
+            "neural": 0.476281,
+            "profileQuality": 0.655,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -1887,23 +2394,31 @@
             "bossa nova"
           ],
           "avoidedGenres": [],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "pt",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
-      "title": "Professor Kranz tedesco di germania",
-      "detail": "TODAY'S RECORD\nProfessor Kranz tedesco di germania\n\nPiero Piccioni · 2011",
-      "reason": "Its catalog tags include bossa nova.",
-      "signals": "BOSSA NOVA\nCONTEMPORARY JAZZ\nEASY LISTENING",
+      "title": "Shine",
+      "detail": "TODAY'S RECORD\nShine\n\nClara Hill · 2020",
+      "reason": "Filed under bossa nova. That’s the strongest match we can explain from the catalog.",
+      "signals": "bossa nova\nelectronic\nfolk",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "8e544c2ade7ba7e1",
-        "catalogGenres": "bossa nova | contemporary jazz | easy listening | jazz | jazz-funk | latin",
-        "catalogTags": "bossa nova | contemporary jazz | easy listening | jazz | jazz-funk | latin | soul jazz",
+        "albumId": "4dc14d80dcbfa930",
+        "catalogGenres": "bossa nova | electronic | folk | indie pop | jazz | pop",
+        "catalogTags": "bossa nova | electronic | folk | indie pop | jazz | pop | psychedelic | smooth jazz | soul",
         "catalogMoods": "",
         "selectionMode": "backend"
       },
@@ -1912,9 +2427,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v5-rrf",
         "diagnostics": {
-          "neural": 0.645415,
+          "neural": 0.635575,
           "local": 1,
-          "lexical": 0.832619,
+          "lexical": 0.8599319999999999,
           "candidates": 96,
           "retrievalSelection": "weighted-rrf-v1",
           "vectorCacheHits": 96,
@@ -1923,89 +2438,84 @@
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
-          "consideredCompilations": 2,
+          "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 0
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "8e544c2ade7ba7e1",
-            "artist": "Piero Piccioni",
-            "title": "Professor Kranz tedesco di germania",
+            "id": "4dc14d80dcbfa930",
+            "artist": "Clara Hill",
+            "title": "Shine",
             "genres": [
               "bossa nova",
-              "contemporary jazz",
-              "easy listening",
-              "jazz",
-              "jazz-funk",
-              "latin"
-            ],
-            "tags": [
-              "bossa nova",
-              "contemporary jazz",
-              "easy listening",
-              "jazz",
-              "jazz-funk",
-              "latin",
-              "soul jazz"
-            ],
-            "moods": [],
-            "score": 0.98976
-          },
-          {
-            "rank": 2,
-            "id": "d3e8ea9b5657409d",
-            "artist": "Camino 84",
-            "title": "Don't read this. You will be kissed...",
-            "genres": [
-              "bossa nova",
-              "disco",
-              "funk",
+              "electronic",
+              "folk",
               "indie pop",
-              "jazz-funk",
+              "jazz",
               "pop"
             ],
             "tags": [
               "bossa nova",
-              "disco",
-              "funk",
-              "indie",
+              "electronic",
+              "folk",
               "indie pop",
-              "jazz-funk",
+              "jazz",
               "pop",
-              "power pop"
+              "psychedelic",
+              "smooth jazz",
+              "soul"
             ],
             "moods": [],
-            "score": 0.985273
+            "score": 0.94859,
+            "neural": 0.635575,
+            "profileQuality": 0.655,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
-            "rank": 3,
-            "id": "e630f1c92a267552",
-            "artist": "T.C. Pfeiler",
-            "title": "T.C. Pfeiler Jazz Organ Trio - BAROCK BAR Live!",
+            "rank": 2,
+            "id": "3146c82d767f4af4",
+            "artist": "Sarah Vaughan",
+            "title": "The Definitive Collection",
             "genres": [
-              "blues",
               "bossa nova",
               "easy listening",
-              "hard bop",
               "jazz",
-              "jazz-funk"
+              "smooth jazz",
+              "swing"
             ],
             "tags": [
-              "blues",
               "bossa nova",
               "easy listening",
-              "hard bop",
               "jazz",
-              "jazz-funk",
+              "smooth jazz",
               "swing"
             ],
             "moods": [],
-            "score": 0.900671
+            "score": 0.902431,
+            "neural": 0.678589,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
-            "rank": 4,
+            "rank": 3,
             "id": "3dc8ef36e47c6aee",
             "artist": "Antônio Carlos Jobim",
             "title": "Wave",
@@ -2027,7 +2537,47 @@
               "meditative"
             ],
             "moods": [],
-            "score": 0.901273
+            "score": 0.89262,
+            "neural": 0.606434,
+            "profileQuality": 0.625,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "b94edb2036174965",
+            "artist": "Fernanda Cunha",
+            "title": "Coração do Brasil",
+            "genres": [
+              "bossa nova",
+              "mpb",
+              "samba"
+            ],
+            "tags": [
+              "bossa nova",
+              "bossa-nova",
+              "brasil",
+              "brazil",
+              "brazilian music",
+              "coração do brasil",
+              "fernanda cunha",
+              "mpb",
+              "samba"
+            ],
+            "moods": [],
+            "score": 0.884227,
+            "neural": 0.558351,
+            "profileQuality": 0.57,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 5,
@@ -2052,7 +2602,15 @@
               "post-bop"
             ],
             "moods": [],
-            "score": 0.904836
+            "score": 0.898188,
+            "neural": 0.636309,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -2083,24 +2641,32 @@
           "avoidedGenres": [
             "metal"
           ],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
-      "title": "Teen Dream",
-      "detail": "TODAY'S RECORD\nTeen Dream\n\nBeach House · 2010\n\nDREAMY · ENERGETIC",
-      "reason": "Its catalog tags include dream pop.",
-      "signals": "DREAM POP\nPOP\nINDIE POP",
+      "title": "Melt Transmission",
+      "detail": "TODAY'S RECORD\nMelt Transmission\n\nSleep Movies · 2021",
+      "reason": "Filed under dream pop. That’s the strongest match we can explain from the catalog.",
+      "signals": "dream pop\nelectronic\nhyperpop",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "58a090ef6a9c29fb",
-        "catalogGenres": "dream pop | indie pop | electronic | indie rock | neo-psychedelia | pop",
-        "catalogTags": "dream pop | indie pop | electronic | indie rock | neo-psychedelia | pop | rock | vyrzukhisuc-album",
-        "catalogMoods": "dreamy | energetic",
+        "albumId": "9016b4a4a02bfd47",
+        "catalogGenres": "dream pop | electronic | hyperpop | psychedelic | shoegaze | vaporwave",
+        "catalogTags": "dream pop | electronic | hyperpop | psychedelic | shoegaze | vaporwave",
+        "catalogMoods": "dreamy",
         "selectionMode": "backend"
       },
       "page": "https://gabiarbex.github.io/an-album-a-day/",
@@ -2108,9 +2674,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v5-rrf",
         "diagnostics": {
-          "neural": 0.62806,
+          "neural": 0.637261,
           "local": 1,
-          "lexical": 0.8807635,
+          "lexical": 0.9522341192955717,
           "candidates": 96,
           "retrievalSelection": "weighted-rrf-v1",
           "vectorCacheHits": 96,
@@ -2121,91 +2687,49 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 2
+          "excludedGenreMatches": 2,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "58a090ef6a9c29fb",
-            "artist": "Beach House",
-            "title": "Teen Dream",
+            "id": "9016b4a4a02bfd47",
+            "artist": "Sleep Movies",
+            "title": "Melt Transmission",
             "genres": [
               "dream pop",
-              "indie pop",
               "electronic",
-              "indie rock",
-              "neo-psychedelia",
-              "pop"
+              "hyperpop",
+              "psychedelic",
+              "shoegaze",
+              "vaporwave"
             ],
             "tags": [
               "dream pop",
-              "indie pop",
               "electronic",
-              "indie rock",
-              "neo-psychedelia",
-              "pop",
-              "rock",
-              "vyrzukhisuc-album"
+              "hyperpop",
+              "psychedelic",
+              "shoegaze",
+              "vaporwave"
             ],
             "moods": [],
-            "score": 0.9003
+            "score": 0.900304,
+            "neural": 0.637261,
+            "profileQuality": 0.5800000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
-            "id": "7203c0fcffa21249",
-            "artist": "Pale Saints",
-            "title": "The Comforts of Madness",
-            "genres": [
-              "shoegaze",
-              "dream pop",
-              "jangle pop",
-              "neo-psychedelia",
-              "noise pop",
-              "psychedelic"
-            ],
-            "tags": [
-              "shoegaze",
-              "dream pop",
-              "abstract",
-              "atmospheric",
-              "dense",
-              "eclectic",
-              "energetic",
-              "ethereal",
-              "hypnotic",
-              "jangle pop"
-            ],
-            "moods": [],
-            "score": 0.894646
-          },
-          {
-            "rank": 3,
-            "id": "da867fa272ba66b3",
-            "artist": "Broadcast",
-            "title": "Tender Buttons",
-            "genres": [
-              "dream pop",
-              "electronic",
-              "indie rock",
-              "leftfield",
-              "pop",
-              "rock"
-            ],
-            "tags": [
-              "dream pop",
-              "electronic",
-              "indie",
-              "indie rock",
-              "leftfield",
-              "pop",
-              "rock",
-              "synth-pop"
-            ],
-            "moods": [],
-            "score": 0.89691
-          },
-          {
-            "rank": 4,
             "id": "5f48f93dfdc3346f",
             "artist": "The Church",
             "title": "Starfish",
@@ -2230,7 +2754,83 @@
               "introspective"
             ],
             "moods": [],
-            "score": 0.897957
+            "score": 0.897957,
+            "neural": 0.597611,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
+            "id": "58a090ef6a9c29fb",
+            "artist": "Beach House",
+            "title": "Teen Dream",
+            "genres": [
+              "dream pop",
+              "indie pop",
+              "electronic",
+              "indie rock",
+              "neo-psychedelia",
+              "pop"
+            ],
+            "tags": [
+              "dream pop",
+              "indie pop",
+              "electronic",
+              "indie rock",
+              "neo-psychedelia",
+              "pop",
+              "rock",
+              "vyrzukhisuc-album"
+            ],
+            "moods": [],
+            "score": 0.9003,
+            "neural": 0.62806,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "da867fa272ba66b3",
+            "artist": "Broadcast",
+            "title": "Tender Buttons",
+            "genres": [
+              "dream pop",
+              "electronic",
+              "indie rock",
+              "leftfield",
+              "pop",
+              "rock"
+            ],
+            "tags": [
+              "dream pop",
+              "electronic",
+              "indie",
+              "indie rock",
+              "leftfield",
+              "pop",
+              "rock",
+              "synth-pop"
+            ],
+            "moods": [],
+            "score": 0.89691,
+            "neural": 0.614486,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 5,
@@ -2256,7 +2856,15 @@
               "slacker rock"
             ],
             "moods": [],
-            "score": 0.885864
+            "score": 0.885864,
+            "neural": 0.565265,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -2287,18 +2895,26 @@
           "avoidedGenres": [
             "pop punk"
           ],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
       "title": "Kunst",
       "detail": "TODAY'S RECORD\nKunst\n\nTalkshow · 2013",
-      "reason": "Its catalog tags include indie pop.",
-      "signals": "INDIE POP\nPOP\nALTERNATIVE POP",
+      "reason": "Filed under indie pop. That’s the strongest match we can explain from the catalog.",
+      "signals": "indie pop\nalternative pop\nindie rock",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
         "albumId": "0a0088223046bcdf",
@@ -2317,15 +2933,21 @@
           "lexical": 0.8768975,
           "candidates": 96,
           "retrievalSelection": "weighted-rrf-v1",
-          "vectorCacheHits": 95,
-          "liveEmbeddings": 1,
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
           "queryVectorSource": "retrieval-reuse",
           "taste": 0,
           "tasteConfidence": 0,
           "tasteAdjacency": 0,
           "consideredCompilations": 2,
           "chosenCompilation": false,
-          "excludedGenreMatches": 2
+          "excludedGenreMatches": 1,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
@@ -2349,7 +2971,15 @@
               "rock"
             ],
             "moods": [],
-            "score": 0.901734
+            "score": 0.901734,
+            "neural": 0.657897,
+            "profileQuality": 0.5800000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
@@ -2370,62 +3000,18 @@
               "indie rock"
             ],
             "moods": [],
-            "score": 0.896096
+            "score": 0.896096,
+            "neural": 0.642652,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 3,
-            "id": "3edd0d99a38d6a8b",
-            "artist": "Panda Bear & Sonic Boom",
-            "title": "Reset",
-            "genres": [
-              "neo-psychedelia",
-              "ambient pop",
-              "electronic",
-              "experimental",
-              "indie pop",
-              "indie rock"
-            ],
-            "tags": [
-              "neo-psychedelia",
-              "ambient pop",
-              "electronic",
-              "english",
-              "experimental",
-              "indie pop",
-              "indie rock",
-              "indietronica",
-              "ph_2_stars",
-              "plattentests.de"
-            ],
-            "moods": [],
-            "score": 0.888705
-          },
-          {
-            "rank": 4,
-            "id": "4fe1df54da65bd4d",
-            "artist": "Walter Etc.",
-            "title": "Gloom Cruise",
-            "genres": [
-              "folk punk",
-              "indie pop",
-              "indie rock",
-              "surf"
-            ],
-            "tags": [
-              "folk punk",
-              "indie pop",
-              "indie rock",
-              "surf",
-              "alternative",
-              "california",
-              "emo surf",
-              "surf emo"
-            ],
-            "moods": [],
-            "score": 0.892027
-          },
-          {
-            "rank": 5,
             "id": "0ed8107e1f86aba5",
             "artist": "The Primitives",
             "title": "Lovely",
@@ -2447,7 +3033,81 @@
               "twee pop"
             ],
             "moods": [],
-            "score": 0.886975
+            "score": 0.886975,
+            "neural": 0.580391,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "97b8fac23ae0fb49",
+            "artist": "Mid-State Orange",
+            "title": "Odds",
+            "genres": [
+              "indie pop",
+              "indie rock",
+              "pop",
+              "pop rock",
+              "rock"
+            ],
+            "tags": [
+              "indie pop",
+              "indie rock",
+              "pop",
+              "pop rock",
+              "rock"
+            ],
+            "moods": [],
+            "score": 0.886585,
+            "neural": 0.598368,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "829cfa04e6517f97",
+            "artist": "Kero Kero Bonito",
+            "title": "Bonito Generation",
+            "genres": [
+              "electronic",
+              "j-pop",
+              "pop",
+              "synth-pop",
+              "bubblegum bass",
+              "bubblegum pop"
+            ],
+            "tags": [
+              "electronic",
+              "j-pop",
+              "pop",
+              "synth-pop",
+              "british",
+              "bubblegum bass",
+              "bubblegum pop",
+              "electropop",
+              "indie pop",
+              "pop rap"
+            ],
+            "moods": [],
+            "score": 0.863745,
+            "neural": 0.514671,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           }
         ]
       },
@@ -2478,23 +3138,31 @@
           "avoidedGenres": [
             "rock"
           ],
-          "energy": null
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
         },
         "scripts": [
-          "/an-album-a-day/intent-core.js?v=goal-002",
-          "/an-album-a-day/retrieval-fusion.js?v=rrf-001",
-          "/an-album-a-day/selector.js?v=goal-003"
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
         ]
       },
-      "title": "Volume 1",
-      "detail": "TODAY'S RECORD\nVolume 1\n\nThe Erin Bardwell Collective · 2003",
-      "reason": "Its catalog tags include rocksteady.",
-      "signals": "ROCKSTEADY\nREGGAE\nSKA",
+      "title": "Foundation Ska",
+      "detail": "TODAY'S RECORD\nFoundation Ska\n\nThe Skatalites · 1997",
+      "reason": "Filed under rocksteady. That’s the strongest match we can explain from the catalog.",
+      "signals": "rocksteady\nska\nreggae",
       "status": "1 seen · 99,999 still in your no-repeat pool.",
       "catalog": {
-        "albumId": "6fcd508f1f26c692",
-        "catalogGenres": "reggae | rocksteady | ska",
-        "catalogTags": "reggae | rocksteady | ska | swindon",
+        "albumId": "f7ecdaa70663dd69",
+        "catalogGenres": "ska | rocksteady | reggae",
+        "catalogTags": "ska | rocksteady | reggae",
         "catalogMoods": "",
         "selectionMode": "backend"
       },
@@ -2503,9 +3171,9 @@
         "ok": true,
         "engine": "hybrid-neural-reranker-v5-rrf",
         "diagnostics": {
-          "neural": 0.542191,
+          "neural": 0.545169,
           "local": 1,
-          "lexical": 0.9967050632813902,
+          "lexical": 0.9957458473610011,
           "candidates": 96,
           "retrievalSelection": "weighted-rrf-v1",
           "vectorCacheHits": 96,
@@ -2516,27 +3184,40 @@
           "tasteAdjacency": 0,
           "consideredCompilations": 3,
           "chosenCompilation": false,
-          "excludedGenreMatches": 28
+          "excludedGenreMatches": 27,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": null,
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
         },
         "alternatives": [
           {
             "rank": 1,
-            "id": "6fcd508f1f26c692",
-            "artist": "The Erin Bardwell Collective",
-            "title": "Volume 1",
+            "id": "f7ecdaa70663dd69",
+            "artist": "The Skatalites",
+            "title": "Foundation Ska",
             "genres": [
-              "reggae",
+              "ska",
               "rocksteady",
-              "ska"
+              "reggae"
             ],
             "tags": [
-              "reggae",
-              "rocksteady",
               "ska",
-              "swindon"
+              "rocksteady",
+              "reggae"
             ],
             "moods": [],
-            "score": 0.872845
+            "score": 0.871301,
+            "neural": 0.545169,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 2,
@@ -2550,48 +3231,18 @@
               "rocksteady"
             ],
             "moods": [],
-            "score": 0.869443
+            "score": 0.869443,
+            "neural": 0.649226,
+            "profileQuality": 0.29000000000000004,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
           },
           {
             "rank": 3,
-            "id": "721545a3b657a53f",
-            "artist": "Bob Marley",
-            "title": "Young Mystic",
-            "genres": [
-              "reggae",
-              "rocksteady",
-              "roots reggae",
-              "ska"
-            ],
-            "tags": [
-              "reggae",
-              "rocksteady",
-              "roots reggae",
-              "ska"
-            ],
-            "moods": [],
-            "score": 0.868802
-          },
-          {
-            "rank": 4,
-            "id": "277d1166c6645af7",
-            "artist": "Derrick Morgan",
-            "title": "I Am the Ruler",
-            "genres": [
-              "reggae",
-              "rocksteady",
-              "ska"
-            ],
-            "tags": [
-              "reggae",
-              "rocksteady",
-              "ska"
-            ],
-            "moods": [],
-            "score": 0.841547
-          },
-          {
-            "rank": 5,
             "id": "732156293988c6c3",
             "artist": "The Regulators",
             "title": "In A Dancing Mood",
@@ -2608,7 +3259,2045 @@
               "ska"
             ],
             "moods": [],
-            "score": 0.856054
+            "score": 0.856054,
+            "neural": 0.449458,
+            "profileQuality": 0.5,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "56604a89e6e7ecbb",
+            "artist": "Glen Adams",
+            "title": "Wonderthirst: Vintage Collectables 1963-1973",
+            "genres": [
+              "reggae",
+              "rocksteady",
+              "roots reggae"
+            ],
+            "tags": [
+              "reggae",
+              "rocksteady",
+              "roots reggae"
+            ],
+            "moods": [],
+            "score": 0.851407,
+            "neural": 0.454166,
+            "profileQuality": 0.42,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "277d1166c6645af7",
+            "artist": "Derrick Morgan",
+            "title": "I Am the Ruler",
+            "genres": [
+              "reggae",
+              "rocksteady",
+              "ska"
+            ],
+            "tags": [
+              "reggae",
+              "rocksteady",
+              "ska"
+            ],
+            "moods": [],
+            "score": 0.841547,
+            "neural": 0.392489,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": null,
+            "vocalLanguages": []
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "id": "L01",
+      "prompt": "quero um álbum brasileiro de samba, sem metal",
+      "category": "artist_origin",
+      "language": "pt",
+      "wantGenres": [
+        "samba"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [
+        "BR"
+      ],
+      "avoidCountries": [],
+      "frontend": {
+        "fusionAvailable": true,
+        "intent": {
+          "goalShift": false,
+          "moods": [],
+          "avoidedMoods": [],
+          "genres": [
+            "samba"
+          ],
+          "avoidedGenres": [
+            "metal"
+          ],
+          "energy": null,
+          "queryLanguage": "pt",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [
+            "BR"
+          ],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
+        },
+        "scripts": [
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
+        ]
+      },
+      "title": "O som das Américas",
+      "detail": "TODAY'S RECORD\nO som das Américas\n\nBanda Black Rio · 2019",
+      "reason": "From the Brazil shelf · filed under samba. Artist origin doesn’t tell us the lyric language.",
+      "signals": "samba\njazz-funk\nlatin",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "6ee6ca591d99b5c5",
+        "catalogGenres": "samba | jazz-funk | latin | soul",
+        "catalogTags": "samba | jazz-funk | latin | soul",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v5-rrf",
+        "diagnostics": {
+          "neural": 0.659848,
+          "local": 1,
+          "lexical": 0.8674525,
+          "candidates": 96,
+          "retrievalSelection": "weighted-rrf-v1",
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 2,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 2,
+          "requestedOriginCountries": [
+            "BR"
+          ],
+          "verifiedOriginMatches": 63,
+          "selectedOriginCountry": "BR",
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "6ee6ca591d99b5c5",
+            "artist": "Banda Black Rio",
+            "title": "O som das Américas",
+            "genres": [
+              "samba",
+              "jazz-funk",
+              "latin",
+              "soul"
+            ],
+            "tags": [
+              "samba",
+              "jazz-funk",
+              "latin",
+              "soul"
+            ],
+            "moods": [],
+            "score": 1.296696,
+            "neural": 0.659848,
+            "profileQuality": 0.53,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 2,
+            "id": "e94ed3fc60ac8451",
+            "artist": "Martinho da Vila",
+            "title": "Batuqueiro",
+            "genres": [
+              "latin",
+              "pop",
+              "samba"
+            ],
+            "tags": [
+              "latin",
+              "pop",
+              "samba"
+            ],
+            "moods": [],
+            "score": 1.283332,
+            "neural": 0.640478,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
+            "id": "0130f6c7f24042cd",
+            "artist": "Gal Costa",
+            "title": "Aquarela do Brasil",
+            "genres": [
+              "bossa nova",
+              "latin",
+              "mpb",
+              "samba"
+            ],
+            "tags": [
+              "bossa nova",
+              "latin",
+              "mpb",
+              "samba"
+            ],
+            "moods": [],
+            "score": 1.275579,
+            "neural": 0.565368,
+            "profileQuality": 0.53,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "85a896298f1ef150",
+            "artist": "Criolo",
+            "title": "Nó na Orelha",
+            "genres": [
+              "hardcore hip hop",
+              "hip hop",
+              "jazz",
+              "latin",
+              "mpb",
+              "samba"
+            ],
+            "tags": [
+              "brazilian music",
+              "hardcore hip hop",
+              "hip hop",
+              "hip-hop",
+              "jazz",
+              "latin",
+              "mpb",
+              "rap",
+              "samba"
+            ],
+            "moods": [],
+            "score": 1.275426,
+            "neural": 0.574894,
+            "profileQuality": 0.655,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "b475746f248fcda6",
+            "artist": "Wilson Simonal",
+            "title": "A Nova Dimensão Do Samba",
+            "genres": [
+              "bossa nova",
+              "jazz",
+              "latin",
+              "latin jazz",
+              "pop",
+              "samba"
+            ],
+            "tags": [
+              "bossa nova",
+              "jazz",
+              "latin",
+              "latin jazz",
+              "pop",
+              "samba"
+            ],
+            "moods": [],
+            "score": 1.272071,
+            "neural": 0.590147,
+            "profileQuality": 0.5800000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "id": "L02",
+      "prompt": "ik wil Nederlandse indie muziek, maar geen metal",
+      "category": "artist_origin",
+      "language": "nl",
+      "wantGenres": [
+        "indie"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [
+        "NL"
+      ],
+      "avoidCountries": [],
+      "frontend": {
+        "fusionAvailable": true,
+        "intent": {
+          "goalShift": false,
+          "moods": [],
+          "avoidedMoods": [],
+          "genres": [
+            "indie"
+          ],
+          "avoidedGenres": [
+            "metal"
+          ],
+          "energy": null,
+          "queryLanguage": "nl",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [
+            "NL"
+          ],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
+        },
+        "scripts": [
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
+        ]
+      },
+      "title": "Goochelaars & Geesten",
+      "detail": "TODAY'S RECORD\nGoochelaars & Geesten\n\nSpinvis · 2007",
+      "reason": "From the the Netherlands shelf · filed under indie. Artist origin doesn’t tell us the lyric language.",
+      "signals": "indie pop\nindie rock\nelectronic",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "7b816b4febca87dc",
+        "catalogGenres": "electronic | indie pop | indie rock | nederpop | pop rock | rock",
+        "catalogTags": "dutch | electronic | indie pop | indie rock | nederpop | pop rock | rock",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v5-rrf",
+        "diagnostics": {
+          "neural": 0.564404,
+          "local": 1,
+          "lexical": 0.5,
+          "candidates": 96,
+          "retrievalSelection": "weighted-rrf-v1",
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 2,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 3,
+          "requestedOriginCountries": [
+            "NL"
+          ],
+          "verifiedOriginMatches": 45,
+          "selectedOriginCountry": "NL",
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "7b816b4febca87dc",
+            "artist": "Spinvis",
+            "title": "Goochelaars & Geesten",
+            "genres": [
+              "electronic",
+              "indie pop",
+              "indie rock",
+              "nederpop",
+              "pop rock",
+              "rock"
+            ],
+            "tags": [
+              "dutch",
+              "electronic",
+              "indie pop",
+              "indie rock",
+              "nederpop",
+              "pop rock",
+              "rock"
+            ],
+            "moods": [],
+            "score": 1.2687,
+            "neural": 0.564404,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "NL",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 2,
+            "id": "18f05ae0fe3dcd42",
+            "artist": "Typhoon",
+            "title": "Live at the Crystal Ballroom",
+            "genres": [
+              "indie rock",
+              "orchestral",
+              "rock",
+              "singer-songwriter"
+            ],
+            "tags": [
+              "indie",
+              "indie rock",
+              "orchestral",
+              "rock",
+              "singer-songwriter"
+            ],
+            "moods": [],
+            "score": 1.268694,
+            "neural": 0.497285,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "NL",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
+            "id": "d18280abb80d5e1f",
+            "artist": "De Kift",
+            "title": "Krankenhaus",
+            "genres": [
+              "art rock",
+              "blues",
+              "experimental",
+              "folk rock",
+              "indie rock",
+              "pop"
+            ],
+            "tags": [
+              "art rock",
+              "blues",
+              "experimental",
+              "folk rock",
+              "indie rock",
+              "pop",
+              "rock"
+            ],
+            "moods": [],
+            "score": 1.26665,
+            "neural": 0.555048,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "NL",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "c3befbf51fd9d929",
+            "artist": "JOHAN",
+            "title": "4",
+            "genres": [
+              "indie rock",
+              "pop",
+              "rock"
+            ],
+            "tags": [
+              "indie rock",
+              "pop",
+              "rock"
+            ],
+            "moods": [],
+            "score": 1.268487,
+            "neural": 0.632295,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "NL",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "1464cae6c619031d",
+            "artist": "Eefje de Visser",
+            "title": "Bitterzoet",
+            "genres": [
+              "electronic",
+              "pop",
+              "dream pop",
+              "indie pop",
+              "synth-pop"
+            ],
+            "tags": [
+              "electronic",
+              "pop",
+              "dream pop",
+              "indie pop",
+              "synth-pop"
+            ],
+            "moods": [],
+            "score": 1.262973,
+            "neural": 0.557871,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "NL",
+            "vocalLanguages": []
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "id": "L03",
+      "prompt": "quiero música brasileña sin metal",
+      "category": "artist_origin",
+      "language": "es",
+      "wantGenres": [],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [
+        "BR"
+      ],
+      "avoidCountries": [],
+      "frontend": {
+        "fusionAvailable": true,
+        "intent": {
+          "goalShift": false,
+          "moods": [],
+          "avoidedMoods": [],
+          "genres": [],
+          "avoidedGenres": [
+            "metal"
+          ],
+          "energy": null,
+          "queryLanguage": "es",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [
+            "BR"
+          ],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
+        },
+        "scripts": [
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
+        ]
+      },
+      "title": "Batuqueiro",
+      "detail": "TODAY'S RECORD\nBatuqueiro\n\nMartinho da Vila · 1986",
+      "reason": "From the Brazil shelf. Artist origin doesn’t tell us the lyric language.",
+      "signals": "latin\npop\nsamba",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "e94ed3fc60ac8451",
+        "catalogGenres": "latin | pop | samba",
+        "catalogTags": "latin | pop | samba",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v5-rrf",
+        "diagnostics": {
+          "neural": 0.541082,
+          "local": 1,
+          "lexical": 0.8181495,
+          "candidates": 96,
+          "retrievalSelection": "weighted-rrf-v1",
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 1,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 2,
+          "requestedOriginCountries": [
+            "BR"
+          ],
+          "verifiedOriginMatches": 55,
+          "selectedOriginCountry": "BR",
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "e94ed3fc60ac8451",
+            "artist": "Martinho da Vila",
+            "title": "Batuqueiro",
+            "genres": [
+              "latin",
+              "pop",
+              "samba"
+            ],
+            "tags": [
+              "latin",
+              "pop",
+              "samba"
+            ],
+            "moods": [],
+            "score": 1.113399,
+            "neural": 0.541082,
+            "profileQuality": 0.44999999999999996,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 2,
+            "id": "06292c082e5356f5",
+            "artist": "Terno Rei",
+            "title": "Nenhuma Estrela",
+            "genres": [
+              "alternative rock",
+              "dream pop",
+              "experimental rock",
+              "indie rock",
+              "pop rock"
+            ],
+            "tags": [
+              "alternative rock",
+              "dream pop",
+              "experimental rock",
+              "indie rock",
+              "pop rock"
+            ],
+            "moods": [],
+            "score": 1.084065,
+            "neural": 0.42117,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
+            "id": "2e246e6d60e4563c",
+            "artist": "Ana Frango Elétrico",
+            "title": "Me Chama de Gato Que Eu Sou Sua",
+            "genres": [
+              "baroque pop",
+              "boogie",
+              "funk",
+              "jazz",
+              "jazz-funk",
+              "mpb"
+            ],
+            "tags": [
+              "baroque pop",
+              "boogie",
+              "funk",
+              "jazz",
+              "jazz-funk",
+              "mpb",
+              "sophisti-pop"
+            ],
+            "moods": [],
+            "score": 1.096282,
+            "neural": 0.462117,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "1433dc85e8026a3e",
+            "artist": "João Gilberto",
+            "title": "Chega De Saudade",
+            "genres": [
+              "bossa nova",
+              "jazz",
+              "latin",
+              "pop"
+            ],
+            "tags": [
+              "bossa nova",
+              "bossanova",
+              "jazz",
+              "latin",
+              "pop"
+            ],
+            "moods": [],
+            "score": 1.099205,
+            "neural": 0.492765,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "0130f6c7f24042cd",
+            "artist": "Gal Costa",
+            "title": "Aquarela do Brasil",
+            "genres": [
+              "bossa nova",
+              "latin",
+              "mpb",
+              "samba"
+            ],
+            "tags": [
+              "bossa nova",
+              "latin",
+              "mpb",
+              "samba"
+            ],
+            "moods": [],
+            "score": 1.09975,
+            "neural": 0.504529,
+            "profileQuality": 0.53,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "id": "L04",
+      "prompt": "ich will ruhige deutsche Musik ohne Metal",
+      "category": "artist_origin",
+      "language": "de",
+      "wantGenres": [],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [
+        "calm"
+      ],
+      "avoidMoods": [],
+      "wantCountries": [
+        "DE"
+      ],
+      "avoidCountries": [],
+      "frontend": {
+        "fusionAvailable": true,
+        "intent": {
+          "goalShift": false,
+          "moods": [
+            "calm"
+          ],
+          "avoidedMoods": [],
+          "genres": [],
+          "avoidedGenres": [
+            "metal"
+          ],
+          "energy": 3,
+          "queryLanguage": "de",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [
+            "DE"
+          ],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
+        },
+        "scripts": [
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
+        ]
+      },
+      "title": "Neu!",
+      "detail": "TODAY'S RECORD\nNeu!\n\nNeu! · 1972",
+      "reason": "From the Germany shelf. Artist origin doesn’t tell us the lyric language.",
+      "signals": "krautrock\nrock\nambient",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "7ffe19890866ecd1",
+        "catalogGenres": "krautrock | rock | ambient | experimental rock",
+        "catalogTags": "krautrock | rock | 1–4 wochen | ambient | experimental rock | german | offizielle charts | self-titled",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v5-rrf",
+        "diagnostics": {
+          "neural": 0.446843,
+          "local": 1,
+          "lexical": 0.5,
+          "candidates": 96,
+          "retrievalSelection": "weighted-rrf-v1",
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 2,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 2,
+          "requestedOriginCountries": [
+            "DE"
+          ],
+          "verifiedOriginMatches": 24,
+          "selectedOriginCountry": "DE",
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "7ffe19890866ecd1",
+            "artist": "Neu!",
+            "title": "Neu!",
+            "genres": [
+              "krautrock",
+              "rock",
+              "ambient",
+              "experimental rock"
+            ],
+            "tags": [
+              "krautrock",
+              "rock",
+              "1–4 wochen",
+              "ambient",
+              "experimental rock",
+              "german",
+              "offizielle charts",
+              "self-titled"
+            ],
+            "moods": [],
+            "score": 1.219655,
+            "neural": 0.446843,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "DE",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 2,
+            "id": "6d03fe83ed3ef24d",
+            "artist": "Tangerine Dream",
+            "title": "Zeit",
+            "genres": [
+              "ambient",
+              "electronic",
+              "drone",
+              "experimental",
+              "progressive electronic",
+              "rock"
+            ],
+            "tags": [
+              "ambient",
+              "electronic",
+              "drone",
+              "experimental",
+              "progressive electronic",
+              "rock",
+              "space ambient"
+            ],
+            "moods": [],
+            "score": 1.208946,
+            "neural": 0.405832,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "DE",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
+            "id": "8d6f790bb58b038c",
+            "artist": "Peter Fox",
+            "title": "Stadtaffe",
+            "genres": [
+              "dancehall",
+              "hip hop",
+              "pop",
+              "reggae"
+            ],
+            "tags": [
+              "dancehall",
+              "hip hop",
+              "5+ wochen",
+              "deutsch",
+              "german",
+              "jahrescharts 2021",
+              "jahrescharts 2022",
+              "jahrescharts 2023",
+              "jahrescharts 2024",
+              "offizielle charts"
+            ],
+            "moods": [],
+            "score": 1.107762,
+            "neural": 0.488739,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "DE",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "24f831be1d768609",
+            "artist": "Tocotronic",
+            "title": "KOOK Variationen",
+            "genres": [
+              "electro",
+              "electronic",
+              "leftfield",
+              "synth-pop",
+              "avant-garde",
+              "glitch"
+            ],
+            "tags": [
+              "electro",
+              "electronic",
+              "leftfield",
+              "synth-pop",
+              "avant-garde",
+              "glitch",
+              "house",
+              "indie rock",
+              "rock",
+              "trip hop"
+            ],
+            "moods": [],
+            "score": 1.092801,
+            "neural": 0.423896,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "DE",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "0baa93e4a6d6a682",
+            "artist": "Kraftwerk",
+            "title": "Autobahn",
+            "genres": [
+              "electronic",
+              "krautrock",
+              "experimental electronic",
+              "progressive electronic",
+              "synth-pop"
+            ],
+            "tags": [
+              "electronic",
+              "german",
+              "krautrock",
+              "1–4 wochen",
+              "deutsch",
+              "experimental electronic",
+              "offizielle charts",
+              "progressive electronic",
+              "synth-pop",
+              "synthpop"
+            ],
+            "moods": [],
+            "score": 1.093733,
+            "neural": 0.427936,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "DE",
+            "vocalLanguages": []
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "id": "L05",
+      "prompt": "je veux de la musique française calme",
+      "category": "artist_origin",
+      "language": "fr",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [
+        "calm"
+      ],
+      "avoidMoods": [],
+      "wantCountries": [
+        "FR"
+      ],
+      "avoidCountries": [],
+      "frontend": {
+        "fusionAvailable": true,
+        "intent": {
+          "goalShift": false,
+          "moods": [
+            "calm"
+          ],
+          "avoidedMoods": [],
+          "genres": [],
+          "avoidedGenres": [],
+          "energy": 3,
+          "queryLanguage": "fr",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [
+            "FR"
+          ],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
+        },
+        "scripts": [
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
+        ]
+      },
+      "title": "The Virgin Suicides",
+      "detail": "TODAY'S RECORD\nThe Virgin Suicides\n\nAir · 2000",
+      "reason": "From the France shelf. Artist origin doesn’t tell us the lyric language.",
+      "signals": "ambient pop\nelectronic\ndowntempo",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "2fb5b0315e2e46a6",
+        "catalogGenres": "ambient pop | electronic | downtempo | electronica | ambient | rock",
+        "catalogTags": "ambient pop | electronic | downtempo | electronica | ambient | score | soundtrack | film score | rock | adolescence",
+        "catalogMoods": "dreamy | energetic | reflective",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v5-rrf",
+        "diagnostics": {
+          "neural": 0.482414,
+          "local": 1,
+          "lexical": 0.5,
+          "candidates": 96,
+          "retrievalSelection": "weighted-rrf-v1",
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 2,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [
+            "FR"
+          ],
+          "verifiedOriginMatches": 25,
+          "selectedOriginCountry": "FR",
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "2fb5b0315e2e46a6",
+            "artist": "Air",
+            "title": "The Virgin Suicides",
+            "genres": [
+              "ambient pop",
+              "electronic",
+              "downtempo",
+              "electronica",
+              "ambient",
+              "rock"
+            ],
+            "tags": [
+              "ambient pop",
+              "electronic",
+              "downtempo",
+              "electronica",
+              "ambient",
+              "score",
+              "soundtrack",
+              "film score",
+              "rock",
+              "adolescence"
+            ],
+            "moods": [],
+            "score": 1.276303,
+            "neural": 0.482414,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "FR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 2,
+            "id": "08d0ff2fc72dd95e",
+            "artist": "Camille",
+            "title": "Le Fil",
+            "genres": [
+              "chanson française",
+              "acid jazz",
+              "downtempo",
+              "electronic",
+              "experimental",
+              "pop"
+            ],
+            "tags": [
+              "chanson française",
+              "acid jazz",
+              "world",
+              "chanson",
+              "downtempo",
+              "electronic",
+              "experimental",
+              "pop"
+            ],
+            "moods": [],
+            "score": 1.230775,
+            "neural": 0.496702,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "FR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
+            "id": "8ab05fb9a4919ae0",
+            "artist": "Sébastien Tellier",
+            "title": "L’Incroyable Vérité",
+            "genres": [
+              "electronic",
+              "downtempo",
+              "chamber pop",
+              "experimental",
+              "pop"
+            ],
+            "tags": [
+              "electronic",
+              "downtempo",
+              "abstract",
+              "alternative/indie rock",
+              "chamber pop",
+              "experimental",
+              "pop"
+            ],
+            "moods": [],
+            "score": 1.223529,
+            "neural": 0.472366,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "FR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "3071f3857131f3bb",
+            "artist": "Phoenix",
+            "title": "United",
+            "genres": [
+              "indie pop",
+              "synth-pop",
+              "disco",
+              "downtempo",
+              "electronic",
+              "indie rock"
+            ],
+            "tags": [
+              "indie pop",
+              "synth-pop",
+              "disco",
+              "downtempo",
+              "electronic",
+              "indie rock",
+              "pop rock",
+              "synthpop"
+            ],
+            "moods": [],
+            "score": 1.212345,
+            "neural": 0.414065,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "FR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "118bf33475c6f7d5",
+            "artist": "M83",
+            "title": "Digital Shades [vol. I]",
+            "genres": [
+              "electronic",
+              "ambient",
+              "ambient pop",
+              "new wave",
+              "pop"
+            ],
+            "tags": [
+              "electronic",
+              "ambient",
+              "alternative/indie rock",
+              "ambient music",
+              "ambient pop",
+              "indie electronic",
+              "new wave",
+              "pop"
+            ],
+            "moods": [],
+            "score": 1.212269,
+            "neural": 0.413724,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "FR",
+            "vocalLanguages": []
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "id": "L06",
+      "prompt": "ik wil muziek in het Nederlands",
+      "category": "vocal_language",
+      "language": "nl",
+      "wantGenres": [],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [],
+      "avoidCountries": [],
+      "wantVocals": [
+        "nl"
+      ],
+      "frontend": {
+        "fusionAvailable": true,
+        "intent": {
+          "goalShift": false,
+          "moods": [],
+          "avoidedMoods": [],
+          "genres": [],
+          "avoidedGenres": [],
+          "energy": null,
+          "queryLanguage": "nl",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": [
+            "nl"
+          ]
+        },
+        "scripts": [
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
+        ]
+      },
+      "title": "Waar ik woon en wie ik ben",
+      "detail": "TODAY'S RECORD\nWaar ik woon en wie ik ben\n\nBoudewijn de Groot · 1975",
+      "reason": "Artist associated with the Netherlands. We can’t confirm the language of the vocals on this record.",
+      "signals": "folk\nfolk rock\nnederpop",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "806d48b977754669",
+        "catalogGenres": "folk | folk rock | nederpop | pop | pop rock | rock",
+        "catalogTags": "folk | folk rock | nederpop | pop | pop rock | rock",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v5-rrf",
+        "diagnostics": {
+          "neural": 0.52956,
+          "local": 0.5,
+          "lexical": 0.8516870000000001,
+          "candidates": 96,
+          "retrievalSelection": "weighted-rrf-v1",
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 3,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [],
+          "verifiedOriginMatches": 0,
+          "selectedOriginCountry": "NL",
+          "requestedVocalLanguages": [
+            "nl"
+          ],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 46
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "806d48b977754669",
+            "artist": "Boudewijn de Groot",
+            "title": "Waar ik woon en wie ik ben",
+            "genres": [
+              "folk",
+              "folk rock",
+              "nederpop",
+              "pop",
+              "pop rock",
+              "rock"
+            ],
+            "tags": [
+              "folk",
+              "folk rock",
+              "nederpop",
+              "pop",
+              "pop rock",
+              "rock"
+            ],
+            "moods": [],
+            "score": 0.708092,
+            "neural": 0.52956,
+            "profileQuality": 0.5800000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "NL",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 2,
+            "id": "d18280abb80d5e1f",
+            "artist": "De Kift",
+            "title": "Krankenhaus",
+            "genres": [
+              "art rock",
+              "blues",
+              "experimental",
+              "folk rock",
+              "indie rock",
+              "pop"
+            ],
+            "tags": [
+              "art rock",
+              "blues",
+              "experimental",
+              "folk rock",
+              "indie rock",
+              "pop",
+              "rock"
+            ],
+            "moods": [],
+            "score": 0.706105,
+            "neural": 0.511131,
+            "profileQuality": 0.6050000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "NL",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
+            "id": "427930e7ffeff7dd",
+            "artist": "André Hazes",
+            "title": "Dit is wat ik wil",
+            "genres": [
+              "ballad",
+              "blues",
+              "blues rock",
+              "pop",
+              "rock"
+            ],
+            "tags": [
+              "ballad",
+              "blues",
+              "blues rock",
+              "pop",
+              "rock"
+            ],
+            "moods": [],
+            "score": 0.701119,
+            "neural": 0.508802,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "NL",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "3b4263c0f57e75fb",
+            "artist": "Epica",
+            "title": "Live at Paradiso",
+            "genres": [
+              "heavy metal",
+              "metal",
+              "rock",
+              "symphonic metal"
+            ],
+            "tags": [
+              "1–4 wochen",
+              "english",
+              "heavy metal",
+              "live",
+              "metal",
+              "offizielle charts",
+              "rock",
+              "symphonic metal"
+            ],
+            "moods": [],
+            "score": 0.68678,
+            "neural": 0.478793,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "NL",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "66b7c99c0f29d94b",
+            "artist": "Het Goede Doel",
+            "title": "Het complete hitoverzicht",
+            "genres": [
+              "electronic",
+              "pop",
+              "pop rock",
+              "rock",
+              "synth-pop"
+            ],
+            "tags": [
+              "electronic",
+              "pop",
+              "pop rock",
+              "rock",
+              "synth-pop"
+            ],
+            "moods": [],
+            "score": 0.690033,
+            "neural": 0.520322,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "NL",
+            "vocalLanguages": []
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "id": "L07",
+      "prompt": "I want Japanese ambient, not metal",
+      "category": "artist_origin",
+      "language": "en",
+      "wantGenres": [
+        "ambient"
+      ],
+      "avoidGenres": [
+        "metal"
+      ],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [
+        "JP"
+      ],
+      "avoidCountries": [],
+      "frontend": {
+        "fusionAvailable": true,
+        "intent": {
+          "goalShift": false,
+          "moods": [],
+          "avoidedMoods": [],
+          "genres": [
+            "ambient"
+          ],
+          "avoidedGenres": [
+            "metal"
+          ],
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [
+            "JP"
+          ],
+          "avoidedOriginCountries": [],
+          "vocalLanguages": []
+        },
+        "scripts": [
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
+        ]
+      },
+      "title": "async",
+      "detail": "TODAY'S RECORD\nasync\n\nRyuichi Sakamoto · 2017",
+      "reason": "From the Japan shelf · filed under ambient. Artist origin doesn’t tell us the lyric language.",
+      "signals": "ambient\nelectronic\nclassical crossover",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "16efe545cba76229",
+        "catalogGenres": "ambient | electronic | classical crossover | experimental | instrumental",
+        "catalogTags": "ambient | electronic | avantgarde | classical crossover | experimental | instrumental | japan | museum | orchestra | organ",
+        "catalogMoods": "dreamy | energetic",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v5-rrf",
+        "diagnostics": {
+          "neural": 0.608508,
+          "local": 1,
+          "lexical": 0.5,
+          "candidates": 96,
+          "retrievalSelection": "weighted-rrf-v1",
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 2,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 1,
+          "requestedOriginCountries": [
+            "JP"
+          ],
+          "verifiedOriginMatches": 14,
+          "selectedOriginCountry": "JP",
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "16efe545cba76229",
+            "artist": "Ryuichi Sakamoto",
+            "title": "async",
+            "genres": [
+              "ambient",
+              "electronic",
+              "classical crossover",
+              "experimental",
+              "instrumental"
+            ],
+            "tags": [
+              "ambient",
+              "electronic",
+              "avantgarde",
+              "classical crossover",
+              "experimental",
+              "instrumental",
+              "japan",
+              "museum",
+              "orchestra",
+              "organ"
+            ],
+            "moods": [],
+            "score": 1.285395,
+            "neural": 0.608508,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "JP",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 2,
+            "id": "19eb8733358ebc45",
+            "artist": "Fishmans",
+            "title": "LONG SEASON",
+            "genres": [
+              "neo-psychedelia",
+              "ambient",
+              "dub",
+              "electronic",
+              "dream pop",
+              "experimental"
+            ],
+            "tags": [
+              "neo-psychedelia",
+              "ambient",
+              "dub",
+              "electronic",
+              "dream pop",
+              "experimental",
+              "post-rock",
+              "ambient pop",
+              "pop",
+              "post-minimalism"
+            ],
+            "moods": [],
+            "score": 1.25221,
+            "neural": 0.464678,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "JP",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
+            "id": "1c91c22198e64652",
+            "artist": "Yellow Magic Orchestra",
+            "title": "Technodon Remixes II",
+            "genres": [
+              "ambient",
+              "electronic",
+              "leftfield",
+              "techno",
+              "dub"
+            ],
+            "tags": [
+              "ambient",
+              "electronic",
+              "leftfield",
+              "techno",
+              "dub"
+            ],
+            "moods": [],
+            "score": 1.233706,
+            "neural": 0.419473,
+            "profileQuality": 0.555,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "JP",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "3c817fbd2a8c1ab9",
+            "artist": "Lamp",
+            "title": "恋人へ (For Lovers)",
+            "genres": [],
+            "tags": [],
+            "moods": [],
+            "score": 1.004272,
+            "neural": 0.31093,
+            "profileQuality": 0.18,
+            "moodSource": "",
+            "energySource": "",
+            "energyConfidence": 0,
+            "energy": null,
+            "originCountry": "JP",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "05167e1d16c5b1c7",
+            "artist": "MASS OF THE FERMENTING DREGS",
+            "title": "MASS OF THE FERMENTING DREGS",
+            "genres": [
+              "noise rock",
+              "shoegaze",
+              "indie rock",
+              "j-rock",
+              "post-hardcore",
+              "post-rock"
+            ],
+            "tags": [
+              "noise rock",
+              "self-titled",
+              "shoegaze",
+              "indie rock",
+              "j-rock",
+              "post-hardcore",
+              "post-rock",
+              "rock",
+              "shimokita-kei",
+              "why is japan always shouting at me"
+            ],
+            "moods": [],
+            "score": 0.879859,
+            "neural": 0.436021,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "JP",
+            "vocalLanguages": []
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "id": "L08",
+      "prompt": "not Dutch, give me Brazilian jazz",
+      "category": "artist_origin",
+      "language": "en",
+      "wantGenres": [
+        "jazz"
+      ],
+      "avoidGenres": [],
+      "wantMoods": [],
+      "avoidMoods": [],
+      "wantCountries": [
+        "BR"
+      ],
+      "avoidCountries": [
+        "NL"
+      ],
+      "frontend": {
+        "fusionAvailable": true,
+        "intent": {
+          "goalShift": false,
+          "moods": [],
+          "avoidedMoods": [],
+          "genres": [
+            "jazz"
+          ],
+          "avoidedGenres": [],
+          "energy": null,
+          "queryLanguage": "en",
+          "narrativeKind": null,
+          "narrativeThemes": [],
+          "originCountries": [
+            "BR"
+          ],
+          "avoidedOriginCountries": [
+            "NL"
+          ],
+          "vocalLanguages": []
+        },
+        "scripts": [
+          "/an-album-a-day/album-locale.js?v=global-001",
+          "/an-album-a-day/geo-catalog.js?v=global-001",
+          "/an-album-a-day/intent-core.js?v=emotion-001",
+          "/an-album-a-day/retrieval-fusion.js?v=emotion-001",
+          "/an-album-a-day/selector.js?v=prelaunch-001"
+        ]
+      },
+      "title": "Nó na Orelha",
+      "detail": "TODAY'S RECORD\nNó na Orelha\n\nCriolo · 2011",
+      "reason": "From the Brazil shelf · filed under jazz. Artist origin doesn’t tell us the lyric language.",
+      "signals": "jazz\nhardcore hip hop\nhip hop",
+      "status": "1 seen · 99,999 still in your no-repeat pool.",
+      "catalog": {
+        "albumId": "85a896298f1ef150",
+        "catalogGenres": "hardcore hip hop | hip hop | jazz | latin | mpb | samba",
+        "catalogTags": "brazilian music | hardcore hip hop | hip hop | hip-hop | jazz | latin | mpb | rap | samba",
+        "catalogMoods": "",
+        "selectionMode": "backend"
+      },
+      "page": "https://gabiarbex.github.io/an-album-a-day/",
+      "backend": {
+        "ok": true,
+        "engine": "hybrid-neural-reranker-v5-rrf",
+        "diagnostics": {
+          "neural": 0.546811,
+          "local": 1,
+          "lexical": 0.5,
+          "candidates": 96,
+          "retrievalSelection": "weighted-rrf-v1",
+          "vectorCacheHits": 96,
+          "liveEmbeddings": 0,
+          "queryVectorSource": "retrieval-reuse",
+          "taste": 0,
+          "tasteConfidence": 0,
+          "tasteAdjacency": 0,
+          "consideredCompilations": 3,
+          "chosenCompilation": false,
+          "excludedGenreMatches": 0,
+          "requestedOriginCountries": [
+            "BR"
+          ],
+          "verifiedOriginMatches": 54,
+          "selectedOriginCountry": "BR",
+          "requestedVocalLanguages": [],
+          "verifiedVocalMatches": 0,
+          "plausibleVocalOriginMatches": 0
+        },
+        "alternatives": [
+          {
+            "rank": 1,
+            "id": "85a896298f1ef150",
+            "artist": "Criolo",
+            "title": "Nó na Orelha",
+            "genres": [
+              "hardcore hip hop",
+              "hip hop",
+              "jazz",
+              "latin",
+              "mpb",
+              "samba"
+            ],
+            "tags": [
+              "brazilian music",
+              "hardcore hip hop",
+              "hip hop",
+              "hip-hop",
+              "jazz",
+              "latin",
+              "mpb",
+              "rap",
+              "samba"
+            ],
+            "moods": [],
+            "score": 1.269055,
+            "neural": 0.546811,
+            "profileQuality": 0.655,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 2,
+            "id": "ea6b1ba11ba06914",
+            "artist": "Antonio Carlos Jobim",
+            "title": "Stone Flower",
+            "genres": [
+              "bossa nova",
+              "jazz",
+              "instrumental",
+              "latin jazz",
+              "samba-jazz"
+            ],
+            "tags": [
+              "bossa nova",
+              "jazz",
+              "instrumental",
+              "latin jazz",
+              "samba-jazz",
+              "calm",
+              "soothing",
+              "warm"
+            ],
+            "moods": [],
+            "score": 1.261921,
+            "neural": 0.524262,
+            "profileQuality": 0.6300000000000001,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 3,
+            "id": "af2cd330c2099159",
+            "artist": "Airto Moreira",
+            "title": "Virgin Land",
+            "genres": [
+              "crossover jazz",
+              "jazz",
+              "latin",
+              "latin jazz"
+            ],
+            "tags": [
+              "crossover jazz",
+              "jazz",
+              "latin",
+              "latin jazz"
+            ],
+            "moods": [],
+            "score": 1.255006,
+            "neural": 0.529843,
+            "profileQuality": 0.53,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 4,
+            "id": "79aaa935d63ca7ea",
+            "artist": "Papangu",
+            "title": "Lampião Rei",
+            "genres": [
+              "avant-prog",
+              "progressive rock",
+              "art rock",
+              "avant-garde metal",
+              "forró",
+              "jazz rock"
+            ],
+            "tags": [
+              "avant-prog",
+              "progressive rock",
+              "art rock",
+              "avant-garde metal",
+              "forró",
+              "jazz rock",
+              "maracatu",
+              "metal",
+              "mpb",
+              "progressive metal"
+            ],
+            "moods": [],
+            "score": 1.257454,
+            "neural": 0.487406,
+            "profileQuality": 0.68,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
+          },
+          {
+            "rank": 5,
+            "id": "6ee6ca591d99b5c5",
+            "artist": "Banda Black Rio",
+            "title": "O som das Américas",
+            "genres": [
+              "samba",
+              "jazz-funk",
+              "latin",
+              "soul"
+            ],
+            "tags": [
+              "samba",
+              "jazz-funk",
+              "latin",
+              "soul"
+            ],
+            "moods": [],
+            "score": 1.267794,
+            "neural": 0.591438,
+            "profileQuality": 0.53,
+            "moodSource": "musicbrainz-tag-translation",
+            "energySource": "musicbrainz-tag-translation",
+            "energyConfidence": 0.5,
+            "energy": null,
+            "originCountry": "BR",
+            "vocalLanguages": []
           }
         ]
       },
