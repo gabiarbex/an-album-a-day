@@ -1892,15 +1892,19 @@ body.has-record .fine-tune[open] .filter-body{max-height:320px}
 .why-signals span:nth-child(2){background:var(--yellow)}
 .why-signals span:nth-child(3){background:var(--pink)}
 .why-copy{
-  position:absolute!important;
-  width:1px!important;
-  height:1px!important;
-  padding:0!important;
-  margin:-1px!important;
-  overflow:hidden!important;
-  clip:rect(0,0,0,0)!important;
-  white-space:nowrap!important;
-  border:0!important;
+  position:static;
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:59ch;
+  padding:0;
+  margin:10px 0 0;
+  overflow:visible;
+  clip:auto;
+  white-space:normal;
+  border:0;
+  color:var(--grey);
+  font:400 14px/1.5 Georgia,"Times New Roman",serif;
 }
 
 /* Result actions: listen + save dominate. */
