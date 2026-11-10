@@ -2769,14 +2769,46 @@ function renderQuickRating(){
  const area=$('quickRating');if(!area)return;
  area.replaceChildren();
  const current=Number(currentDiaryEntry()?.rating)||0;
+ const namespace='http://www.w3.org/2000/svg';
+ const preview=value=>{
+  area.classList.toggle('is-previewing',value>0);
+  [...area.children].forEach((button,index)=>
+   button.classList.toggle('preview',value>0 && index<value));
+ };
  for(let i=1;i<=5;i++){
-  const button=document.createElement('button');button.type='button';
-  button.textContent='★';button.className=i<=current?'active':'';
-  button.setAttribute('role','radio');button.setAttribute('aria-checked',String(i===current));
-  button.setAttribute('aria-label',i+' stars');
-  button.onclick=()=>setQuickRating(i);
+  const button=document.createElement('button');
+  button.type='button';
+  button.className='rating-star'+(i<=current?' active':'');
+  button.setAttribute('role','radio');
+  button.setAttribute('aria-checked',String(i===current));
+  button.setAttribute('aria-label',i+' out of 5 stars');
+  button.tabIndex=i===(current||1)?0:-1;
+  const svg=document.createElementNS(namespace,'svg');
+  svg.setAttribute('viewBox','0 0 24 24');
+  svg.setAttribute('aria-hidden','true');
+  svg.setAttribute('focusable','false');
+  const star=document.createElementNS(namespace,'polygon');
+  star.setAttribute('points','12,2.2 15.05,8.15 21.7,9.1 16.85,13.8 18,20.4 12,17.3 6,20.4 7.15,13.8 2.3,9.1 8.95,8.15');
+  svg.append(star);button.append(svg);
+  button.onmouseenter=()=>preview(i);
+  button.onfocus=()=>preview(i);
+  button.onclick=()=>{
+   setQuickRating(i);
+   $('quickRating')?.children[i-1]?.focus({preventScroll:true});
+  };
   area.append(button);
  }
+ area.onmouseleave=()=>preview(0);
+ area.onfocusout=event=>{if(!area.contains(event.relatedTarget))preview(0)};
+ area.onkeydown=event=>{
+  if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(event.key))return;
+  event.preventDefault();
+  const currentFocus=[...area.children].indexOf(document.activeElement)+1||current||1;
+  const next=event.key==='Home'?1:event.key==='End'?5:
+   Math.max(1,Math.min(5,currentFocus+(event.key==='ArrowRight'||event.key==='ArrowUp'?1:-1)));
+  area.children[next-1]?.click();
+  $('quickRating')?.children[next-1]?.focus({preventScroll:true});
+ };
 }
 function renderListenCheckin(){
  const box=$('listenCheckin');if(!box)return;
@@ -2786,7 +2818,7 @@ function renderListenCheckin(){
  $('listenCheckinPrimary').hidden=done;
  $('listenCheckinDone').hidden=!done;
  $('listenCheckinState').textContent=done?'listened ✓':'not finished yet';
- $('listenCheckinTitle').textContent=done?'one record down. teach the shelf what you thought.':'come back when the record ends.';
+ $('listenCheckinTitle').textContent=done?'one record down. what did you think?':'come back when the record ends.';
  renderQuickRating();
 }
 function completeCurrentPick(options={}){
