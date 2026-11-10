@@ -98,15 +98,15 @@ function renderTasteSentence(stats){
  const artist=stats.topArtists[0]?.name;
  const energy=energyLabel(stats.averageEnergy);
  if(!genre&&!mood&&!artist){
-  node.textContent='save and rate a few records and this starts sounding like you.';
+  node.textContent='Listen to a few records and rate the ones you want to remember. Your shelf will take shape from there.';
   return;
  }
  const pieces=[];
- if(genre&&mood)pieces.push(`your shelf leans ${genre} / ${mood}`);
- else if(genre)pieces.push(`your shelf leans ${genre}`);
- else if(mood)pieces.push(`your shelf leans ${mood}`);
- if(Number.isFinite(stats.averageEnergy))pieces.push(`${energy} energy overall`);
- if(artist)pieces.push(`${artist} appears most often`);
+ if(genre&&mood)pieces.push(`most of your saved records sit around ${genre} and ${mood}`);
+ else if(genre)pieces.push(`you’ve saved a lot of ${genre}`);
+ else if(mood)pieces.push(`${mood} comes up often in your saved records`);
+ if(Number.isFinite(stats.averageEnergy))pieces.push(`usually ${energy} energy`);
+ if(artist)pieces.push(`you return to ${artist} the most`);
  node.textContent=pieces.join('. ')+'.';
 }
 
@@ -118,7 +118,7 @@ function renderFiveStarShelf(diary){
   .reverse()
   .slice(0,6);
  if(!rows.length){
-  node.append(el('p','studio-empty','your 5★ records will live here.'));
+  node.append(el('p','studio-empty','No five-star records yet. Your favorites will appear here.'));
   return;
  }
  for(const entry of rows){
@@ -150,7 +150,7 @@ function renderProfile(s){
  renderTasteTags(stats);
  renderTasteSentence(stats);
  renderFiveStarShelf(s.diary);
- renderList('studioTopArtists',stats.topArtists.slice(0,6),'your artist orbit appears after you save records');
+ renderList('studioTopArtists',stats.topArtists.slice(0,6),'Once you log a few records, your most-played artists will appear here.');
  renderList('studioFavoriteTracks',stats.favoriteTracks.slice(0,6),'favorite tracks you log will collect here');
 
  const lastfm=$('studioLastfm');
@@ -164,7 +164,7 @@ function renderProfile(s){
    const neighbors=(s.lastfmProfile?.neighbors||[]).slice(0,5).map(row=>Array.isArray(row)?row[0]:row).filter(Boolean);
    if(neighbors.length)lastfm.append(el('small','','neighbors · '+neighbors.join(' / ')));
   }else{
-   lastfm.append(el('strong','','no Last.fm layer yet'),el('span','','import your CSV from the diary to deepen the profile'));
+   lastfm.append(el('strong','','No Last.fm history imported'),el('span','','You can import a Last.fm CSV from the diary, if you want to.'));
   }
  }
 }
@@ -219,11 +219,11 @@ function renderWrapped(s,year){
   empty.append(
    el('small','','ALBUM-A-DAY WRAPPED / '+year),
    el('strong','','nothing to wrap yet.'),
-   el('p','','save your first record of the year and this page starts building itself.')
+   el('p','','Finish your first album of the year and it will appear here.')
   );
   grid.append(empty);
   const summary=$('wrappedSummary');
-  if(summary)summary.textContent='your '+year+' Wrapped is waiting for its first saved record.';
+  if(summary)summary.textContent='Nothing logged for '+year+' yet. Finish an album to start your yearbook.';
   return;
  }
  const topArtist=stats.topArtists[0]?.name||'still collecting';
@@ -235,15 +235,15 @@ function renderWrapped(s,year){
 
  grid.append(
   wrappedCard('records finished',stats.listened,'front to back'),
-  wrappedCard('days you showed up',stats.daysPicked,'album days'),
+  wrappedCard('days you listened',stats.daysPicked,'days with a record'),
   wrappedCard('artist of the year',topArtist,stats.topArtists[0]?Math.round(stats.topArtists[0].count)+' saved record'+(stats.topArtists[0].count===1?'':'s'):''),
-  wrappedCard('genre orbit',topGenre,'your most-saved lane'),
+  wrappedCard('most-saved genre',topGenre,'from your diary'),
   wrappedCard('average rating',stats.averageRating!==null?stats.averageRating.toFixed(1)+'★':'—',stats.fiveStar+' five-star record'+(stats.fiveStar===1?'':'s')),
   wrappedCard('record of the year',best,stats.topRated?.rating?stats.topRated.rating+'★':''),
   wrappedCard('favorite track',fav,'most logged favorite'),
-  wrappedCard('mood of the year',topMood,'from your saved record signals'),
+  wrappedCard('mood in the diary',topMood,'based on the tags recorded'),
   wrappedCard('biggest month',month,stats.biggestMonth?Math.round(stats.biggestMonth.count)+' saved':''),
-  wrappedCard('listening time',Core.hoursLabel(stats.listeningMinutes),stats.listeningMinutes===null?'starts accumulating with new saves':'known album runtimes')
+  wrappedCard('listening time',Core.hoursLabel(stats.listeningMinutes),stats.listeningMinutes===null?'not enough runtime data yet':'from known album runtimes')
  );
  const summary=$('wrappedSummary');
  if(summary)summary.textContent=Core.wrappedSummary(stats);
