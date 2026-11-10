@@ -64,23 +64,49 @@ try{
    await page.locator('#recommend').click();
    await page.waitForFunction(()=>document.body.classList.contains('has-record')&&
        !!document.querySelector('#details h2')?.textContent?.trim(),null,{timeout:90000});
-   entry.result=await page.evaluate(()=>({
-    overflow:Math.max(0,document.documentElement.scrollWidth-window.innerWidth),
-    album:document.querySelector('#details h2')?.textContent.trim(),
-    artist:document.querySelector('#details p')?.textContent.trim(),
-    why:document.querySelector('#whyText')?.textContent.trim(),
-    visibleWhy:document.querySelector('#whyPanel')?.hidden===false,
-    cover:!!document.querySelector('#cover')?.getAttribute('src'),
-    spotifyReady:document.querySelector('#spotify')?.getAttribute('aria-disabled')==='false',
-    saveReady:!document.querySelector('#log')?.disabled,
-    actions:[...document.querySelectorAll('.result-actions button')].filter(x=>!x.hidden).map(x=>x.textContent?.trim()),
-    moodTile:getComputedStyle(document.querySelector('.mood-block')).backgroundImage
-   }));
+   // Give artwork time to load, but do not claim it exists if the fallback remains.
+   await page.waitForTimeout(1800);
+   entry.result=await page.evaluate(()=>{
+    const visible=selector=>{
+     const el=document.querySelector(selector);
+     if(!el)return false;
+     const style=getComputedStyle(el),rect=el.getBoundingClientRect();
+     if(rect.width<8||rect.height<8||style.visibility!=='visible'||
+        style.display==='none'||Number(style.opacity)<0.95)return false;
+     for(let parent=el.parentElement;parent;parent=parent.parentElement){
+      const cs=getComputedStyle(parent);
+      if(cs.visibility==='hidden'||cs.display==='none'||Number(cs.opacity)<.95)return false;
+     }
+     return true;
+    };
+    const cover=document.querySelector('#cover');
+    return {
+     overflow:Math.max(0,document.documentElement.scrollWidth-window.innerWidth),
+     album:document.querySelector('#details h2')?.textContent.trim(),
+     artist:document.querySelector('#details p')?.textContent.trim(),
+     why:document.querySelector('#whyText')?.textContent.trim(),
+     visibleWhy:visible('#whyPanel'),
+     readableWhy:visible('#whyText'),
+     visibleActions:visible('.result-actions'),
+     visibleSpotify:visible('#spotify'),
+     visibleSave:visible('#log'),
+     visibleShare:visible('#sharePick'),
+     cover:!!cover?.getAttribute('src'),
+     artActuallyLoaded:!!cover?.classList.contains('cover-loaded'),
+     coverIsPlaceholder:Boolean(cover?.src?.startsWith('data:')),
+     spotifyReady:document.querySelector('#spotify')?.getAttribute('aria-disabled')==='false',
+     saveReady:!document.querySelector('#log')?.disabled,
+     actions:[...document.querySelectorAll('.result-actions button')].filter(x=>!x.hidden).map(x=>x.textContent?.trim()),
+     moodTile:getComputedStyle(document.querySelector('.mood-block')).backgroundImage
+    };
+   });
    await page.screenshot({path:outDir+'/'+device.label+'-record.png',fullPage:true});
    if(entry.result.overflow>3||!entry.result.album||!entry.result.cover||
-      !entry.result.spotifyReady||!entry.result.saveReady||!entry.result.visibleWhy||
+      !entry.result.spotifyReady||!entry.result.saveReady||
+      !entry.result.visibleWhy||!entry.result.readableWhy||!entry.result.visibleActions||
+      !entry.result.visibleSpotify||!entry.result.visibleSave||!entry.result.visibleShare||
       entry.result.moodTile!=='none'||/neural|embeddings?|algorithmic|ai-powered|catalog similarity/i.test(entry.result.why))
-    throw Error('Result layout / explanation check failed: '+JSON.stringify(entry.result));
+    throw Error('Result layout / explanation / visibly reachable action check failed: '+JSON.stringify(entry.result));
   }catch(error){
    entry.error=String(error?.message||error);
    report.views.push(entry);
