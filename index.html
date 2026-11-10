@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>An Album a Day</title>
-  <meta name="description" content="One record every day, with a listening diary and a very large shelf.">
+  <meta name="description" content="One album a day. A record-shop-sized catalog, a listening diary, and a reason to listen all the way through.">
   <meta name="theme-color" content="#f4efe5">
   <link rel="canonical" href="https://gabiarbex.github.io/an-album-a-day/">
   <link rel="preconnect" href="https://coverartarchive.org">
@@ -18,7 +18,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="An Album a Day">
   <meta property="og:title" content="An Album a Day">
-  <meta property="og:description" content="One record every day.">
+  <meta property="og:description" content="Tell us what you're in the mood for. Leave with a whole album to listen to.">
   <meta property="og:url" content="https://gabiarbex.github.io/an-album-a-day/">
   <meta property="og:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <meta property="og:image:width" content="1200">
@@ -26,7 +26,7 @@
   <meta property="og:image:alt" content="An Album a Day">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="An Album a Day">
-  <meta name="twitter:description" content="One record every day.">
+  <meta name="twitter:description" content="Tell us what you're in the mood for. Leave with a whole album to listen to.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.svg?v=5">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css?v=zine-070">
@@ -34,7 +34,7 @@
 </head>
 <body>
   <header class="masthead">
-    <div class="masthead-kicker">THE INDEPENDENT LISTENING JOURNAL <span>100,000 ALBUMS / ONE A DAY</span></div>
+    <div class="masthead-kicker">THE DAILY RECORD SHOP <span>100,000 ALBUMS / ONE A DAY</span></div>
     <div class="masthead-row">
       <div class="title-lockup">
         <h1 class="site-title" aria-label="An Album a Day">
@@ -42,8 +42,8 @@
           <span class="title-album">album</span>
           <span class="title-day">a day</span>
         </h1>
-        <p>Music worth making time for. One album, every day.</p>
-        <span class="title-scribble" aria-hidden="true">↘ no skips / no repeats</span>
+        <p>A whole record. A little time to get lost in it.</p>
+        <span class="title-scribble" aria-hidden="true">one at a time / no repeats</span>
         <svg class="header-doodle" viewBox="0 0 180 90" aria-hidden="true" focusable="false">
           <path d="M8 57 C34 18, 64 77, 98 35 S151 26, 170 9" />
           <path d="M145 9 L171 8 L161 31" />
@@ -79,19 +79,19 @@
         <div class="sleeve" id="sleeve">
           <img id="cover" width="720" height="720" alt="Selected album cover" decoding="async" loading="eager" fetchpriority="high">
           <div id="emptyCover" class="empty-cover">
-            <strong>your next record goes here.</strong>
+            <strong>something worth a side a.</strong>
           </div>
         </div>
       </div>
 
       <div class="album-details" id="details">
         <div class="eyebrow">today’s record</div>
-        <h2>Your next album starts here.</h2>
-        <p>Tell us what you want to hear, or take a chance.</p>
+        <h2>Good records are worth the time.</h2>
+        <p>Tell us what you’re after. Or pull something at random.</p>
       </div>
 
       <div class="why-panel" id="whyPanel" role="note" aria-label="Why this album matched" hidden>
-        <div class="why-heading">why this one</div>
+        <div class="why-heading">the record-shop reasoning</div>
         <div id="whySignals" class="why-signals"></div>
         <p id="whyText" class="why-copy"></p>
       </div>
@@ -99,7 +99,7 @@
       <div class="actions result-actions">
         <a id="spotify" class="primary result-primary disabled" aria-disabled="true" target="_blank" rel="noopener noreferrer">listen on spotify ↗</a>
         <button id="log" type="button" class="secondary save-action" disabled>save for later</button>
-        <button id="reroll" type="button" class="secondary reroll" hidden>another with this brief</button>
+        <button id="reroll" type="button" class="secondary reroll" hidden>try another</button>
         <button id="sharePick" type="button" class="secondary quiet-action" disabled>share</button>
       </div>
 
@@ -165,12 +165,12 @@
     <section class="picker" aria-label="Choose a record">
       <div class="clerk-intro">
         <div class="eyebrow">today’s listen</div>
-        <h2>What are you in the mood for?</h2>
-        <p>A genre, a feeling, a place. Tell us what you want to hear, in your own language.</p>
-        <div class="listener-flow" aria-label="How it works">
-          <span><b>1</b> describe</span>
-          <span><b>2</b> get one record</span>
-          <span><b>3</b> listen + save</span>
+        <h2>What do you want to hear?</h2>
+        <p>Give us a mood, a genre, or the very specific situation you’re in. Write like you talk.</p>
+        <div class="listener-flow" aria-label="The idea">
+          <span><b>01</b> tell us what you're after</span>
+          <span><b>02</b> we'll pull one album</span>
+          <span><b>03</b> listen front to back</span>
         </div>
         <div class="quick-actions">
           <button id="surpriseMe" type="button" class="quick-pick" title="Pure random: ignores your note, filters and taste profile." disabled><b>shuffle the shelf</b></button>
@@ -208,9 +208,9 @@
       </div>
 
       <div class="feeling-field">
-        <label for="feelingInput" class="feeling-prompt">A note to the record shop</label>
-        <textarea id="feelingInput" maxlength="1200" rows="2" placeholder="something for the long way home. no sad songs."></textarea>
-        <p id="meaningMatchNote" class="ai-match-note" hidden><b>SEARCH NOTE</b> we read your description alongside catalog tags. results aren’t always exact.</p>
+        <label for="feelingInput" class="feeling-prompt">Leave a note for the record shop</label>
+        <textarea id="feelingInput" maxlength="1200" rows="2" placeholder="it's raining, i can't sleep, and i want something quiet. no piano, please."></textarea>
+        <p id="meaningMatchNote" class="ai-match-note" hidden><b>A small caveat.</b> We use album credits and genre tags to narrow things down. Feelings are harder to catalogue.</p>
         <div class="feeling-foot">
           <span id="feelingInsight" aria-live="polite"></span>
           <small class="locale-hint">English · português · Nederlands · español · Deutsch · français</small>
@@ -229,7 +229,7 @@
 
           <div class="tuning-block mood-block">
             <div class="eyebrow">mood</div>
-            <h3>choose any</h3>
+            <h3>whatever fits</h3>
             <div id="moods" class="chips mood-chips"></div>
             <button id="moodToggleMore" type="button" class="mood-more" aria-expanded="false">show more moods +</button>
           </div>
@@ -242,13 +242,13 @@
 
           <div class="tuning-block comfort-block">
             <div class="eyebrow">familiarity</div>
-            <h3>familiar or new</h3>
+            <h3>old friends or a surprise</h3>
             <div id="comfort" class="chips"></div>
           </div>
 
           <div class="tuning-block time-block">
             <div class="eyebrow">length</div>
-            <h3>maximum listening time</h3>
+            <h3>how much time have you got?</h3>
             <div id="time" class="chips"></div>
           </div>
         </div>
@@ -261,9 +261,9 @@
 
       <div id="pickProgress" class="pick-progress" role="status" aria-live="polite" hidden>
         <i aria-hidden="true"></i>
-        <span id="pickProgressText">looking through the records…</span>
+        <span id="pickProgressText">checking the shelves…</span>
       </div>
-      <p id="status" role="status">loading albums…</p>
+      <p id="status" role="status">opening the record shop…</p>
     </section>
   </main>
 
@@ -326,8 +326,8 @@
       <div class="recent-seen-head">
         <div>
           <span>RECENT PICKS</span>
-          <h3 id="recentSeenHeading">seen doesn’t mean gone.</h3>
-          <small>reopen a recommendation without putting it back in the repeat pool.</small>
+          <h3 id="recentSeenHeading">records you’ve passed by</h3>
+          <small>Come back to one without drawing it again.</small>
         </div>
         <b id="recentSeenCount">0</b>
       </div>
@@ -337,15 +337,15 @@
     <div id="supporterShelfTeaser" class="supporter-shelf-teaser">
       <div>
         <small>SUPPORTER / $3 MONTH</small>
-        <strong>your listening year, mapped.</strong>
-        <span>profile · deeper stats · wrapped · cloud sync</span>
+        <strong>keep a record of what stuck.</strong>
+        <span>your shelf · listening stats · year in records · sync</span>
       </div>
       <div class="supporter-preview" aria-hidden="true">
-        <div><small>YOUR ORBIT</small><b id="supporterPreviewGenre">building</b></div>
+        <div><small>FILED UNDER</small><b id="supporterPreviewGenre">building</b></div>
         <div><small>THIS YEAR</small><b id="supporterPreviewYear">0 listens</b></div>
-        <div class="supporter-preview-lock">FULL PROFILE + WRAPPED</div>
+        <div class="supporter-preview-lock">LISTENING ARCHIVE + YEARBOOK</div>
       </div>
-      <button id="supporterTeaserOpen" type="button">unlock the full profile ↗</button>
+      <button id="supporterTeaserOpen" type="button">see supporter extras ↗</button>
     </div>
     <button id="supporterStudioDrawer" type="button" class="secondary supporter-studio-drawer" hidden>open supporter studio ↗</button>
 
@@ -354,9 +354,9 @@
     <details class="diary-extras">
       <summary>taste + data tools</summary>
       <section id="tastePrint" class="taste-print" hidden aria-label="Current taste profile">
-        <div class="taste-print-head"><span>taste print</span><small>local signals</small></div>
-        <div class="taste-print-row"><b>orbit</b><div id="tastePrintTags"></div></div>
-        <div class="taste-print-row"><b>neighbors</b><div id="tastePrintNeighbors"></div></div>
+        <div class="taste-print-head"><span>notes from your shelf</span><small>your diary</small></div>
+        <div class="taste-print-row"><b>genres</b><div id="tastePrintTags"></div></div>
+        <div class="taste-print-row"><b>nearby sounds</b><div id="tastePrintNeighbors"></div></div>
       </section>
       <div class="drawer-actions">
         <button id="openAccountFromDrawer" type="button" class="secondary account-drawer-cta">account / billing</button>
@@ -379,7 +379,7 @@
     <div class="dialog-head">
       <div>
         <small class="account-kicker">account + supporter</small>
-        <h2>your shelf, your account.</h2>
+        <h2>keep your records together.</h2>
       </div>
       <button type="button" id="closeAccountDialog" aria-label="Close account dialog">✕</button>
     </div>
@@ -439,7 +439,7 @@
       <header class="studio-head">
         <div>
           <small>SUPPORTER STUDIO / PRIVATE</small>
-          <h2>your listening life, in print.</h2>
+          <h2>the records you kept.</h2>
         </div>
         <button id="closeSupporterStudio" type="button" aria-label="Close Supporter Studio">✕</button>
       </header>
@@ -463,11 +463,11 @@
 
         <div class="studio-taste-statement">
           <small>YOUR SHELF RIGHT NOW</small>
-          <p id="studioTasteSentence">save and rate a few records and this starts sounding like you.</p>
+          <p id="studioTasteSentence">Listen to a few albums, rate the ones that stay with you, and this page will take shape.</p>
         </div>
 
         <div class="studio-section">
-          <div class="studio-section-head"><span>taste fingerprint</span><small>built from what you actually save + rate</small></div>
+          <div class="studio-section-head"><span>filed under</span><small>built from what you actually save + rate</small></div>
           <div id="studioTasteTags" class="studio-chips"></div>
         </div>
 
@@ -478,7 +478,7 @@
 
         <div class="studio-two-col">
           <section class="studio-section">
-            <div class="studio-section-head"><span>artist orbit</span><small>most saved</small></div>
+            <div class="studio-section-head"><span>artists you return to</span><small>most saved</small></div>
             <div id="studioTopArtists" class="studio-rank-list"></div>
           </section>
           <section class="studio-section">
@@ -522,13 +522,13 @@
             <div id="studioStatsGenres" class="studio-rank-list"></div>
           </section>
           <section class="studio-section">
-            <div class="studio-section-head"><span>mood map</span><small>saved record signals</small></div>
+            <div class="studio-section-head"><span>moods in your diary</span><small>saved record signals</small></div>
             <div id="studioStatsMoods" class="studio-rank-list"></div>
           </section>
         </div>
 
         <section class="studio-section">
-          <div class="studio-section-head"><span>rating curve</span><small>1★ → 5★</small></div>
+          <div class="studio-section-head"><span>how you rated them</span><small>1★ → 5★</small></div>
           <div id="studioRatings" class="rating-dist"></div>
         </section>
       </section>
