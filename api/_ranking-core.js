@@ -398,9 +398,9 @@ export function explanation(row, body) {
   const relationship=relationshipStyleFit(candidate,body);
   if(relationship.active){
    const style=relationship.evidence[0];
-   if(relationship.verifiedMood)return 'Catalogued with a reflective or melancholic mood; the lyrics have not been checked.';
-   if(style)return 'Filed under '+style+'; a quieter direction, though the emotional fit is not verified.';
-   return 'A tentative match. The catalog cannot verify whether its music fits this particular feeling.';
+   if(relationship.verifiedMood)return 'Filed under reflective or melancholic. We haven’t checked the lyrics.';
+   if(style)return 'Filed under '+style+'. A quieter possibility, not a promise about how it feels.';
+   return 'An uncertain pick. We don’t have enough mood information to claim a closer match.';
   }
 
   const moodFit = requestedMoodFit(candidate, body);
@@ -440,32 +440,32 @@ export function explanation(row, body) {
    const sound=area.countryMatch||hint
     ? `Artist associated with ${areaNames[candidate.originCountry]||candidate.originCountry}. `
     : '';
-   return sound+'The catalog cannot verify the language sung on this album.';
+   return sound+'We can’t confirm the language of the vocals on this record.';
   }
   if(area.countryMatch){
    const where=areaNames[candidate.originCountry]||candidate.originCountry;
    const genre=requestedGenreFit(candidate,body).matched[0];
-   return `Artist associated with ${where}${genre?' · catalog tags include '+genre:''}.`;
+   return `From the ${where} shelf${genre?' · filed under '+genre:''}. Artist origin doesn’t tell us the lyric language.`;
   }
   if(area.requestedCountry&&!area.countryMatch){
-   return 'The catalog cannot verify an artist-origin match for this request.';
+   return 'We couldn’t confirm the artist’s country from the information on file.';
   }
   const genre=genreFit.matched[0];
   const mood=moodFit.matched[0];
-  if(genre&&mood)return `Catalog tags: ${genre} and ${mood}.`;
+  if(genre&&mood)return `Filed under ${genre} · ${mood}. Both appear in the catalog.`;
   if(genre&&moodFit.suggestive?.length){
-    return `Catalogued as ${genre}; its style also suggests ${moodFit.suggestive[0]}, though that mood isn't independently verified.`;
+    return `Filed under ${genre}. ${moodFit.suggestive[0]} is a guess from the style, not a checked mood tag.`;
   }
-  if(genre)return `Its catalog tags include ${genre}.`;
-  if(mood)return `The catalog includes ${mood} among its mood tags.`;
+  if(genre)return `Filed under ${genre}. That’s the strongest match we can explain from the catalog.`;
+  if(mood)return `The catalog lists ${mood} among this record’s mood tags.`;
   if(moodFit.suggestive?.length){
     const matchingStyles=cleanArray(candidate.genres,12).filter(g=>
       /dream pop|ethereal wave|shoegaze|ambient pop|chillwave|hypnagogic pop|downtempo|chillout|new age|lounge|ambient|minimal ambient|slowcore|dark ambient|darkwave|gothic rock|dance.punk|dance pop/i.test(g)
     );
     const style=matchingStyles[0]||'its listed genres';
-    return `${style} suggests ${moodFit.suggestive[0]} music, but the mood is not independently verified.`;
+    return `Filed under ${style}. We’re guessing at the ${moodFit.suggestive[0]} mood from its style.`;
   }
-  if(unique.length)return `Matched on ${unique.join(' and ')}.`;
-  if(moodFit.requested)return 'Its sound may suit your note, but the catalog has no verified mood tags.';
-  return 'Selected using catalog similarity; more descriptive tags are not available.';
+  if(unique.length)return `Picked for ${unique.join(' and ')}. That’s what we could check.`;
+  if(moodFit.requested)return 'No reliable mood tags for this record. If it misses, tell us and we’ll try another.';
+  return 'A wildcard from the catalog. We don’t have enough detail to give it a more specific reason.';
 }
