@@ -39,6 +39,10 @@ def test_frontend_contract():
         fail(f"Visible release buttons missing JS wiring: {unwired}")
 
     if css.count("{")!=css.count("}"): fail("CSS braces are unbalanced")
+    editorial=(ROOT/"editorial.css").read_text(encoding="utf-8")
+    if editorial.count("{")!=editorial.count("}"): fail("Editorial CSS braces are unbalanced")
+    if "PRE-LAUNCH TYPESETTING" not in editorial or "prefers-reduced-motion" not in editorial:
+        fail("The paper-and-ink editorial stylesheet and reduced-motion rules must remain present")
 
     # Critical desktop components must exist before responsive overrides.
     desktop_css=css.split("@media",1)[0]
@@ -79,7 +83,7 @@ def test_frontend_contract():
         fail("Free-text note and picker controls must be session-only, not persistent browser history")
     if "pulledRecordCount()" not in js or "statPulled" not in html or "pulledCount" not in html:
         fail("UI must distinguish pulled no-repeat history from saved diary history")
-    if 'id="meaningMatchNote"' not in html or "we read your description alongside catalog tags" not in html:
+    if 'id="meaningMatchNote"' not in html or "We use album credits and genre tags to narrow things down" not in html:
         fail("The free-text matching note must explain catalog evidence without inflated AI claims")
     if "query:pickerSnapshot()" in js:
         fail("Feedback must not send the raw free-text picker snapshot")
