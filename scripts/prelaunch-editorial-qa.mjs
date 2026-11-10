@@ -24,7 +24,17 @@ try{
   const page=await context.newPage();
   const entry={label:device.label,viewport:device.width+'×'+device.height};
   try{
-   await page.goto(site,{waitUntil:'domcontentloaded',timeout:45000});
+   // Pages CDN can serve mixed old/new versions briefly after deploy.
+   // Reload with a unique query until this browser gets the correct release.
+   let releaseSeen=false;
+   for(let attempt=0;attempt<8;attempt++){
+    const url=site+(site.includes('?')?'&':'?')+'editorialRelease=print-004-'+device.label+'-'+attempt;
+    await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
+    const installed=await page.locator('link[href*="editorial.css"]').first().getAttribute('href').catch(()=>null);
+    if(installed?.includes('print-004')){releaseSeen=true;break}
+    await page.waitForTimeout(1200);
+   }
+   if(!releaseSeen)throw Error('Latest editorial stylesheet was not served to '+device.label);
    await page.waitForFunction(()=>document.querySelector('#recommend')&&!document.querySelector('#recommend').disabled,null,{timeout:90000});
    entry.firstView=await page.evaluate(()=>{
     const css=getComputedStyle(document.body);
