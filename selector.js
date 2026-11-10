@@ -278,7 +278,7 @@ function resetPicker(){
  $('moods')?.classList.remove('is-expanded');
  renderMoodMore();
  const insight=$('feelingInsight');if(insight)insight.textContent='';
- const status=$('status');if(status)status.textContent='ready for a new pick.';
+ const status=$('status');if(status)status.textContent='ready when you are.';
  updatePickerStateUI();
  showToast('Cleared.');
 }
@@ -1252,6 +1252,8 @@ function albumProfileQuality(a){
 function backendCandidate(a,intent,semanticScore=0){
  const translatedMoodGuess=String(a.provenance?.moods?.source||'')==='musicbrainz-tag-translation';
  const translatedEnergyGuess=String(a.provenance?.energy?.source||'')==='musicbrainz-tag-translation';
+ const verifiedEnergySource=String(a.provenance?.energy?.source||'');
+ const verifiedEnergy=verifiedEnergySource&&verifiedEnergySource!=='musicbrainz-tag-translation'&&(Number(a.provenance?.energy?.confidence)||0)>=.65;
  const featureMoods=translatedMoodGuess
   ? []
   : (a.features?.moods&&Object.keys(a.features.moods).length?Object.keys(a.features.moods):(a.moods||[]));
@@ -1260,8 +1262,8 @@ function backendCandidate(a,intent,semanticScore=0){
  const energy=[
   a._acoustic?.energy,
   a._live?.signals?.energy,
-  translatedEnergyGuess?null:(a.features?.energy!=null?Number(a.features.energy)*10:null),
-  translatedEnergyGuess?null:a.energy_level
+  !translatedEnergyGuess&&verifiedEnergy&&a.features?.energy!=null?Number(a.features.energy)*10:null,
+  !translatedEnergyGuess&&verifiedEnergy?a.energy_level:null
  ].find(v=>v!==null&&v!==undefined&&Number.isFinite(Number(v)));
  return {
   id:lookupId(a),
@@ -1365,7 +1367,7 @@ async function rankWithBackend(pool,seed,daily){
   const retrievalEndpoint=backendUrl('/api/neural-retrieve');
   if(retrievalEndpoint){
    try{
-    $('status').textContent='searching 100,000 neural records…';
+    $('status').textContent='looking through the album catalogue…';
     const response=await fetch(retrievalEndpoint,{
      method:'POST',
      headers:{'Content-Type':'application/json'},
@@ -1537,7 +1539,7 @@ async function rankWithBackend(pool,seed,daily){
  const byId=new Map(shortlist.map(row=>[lookupId(row.album),row.album]));
  const candidates=shortlist.slice(0,96).map(row=>backendCandidate(row.album,intent,row.semanticScore));
 
- $('status').textContent='neural reranking…';
+ $('status').textContent='narrowing down the shortlist…';
  try{
   const response=await fetch(endpoint,{
    method:'POST',
@@ -1715,10 +1717,10 @@ function setPickProgress(busy){
  box.hidden=!busy;
  if(!busy)return;
  const messages=[
-  'digging through the shelf…',
-  'matching the feeling…',
-  'skipping everything you have already seen…',
-  'checking the final contenders…'
+  'checking the shelves…',
+  'reading the album notes…',
+  'setting aside records you’ve seen…',
+  'comparing a few records…'
  ];
  let index=0;copy.textContent=messages[index];
  pickProgressTimer=setInterval(()=>{
@@ -2018,7 +2020,7 @@ async function rankWithSemantic(seed,daily){
  const note=$('feelingInput')?.value.trim()||'';
  const retrievalNote=globalThis.AlbumIntent?.retrievalText?.(note)??note;
  if(retrievalNote.length<2||!globalThis.AlbumSemantic?.search||!catalogManifest)return null;
- $('status').textContent='searching albums…';
+ $('status').textContent='checking the album catalogue…';
  let raw;
  try{raw=await globalThis.AlbumSemantic.search(retrievalNote,120)}
  catch(e){console.info('Semantic index unavailable; using live fallback.',e);return null}
@@ -2081,7 +2083,7 @@ async function rankWithSemantic(seed,daily){
 async function rankWithLiveMetadata(pool,seed,daily){
  const intent=correctedIntent(interpretFeeling($('feelingInput')?.value||''));
  const sample=sampleCandidates(pool,seed,12,daily);
- $('status').textContent='checking albums…';
+ $('status').textContent='looking through the record bins…';
  const enriched=(await mapConcurrent(sample,4,async a=>{
   const meta=await findItunesAlbum(a);
   if(!meta)return {...a,_live:{matched:false}};
@@ -2668,8 +2670,12 @@ function show(a,context={}){
  const title=document.createElement('h2');title.textContent=a.title;
  const artist=document.createElement('p');artist.textContent=`${a.artist}${a.year?' · '+a.year:''}`;
  const meta=document.createElement('p');
- meta.textContent=[(a.moods||[]).join(' · '),a.length_min?`${Math.round(Number(a.length_min))} min`:null].filter(Boolean).join('  /  ');
- info.append(tag,title,artist,meta);
+ // Catalog mood tags can be inferred and unverified. Keep the sleeve
+ // caption factual; explanations state what evidence is actually known.
+ meta.textContent=a.length_min&&Number.isFinite(Number(a.length_min))
+  ?Math.round(Number(a.length_min))+' min': '';
+ info.append(tag,title,artist);
+ if(meta.textContent)info.append(meta);
  const explanation=['shared','history','diary'].includes(context.mode)?'':explainPick(a,context);
  const whyPanel=$('whyPanel');
  const why=$('whyText');
@@ -2683,7 +2689,7 @@ function show(a,context={}){
    .map(value=>String(typeof value==='string'?value:value?.name||'').trim())
    .filter(Boolean);
   const requested=correctedIntent(interpretFeeling($('feelingInput')?.value||'')).genres||[];
-  const matching=genres.filter(value=>requested.some(w=>value.toLowerCase().includes(w)||w.includes(value.toLowerCase())));
+  const matching=genres.filter(value=>requested.some(w=>globalThis.AlbumIntent?.styleMatches?.(value,w)));
   const pieces=[...new Set([...matching,...genres])].slice(0,3);
   for(const value of pieces){
    const chip=document.createElement('span');
@@ -2723,7 +2729,7 @@ function show(a,context={}){
  if(context.userTriggered)handoffToResult();
 }
 function labelColor(a){
- const palette=['#c8432f','#2e5f76','#d5ad36','#65714b','#9a593f','#d9d0bc'];
+ const palette=['#a84635','#58645c','#c7b07b','#767c64','#94654d','#d2c6ae'];
  let n=0;for(const c of key(a))n=(n*31+c.charCodeAt(0))>>>0;
  return palette[n%palette.length];
 }
@@ -3258,13 +3264,13 @@ function artPlaceholder(a){
  };
  const lines=wrap(a.title,17);
  const title=lines.map((v,i)=>'<text x="54" y="'+(300+i*58)+'" font-size="50" font-weight="900">'+safe(v)+'</text>').join('');
- const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720"><rect width="720" height="720" fill="#e9e3d7"/><path d="M0 112H720M0 118H720M0 610H720" stroke="#111" stroke-width="3"/><g fill="#111" font-family="Arial, Helvetica, sans-serif"><text x="54" y="73" font-family="Courier New, monospace" font-size="14" font-weight="700" letter-spacing="3">COVER NOT FILED</text>'+title+'<text x="54" y="565" font-family="Courier New, monospace" font-size="18" font-weight="700">'+safe(a.artist).slice(0,46)+'</text></g><g transform="translate(456 58) rotate(-4)"><rect width="205" height="58" fill="#e6442f"/><text x="16" y="37" fill="#fff" font-family="Courier New, monospace" font-size="15" font-weight="700">IMAGE MISSING</text></g><circle cx="603" cy="542" r="62" fill="none" stroke="#111" stroke-width="3"/><circle cx="603" cy="542" r="9" fill="#111"/></svg>';
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 720 720" role="img"><rect width="720" height="720" fill="#e9e5dd"/><rect x="28" y="28" width="664" height="664" fill="none" stroke="#201e1a" stroke-width="2"/><path d="M54 113H666M54 605H666" stroke="#201e1a" stroke-width="2"/><rect x="54" y="57" width="51" height="9" fill="#a84635"/><g fill="#201e1a"><text x="54" y="89" font-family="Courier New,monospace" font-size="16" letter-spacing="2">ALBUM-A-DAY / RECORD FILE</text>'+title.replaceAll('font-size="50" font-weight="900"','font-size="50" font-weight="700" font-family="Georgia,serif"')+'<text x="54" y="568" font-family="Georgia,serif" font-size="23">'+safe(a.artist).slice(0,42)+'</text><text x="54" y="647" font-family="Courier New,monospace" font-size="15">ARTWORK NOT ON FILE</text></g></svg>';
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 
 function explainPick(a,context={}){
  if(context.rankingMode==='shared')return '';
- if(context.rankingMode==='surprise')return 'random pick.';
+ if(context.rankingMode==='surprise')return 'Pulled at random. No brief, just a record.';
  if(context.rankingMode==='backend'&&a._backendRank?.reason)return String(a._backendRank.reason).trim().replace(/[.]+$/,'')+'.';
  if(context.rankingMode==='regional'&&a._regionalExplanation)return a._regionalExplanation;
 
@@ -3301,9 +3307,9 @@ function explainPick(a,context={}){
  const familiarity=artistFamiliarity(a.artist);
  const comfort=recommendationComfort();
  const adjacency=tasteAdjacency(a);
- if(adjacency>=.35&&familiarity<.25)reasons.push('taste-neighbor');
- else if(comfort==='comfort'&&familiarity>=.2)reasons.push('known artist');
- else if(comfort==='exploration'&&familiarity<=.15)reasons.push('new artist');
+ if(adjacency>=.35&&familiarity<.25)reasons.push('similar to records you’ve rated');
+ else if(comfort==='comfort'&&familiarity>=.2)reasons.push('an artist you’ve played before');
+ else if(comfort==='exploration'&&familiarity<=.15)reasons.push('an unfamiliar artist');
 
  if(state.time!==null){
   const rawMinutes=[a._live?.runtimeMin,a._semantic?.runtimeMin,a.features?.duration_min,a.length_min]
@@ -3313,15 +3319,20 @@ function explainPick(a,context={}){
  }
 
  if(note&&['semantic','live','stored'].includes(context.rankingMode)){
-  const genre=(intent.genres||[])[0];
-  if(genre)reasons.push(genre);
+  const genres=[...(a.genres||[]),...(a.tags||[])]
+   .map(v=>String(typeof v==='string'?v:v?.name||''));
+  const genre=(intent.genres||[]).find(g=>genres.some(tag=>globalThis.AlbumIntent?.styleMatches?.(tag,g)));
+  if(genre)reasons.push('filed under '+genre);
  }
 
  const personal=diaryTasteScore(a);
- if(personal.active&&personal.score>.65)reasons.push('diary overlap');
+ if(personal.active&&personal.score>.65)reasons.push('similar to your diary');
 
  const unique=[...new Set(reasons.filter(Boolean))];
- return unique.length?unique.slice(0,3).join(' · ')+'.':'';
+ if(!unique.length)return note
+  ?'We don’t have enough reliable mood information to explain this match. Try another if it feels off.'
+  :'A wildcard from the catalogue. Sometimes it’s worth taking a chance.';
+ return 'From the record file: '+unique.slice(0,3).join(' · ')+'.';
 }
 const interpretFeeling=globalThis.AlbumIntent?.interpretFeeling||(()=>({moods:{},avoidMoods:{},genres:[],avoidGenres:[],energy:null,exploration:0,summary:''}));
 if($('todayDate')){
