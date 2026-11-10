@@ -52,7 +52,7 @@ assert.equal(diverse.length,3);
 const untagged={...solo,moods:[],tags:[],moodSource:'unknown'};
 const why=explanation({candidate:untagged,taste:{}},
  {...neutral,intent:{moods:{dreamy:1},genres:[],avoidGenres:[],avoidMoods:{}}});
-assert.match(why,/no verified mood tags/);
+assert.match(why,/No reliable mood tags/);
 assert.doesNotMatch(why,/overall match/i);
 
 
@@ -67,7 +67,7 @@ const grittyStyle={...untagged,genres:['noise rock'],moods:['gritty'],moodSource
 const dreamyRequest={...neutral,intent:{moods:{dreamy:1},genres:[],avoidGenres:[],avoidMoods:{}}};
 assert.ok(scoreCandidate(dreamStyle,0.5,dreamyRequest)>scoreCandidate(grittyStyle,0.5,dreamyRequest),
  'Well-supported dreamy styles should outrank confidently unrelated tags');
-assert.match(explanation({candidate:dreamStyle,taste:{}},dreamyRequest),/not independently verified/);
+assert.match(explanation({candidate:dreamStyle,taste:{}},dreamyRequest),/guess.*style|guess from the style/);
 
 
 // Strong style evidence must be precise: pop is not sufficient for dream pop.
