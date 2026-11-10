@@ -25,7 +25,7 @@ assert.equal(geographyFit(brazil,body).countryMatch,true);
 assert.equal(geographyFit(dutch,body).excludedCountry,true);
 assert.match(explanation({candidate:brazil,taste:{}},body),/Brazil/);
 const singing={...body,intent:{...body.intent,vocalLanguages:['nl']}};
-assert.match(explanation({candidate:brazil,taste:{}},singing),/cannot verify the language sung/);
+assert.match(explanation({candidate:brazil,taste:{}},singing),/can’t confirm the language of the vocals/);
 assert.equal(geographyFit(brazil,singing).vocalMatch,false);
 const verified={...brazil,vocalLanguages:['nl']};
 assert.equal(geographyFit(verified,singing).vocalMatch,true);
@@ -37,7 +37,7 @@ assert.equal(plausibleVocalOrigin(brazil,dutchLyrics),false);
 assert.equal(plausibleVocalOrigin(unknown,dutchLyrics),false);
 assert.equal(geographyFit(dutch,dutchLyrics).vocalMatch,false,
  'Dutch origin must not be presented as proof of Dutch vocals');
-assert.match(explanation({candidate:dutch,taste:{}},dutchLyrics),/cannot verify the language sung/);
+assert.match(explanation({candidate:dutch,taste:{}},dutchLyrics),/can’t confirm the language of the vocals/);
 assert.ok(scoreCandidate(dutch,.4,dutchLyrics)>scoreCandidate(unknown,.4,dutchLyrics));
 
 console.log('Artist-origin index and genre-vs-vocal-language evidence contracts passed.');
