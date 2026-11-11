@@ -1,0 +1,27 @@
+name: Album-a-Day release checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  unit-and-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout pinned revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Confirm Node runtime
+        run: node --version
+      - name: Validate JavaScript syntax
+        run: |
+          set -e
+          for file in selector.js auth-sync.js sync-state.js album-locale.js intent-core.js api/recommend.js api/_eligibility.js api/_ranking-core.js; do
+            node --check "$file"
+          done
+      - name: Run release regressions
+        run: node --test tests/*.test.js
