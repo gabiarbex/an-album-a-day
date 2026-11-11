@@ -31,7 +31,7 @@ try{
     const url=site+(site.includes('?')?'&':'?')+'editorialRelease=theme-20261111-'+device.label+'-'+attempt;
     await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
     const installed=await page.locator('link[href*="theme.css"]').first().getAttribute('href').catch(()=>null);
-    if(installed?.includes('theme.css?v=listening-desk-03')){releaseSeen=true;break}
+    if(installed?.includes('theme.css?v=listening-desk-04')){releaseSeen=true;break}
     await page.waitForTimeout(1200);
    }
    if(!releaseSeen)throw Error('Latest editorial stylesheet was not served to '+device.label);
@@ -49,7 +49,7 @@ try{
      headingFont:getComputedStyle(heading).fontFamily,
      inputVisible:document.querySelector('#feelingInput').getClientRects().length>0,
      heading:heading?.textContent?.trim(),
-     editorialAsset:[...document.styleSheets].some(sheet=>/theme\.css\?v=listening-desk-03/.test(sheet.href||'')),
+     editorialAsset:[...document.styleSheets].some(sheet=>/theme\.css\?v=listening-desk-04/.test(sheet.href||'')),
      subtitle:document.querySelector('.masthead p')?.textContent?.trim()||''
     };
    });

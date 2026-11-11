@@ -5030,3 +5030,43 @@ body:not(.has-record) .album-details p{font-size:13px;margin-top:8px}
  height:auto;min-height:42px;
  margin:0!important;z-index:auto;
 }
+
+
+/* Critical interactive grid reset. Legacy filter layouts used 12 columns
+   with fixed placements, collapsing mood hit areas in the new two-column UI. */
+body .picker details#fineTune .filter-body{
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-auto-flow:row!important;
+ gap:21px 22px!important;
+ width:100%!important;
+ max-width:100%!important;
+ overflow:visible!important;
+}
+body .picker details#fineTune .filter-body > .tuning-block{
+ grid-column:auto!important;
+ grid-row:auto!important;
+ width:100%!important;
+ min-width:0!important;
+}
+body .picker details#fineTune .filter-body > .mood-block{
+ grid-column:1 / -1!important;
+ grid-row:auto!important;
+}
+body .picker #moods{
+ display:grid!important;
+ width:100%!important;
+ grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ grid-auto-flow:row!important;
+}
+@media(max-width:700px){
+ body .picker details#fineTune .filter-body{
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+ body .picker details#fineTune .filter-body > .mood-block{
+  grid-column:1!important;
+ }
+ body .picker #moods{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+}
