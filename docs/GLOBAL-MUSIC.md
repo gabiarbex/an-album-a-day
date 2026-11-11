@@ -1,7 +1,7 @@
 # Global listening: countries are not languages
 
 Album-a-Day now interprets short music requests in English, Portuguese,
-Dutch, Spanish, German and French. The first production iteration targets
+Dutch, Spanish, German, French, Ukrainian and Russian (common phrases). The first production iteration targets
 country-specific discovery without pretending that an artist's home country
 determines the language they sing.
 
@@ -31,12 +31,14 @@ from `data/catalog/base.json` and the 90 global shards. Generated
 MusicBrainz metadata and catalog-file provenance; no albums are invented.
 
 The build's manifest reports original matched totals, distinct artists and
-the smaller indexed discovery subset for each country. The initial
-verified run matched 218 Brazil-associated records and 155 Netherlands-associated
-records from the 100k catalog; 197 and 133 are indexed for direct discovery.
-Other country indexes include Portugal, Belgium, Germany, France, Spain,
-Japan, Argentina, Nigeria and Ukraine, but smaller countries need improved
-catalog depth.
+the smaller indexed discovery subset for each country. The current
+verified build matched 221 Brazil-associated records and 165 Netherlands-associated
+records from the 100k catalog; 200 and 143 are indexed for direct discovery.
+Other indexes cover Portugal, Belgium, Germany, France, Spain,
+Japan, Argentina, Nigeria and Ukraine. The 11 indexed countries collectively
+expose 582 actual catalog records, not 100,000 verified country assignments.
+Ukraine currently has only three indexed albums; the catalog and attribution
+pipeline need more coverage before international recommendations can be called comprehensive.
 
 ## Search pipeline
 
@@ -53,7 +55,9 @@ catalog depth.
 
 The free-text parser is useful for common phrases; it is not a fully fledged
 multilingual linguistic model, and no lyrical-language or audio-language
-model has been trained.
+model has been trained. When a requested vocal language cannot be verified,
+the recommender returns a no-match result rather than treating artist origin
+as evidence of the language sung.
 
 ## Validation
 
@@ -92,3 +96,11 @@ rebuild are:
 
 **Production principle:** global music discovery must not quietly become
 Anglo-American recommendations dressed in translated prompts.
+
+## Release hardening checks (November 2026)
+
+Run `node --test tests/*.test.js` for strict constraints, multilingual language and geography requests, diary conflict merging, asset references and UI control smoke tests.
+The CI workflow also runs the existing intent, ranking and 22-gate stress matrix.
+Production browser checks additionally verify loaded cover art, responsive overflow,
+SVG star ratings, account dialog and no-repeat history. Logged-in cross-device
+behavior still requires testing with two authenticated browsers.
