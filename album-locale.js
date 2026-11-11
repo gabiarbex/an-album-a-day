@@ -5,7 +5,7 @@
 'use strict';
 const fold=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’‘]/g,"'");
 const unique=items=>[...new Set(items)];
-const NEGATION=/\b(?:not|no|without|avoid|avoiding|dont|don't|do not|nao|sem|geen|niet|zonder|kein|keine|nicht|ohne|sin|sans|pas|non)\b/;
+const NEGATION=/(?:\b(?:not|no|without|avoid|avoiding|dont|don't|do not|nao|sem|geen|niet|zonder|kein|keine|nicht|ohne|sin|sans|pas|non)\b|(?:^|\s)(?:не|без|нет|ні)(?:\s|$))/u;
 const BOUNDARY=/[,;.!?]|\b(?:but|however|mas|pero|maar|aber|mais|porem)\b/g;
 function negated(text,start){
  const context=text.slice(Math.max(0,start-90),start);
@@ -24,7 +24,7 @@ const COUNTRIES={
  JP:['japan','japanese','japao','japones','japonesa','japanisch'],
  AR:['argentina','argentine','argentino','argentina'],
  NG:['nigeria','nigerian','nigeriana','nigeriano'],
- UA:['ukraine','ukrainian','ucrania','ucraniano','ucraniana','ukrainisch','україн']
+ UA:['ukraine','ukrainian','ucrania','ucraniano','ucraniana','ukrainisch','україна','український','українська','українські','украинский','украина']
 };
 const VOCALS={
  nl:['dutch','nederlands','nederlandstalig','nederlandstalige','holandes','holandesa','neerlandes'],
@@ -34,8 +34,8 @@ const VOCALS={
  fr:['french','francais','francaise','frances','francesa','franzosisch'],
  de:['german','deutsch','deutsche','alemao','alema','aleman','alemana'],
  ja:['japanese','japones','japonesa','japanisch'],
- uk:['ukrainian','ucraniano','ucraniana','ukrainisch','українською'],
- ru:['russian','russo','russa','russisch','русском']
+ uk:['ukrainian','ucraniano','ucraniana','ukrainisch','українською','українська','украинском','українською мовою'],
+ ru:['russian','russo','russa','russisch','русском','русски','русский','по-русски']
 };
 const VOCAL_CONTEXT=/(?:\b(?:in|em|en|auf|sung|singing|sing|lyrics|vocals|vocais|cantad[oa]s?|cantand[oa]|gezongen|gesungen|chante|chant[eé]e?s?|gesungen|spracha|sprache)\s+(?:(?:the|het|la|o|in|em)\s+)?|(?:^|[^a-z])(?:nederlandstalig|deutschsprachig|francophone|lusofono|lusofona)\b)/;
 const TRANSLATE=[
@@ -52,12 +52,19 @@ const TRANSLATE=[
  ['mais','but'],['musique','music'],['calme','calm'],['triste','sad'],['joyeuse','hopeful'],
  ['quiero','i want'],['busco','looking for'],['sin','without'],['pero','but'],
  ['musica','music'],['tranquila','calm'],['tranquilo','calm'],['alegre','hopeful'],
+ ['я хочу','i want'],['хочу','i want'],['шукаю','looking for'],['ищу','looking for'],
+ ['не хочу','i do not want'],['без','without'],['спокійна','calm'],['спокійний','calm'],
+ ['спокійно','calm'],['сумно','sad'],['сумна','sad'],['сумний','sad'],
+ ['грустная','sad'],['грустный','sad'],['спокойная','calm'],['спокойный','calm'],
+ ['енергійна','energetic'],['енергійний','energetic'],
  ['quero','i want'],['procuro','looking for'],['preciso','i need'],['sem','without'],
  ['nao','not'],['porem','but'],['sombria','dark'],['sombrio','dark'],
  ['triste','sad'],['tranquila','calm'],['tranquilo','calm'],['animada','energetic'],
  ['animado','energetic'],['alegre','hopeful'],['sossegada','calm'],['sossegado','calm']
 ];
 const LANG_CUES={
+ uk:/(?:хочу|шукаю|українською|сумно|спокійн|енергійн)/u,
+ ru:/(?:ищу|грустн|спокойн|русском|по-русски)/u,
  nl:/\b(?:ik wil|ik zoek|ik voel me|geen|zonder|muziek|nederlandse|nederlands|dromerig|rustig|vrolijk)\b/,
  pt:/\b(?:quero|preciso|estou|brasileiro|brasileira|nao|sem|sossegad|alegre|triste|em\s+(?:holandes|portugues|ingles))\b/,
  es:/\b(?:quiero|busco|espanol|sin|pero|estoy|brasilena|brasileno)\b/,
@@ -68,8 +75,9 @@ const LANG_CUES={
 function phraseMatches(text,alias){
  const name=fold(alias);
  if(!name)return [];
- const escaped=name.replace(/[^a-z0-9 ]/g,char=>'\\'+char).replace(/ +/g,'\\s+');
- const re=new RegExp('(^|[^a-z0-9])('+escaped+')(?=$|[^a-z0-9])','g');
+ const escaped=name.replace(/[.*+?^\${}()|[\]\\]/g,'\\ const escaped=name.replace(/[^a-z0-9 ]/g,char=>'\\'+char).replace(/ +/g,'\\s+');
+ const re=new RegExp('(^|[^a-z0-9])('+escaped+')(?=$|[^a-z0-9])','g');').replace(/ +/g,'\\s+');
+ const re=new RegExp('(^|[^\\p{L}\\p{N}])('+escaped+')(?=$|[^\\p{L}\\p{N}])','gu');
  return [...text.matchAll(re)].map(m=>({start:m.index+m[1].length,end:m.index+m[1].length+m[2].length}));
 }
 function blankSpans(text,spans){
@@ -121,5 +129,5 @@ function parse(value){
   vocalLanguages:vocal,avoidVocalLanguages:unique(avoidVocalLanguages)
  };
 }
-root.AlbumLocale={parse,fold,version:'multilingual-intent-v1'};
+root.AlbumLocale={parse,fold,version:'multilingual-intent-v2'};
 })(globalThis);
