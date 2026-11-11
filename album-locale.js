@@ -77,6 +77,7 @@ function phraseMatches(text,alias){
  if(!name)return [];
  const escaped=[...name].map(ch=>{
   if(ch===' ')return '\\s+';
+  if(ch==='-')return '-';
   if(/[\p{L}\p{N}]/u.test(ch))return ch;
   return '\\'+ch;
  }).join('');
