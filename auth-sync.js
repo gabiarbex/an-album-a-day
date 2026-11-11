@@ -69,31 +69,18 @@ function cloudLastfm(profile){
  };
 }
 function mergeState(remote,local){
- const deleted=new Set([
-  ...(remote?.deletedDiaryKeys||remote?.deleted_diary_keys||[]),
-  ...(local?.deletedDiaryKeys||[])
- ].map(String));
- const recent=uniq([
-  ...(remote?.recentArtists||remote?.recent_artists||[]),
-  ...(local?.recentArtists||[])
- ].map(normalizeArtist).filter(Boolean),36).slice(-18);
- const pickDays=uniq([
-  ...(remote?.pickDays||remote?.pick_days||[]),
-  ...(local?.pickDays||[])
- ]).sort().slice(-730);
- const seenKeys=uniq([
-  ...(remote?.seenKeys||remote?.seen_keys||[]),
-  ...(local?.seenKeys||[])
- ]);
+ if(window.AlbumSyncState?.mergeState){
+  return window.AlbumSyncState.mergeState(remote,local,{localDirty:dirty});
+ }
+ // If the helper fails to load, retain all local records and seen keys.
+ const localOnly=local||{},remoteOnly=remote||{};
  return {
-  diary:mergeDiary(remote?.diary||[],local?.diary||[],deleted),
-  deletedDiaryKeys:[...deleted].slice(-1000),
-  seenKeys,
-  recentArtists:recent,
-  pickDays,
-  lastfmProfile:dirty
-   ? cloudLastfm(local?.lastfmProfile||null)
-   : cloudLastfm(local?.lastfmProfile||remote?.lastfm_profile||remote?.lastfmProfile||null)
+  ...remoteOnly,...localOnly,
+  diary:mergeDiary(remoteOnly.diary||[],localOnly.diary||[],new Set([
+   ...(remoteOnly.deletedDiaryKeys||[]),...(localOnly.deletedDiaryKeys||[])
+  ])),
+  seenKeys:uniq([...(remoteOnly.seenKeys||[]),...(localOnly.seenKeys||[])]),
+  pickDays:uniq([...(remoteOnly.pickDays||[]),...(localOnly.pickDays||[])])
  };
 }
 function migrationKey(){return session?.user?.id?MIGRATION_PREFIX+session.user.id:null}
@@ -331,8 +318,32 @@ async function syncNow(options={}){
    setSyncStatus('new changes detected · syncing again','busy');
    return null;
   }
-  const {error:writeError}=await client.from(TABLE).upsert(stateToRow(merged,userId),{onConflict:'user_id'});
-  if(writeError)throw writeError;
+  // Optimistic write: a second device must not silently overwrite a newer
+  // synced diary while our merge request is in flight.
+  const nextRow=stateToRow(merged,userId);
+  if(data?.updated_at){
+   const {data:written,error:writeError}=await client.from(TABLE)
+    .update(nextRow)
+    .eq('user_id',userId)
+    .eq('updated_at',data.updated_at)
+    .select('user_id');
+   if(writeError)throw writeError;
+   if(!written?.length){
+    dirty=true;retryForConcurrentEdit=true;
+    setSyncStatus('another device synced · merging again','busy');
+    return null;
+   }
+  }else{
+   const {error:writeError}=await client.from(TABLE).insert(nextRow);
+   if(writeError){
+    if(writeError.code==='23505'){
+     dirty=true;retryForConcurrentEdit=true;
+     setSyncStatus('another device synced · merging again','busy');
+     return null;
+    }
+    throw writeError;
+   }
+  }
   if(localRevision!==revisionAtStart){
    dirty=true;
    retryForConcurrentEdit=true;
@@ -351,7 +362,7 @@ async function syncNow(options={}){
   if(!options.silent)toast('Cloud sync paused. Your local diary is still safe.');
   return null;
  }finally{
-  syncing=false;renderAuth();
+  syncing=false;renderSupporter();
   if(retryForConcurrentEdit&&session?.user?.id===userId&&isSupporter()){
    clearTimeout(syncTimer);
    syncTimer=setTimeout(()=>syncNow({silent:true}),900);
