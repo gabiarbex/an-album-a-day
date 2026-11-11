@@ -13,7 +13,7 @@ const cases=[
  {id:'normal-hope',note:"I want something hopeful for the future",moods:['hopeful'],kind:null},
  {id:'contrast-request',note:"I'm sad about my relationship but I want happy upbeat pop music",moods:['hopeful'],kind:null},
  {id:'nostalgia-other',note:"I feel homesick and miss someone",moods:['nostalgic'],kind:null},
- {id:'genre-exclusion',note:"I want indie folk but not metal",moods:[],kind:null,genre:'indie',avoid:'metal'},
+ {id:'genre-exclusion',note:"I want indie folk but not metal",moods:[],kind:null,genre:'indie folk',avoid:'metal'},
  {id:'positive-goal',note:"I'm sad but want uplifting music",moods:['hopeful'],kind:null,shift:true}
 ];
 for(const c of cases){

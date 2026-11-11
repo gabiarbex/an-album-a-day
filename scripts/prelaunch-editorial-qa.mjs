@@ -28,10 +28,10 @@ try{
    // Reload with a unique query until this browser gets the correct release.
    let releaseSeen=false;
    for(let attempt=0;attempt<8;attempt++){
-    const url=site+(site.includes('?')?'&':'?')+'editorialRelease=print-004-'+device.label+'-'+attempt;
+    const url=site+(site.includes('?')?'&':'?')+'editorialRelease=theme-20261111-'+device.label+'-'+attempt;
     await page.goto(url,{waitUntil:'domcontentloaded',timeout:45000});
-    const installed=await page.locator('link[href*="editorial.css"]').first().getAttribute('href').catch(()=>null);
-    if(installed?.includes('print-004')){releaseSeen=true;break}
+    const installed=await page.locator('link[href*="theme.css"]').first().getAttribute('href').catch(()=>null);
+    if(installed?.includes('theme.css?v=')){releaseSeen=true;break}
     await page.waitForTimeout(1200);
    }
    if(!releaseSeen)throw Error('Latest editorial stylesheet was not served to '+device.label);
@@ -49,13 +49,13 @@ try{
      headingFont:getComputedStyle(heading).fontFamily,
      inputVisible:document.querySelector('#feelingInput').getClientRects().length>0,
      heading:heading?.textContent?.trim(),
-     editorialAsset:[...document.styleSheets].some(sheet=>/editorial\.css\?v=print-004/.test(sheet.href||'')),
+     editorialAsset:[...document.styleSheets].some(sheet=>/theme\.css\?v=/.test(sheet.href||'')),
      subtitle:document.querySelector('.masthead p')?.textContent?.trim()||''
     };
    });
    await page.screenshot({path:outDir+'/'+device.label+'-landing.png',fullPage:true});
    if(entry.firstView.overflow>3||!entry.firstView.inputVisible||!entry.firstView.editorialAsset||
-      !entry.firstView.headingFont.includes('Georgia')||entry.firstView.pageBackground!=='none')
+      !entry.firstView.headingFont.includes('Georgia')||entry.firstView.pageBackground==='none')
     throw Error('Visual contract failed: '+JSON.stringify(entry.firstView));
    await page.locator('#feelingInput').fill('i want quiet, reflective bossa nova for a rainy evening. no metal.');
    await page.locator('#fineTune summary').click();

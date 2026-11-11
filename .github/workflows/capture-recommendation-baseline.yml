@@ -10,6 +10,7 @@ on:
       - 'scripts/smoke-mobile.mjs'
       - 'editorial.css'
       - 'style.css'
+      - 'theme.css'
       - 'api/recommend.js'
       - 'api/_ranking-core.js'
       - 'api/_embedding.js'
@@ -47,7 +48,7 @@ jobs:
         run: |
           found=0
           for i in $(seq 1 24); do
-            if curl --fail --silent --show-error https://gabiarbex.github.io/an-album-a-day/ | grep -q 'album-locale.js?v=global-001'; then
+            if curl --fail --silent --show-error https://gabiarbex.github.io/an-album-a-day/ | grep -q 'theme.css?v='; then
               found=1
               break
             fi

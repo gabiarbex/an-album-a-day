@@ -152,8 +152,9 @@ def run_case(name, body, candidates, expected, query_vector_override=None):
     if query_vector_override is not None:
         payload["queryVector"] = query_vector_override
     data, elapsed = post_json(RECOMMEND_URL, payload)
-    expected_engine = ("hybrid-neural-reranker-v5-rrf" if body.get("retrievalSelection") == "weighted-rrf-v1" else "hybrid-neural-reranker-v4")
+    expected_engine = "hybrid-neural-reranker-v6-verified"
     assert data.get("engine") == expected_engine, data
+    assert data.get("diagnostics", {}).get("verifiedConstraints") is True, data
     assert data.get("albumId") == expected, (
         name,
         expected,

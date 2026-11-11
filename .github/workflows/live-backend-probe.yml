@@ -15,6 +15,10 @@ on:
       - "scripts/retrieval_quality_probe.py"
       - ".github/workflows/live-backend-probe.yml"
 
+concurrency:
+  group: live-neural-probe-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   probe:
     runs-on: ubuntu-latest

@@ -252,10 +252,10 @@ def test_frontend_contract():
     webhook=(ROOT/"supabase"/"functions"/"stripe-supporter-webhook"/"index.ts").read_text(encoding="utf-8")
     if 'object?.payment_status === "paid"' not in webhook or 'status: checkoutPaid ? "active" : "pending"' not in webhook:
         fail("Supporter entitlement must not activate before Checkout payment settles")
-    if "if(!a||albumWasSeen(a)||logged.has(key(a)))return;" not in js:
-        fail("Backend recall must not reintroduce seen or diary-saved albums")
-    if ".filter(row=>!albumWasSeen(row.album)&&!logged.has(key(row.album)))" not in js:
-        fail("Semantic fallback must use the normalized no-repeat guard")
+    if "if(!a||albumWasSeen(a)||logged.has(key(a))||!satisfiesExplicitConstraints(a,intent))return;" not in js:
+        fail("Backend recall must exclude seen or diary-saved albums and honor hard constraints")
+    if ".filter(row=>!albumWasSeen(row.album)&&!logged.has(key(row.album))&&satisfiesExplicitConstraints(row.album,intent))" not in js:
+        fail("Semantic fallback must enforce no-repeat and hard constraints")
     if "await restoreSharedPick();" not in load_block:
         fail("Explicit shared-record links must still restore their requested album")
     if "let recommendationRequest=0" not in js or "if(request!==recommendationRequest)return;" not in js:
@@ -268,8 +268,8 @@ def test_frontend_contract():
         fail("Successful tracklist rendering must hide the loading status")
     if "PRODUCT PASS" in css or "EDITORIAL RESET" in css or "HUMAN EDITORIAL PASS" in css:
         fail("Legacy layered CSS markers returned; release stylesheet should stay consolidated")
-    if "selector.js?v=" not in html or "style.css?v=" not in html:
-        fail("Cache-busted CSS/JS references missing")
+    if "selector.js?v=" not in html or 'href="theme.css?v=' not in html or html.count('<link rel="stylesheet"')!=1:
+        fail("Production must load one cache-busted CSS bundle and the selector script")
     feeling_pos=html.find('id="feelingInput"')
     filters_pos=html.find('class="fine-tune"')
     if feeling_pos < 0 or filters_pos < 0 or feeling_pos > filters_pos:
