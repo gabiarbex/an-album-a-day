@@ -4,16 +4,16 @@
   "does_not_infer_vocal_language": true,
   "country_counts": {
     "BR": {
-      "roster_artists": 143,
-      "matched_artists": 84,
-      "catalog_albums": 218,
-      "indexed_albums": 197
+      "roster_artists": 146,
+      "matched_artists": 87,
+      "catalog_albums": 221,
+      "indexed_albums": 200
     },
     "NL": {
-      "roster_artists": 112,
-      "matched_artists": 59,
-      "catalog_albums": 155,
-      "indexed_albums": 133
+      "roster_artists": 118,
+      "matched_artists": 65,
+      "catalog_albums": 165,
+      "indexed_albums": 143
     },
     "PT": {
       "roster_artists": 18,
@@ -22,10 +22,10 @@
       "indexed_albums": 7
     },
     "BE": {
-      "roster_artists": 17,
-      "matched_artists": 12,
-      "catalog_albums": 25,
-      "indexed_albums": 25
+      "roster_artists": 18,
+      "matched_artists": 13,
+      "catalog_albums": 27,
+      "indexed_albums": 27
     },
     "DE": {
       "roster_artists": 17,
@@ -64,10 +64,10 @@
       "indexed_albums": 3
     },
     "UA": {
-      "roster_artists": 10,
-      "matched_artists": 2,
-      "catalog_albums": 2,
-      "indexed_albums": 2
+      "roster_artists": 11,
+      "matched_artists": 3,
+      "catalog_albums": 3,
+      "indexed_albums": 3
     }
   }
 }
