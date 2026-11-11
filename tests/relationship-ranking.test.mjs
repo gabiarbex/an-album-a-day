@@ -30,8 +30,8 @@ assert.ok(goodEvidence.bonus>.2,'Credibly quieter album must receive a modest st
 assert.ok(scoreCandidate(intimate,.45,body)>scoreCandidate(exuberant,.85,body),
  'Intimate candidate must outrank higher-neural disco/funk record for low-energy relationship distress');
 assert.equal(relationshipStyleFit(exuberant,{...body,intent:{...body.intent,narrativeKind:null}}).penalty,0);
-assert.match(explanation({candidate:intimate,taste:{}},body),/not a promise about how it feels/);
-assert.match(explanation({candidate:transparent,taste:{}},body),/uncertain pick/i);
+assert.match(explanation({candidate:intimate,taste:{}},body),/haven.t checked the lyrics/i);
+assert.match(explanation({candidate:transparent,taste:{}},body),/limited information about this record/i);
 const energetic={...body,energy:9};
 assert.equal(relationshipStyleFit(exuberant,energetic).penalty,0,
  'Explicitly high-energy request must override default style restraint');
