@@ -18,7 +18,7 @@ const feelingLexicon={
 };
 
 const genreLexicon=[
- 'alternative','indie','rock','pop','electronic','house','techno','ambient','jazz','classical','metal','punk',
+ 'alternative','indie folk','ambient folk','indie','rock','pop','electronic','house','techno','ambient','jazz','classical','metal','punk',
  'hip hop','rap','r&b','soul','folk','country','reggae','ska','latin','bossa nova','samba','mpb','shoegaze',
  'dream pop','synth-pop','synth pop','indie pop','indie rock','art pop','pop punk',
  'punk rock','post-rock','post rock','garage rock','ambient techno','acid jazz',
@@ -204,7 +204,9 @@ function interpretFeeling(text){
   originCountries:locale?.originCountries||[],avoidOriginCountries:locale?.avoidOriginCountries||[],
   vocalLanguages:locale?.vocalLanguages||[],avoidVocalLanguages:locale?.avoidVocalLanguages||[],
   queryLanguage:locale?.queryLanguage||'und',
-  narrativeKind:relationship&&!relationship.goalOverride&&!goal?'relationship-uncertainty':null,
+  narrativeKind:relationship&&!relationship.goalOverride&&(!goal||
+   Object.keys(goal.desiredMoods).every(m=>['melancholic','reflective','calm','warm','nostalgic','dreamy'].includes(m)))
+   ?'relationship-uncertainty':null,
   narrativeThemes:relationship?.themes||[],
   listenerState:goal?.stateMoods||{},desiredMoods:goal?.desiredMoods||{},
   goalShift:Boolean(goal||relationship?.goalOverride),summary:parts.join(' · ')};
