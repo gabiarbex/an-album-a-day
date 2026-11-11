@@ -25,3 +25,8 @@ jobs:
           done
       - name: Run release regressions
         run: node --test tests/*.test.js
+      - name: Run legacy recommender stress and intent gates
+        run: |
+          node scripts/intent_test.js
+          node scripts/ranking_test.js
+          node scripts/recommender_matrix_test.js
