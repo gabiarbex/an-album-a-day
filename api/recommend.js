@@ -12,7 +12,8 @@ import {
 } from './_embedding.js';
 import { loadVectorChunk } from './_vector-store.js';
 import { loadTasteProfile, tasteSimilarity } from './_taste-store.js';
-import { scoreCandidate, explanation, genreConflict, isCompilation, diverseTopK, plausibleVocalOrigin } from './_ranking-core.js';
+import { scoreCandidate, explanation, isCompilation, diverseTopK } from './_ranking-core.js';
+import { eligibleRanked } from './_eligibility.js';
 
 const MAX_CANDIDATES = 96;
 
@@ -112,45 +113,28 @@ export default {
         };
       }).sort((a, b) => b.score - a.score);
 
-      // Explicit genre exclusions override embedding similarity whenever an
-      // eligible candidate exists; hidden genres are never assumed absent.
-      const avoided = Array.isArray(body.intent?.avoidGenres) ? body.intent.avoidGenres : [];
-      const genreSafe = avoided.length ? ranked.filter(row => !genreConflict(row.candidate, avoided)) : ranked;
-      const knownAvoided=Array.isArray(body.intent?.avoidOriginCountries)?body.intent.avoidOriginCountries:[];
-      const countrySafe=(genreSafe.length?genreSafe:ranked)
-        .filter(row=>!knownAvoided.includes(String(row.candidate.originCountry||'').toUpperCase()));
-      const requestedCountries=Array.isArray(body.intent?.originCountries)?body.intent.originCountries:[];
-      const knownOriginMatches=requestedCountries.length
-        ? countrySafe.filter(row=>requestedCountries.includes(String(row.candidate.originCountry||'').toUpperCase()))
-        : [];
-      const vocalRequests=Array.isArray(body.intent?.vocalLanguages)?body.intent.vocalLanguages:[];
-      const knownVocalMatches=vocalRequests.length?(knownOriginMatches.length?knownOriginMatches:countrySafe)
-        .filter(row=>vocalRequests.some(code=>(row.candidate.vocalLanguages||[]).includes(code))):[];
-      // A country association can only be a *weak retrieval fallback*
-      // when an album's sung language is unknown. Never call it verified.
-      const plausibleVocalMatches=vocalRequests.length&&!knownVocalMatches.length&&!knownOriginMatches.length
-        ? countrySafe.filter(row=>plausibleVocalOrigin(row.candidate,body))
-        : [];
-      // Explicit excluded origins are hard constraints: never restore a
-      // forbidden country simply because the candidate list was exhausted.
-      const eligible=knownVocalMatches.length?knownVocalMatches:
-        knownOriginMatches.length?knownOriginMatches:
-        plausibleVocalMatches.length?plausibleVocalMatches:
-        countrySafe;
-      if(!eligible.length)return json({
-        error:'No candidates satisfy the explicit country exclusions.'
+      // Explicit preferences outrank similarity. Never resurrect forbidden
+      // albums or infer lyrics from an artist's passport.
+      const selection=eligibleRanked(ranked,body);
+      if(!selection.eligible.length)return json({
+        error:selection.error,
+        code:'NO_VERIFIED_MATCH',
+        reason:selection.reason
       },422,headers);
+      const eligible=selection.eligible;
       const chosen=eligible[0];
-      const top = diverseTopK(eligible, 5, (left, right) => {
-        const a = cached.get(String(left.candidate.id));
-        const b = cached.get(String(right.candidate.id));
-        return a && b ? cosine(a, b) : 0;
+      const top=diverseTopK(eligible,5,(left,right)=>{
+        const a=cached.get(String(left.candidate.id));
+        const b=cached.get(String(right.candidate.id));
+        return a&&b?cosine(a,b):0;
       });
+      const requestedCountries=Array.isArray(body.intent?.originCountries)?body.intent.originCountries:[];
+      const vocalRequests=Array.isArray(body.intent?.vocalLanguages)?body.intent.vocalLanguages:[];
       const cacheHits = candidates.length - missing.length;
 
       return json({
         ok: true,
-        engine: body.retrievalSelection==='weighted-rrf-v1' ? 'hybrid-neural-reranker-v5-rrf' : 'hybrid-neural-reranker-v4',
+        engine: body.retrievalSelection==='weighted-rrf-v1' ? 'hybrid-neural-reranker-v6-verified' : 'hybrid-neural-reranker-v6-verified',
         model: EMBEDDING_MODEL,
         dimensions: EMBEDDING_DIMENSIONS,
         albumId: chosen.candidate.id,
@@ -169,13 +153,13 @@ export default {
           tasteAdjacency: Number((chosen.candidate.tasteAdjacency || 0).toFixed(6)),
           consideredCompilations: candidates.filter(isCompilation).length,
           chosenCompilation: isCompilation(chosen.candidate),
-          excludedGenreMatches: ranked.length - genreSafe.length,
+          excludedConstraintMatches: selection.excluded,
           requestedOriginCountries:requestedCountries,
-          verifiedOriginMatches:knownOriginMatches.length,
+          verifiedOriginMatches:selection.verifiedOrigins,
           selectedOriginCountry:chosen.candidate.originCountry||null,
           requestedVocalLanguages:vocalRequests,
-          verifiedVocalMatches:knownVocalMatches.length,
-          plausibleVocalOriginMatches:plausibleVocalMatches.length,
+          verifiedVocalMatches:selection.verifiedVocals,
+          verifiedConstraints:true,
         },
         reason: explanation(chosen, body),
         alternatives: top.map(row => ({
