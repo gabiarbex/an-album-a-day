@@ -2109,7 +2109,7 @@ async function rankWithSemantic(seed,daily){
  const logged=new Set(logs.map(l=>`${String(l.artist).toLowerCase()}::${String(l.album).toLowerCase()}`));
  const intent=correctedIntent(interpretFeeling(note));
  let ranked=resolved
-  .filter(row=>!albumWasSeen(row.album)&&!logged.has(key(row.album)))
+  .filter(row=>!albumWasSeen(row.album)&&!logged.has(key(row.album))&&satisfiesExplicitConstraints(row.album,intent))
   .map(row=>{
    const semantic=Math.max(0,Math.min(1,(Number(row.semanticScore)+1)/2));
    const controls=score(row.album,intent);
@@ -2884,7 +2884,7 @@ function completeCurrentPick(options={}){
   if(!entry)return;
   logs.push(entry);index=logs.length-1;
  }else{
-  logs[index]={...logs[index],completed:true,date:getDate(),completed_date:getDate(),completed_at:new Date().toISOString(),
+  logs[index]={...logs[index],completed:true,date:getDate(),completed_date:getDate(),completed_at:new Date().toISOString(),updated_at:new Date().toISOString(),
    pick_mode:logs[index].pick_mode||(['daily','bonus'].includes(currentShowMode)?currentShowMode:null),
    daily_date:logs[index].daily_date||(currentShowMode==='daily'?getDate():null)};
  }
@@ -2908,7 +2908,8 @@ function setQuickRating(value){
  if(index<0)return;
  logs[index]={...logs[index],rating:Number(value)||0,completed:true,
   completed_date:logs[index].completed_date||logs[index].date||getDate(),
-  completed_at:logs[index].completed_at||new Date().toISOString()};
+  completed_at:logs[index].completed_at||new Date().toISOString(),
+  updated_at:new Date().toISOString()};
  persist();
  if(before&&!wasListened)markTodayComplete();
  recordFeedback('rating',value).catch(()=>{});
@@ -3099,7 +3100,7 @@ function buildDiaryEntryFromPick(ratingValue=0,favoriteTrack='',noteText='',comp
  const runtime=Number(pick.features?.duration_min??pick.length_min);
  const releaseYear=Number(pick.year??pick.release_year);
  return {
-  date:getDate(),artist:pick.artist,album:pick.title,rating:Number(ratingValue)||0,
+  date:getDate(),artist:pick.artist,album:pick.title,rating:Number(ratingValue)||0,updated_at:new Date().toISOString(),
   completed:Boolean(completed),completed_date:completed?getDate():null,completed_at:completed?new Date().toISOString():null,
   pick_mode:['daily','bonus'].includes(currentShowMode)?currentShowMode:null,
   daily_date:currentShowMode==='daily'?getDate():null,
@@ -3170,7 +3171,7 @@ $('logForm').onsubmit=e=>{
  if(editingLogIndex!==null){
   const current=logs[editingLogIndex];if(!current)return;
   logs[editingLogIndex]={...current,rating,favorite_track:$('track').value.trim(),notes:$('notes').value.trim(),
-   completed:true,completed_date:current.completed_date||current.date||getDate(),completed_at:current.completed_at||new Date().toISOString()};
+   completed:true,completed_date:current.completed_date||current.date||getDate(),completed_at:current.completed_at||new Date().toISOString(),updated_at:new Date().toISOString()};
   const ratingMatchesPick=Boolean(pick&&sameDiaryAlbum(current,pick));
   editingLogIndex=null;
   persist();
@@ -3187,7 +3188,7 @@ $('logForm').onsubmit=e=>{
   const existingIndex=logs.findIndex(entry=>sameDiaryAlbum(entry,pick));
   if(existingIndex>=0){
    logs[existingIndex]={...logs[existingIndex],rating:newEntry.rating,favorite_track:newEntry.favorite_track,notes:newEntry.notes,
-    completed:true,completed_date:logs[existingIndex].completed_date||logs[existingIndex].date||getDate(),completed_at:logs[existingIndex].completed_at||new Date().toISOString()};
+    completed:true,completed_date:logs[existingIndex].completed_date||logs[existingIndex].date||getDate(),completed_at:logs[existingIndex].completed_at||new Date().toISOString(),updated_at:new Date().toISOString()};
    editingLogIndex=null;
    persist();
    if(rating&&!['diary','history','shared'].includes(currentShowMode))markTodayComplete();
