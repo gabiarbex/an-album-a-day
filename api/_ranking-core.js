@@ -118,16 +118,16 @@ export function energyPenalty(candidate, body) {
 
 export function requestedGenreFit(candidate, body) {
   const wanted = cleanArray(body?.intent?.genres, 12).map(value => String(value).toLowerCase());
-  if (!wanted.length) return { requested: false, known: false, match: false, matched: [] };
+  if (!wanted.length) return { requested: false, known: false, match: false, matched: [], coverage: 1, total: 0 };
 
   const haystack = [...cleanArray(candidate.genres, 14), ...cleanArray(candidate.tags, 24)]
     .map(value => String(value).toLowerCase());
-  if (!haystack.length) return { requested: true, known: false, match: false, matched: [] };
+  if (!haystack.length) return { requested: true, known: false, match: false, matched: [], coverage: 0, total: wanted.length };
 
   const matched = wanted.filter(needle =>
     haystack.some(value => styleMatches(value,needle))
   );
-  return { requested: true, known: true, match: matched.length > 0, matched };
+  return { requested: true, known: true, match: matched.length > 0, matched, coverage: matched.length / wanted.length, total: wanted.length };
 }
 
 export function requestedMoodFit(candidate, body) {
@@ -311,8 +311,12 @@ export function scoreCandidate(candidate, neural, body, learnedTaste = { score: 
     adjacencyWeight * adjacency;
 
   // Explicit positive controls should beat a superficially stronger embedding.
-  if (genreFit.match) score += 0.15;
-  else if (genreFit.known) score -= 0.18;
+  if(genreFit.requested){
+    // Requiring both "indie" and "folk" is not satisfied by only "indie".
+    // All explicit genre terms must matter more than the semantic similarity.
+    if(!genreFit.known)score-=0.16;
+    else score+=0.22*genreFit.coverage-0.27*(1-genreFit.coverage);
+  }
 
   if (moodFit.match) score += 0.13;
   else if (moodFit.suggestive?.length) score += 0.08;
@@ -398,9 +402,9 @@ export function explanation(row, body) {
   const relationship=relationshipStyleFit(candidate,body);
   if(relationship.active){
    const style=relationship.evidence[0];
-   if(relationship.verifiedMood)return 'Filed under reflective or melancholic. We haven’t checked the lyrics.';
-   if(style)return 'Filed under '+style+'. A quieter possibility, not a promise about how it feels.';
-   return 'An uncertain pick. We don’t have enough mood information to claim a closer match.';
+   if(relationship.verifiedMood)return 'The catalog tags this one as reflective or melancholic. We can’t verify what the lyrics are about.';
+   if(style)return 'Tagged as '+style+'. The music may fit the mood, but we haven’t checked the lyrics.';
+   return 'We have limited information about this record’s mood, so this one is a tentative match.';
   }
 
   const moodFit = requestedMoodFit(candidate, body);
@@ -443,9 +447,11 @@ export function explanation(row, body) {
    return sound+'We can’t confirm the language of the vocals on this record.';
   }
   if(area.countryMatch){
-   const where=areaNames[candidate.originCountry]||candidate.originCountry;
+   const shelf={BR:'Brazilian',NL:'Dutch',PT:'Portuguese',BE:'Belgian',
+    DE:'German',FR:'French',ES:'Spanish',JP:'Japanese',AR:'Argentinian',
+    NG:'Nigerian',UA:'Ukrainian'}[candidate.originCountry]||'regional';
    const genre=requestedGenreFit(candidate,body).matched[0];
-   return `From the ${where} shelf${genre?' · filed under '+genre:''}. Artist origin doesn’t tell us the lyric language.`;
+   return `From our ${shelf} shelf${genre?' · tagged '+genre:''}.`;
   }
   if(area.requestedCountry&&!area.countryMatch){
    return 'We couldn’t confirm the artist’s country from the information on file.';
