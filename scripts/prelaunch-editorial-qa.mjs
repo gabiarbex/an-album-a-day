@@ -55,7 +55,7 @@ try{
    });
    await page.screenshot({path:outDir+'/'+device.label+'-landing.png',fullPage:true});
    if(entry.firstView.overflow>3||!entry.firstView.inputVisible||!entry.firstView.editorialAsset||
-      !entry.firstView.headingFont.includes('Georgia')||entry.firstView.pageBackground==='none')
+      !entry.firstView.headingFont.includes('Instrument Serif')||entry.firstView.pageBackground!=='none')
     throw Error('Visual contract failed: '+JSON.stringify(entry.firstView));
    await page.locator('#feelingInput').fill('i want quiet, reflective bossa nova for a rainy evening. no metal.');
    await page.locator('#fineTune summary').click();
