@@ -5011,3 +5011,22 @@ body:not(.has-record) .album-details p{font-size:13px;margin-top:8px}
  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
 
+
+
+/* Remove legacy mosaic spans: every mood occupies exactly one cell.
+   Prevents neighbouring mood buttons from overlapping/intercepting taps. */
+#moods{
+ grid-auto-flow:row;
+ grid-auto-rows:minmax(42px,auto);
+ align-items:stretch;
+}
+#moods .chip:nth-child(n){
+ grid-column:auto!important;
+ grid-row:auto!important;
+ position:relative!important;
+ float:none!important;
+ top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;
+ width:100%!important;min-width:0;max-width:100%;
+ height:auto;min-height:42px;
+ margin:0!important;z-index:auto;
+}
