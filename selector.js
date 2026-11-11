@@ -1207,6 +1207,54 @@ async function eligiblePool(){
  }
  return pool;
 }
+// Guard browser fallbacks with the same rules as the neural backend.
+function satisfiesExplicitConstraints(a,intent){
+ const labels=[...(a?.genres||[]),...(a?.tags||[])].map(v=>String(typeof v==='string'?v:v?.name||'').toLowerCase());
+ const match=(needle)=>labels.some(x=>globalThis.AlbumIntent?.styleMatches?.(x,needle));
+ if((intent.avoidGenres||[]).length&&(!labels.length||intent.avoidGenres.some(match)))return false;
+ const origin=globalThis.AlbumGeo?.countryForAlbum?.(a)||'';
+ if(intent.originCountries?.length&&!intent.originCountries.includes(origin))return false;
+ if(intent.avoidOriginCountries?.includes(origin))return false;
+ const vocals=a.provenance?.vocalLanguages?.source&&Array.isArray(a.vocalLanguages)
+  ? a.vocalLanguages.map(v=>String(v).toLowerCase()):[];
+ if(intent.vocalLanguages?.length&&!intent.vocalLanguages.some(v=>vocals.includes(v)))return false;
+ if(intent.avoidVocalLanguages?.length&&(!vocals.length||intent.avoidVocalLanguages.some(v=>vocals.includes(v))))return false;
+ const avoidMoods=Object.keys(intent.avoidMoods||{});
+ const moods=a.provenance?.moods?.source==='musicbrainz-tag-translation'?[]:
+  (a.moods||[]).map(v=>String(v).toLowerCase());
+ if(avoidMoods.some(v=>moods.some(m=>m.includes(v))||match(v)))return false;
+ const duration=[a._live?.runtimeMin,a._semantic?.runtimeMin,a.features?.duration_min,a.length_min]
+  .find(v=>v!==null&&v!==undefined&&Number.isFinite(Number(v)));
+ if(state.time!==null&&duration!==undefined&&Number(duration)>Number(state.time)+2)return false;
+ return true;
+}
+function hasCatalogEvidence(a,intent){
+ const genres=[...(a?.genres||[]),...(a?.tags||[])].map(v=>String(typeof v==='string'?v:v?.name||'').toLowerCase());
+ const styleMatches=(word)=>genres.some(label=>globalThis.AlbumIntent?.styleMatches?.(label,word));
+ const wantedGenres=intent.genres||[];
+ if(wantedGenres.length)return wantedGenres.some(styleMatches);
+ const moods=a.provenance?.moods?.source==='musicbrainz-tag-translation'?[]:
+  (a?.moods||[]).map(v=>String(v).toLowerCase());
+ const wantedMoods=Object.keys({...selectedMoodSignals(),...(intent.moods||{})});
+ const styleHints={
+  melancholic:['slowcore','sadcore','indie folk','singer-songwriter','chamber pop'],
+  reflective:['ambient','slowcore','folk','singer-songwriter'],
+  calm:['ambient','downtempo','new age','soft jazz'],
+  dreamy:['dream pop','shoegaze','ethereal wave','chillwave'],
+  hopeful:['sunshine pop','gospel','disco','soul'],
+  energetic:['dance pop','house','disco','dance-punk'],
+  warm:['soul','quiet storm','bossa nova','soft rock'],
+  dark:['darkwave','dark ambient','gothic rock']
+ };
+ if(wantedMoods.length)return wantedMoods.some(m=>
+  moods.some(x=>x.includes(m))||(styleHints[m]||[]).some(styleMatches));
+ // We cannot validate completely free-form text against an untagged record.
+ return !$('feelingInput')?.value.trim();
+}
+function noReliableMatch(message='No reliable match for those details. Try a broader mood, genre or country.'){
+ const status=$('status');if(status)status.textContent=message;
+ showToast(message);
+}
 function hasRecommendationIntent(){
  return Boolean(
   $('feelingInput')?.value.trim() ||
@@ -1219,6 +1267,7 @@ function hasRecommendationIntent(){
  );
 }
 
+let strictNoMatchReason='';
 let backendUnavailableUntil=0;
 function backendUrl(path){
  try{
@@ -1297,6 +1346,7 @@ function backendCandidate(a,intent,semanticScore=0){
  };
 }
 async function rankWithBackend(pool,seed,daily){
+ strictNoMatchReason='';
  const endpoint=backendUrl('/api/recommend');
  if(!endpoint||Date.now()<backendUnavailableUntil)return null;
  const note=$('feelingInput')?.value.trim()||'';
@@ -1316,7 +1366,7 @@ async function rankWithBackend(pool,seed,daily){
  const sourceCounts={regional:0,emotional:0,neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
  const sourcePositions={regional:0,emotional:0,neural:0,semantic:0,controls:0,adjacent:0,familiar:0,explore:0};
  const add=(a,semanticScore=0,source='controls')=>{
-  if(!a||albumWasSeen(a)||logged.has(key(a)))return;
+  if(!a||albumWasSeen(a)||logged.has(key(a))||!satisfiesExplicitConstraints(a,intent))return;
   const knownCountry=globalThis.AlbumGeo?.countryForAlbum?.(a);
   if(knownCountry&&intent.avoidOriginCountries?.includes(knownCountry))return;
   const id=lookupId(a);
@@ -1573,6 +1623,11 @@ async function rankWithBackend(pool,seed,daily){
     candidates
    })
   });
+  if(response.status===422){
+   const detail=await response.json().catch(()=>({}));
+   strictNoMatchReason=String(detail.error||'No verified match for those details.');
+   return null;
+  }
   if(!response.ok)throw Error('backend HTTP '+response.status);
   const data=await response.json();
   const album=byId.get(String(data.albumId||''));
@@ -1633,8 +1688,16 @@ async function chooseDaily(options={}){
  window.AlbumAnalytics?.track('pick_requested',{surprise});
  setPickBusy(true);
  try{
-  const pool=await eligiblePool();
-  if(!pool.length){$('status').textContent='Every available album has already been recommended.';return}
+  let pool=await eligiblePool();
+  const note=$('feelingInput')?.value||'';
+  const intent=correctedIntent(interpretFeeling(note));
+  if((intent.originCountries?.length||intent.avoidOriginCountries?.length)&&globalThis.AlbumGeo?.ready){
+   try{await globalThis.AlbumGeo.ready()}catch(e){console.info('Area data unavailable',e)}
+  }
+  if(hasRecommendationIntent()&&!surprise){
+   pool=pool.filter(a=>satisfiesExplicitConstraints(a,intent));
+  }
+  if(!pool.length){noReliableMatch('No unseen albums satisfy these constraints. Remove a filter or try a different request.');return}
   const seed=`${getDate()}|${getUserSalt()}`;
   let result;
   if(surprise||!hasRecommendationIntent()){
@@ -1644,6 +1707,7 @@ async function chooseDaily(options={}){
    result={album,featuresUsed:false,mode:surprise?'surprise':'draw'};
   }else{
    result=await rankWithBackend(pool,seed,true);
+   if(strictNoMatchReason){noReliableMatch(strictNoMatchReason);return}
    if(!result){
     const hasNote=Boolean($('feelingInput')?.value.trim());
     result=hasNote?await rankWithSemantic(seed,true):null;
@@ -1655,6 +1719,7 @@ async function chooseDaily(options={}){
    }
   }
   if(request!==recommendationRequest)return;
+  if(!result?.album){noReliableMatch();return}
   pick=result.album;
   markAlbumSeen(pick);
   show(pick,{mode:'daily',featuresUsed:result.featuresUsed,rankingMode:result.mode,userTriggered:true});
@@ -1668,8 +1733,16 @@ async function chooseAnother(){
  const request=++recommendationRequest;
  setPickBusy(true);
  try{
-  const pool=await eligiblePool();
-  if(!pool.length){$('status').textContent='Every available album has already been recommended.';return}
+  let pool=await eligiblePool();
+  const note=$('feelingInput')?.value||'';
+  const intent=correctedIntent(interpretFeeling(note));
+  if((intent.originCountries?.length||intent.avoidOriginCountries?.length)&&globalThis.AlbumGeo?.ready){
+   try{await globalThis.AlbumGeo.ready()}catch(e){console.info('Area data unavailable',e)}
+  }
+  if(hasRecommendationIntent()&&!false){
+   pool=pool.filter(a=>satisfiesExplicitConstraints(a,intent));
+  }
+  if(!pool.length){noReliableMatch('No unseen albums satisfy these constraints. Remove a filter or try a different request.');return}
   const seed=`bonus|${Date.now()}|${Math.random()}`;
   let result;
   if(!hasRecommendationIntent()){
@@ -1677,6 +1750,7 @@ async function chooseAnother(){
    result={album:candidates[Math.floor(Math.random()*candidates.length)]||pool[0],featuresUsed:false,mode:'draw'};
   }else{
    result=await rankWithBackend(pool,seed,false);
+   if(strictNoMatchReason){noReliableMatch(strictNoMatchReason);return}
    if(!result){
     const hasNote=Boolean($('feelingInput')?.value.trim());
     result=hasNote?await rankWithSemantic(seed,false):null;
@@ -1688,6 +1762,7 @@ async function chooseAnother(){
    }
   }
   if(request!==recommendationRequest)return;
+  if(!result?.album){noReliableMatch();return}
   pick=result.album;
   markAlbumSeen(pick);
   show(pick,{mode:'bonus',featuresUsed:result.featuresUsed,rankingMode:result.mode,userTriggered:true});
@@ -1696,15 +1771,19 @@ async function chooseAnother(){
 }
 function rankFromStoredFeatures(pool,seed,daily){
  const intent=correctedIntent(interpretFeeling($('feelingInput')?.value||''));
- const candidates=sampleCandidates(pool,seed,Math.min(1800,pool.length),daily)
+ const note=$('feelingInput')?.value.trim()||'';
+ const candidates=sampleCandidates(pool,seed,Math.min(4200,pool.length),daily)
+  .filter(a=>satisfiesExplicitConstraints(a,intent))
+  .filter(a=>!note||hasCatalogEvidence(a,intent))
   .map(a=>({a,v:score(a,intent)}))
   .sort((x,y)=>y.v-x.v);
- const top=candidates.slice(0,Math.min(200,candidates.length));
- if(!top.length)return {album:pool[0],featuresUsed:false,mode:'draw'};
- // Relevance-biased sampling keeps repeated prompts from collapsing to one argmax.
- const weights=top.map((row,i)=>Math.max(.02,(row.v+.08)*(1-i/(top.length*1.25))));
- const total=weights.reduce((n,v)=>n+v,0);
- let needle=(daily?seededUnit(seed+'|stored-final'):Math.random())*total;
+ const top=candidates.slice(0,Math.min(6,candidates.length));
+ if(!top.length)return null;
+ // Small, relevance-focused pool: avoid random picks from 200 weak matches.
+ const max=top[0].v;
+ const weights=top.map((row,i)=>Math.exp(Math.max(-20,(row.v-max)*14))/(i+1));
+ let needle=(daily?seededUnit(seed+'|stored-final'):Math.random())*
+  weights.reduce((sum,v)=>sum+v,0);
  let chosen=top[0];
  for(let i=0;i<top.length;i++){needle-=weights[i];if(needle<=0){chosen=top[i];break}}
  return {album:chosen.a,featuresUsed:true,mode:'stored'};
@@ -2082,34 +2161,9 @@ async function rankWithSemantic(seed,daily){
 
 async function rankWithLiveMetadata(pool,seed,daily){
  const intent=correctedIntent(interpretFeeling($('feelingInput')?.value||''));
- const sample=sampleCandidates(pool,seed,12,daily);
- $('status').textContent='looking through the record bins…';
- const enriched=(await mapConcurrent(sample,4,async a=>{
-  const meta=await findItunesAlbum(a);
-  if(!meta)return {...a,_live:{matched:false}};
-  const signals=genreSignals(meta.primaryGenreName);
-  return {...a,year:(meta.releaseDate||'').slice(0,4)||a.year,_live:{matched:true,genre:meta.primaryGenreName||'',year:(meta.releaseDate||'').slice(0,4),signals,collectionId:meta.collectionId,trackCount:meta.trackCount}};
- })).filter(Boolean);
- let ranked=enriched.map(a=>({a,v:liveScore(a,intent)+(daily?seededUnit(seed+'|rank|'+key(a))*.12:Math.random()*.12)})).sort((x,y)=>y.v-x.v);
- if(state.time!==null){
-  const finalists=ranked.slice(0,3);
-  await mapConcurrent(finalists,2,async row=>{
-   if(!row.a._live?.collectionId)return;
-   const tracks=await getAlbumTracks({collectionId:row.a._live.collectionId});
-   const ms=tracks.reduce((n,t)=>n+(Number(t.trackTimeMillis)||0),0);
-   if(ms)row.a._live.runtimeMin=ms/60000;
-   row.v=liveScore(row.a,intent)+(daily?seededUnit(seed+'|time|'+key(row.a))*.08:Math.random()*.08);
-  });
-  ranked=ranked.sort((x,y)=>y.v-x.v);
- }
- const viable=ranked.filter(x=>x.a._live?.matched);
- if(!viable.length){
-  const fallback=sample[0]||pool[0];
-  return {album:fallback,featuresUsed:false,mode:'draw'};
- }
- const top=viable.slice(0,Math.min(8,viable.length));
- const chosen=daily?top[Math.floor(seededUnit(seed+'|final')*top.length)]:top[Math.floor(Math.random()*top.length)];
- return {album:chosen.a,featuresUsed:true,mode:'live'};
+ // Prefer a larger evidence-based local selection over a dozen random
+ // iTunes lookups. An unverifiable request gets an honest no-match.
+ return rankFromStoredFeatures(pool,seed,daily);
 }
 
 const itunesAlbumCache=new Map();
