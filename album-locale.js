@@ -96,7 +96,7 @@ function parse(value){
    for(const span of phraseMatches(raw,name)){
     const context=raw.slice(Math.max(0,span.start-45),span.start);
     const suffix=raw.slice(span.end,span.end+35);
-    const explicit=VOCAL_CONTEXT.test(context) || /^(?:[- ](?:language|lyrics|vocals|songs|language music)|stalige?\b)/.test(suffix) || /(?:stalig|sprachig|fono|fone)/.test(name);
+    const explicit=VOCAL_CONTEXT.test(context) || /^(?:[- ](?:language|lyrics|vocals|songs|language music)|stalige?\b)/.test(suffix) || /(?:stalig|sprachig|fono|fone)/.test(name) || /^(?:українською|українською мовою|украинском|русском|по-русски)$/.test(name);
     if(!explicit)continue;
     used.push(span);
     (negated(raw,span.start)?avoidVocalLanguages:vocalLanguages).push(code);
