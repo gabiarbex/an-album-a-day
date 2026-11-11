@@ -70,3 +70,16 @@ test('explicit happy musical outcome overrides a sad personal situation',()=>{
  assert.ok(p.goalShift);
  assert.ok(p.moods.energetic);
 });
+
+test('indie folk is a distinct compound genre',()=>{
+ const p=interpret('I want quiet indie folk, not metal');
+ assert.ok(p.genres.includes('indie folk'));
+ assert.ok(!p.genres.includes('indie'));
+ assert.ok(!p.genres.includes('folk'));
+ assert.ok(p.avoidGenres.includes('metal'));
+});
+test('relationship uncertainty remains relevant when a listener asks for reflective music',()=>{
+ const p=interpret('I had a terrible fight with my girlfriend and I am scared of losing her, I want reflective indie folk music');
+ assert.equal(p.narrativeKind,'relationship-uncertainty');
+ assert.ok(p.genres.includes('indie folk'));
+});
