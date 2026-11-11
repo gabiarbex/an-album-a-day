@@ -75,8 +75,11 @@ const LANG_CUES={
 function phraseMatches(text,alias){
  const name=fold(alias);
  if(!name)return [];
- const escaped=name.replace(/[.*+?^\${}()|[\]\\]/g,'\\ const escaped=name.replace(/[^a-z0-9 ]/g,char=>'\\'+char).replace(/ +/g,'\\s+');
- const re=new RegExp('(^|[^a-z0-9])('+escaped+')(?=$|[^a-z0-9])','g');').replace(/ +/g,'\\s+');
+ const escaped=[...name].map(ch=>{
+  if(ch===' ')return '\\s+';
+  if(/[\p{L}\p{N}]/u.test(ch))return ch;
+  return '\\'+ch;
+ }).join('');
  const re=new RegExp('(^|[^\\p{L}\\p{N}])('+escaped+')(?=$|[^\\p{L}\\p{N}])','gu');
  return [...text.matchAll(re)].map(m=>({start:m.index+m[1].length,end:m.index+m[1].length+m[2].length}));
 }
