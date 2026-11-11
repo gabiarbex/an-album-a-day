@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {candidateAllowed,eligibleRanked} from '../api/_eligibility.js';
-import {scoreCandidate} from '../api/_ranking-core.js';
+import {scoreCandidate,requestedGenreFit,explanation} from '../api/_ranking-core.js';
 
 const c=(id,extra={})=>({id,artist:'An Artist',title:'Record',genres:['indie folk'],tags:['reflective'],moods:['reflective'],originCountry:'BR',vocalLanguages:['pt'],duration:34,...extra});
 const ranked=(...albums)=>albums.map((candidate,i)=>({candidate,score:1-i*.01,neural:0,taste:{score:0,confidence:0}}));
@@ -62,4 +62,19 @@ test('personal taste does not override a forbidden genre',()=>{
 test('neural ranking remains finite with multilingual intent',()=>{
  const value=scoreCandidate(c('test'),0.45,{note:'quero musica brasileira calma, sem rock',intent:{moods:{calm:2},avoidGenres:['rock'],originCountries:['BR']},energy:3}, {score:0,confidence:0});
  assert.ok(Number.isFinite(value));
+});
+test('multi-genre request does not equate partial to full coverage',()=>{
+ const a=requestedGenreFit(c('a',{genres:['indie']}),{intent:{genres:['indie','folk']}});
+ const b=requestedGenreFit(c('b',{genres:['indie','folk']}),{intent:{genres:['indie','folk']}});
+ assert.equal(a.coverage,0.5);
+ assert.equal(b.coverage,1);
+ const body={intent:{genres:['indie','folk']},note:'indie folk'};
+ assert.ok(scoreCandidate(c('b',{genres:['indie','folk']}),0.4,body)>
+  scoreCandidate(c('a',{genres:['indie']}),0.4,body));
+});
+test('regional explanation has natural article and does not claim a vocal language',()=>{
+ const row={candidate:c('br'),neural:0,taste:{score:0,confidence:0}};
+ const why=explanation(row,{intent:{originCountries:['BR']}});
+ assert.match(why,/our Brazilian shelf/);
+ assert.doesNotMatch(why,/From the Brazil shelf/);
 });
