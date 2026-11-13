@@ -27,10 +27,12 @@ function skip(el){
 }
 function textValue(node){
  const value=node.nodeValue,clean=normalize(value);
- if(!clean||!tables.en.has(clean)||!node.parentElement||skip(node.parentElement))return;
+ if(!clean||!node.parentElement||skip(node.parentElement))return;
  let base=originalText.get(node);
  if(!base||(!Object.values(tables).some(map=>map.get(base)===clean)&&base!==clean)){
-   base=clean;originalText.set(node,base);
+   base=clean;
+   if(!tables.en.has(base))return;
+   originalText.set(node,base);
  }
  const translated=tables[selected].get(base)||base;
  if(clean!==translated){
