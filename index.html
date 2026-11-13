@@ -29,17 +29,18 @@
   <meta name="twitter:title" content="An Album a Day">
   <meta name="twitter:description" content="Tell us what you're in the mood for. Leave with a whole album to listen to.">
   <meta name="twitter:image" content="https://gabiarbex.github.io/an-album-a-day/assets/share-card.png?v=6">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111111'/%3E%3Ccircle cx='32' cy='32' r='14' fill='%23f7f7f5'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23111111'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="assets/app-logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="theme.css?v=listening-desk-04">
+  <link rel="stylesheet" href="theme.css?v=listening-desk-05">
 </head>
 <body>
   <header class="masthead">
     <div class="masthead-kicker">THE LISTENING DESK <span>100,000 ALBUMS / ONE AT A TIME</span></div>
     <div class="masthead-row">
       <div class="title-lockup">
+        <a class="app-logo" href="./" aria-label="An Album a Day home" title="An Album a Day"><img src="assets/app-logo.svg" width="96" height="96" alt="An Album a Day app logo"></a>
         <h1 class="site-title" aria-label="An Album a Day">
           <span class="title-an">an</span>
           <span class="title-album">album</span>
@@ -55,6 +56,20 @@
         </svg>
       </div>
       <div class="masthead-actions">
+        <label class="language-switch" for="languagePicker"><span>LANGUAGE / IDIOMA</span>
+          <select id="languagePicker" aria-label="Interface language" autocomplete="off">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="nl">Nederlands</option>
+            <option value="pt">Português</option>
+            <option value="fr">Français</option>
+            <option value="ru">Русский</option>
+            <option value="de">Deutsch</option>
+            <option value="ar">العربية</option>
+            <option value="zh">中文（普通话）</option>
+            <option value="ja">日本語</option>
+          </select>
+        </label>
         <button id="accountToggle" type="button" class="account-toggle" hidden aria-controls="accountDialog">
           ☁ <span data-account-label>log in</span>
         </button>
@@ -216,7 +231,7 @@
         <p id="meaningMatchNote" class="ai-match-note" hidden><b>A small caveat.</b> We use album credits and genre tags to narrow things down. Feelings are harder to catalogue.</p>
         <div class="feeling-foot">
           <span id="feelingInsight" aria-live="polite"></span>
-          <small class="locale-hint">English · português · Nederlands · español · Deutsch · français</small>
+          <small class="locale-hint">Music prompts: English, Español, Nederlands, Português, Français, Русский, Deutsch. العربية, 中文 and 日本語: common music terms.</small>
           <button id="clearFeeling" type="button" disabled>clear text</button>
         </div>
       </div>
@@ -582,6 +597,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="auth-config.js?v=zine-070" defer></script>
   <script src="analytics.js?v=zine-070" defer></script>
+  <script src="interface-i18n.js?v=20261113-1" defer></script>
   <script src="album-locale.js?v=global-002"></script>
   <script src="geo-catalog.js?v=global-001"></script>
   <script src="intent-core.js?v=emotion-002"></script>
