@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="190" height="190" viewBox="0 0 190 190">
+ <filter id="printgrain"><feTurbulence type="fractalNoise" baseFrequency=".72" numOctaves="3" seed="12" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+ <rect width="190" height="190" fill="#453d29" filter="url(#printgrain)" opacity=".28"/>
+</svg>

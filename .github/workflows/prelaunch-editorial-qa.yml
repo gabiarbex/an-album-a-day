@@ -6,6 +6,8 @@ on:
       - '.github/workflows/prelaunch-editorial-qa.yml'
       - 'scripts/prelaunch-editorial-qa.mjs'
       - 'theme.css'
+      - 'design/fanzine.css'
+      - 'assets/zine-grain.svg'
       - 'index.html'
   workflow_dispatch:
 
@@ -34,7 +36,7 @@ jobs:
           ready=0
           for n in $(seq 1 30); do
             if curl -fsSL https://gabiarbex.github.io/an-album-a-day/ |
-              grep -q 'theme.css?v=listening-desk-04'; then
+              grep -q 'theme.css?v=fanzine-01'; then
               ready=1
               break
             fi

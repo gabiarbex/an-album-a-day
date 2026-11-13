@@ -32,8 +32,8 @@
   <link rel="icon" type="image/svg+xml" href="assets/app-logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="theme.css?v=listening-desk-05">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Permanent+Marker&family=Special+Elite&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="theme.css?v=fanzine-01">
 </head>
 <body>
   <header class="masthead">
@@ -47,13 +47,7 @@
           <span class="title-day">a day</span>
         </h1>
         <p>A whole record. A little time to get lost in it.</p>
-        <span class="title-scribble" aria-hidden="true">one at a time / no repeats</span>
-        <svg class="header-doodle" viewBox="0 0 180 90" aria-hidden="true" focusable="false">
-          <path d="M8 57 C34 18, 64 77, 98 35 S151 26, 170 9" />
-          <path d="M145 9 L171 8 L161 31" />
-          <path d="M24 72 C44 83, 71 84, 92 72" />
-          <path d="M101 67 l7 -8 l7 8 l-7 8 z" />
-        </svg>
+        <div class="zine-signature" aria-hidden="true"><span>33⅓ RPM</span><b>✳</b><span>AAD / 001</span></div>
       </div>
       <div class="masthead-actions">
         <label class="language-switch" for="languagePicker"><span>LANGUAGE / IDIOMA</span>
@@ -92,12 +86,17 @@
       </div>
 
       <div class="record-stage" id="stage">
+        <div class="zine-record-edition" aria-hidden="true">A/001
+          ★</div>
         <div id="recordStamp" class="record-stamp" aria-hidden="true">TODAY / 001</div>
         <div class="record" id="record"><div class="record-label" id="recordLabel"></div></div>
         <div class="sleeve" id="sleeve">
           <img id="cover" width="720" height="720" alt="Selected album cover" decoding="async" loading="eager" fetchpriority="high">
           <div id="emptyCover" class="empty-cover">
+            <div class="zine-blank-disc" aria-hidden="true"><span></span></div>
+            <div class="zine-cover-sticker" aria-hidden="true">33⅓ / AAD</div>
             <strong>the next one is yours.</strong>
+            <span class="zine-cover-number" aria-hidden="true">VOL. 001&nbsp;&nbsp; / &nbsp;&nbsp;SIDE A</span>
           </div>
         </div>
       </div>
@@ -182,6 +181,7 @@
 
     <section class="picker" aria-label="Choose a record">
       <div class="clerk-intro">
+        <div class="zine-ticket-head" aria-hidden="true"><span>AAD / 001</span><span>✳ 33⅓</span></div>
         <div class="eyebrow">THE REQUEST</div>
         <h2>What do you want to hear?</h2>
         <p>Tell us what today sounds like. A feeling, a genre, or something you can’t quite put into words.</p>
@@ -288,6 +288,7 @@
   <section class="recent-shelf" aria-labelledby="recentHeading">
     <div class="recent-shelf-head">
       <div><span>listening diary</span><h2 id="recentHeading">recent listens</h2></div>
+      <span class="zine-shelf-mark" aria-hidden="true">SIDE B / AAD</span>
       <button id="openDiaryFromShelf" type="button">open diary</button>
     </div>
     <div id="recentPulls" class="recent-pulls">
