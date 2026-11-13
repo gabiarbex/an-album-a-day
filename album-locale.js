@@ -35,7 +35,9 @@ const VOCALS={
  de:['german','deutsch','deutsche','alemao','alema','aleman','alemana'],
  ja:['japanese','japones','japonesa','japanisch'],
  uk:['ukrainian','ucraniano','ucraniana','ukrainisch','українською','українська','украинском','українською мовою'],
- ru:['russian','russo','russa','russisch','русском','русски','русский','по-русски']
+ ru:['russian','russo','russa','russisch','русском','русски','русский','по-русски'],
+ ar:['arabic','árabe','arabe','عربي','العربية'],
+ zh:['mandarin','chinese','chinois','chinês','中文','普通话','國語','国语']
 };
 const VOCAL_CONTEXT=/(?:\b(?:in|em|en|auf|sung|singing|sing|lyrics|vocals|vocais|cantad[oa]s?|cantand[oa]|gezongen|gesungen|chante|chant[eé]e?s?|gesungen|spracha|sprache)\s+(?:(?:the|het|la|o|in|em)\s+)?|(?:^|[^a-z])(?:nederlandstalig|deutschsprachig|francophone|lusofono|lusofona)\b)/;
 const TRANSLATE=[
@@ -63,6 +65,9 @@ const TRANSLATE=[
  ['animado','energetic'],['alegre','hopeful'],['sossegada','calm'],['sossegado','calm']
 ];
 const LANG_CUES={
+ ar:/[\u0600-\u06ff]/u,
+ zh:/[\u4e00-\u9fff]/u,
+ ja:/[\u3040-\u30ff]/u,
  uk:/(?:хочу|шукаю|українською|сумно|спокійн|енергійн)/u,
  ru:/(?:ищу|грустн|спокойн|русском|по-русски)/u,
  nl:/\b(?:ik wil|ik zoek|ik voel me|geen|zonder|muziek|nederlandse|nederlands|dromerig|rustig|vrolijk)\b/,
@@ -88,6 +93,41 @@ function blankSpans(text,spans){
  const copy=[...text];for(const span of spans)for(let i=span.start;i<span.end;i++)copy[i]=' ';
  return copy.join('');
 }
+
+/* Basic lexical bridge for scripts without Latin word boundaries.
+   Phrase recognition, not machine translation; user text stays private. */
+const ASIAN_PHRASES=[
+ ['ロックはなしで',' without rock '],['ロックなし',' without rock '],
+ ['不要摇滚',' without rock '],['不要重金属',' without metal '],
+ ['בלי רוק',' without rock '],
+ ['بدون روك',' without rock '],['من دون روك',' without rock '],
+ ['ロックは嫌',' without rock '],['メタルはなし',' without metal '],
+ ['摇滚',' rock '],['ロック',' rock '],['重金属',' metal '],['メタル',' metal '],
+ ['爵士',' jazz '],['ジャズ',' jazz '],['جاز',' jazz '],
+ ['电子音乐',' electronic music '],['電子音楽',' electronic music '],
+ ['ポップ',' pop '],['流行音乐',' pop music '],['بوب',' pop '],
+ ['موسيقى',' music '],['音乐',' music '],['音楽',' music '],
+ ['هادئة',' calm '],['هادئ',' calm '],['هادئًا',' calm '],
+ ['安静',' calm '],['平静',' calm '],['静かな',' calm '],['穏やかな',' calm '],
+ ['حزينة',' sad '],['حزين',' sad '],['悲伤',' sad '],['切ない',' melancholic '],
+ ['悲しい',' sad '],['怀旧',' nostalgic '],['懐かしい',' nostalgic '],
+ ['حالم',' dreamy '],['梦幻',' dreamy '],['夢のような',' dreamy '],
+ ['نشيطة',' energetic '],['充满活力',' energetic '],['元気な',' energetic '],
+ ['أريد',' i want '],['اريد',' i want '],['أبحث عن',' looking for '],
+ ['我想听',' i want '],['想听',' i want '],['我想要',' i want '],
+ ['聴きたい',' i want '],['聞きたい',' i want '],['探している',' looking for '],
+ ['من دون',' without '],['بدون',' without '],['不要',' without '],
+ ['なしで',' without '],['なし',' without '],
+ ['من فضلك',' please '],['请',' please ']
+];
+function lexicalBridge(input){
+ let result=input;
+ for(const [from,to] of ASIAN_PHRASES){
+  result=result.split(from).join(to);
+ }
+ return result.replace(/\s+/g,' ').trim();
+}
+
 function parse(value){
  const raw=fold(value);
  const queryLanguage=Object.keys(LANG_CUES).find(code=>LANG_CUES[code].test(raw))||'und';
@@ -113,7 +153,7 @@ function parse(value){
    }
   }
  }
- let canonicalText=raw;
+ let canonicalText=lexicalBridge(raw);
  const phrases=[...TRANSLATE].sort((a,b)=>b[0].length-a[0].length);
  for(const [from,to] of phrases){
   const matches=phraseMatches(canonicalText,from);
@@ -122,6 +162,12 @@ function parse(value){
    canonicalText=canonicalText.slice(0,start)+to+canonicalText.slice(end);
   }
  }
+ // Distinguish scripts for Japanese / Chinese / Arabic origin phrases.
+ // These are explicit geography cues, never inferred from interface language.
+ const geographicText=raw;
+ if(/(?:日本の音楽|日本のアーティスト|日本音乐|日本歌手|日本艺术家)/u.test(geographicText))originCountries.push('JP');
+ if(/(?:巴西音乐|巴西歌手|موسيقى برازيلية|موسيقى برازيلية)/u.test(geographicText))originCountries.push('BR');
+ if(/(?:荷兰音乐|هولندية|هولندي)/u.test(geographicText))originCountries.push('NL');
  const countries=unique(originCountries).filter(c=>!avoidOriginCountries.includes(c));
  const vocal=unique(vocalLanguages).filter(c=>!avoidVocalLanguages.includes(c));
  // Positive location is an explicit retrieval hint; exclusions are constraints.
@@ -133,5 +179,5 @@ function parse(value){
   vocalLanguages:vocal,avoidVocalLanguages:unique(avoidVocalLanguages)
  };
 }
-root.AlbumLocale={parse,fold,version:'multilingual-intent-v2'};
+root.AlbumLocale={parse,fold,version:'multilingual-intent-v3'};
 })(globalThis);
