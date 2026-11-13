@@ -3,7 +3,7 @@
    Lexical normalization is a safe fallback, not a claim of full translation. */
 (function(root){
 'use strict';
-const fold=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’‘]/g,"'");
+const fold=value=>String(value||'').normalize('NFD').replace(/([a-zA-Z])[\u0300-\u036f]+/g,'$1').normalize('NFC').toLowerCase().replace(/[’‘]/g,"'");
 const unique=items=>[...new Set(items)];
 const NEGATION=/(?:\b(?:not|no|without|avoid|avoiding|dont|don't|do not|nao|sem|geen|niet|zonder|kein|keine|nicht|ohne|sin|sans|pas|non)\b|(?:^|\s)(?:не|без|нет|ні)(?:\s|$))/u;
 const BOUNDARY=/[,;.!?]|\b(?:but|however|mas|pero|maar|aber|mais|porem)\b/g;
@@ -66,10 +66,10 @@ const TRANSLATE=[
 ];
 const LANG_CUES={
  ar:/[\u0600-\u06ff]/u,
- zh:/[\u4e00-\u9fff]/u,
  ja:/[\u3040-\u30ff]/u,
- uk:/(?:хочу|шукаю|українською|сумно|спокійн|енергійн)/u,
- ru:/(?:ищу|грустн|спокойн|русском|по-русски)/u,
+ zh:/[\u4e00-\u9fff]/u,
+ ru:/(?:ищу|грустн|спокойн|русском|по-русски|музыку|рока)/u,
+ uk:/(?:шукаю|українською|сумно|спокійн|енергійн)/u,
  nl:/\b(?:ik wil|ik zoek|ik voel me|geen|zonder|muziek|nederlandse|nederlands|dromerig|rustig|vrolijk)\b/,
  pt:/\b(?:quero|preciso|estou|brasileiro|brasileira|nao|sem|sossegad|alegre|triste|em\s+(?:holandes|portugues|ingles))\b/,
  es:/\b(?:quiero|busco|espanol|sin|pero|estoy|brasilena|brasileno)\b/,
@@ -114,6 +114,7 @@ const ASIAN_PHRASES=[
  ['حالم',' dreamy '],['梦幻',' dreamy '],['夢のような',' dreamy '],
  ['نشيطة',' energetic '],['充满活力',' energetic '],['元気な',' energetic '],
  ['أريد',' i want '],['اريد',' i want '],['أبحث عن',' looking for '],
+ ['спокойную',' calm '],['спокойный',' calm '],['музыку',' music '],['рока',' rock '],
  ['我想听',' i want '],['想听',' i want '],['我想要',' i want '],
  ['聴きたい',' i want '],['聞きたい',' i want '],['探している',' looking for '],
  ['من دون',' without '],['بدون',' without '],['不要',' without '],
