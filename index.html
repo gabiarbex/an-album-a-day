@@ -34,6 +34,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Permanent+Marker&family=Special+Elite&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="theme.css?v=fanzine-01">
+<style>.discovery-desk{border-block:2px solid var(--ink,#24221e);padding:22px 0;margin:24px 0}.discovery-heading>span,.discovery-desk small{font:11px "IBM Plex Mono",monospace}.discovery-heading h2{font:italic 32px "Instrument Serif",serif;margin:8px 0 18px}.discovery-routes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}.discovery-desk button{font:12px "IBM Plex Mono",monospace;border:1px solid currentColor;background:transparent;color:inherit;padding:10px;cursor:pointer}.discovery-routes button[aria-pressed=true]{background:#b52f24;color:#fff;border-color:#b52f24}.discovery-desk input,.discovery-desk select{box-sizing:border-box;width:100%;padding:12px;border:1px solid #777;background:#faf7ef;color:#24221e;font:14px "DM Sans",sans-serif;margin:8px 0 12px}.discovery-desk label,.discovery-desk small{display:block}.discovery-desk small{line-height:1.6;margin-top:10px}.discovery-selects{display:grid;grid-template-columns:1fr 1fr;gap:12px}.discovery-genres{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:18px}.discovery-genres span{font:11px "IBM Plex Mono",monospace}.discovery-genres button{padding:5px 2px;border:0;border-bottom:1px dotted}.discovery-desk button:focus-visible{outline:3px solid #b52f24;outline-offset:3px}#discoveryStatus:empty{display:none}.showcase .sleeve{transform:rotate(-1deg)}@media(max-width:600px){.discovery-routes{flex-direction:column}.discovery-routes button{text-align:left}.discovery-selects{grid-template-columns:1fr}}</style>
 </head>
 <body>
   <header class="masthead">
@@ -225,6 +226,18 @@
         <button id="resumeLastPickButton" type="button">reopen ↗</button>
       </div>
 
+<section class="discovery-desk" aria-labelledby="discoveryHeading">
+ <div class="discovery-heading"><span>THE OPEN SHELF</span><h2 id="discoveryHeading">where do you want to start?</h2></div>
+ <div class="discovery-routes" role="group" aria-label="Ways to discover">
+ <button type="button" data-route="mood" aria-pressed="true">01 / a feeling</button>
+ <button type="button" data-route="artists" aria-pressed="false">02 / artists i love</button>
+ <button type="button" data-route="places" aria-pressed="false">03 / somewhere else</button>
+ </div>
+ <div id="discoveryArtists" hidden><label for="discoveryArtistInput">name up to three artists</label><input id="discoveryArtistInput" maxlength="240" placeholder="HAIM, Alice Merton, Marisa Monte"><button type="button" id="useDiscoveryArtists">add to my request ↗</button><small>Artist references guide the request; matches depend on the catalogue.</small></div>
+ <div id="discoveryPlaces" hidden><div class="discovery-selects"><label>country<select id="discoveryCountry"><option value="">anywhere</option>Brazil</option><option value="Brazil">Brazil</option><option value="Netherlands">Netherlands</option><option value="Japan">Japan</option><option value="France">France</option><option value="Nigeria">Nigeria</option><option value="United Kingdom">United Kingdom</option><option value="United States">United States</option></select></label><label>decade<select id="discoveryDecade"><option value="">any decade</option><option>1960s</option><option>1970s</option><option>1980s</option><option>1990s</option><option>2000s</option><option>2010s</option><option>2020s</option></select></label></div><button type="button" id="useDiscoveryPlace">add to my request ↗</button><small>Added as a request. Catalogue coverage varies by place and era.</small></div>
+ <div class="discovery-genres" aria-label="Explore a sound"><span>follow a sound →</span><button type="button" data-sound="mpb">mpb</button><button type="button" data-sound="dream pop">dream pop</button><button type="button" data-sound="afrobeat">afrobeat</button><button type="button" data-sound="shoegaze">shoegaze</button><button type="button" data-sound="jazz">jazz</button><button type="button" data-sound="bossa nova">bossa nova</button></div>
+ <p id="discoveryStatus" role="status" aria-live="polite"></p>
+ </section>
       <div class="feeling-field">
         <label for="feelingInput" class="feeling-prompt">What&#39;s on your mind?</label>
         <textarea id="feelingInput" maxlength="1200" rows="2" placeholder="it's raining, i can't sleep, and i want something quiet. no piano, please."></textarea>
@@ -609,5 +622,13 @@
   <script src="auth-sync.js?v=20261111-qa" defer></script>
   <script src="supporter-core.js?v=zine-070"></script>
   <script src="supporter.js?v=prelaunch-001" defer></script>
+<script>(()=>{
+const note=document.getElementById('feelingInput');
+function add(text){if(!text)return;note.value=[note.value.trim(),text].filter(Boolean).join('\n').slice(0,1200);note.dispatchEvent(new Event('input',{bubbles:true}));document.getElementById('discoveryStatus').textContent='Added to your request. Choose “find a record” when ready.';note.focus();}
+document.querySelectorAll('[data-route]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-route]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));document.getElementById('discoveryArtists').hidden=button.dataset.route!=='artists';document.getElementById('discoveryPlaces').hidden=button.dataset.route!=='places';if(button.dataset.route==='mood')note.focus();}));
+document.getElementById('useDiscoveryArtists').addEventListener('click',()=>{const value=document.getElementById('discoveryArtistInput').value.trim();if(value)add('I like these artists: '+value+'. Find an album with a related sound.');});
+document.getElementById('useDiscoveryPlace').addEventListener('click',()=>{const place=document.getElementById('discoveryCountry').value,era=document.getElementById('discoveryDecade').value;if(place||era)add('I want music '+[place?'from '+place:'',era?'released in the '+era:''].filter(Boolean).join(', ')+'.');});
+document.querySelectorAll('[data-sound]').forEach(button=>button.addEventListener('click',()=>add('I want to explore '+button.dataset.sound+'.')));
+})();</script>
 </body>
 </html>
