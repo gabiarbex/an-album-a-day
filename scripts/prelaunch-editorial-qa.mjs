@@ -59,6 +59,12 @@ try{
     throw Error('Visual contract failed: '+JSON.stringify(entry.firstView));
    await page.locator('#feelingInput').fill('i want quiet, reflective bossa nova for a rainy evening. no metal.');
    await page.locator('#fineTune summary').click();
+   const collapsedCount=await page.locator('#moods button:visible').count();
+   if(collapsedCount!==12)throw Error('Collapsed moods must show 12 choices');
+   await page.locator('#moodToggleMore').click();
+   if(await page.locator('#moods button:visible').count()<=collapsedCount)throw Error('More moods did not expand');
+   await page.locator('#moodToggleMore').click();
+   if(await page.locator('#moods button:visible').count()!==collapsedCount)throw Error('Moods did not collapse');
    const mood=page.locator('#moods button').filter({hasText:/^reflective$/i}).first();
    await mood.click();
    entry.controls=await page.evaluate(()=>{
