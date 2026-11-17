@@ -4713,3 +4713,15 @@ body:not(.has-record) .record-stage:not(.revealed) .empty-cover strong{
 }
 
 
+
+/* Fanzine audit: progressive disclosure and readable controls. */
+body .picker #moods:not(.is-expanded) .chip:nth-child(n+13):not(.selected){display:none}
+.drawer button,.recent-pulls button{min-width:44px;min-height:44px;font-size:12px;line-height:1.4;padding:8px}
+.drawer small,.drawer .history-copy small,.drawer .history-meta,.drawer .stat span{font-size:11px;line-height:1.5}
+.history-entry-actions{display:flex;flex-wrap:wrap;gap:8px}
+.history-copy strong{font-size:16px;line-height:1.35}
+body.has-record .album-details h2{font:800 clamp(36px,4.6vw,64px)/1 var(--type-display);text-transform:uppercase;letter-spacing:-.025em}
+body.has-record .album-details p{font:400 14px/1.5 var(--type-body)}
+.zine-record-edition,.zine-shelf-mark{display:none}
+.artwork-status{margin:12px 0;font:400 13px/1.5 var(--type-body);color:var(--ink-soft)}
+@media(max-width:700px){#feelingInput,body:not(.has-record) #feelingInput{font-size:16px}.picker{transform:none!important}}

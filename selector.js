@@ -3277,6 +3277,9 @@ function storeArtworkUrl(album,size=300){
 async function loadArtwork(a,img){
  const request=++artworkRequest;
  const fallback=artPlaceholder(a);
+ let artworkStatus=document.getElementById('artworkStatus');
+ if(!artworkStatus){artworkStatus=document.createElement('p');artworkStatus.id='artworkStatus';artworkStatus.className='artwork-status';img.closest('.record-stage').after(artworkStatus)}
+ artworkStatus.hidden=true;
  img.classList.remove('cover-loaded');
  img.onerror=null;
  img.onload=null;
@@ -3295,7 +3298,8 @@ async function loadArtwork(a,img){
  });
 
  // Race independent sources. One slow API should never block a cover that is already available elsewhere.
- if(full||preview)candidateJobs.push(candidate(Promise.resolve(full||preview),'catalogue'));
+ if(full)candidateJobs.push(candidate(Promise.resolve(full),'catalogue'));
+ if(preview&&preview!==full)candidateJobs.push(candidate(Promise.resolve(preview),'catalogue'));
  candidateJobs.push(candidate(
   findItunesAlbum(a).then(album=>({url:storeArtworkUrl(album,600)})),
   'store'
@@ -3319,6 +3323,8 @@ async function loadArtwork(a,img){
 
  if(request!==artworkRequest||!pick||key(pick)!==key(a))return;
  if(!winner?.url){
+  artworkStatus.textContent='Artwork unavailable';artworkStatus.hidden=false;
+  img.alt=`${a.title} by ${a.artist}, placeholder sleeve`;
   img.classList.remove('cover-loaded');
   return;
  }
@@ -3328,8 +3334,9 @@ async function loadArtwork(a,img){
   img.onerror=null;
   img.classList.remove('cover-loaded');
   img.src=fallback;
+  artworkStatus.textContent='Artwork unavailable';artworkStatus.hidden=false;
  };
- img.onload=()=>{if(request===artworkRequest)img.classList.add('cover-loaded')};
+ img.onload=()=>{if(request===artworkRequest){img.classList.add('cover-loaded');artworkStatus.hidden=true}};
  img.src=winner.url;
  if(winner.musicbrainz_id){
   a.metadata={...(a.metadata||{}),musicbrainz_id:winner.musicbrainz_id,cover_art:winner.url};
